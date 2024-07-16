@@ -1,0 +1,8 @@
+/*for kiosk-apps: otherwise there is a white space between the content and the screen-edges*/
+body {
+    margin: 0;     /* Remove margin */
+    padding: 0;    /* Remove padding */
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* hide scroll bar*/
+}

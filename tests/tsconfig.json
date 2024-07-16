@@ -1,0 +1,23 @@
+{
+  "extends": "../tsconfig-base.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "types": ["jest"],
+    "baseUrl": "../public_html/js",
+    "paths": {
+      "../public_html/js/*": [
+        "../public_html/js/*"
+      ]
+    }
+  },
+  "compileOnSave": false,
+  "include": [
+    "../public_html/js",
+    "../**/*.ts",
+    "../public_html/js/global.d.ts",
+    "../public_html/js/**/*.ts"
+  ],
+  "references": [
+    { "path": "../public_html" }
+  ]
+}
