@@ -1,17 +1,31 @@
-import {IMedia} from "./Media";
+import {IMedia, Video} from "./Media";
 
 
 export class Content{
 
     private _id:number;
     private _name:string;
-    private _media:IMedia[];
-    private _tagIds:number[];
+    private _media:IMedia[] = [];
+    private _tagIds:number[] = [];
 
     constructor() {}
 
     getMaxDuration():number {
+        let i:number;
+        let highestDuration:number = 0;
+        let video:Video;
 
+        for(i = 0; i < this._media.length; i++){
+
+            if(this._media[i] instanceof Video){
+                video = this._media[i] as Video;
+
+                if(video.duration > highestDuration)
+                    highestDuration = video.duration;
+            }
+        }
+
+        return highestDuration;
     }
 
     get id(): number {

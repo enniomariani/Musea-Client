@@ -2,7 +2,6 @@ import {beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {ModelMain} from "renderer/models/ModelMain";
 import {GlobalSettings} from "renderer/models/globalSettings/GlobalSettings";
 import {CreateGlobalSettings} from "renderer/models/globalSettings/CreateGlobalSettings"
-import {MediaClientFramework} from "../../../public_html/js/renderer/mediaServerFramework/MediaClientFramework";
 
 const mockBackend: jest.Mocked<IBackend> = {
     loadSettings: jest.fn()
@@ -22,14 +21,6 @@ jest.mock('renderer/models/globalSettings/CreateGlobalSettings', () => {
 });
 
 const createGlobalSettings: CreateGlobalSettings = new CreateGlobalSettings(globalSettings, mockBackend);
-
-jest.mock('../../../public_html/js/renderer/mediaServerFramework/MediaClientFramework', () => {
-    return {
-        MediaServerFramework: jest.fn().mockImplementation(() => {
-            return {}
-        }),
-    }
-});
 
 let modelMain:ModelMain;
 

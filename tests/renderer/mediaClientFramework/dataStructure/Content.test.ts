@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
 import {Content} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Content";
-import {Video} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Media";
+import {Image, Video} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Media";
 
 let content:Content;
 
@@ -26,5 +26,18 @@ describe("getMaxDuration() ", ()=>{
 
         //tests
         expect(content.getMaxDuration()).toBe(200);
+    });
+
+    it("should return 0 if there are no videos in the media", ()=>{
+        //setup
+        let image:Image;
+
+        for(let i:number = 0; i < 5; i++){
+            image = new Image();
+            content.media.push(image);
+        }
+
+        //tests
+        expect(content.getMaxDuration()).toBe(0);
     });
 });
