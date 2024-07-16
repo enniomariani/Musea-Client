@@ -1,0 +1,27 @@
+import {
+    NetworkConnectionHandler
+} from "renderer/network/NetworkConnectionHandler.js";
+import {IMainNetworkService} from "main/MuseaClientMain.js";
+
+const mockBackendNetworkService:jest.Mocked<IMainNetworkService> = {
+    ping: jest.fn(),
+}
+
+
+export class MockNetworkConnectionHandler extends NetworkConnectionHandler{
+
+    createConnection: jest.Mock;
+    sendData: jest.Mock;
+    closeConnection: jest.Mock;
+    ping: jest.Mock;
+    hasConnection: jest.Mock;
+
+    constructor() {
+        super(mockBackendNetworkService);
+        this.createConnection = jest.fn();
+        this.sendData = jest.fn();
+        this.closeConnection = jest.fn();
+        this.ping = jest.fn();
+        this.hasConnection = jest.fn();
+    }
+}

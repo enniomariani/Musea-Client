@@ -1,0 +1,171 @@
+import {MediaStation} from "renderer/dataStructure/MediaStation.js";
+import {MediaStationLocalMetaData} from "renderer/fileHandling/MediaStationLocalMetaData.js";
+import {MediaPlayerRole} from "renderer/dataStructure/MediaPlayer.js";
+import {ContentFileService} from "renderer/fileHandling/ContentFileService.js";
+import {MediaFilesMarkedToDeleteService} from "renderer/fileHandling/MediaFilesMarkedToDeleteService.js";
+import {TagRegistry} from "renderer/registries/TagRegistry.js";
+import {MediaPlayerRegistry} from "renderer/registries/MediaPlayerRegistry.js";
+import {MediaFileCacheHandler} from "renderer/fileHandling/MediaFileCacheHandler.js";
+
+export class MediaStationRepository{
+
+    private _allMediaStations: Map<number, MediaStation> = new Map();
+    private _mediaStationIdCounter:number = 0;
+
+    private _mediaStationMetaData:MediaStationLocalMetaData;
+    private _contentFileService:ContentFileService;
+    private _mediaFilesMarkedToDeleteService:MediaFilesMarkedToDeleteService;
+    private _mediaStationFactory: (id: number) => MediaStation;
+
+    private _mediaCacheHandler:MediaFileCacheHandler;
+
+    private _pathToMainFolder:string;
+
+    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaCacheHandler:MediaFileCacheHandler = new MediaFileCacheHandler(pathToMainFolder), mediaFilesMarkedToDeleteService = new MediaFilesMarkedToDeleteService(), contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id, new TagRegistry(), new MediaPlayerRegistry())) {
+        this._mediaStationMetaData = mediaStationMetaData;
+        this._pathToMainFolder = pathToMainFolder;
+        this._contentFileService = contentFileService;
+        this._mediaFilesMarkedToDeleteService = mediaFilesMarkedToDeleteService;
+        this._mediaStationFactory = mediaStationFactory;
+
+        this._mediaCacheHandler = mediaCacheHandler;
+        this._contentFileService.init(this._pathToMainFolder)
+        this._mediaFilesMarkedToDeleteService.init(this._pathToMainFolder)
+        this._mediaStationMetaData.init(this._pathToMainFolder + "savedMediaStations.json")
+    }
+
+    /**
+     * Load all media-stations with corresponding controller-ips from the saved json.
+     * Reset the mediaStationIdCounter and clears all mediastations added before calling this method.
+     *
+     * @returns {Promise<Map<string, string>>}  return "mediastation-Name" + "ip of controller" as key-value-pairs
+     */
+    async loadMediaStations():Promise<Map<string, string>>{
+        let loadedMetaData:Map<string, string>;
+        let mediaStation:MediaStation;
+        let id:number;
+
+        loadedMetaData = await this._mediaStationMetaData.load();
+
+        this._allMediaStations.clear();
+        this._mediaStationIdCounter = 0;
+
+        if(loadedMetaData){
+            for (let [key, controllerIp] of loadedMetaData) {
+                id = await this.addMediaStation(key, false);
+                mediaStation = this.requireMediaStation(id);
+
+                await this._mediaCacheHandler.hydrate(id);
+
+                if(await this.isMediaStationCached(id))
+                    mediaStation.importFromJSON(await this._contentFileService.loadFile(id), false);
+                else if(controllerIp)
+                    mediaStation.mediaPlayerRegistry.add(mediaStation.getNextMediaPlayerId(), "Controller-App not reachable", controllerIp, MediaPlayerRole.CONTROLLER);
+            }
+        }
+
+        return loadedMetaData;
+    }
+
+    async addMediaStation(name:string, save:boolean = true):Promise<number>{
+        let newMediaStation:MediaStation = this._mediaStationFactory(this._mediaStationIdCounter);
+
+        newMediaStation.name = name;
+
+        this._allMediaStations.set(this._mediaStationIdCounter, newMediaStation);
+        this._mediaStationIdCounter++;
+
+        if(save)
+            await this._mediaStationMetaData.save(this._getNameControllerMap());
+
+        return newMediaStation.id;
+    }
+
+    findMediaStation(id:number):MediaStation | null{
+        let mediaStation:MediaStation | undefined = this._allMediaStations.get(id);
+
+        if(!mediaStation)
+            return null;
+
+        return mediaStation;
+    }
+    /**
+     * Returns the MediaStation or throws if it does not exist.
+     */
+    requireMediaStation(id:number):MediaStation {
+        const ms:MediaStation | undefined = this._allMediaStations.get(id);
+
+        if (!ms)
+            throw new Error("Mediastation with this ID does not exist: " + id);
+
+        return ms;
+    }
+
+    /**
+     * deletes the media Station and removes all cached media files if there are any
+     *
+     * @param {number} id
+     */
+    async deleteMediaStation(id:number):Promise<void> {
+        if(await this.isMediaStationCached(id))
+            this.removeCachedMediaStation(id);
+
+        this._allMediaStations.delete(id);
+        await this._mediaStationMetaData.save(this._getNameControllerMap());
+
+        this._mediaCacheHandler.deleteAllCachedMedia(id);
+    }
+
+    /**
+     * saves the name of all mediastations and the ip of the controllers in a json-file
+     */
+    async saveMediaStations():Promise<void> {
+        await this._mediaStationMetaData.save(this._getNameControllerMap());
+    }
+
+    cacheMediaStation(id:number):void{
+        const mediaStation:MediaStation = this.requireMediaStation(id);
+        this._contentFileService.saveFile(id,mediaStation.exportToJSON(new Date()) );
+    }
+
+    removeCachedMediaStation(id:number):void{
+        this.requireMediaStation(id);
+        this._contentFileService.deleteFile(id);
+    }
+
+    async isMediaStationCached(id:number):Promise<boolean>{
+        this.requireMediaStation(id);
+        return await this._contentFileService.fileExists(id);
+    }
+
+    async markMediaIDtoDelete(mediaStationId:number,mediaPlayerId:number, id:number):Promise<void>{
+        this.requireMediaStation(mediaStationId);
+        await this._mediaFilesMarkedToDeleteService.addID(mediaStationId,mediaPlayerId, id);
+    }
+
+    async deleteStoredMediaID(mediaStationId:number, mediaPlayerId:number, id:number):Promise<void>{
+        this.requireMediaStation(mediaStationId);
+        await this._mediaFilesMarkedToDeleteService.removeID(mediaStationId, mediaPlayerId, id);
+    }
+
+    async getAllMediaIDsToDelete(mediaStationId:number):Promise<Map<number, number[]>>{
+        this.requireMediaStation(mediaStationId);
+        return await this._mediaFilesMarkedToDeleteService.getAllIDS(mediaStationId);
+    }
+
+    private _getNameControllerMap():Map<string, string> {
+        let map:Map<string, string> = new Map();
+        let controllerIp:string | null;
+
+        this._allMediaStations.forEach((mediaStation:MediaStation, key:number)=>{
+            controllerIp = mediaStation.mediaPlayerRegistry.getControllerIp();
+            map.set(mediaStation.name, controllerIp?controllerIp:"");
+        });
+
+        return map;
+    }
+
+    get mediaCacheHandler(): MediaFileCacheHandler {
+        return this._mediaCacheHandler;
+    }
+}

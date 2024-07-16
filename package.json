@@ -1,0 +1,71 @@
+{
+  "name": "musea-client",
+  "author": "Ennio Mariani",
+  "email": "mail@enniomariani.ch",
+  "version": "1.0.9",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/enniomariani/Musea-Client"
+  },
+  "license": "GPL-3.0-only",
+  "description": "Electron-Library to communicate with Musea-Server. This is the client-side. The server-side is Musea-Server.",
+  "type": "module",
+  "main": "build/test-app/main/main.js",
+  "scripts": {
+    "test": "node --no-warnings node_modules/jest/bin/jest.js ./tests --maxWorkers=50%",
+    "dev": "cross-env NODE_ENV=development npm start",
+    "start": "electron .",
+    "clean": "rimraf build/",
+    "copy:data": "copyfiles -u 1 \"daten/**/*\" build/daten",
+    "copy:html": "copyfiles -u 1 \"src/**/*.html\" build",
+    "copy:d.ts": "copyfiles -u 1 \"src/**/*.d.ts\" build",
+    "copy": "npm run copy:data && npm run copy:html && npm run copy:d.ts",
+    "build": "cls && npm run clean && tsc --b && tsc-alias -p tsconfig.node.json --outDir build && npm run copy"
+  },
+  "exports": {
+    "./main": {
+      "types": "./build/musea-client/main/index.d.ts",
+      "default": "./build/musea-client/main/index.js",
+      "import": "./build/musea-client/main/index.js"
+    },
+    "./renderer": {
+      "types": "./build/musea-client/renderer/index.d.ts",
+      "default": "./build/musea-client/renderer/index.js",
+      "import": "./build/musea-client/renderer/index.js"
+    },
+    "./preload": {
+      "types": "./build/musea-client/preload/index.d.ts",
+      "default": "./build/musea-client/preload/index.js",
+      "import": "./build/musea-client/preload/index.js"
+    },
+    "./mocks": {
+      "types": "./build/musea-client/mocks/index.d.ts",
+      "default": "./build/musea-client/mocks/index.js",
+      "import": "./build/musea-client/mocks/index.js"
+    }
+  },
+  "files": [
+    "build/musea-client"
+  ],
+  "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "@types/jest": "^30.0.0",
+    "@types/ping": "^0.4.4",
+    "copyfiles": "^2.4.1",
+    "cross-env": "^10.1.0",
+    "electron": "^39.2.4",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "jest-websocket-mock": "^2.5.0",
+    "rimraf": "^6.1.2",
+    "ts-jest": "^29.4.5",
+    "ts-loader": "^9.5.4",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "jsonschema": "^1.5.0",
+    "ping": "^1.0.0"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "extends": "../tsconfig.node.json",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "baseUrl": "..",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node", "jest"],
+    "paths": {
+      "main/*": [
+        "src/musea-client/main/*"
+      ],
+      "renderer/*": [
+        "src/musea-client/renderer/*"
+      ],
+      "mocks/*": [
+        "src/musea-client/mocks/*"
+      ]
+    }
+  },
+  "include": [
+    "./**/*.ts", "../src/**/*.d.ts"
+  ],
+  "exclude": ["**/build/**"],
+  "references": [
+    {
+      "path": "../src/musea-client/renderer"
+    },
+    {
+      "path": "../src/musea-client/main"
+    },
+    {
+      "path": "../src/musea-client/mocks"
+    }
+  ]
+}
