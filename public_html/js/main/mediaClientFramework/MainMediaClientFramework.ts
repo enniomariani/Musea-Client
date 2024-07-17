@@ -1,5 +1,6 @@
 import {BrowserWindow, ipcMain} from 'electron';
 import {MainFileService} from "./MainFileService";
+import ping from "ping";
 
 export class MainMediaClientFramework {
 
@@ -34,6 +35,15 @@ export class MainMediaClientFramework {
                 fileDataAsUint8Array = new Uint8Array(loadedFileData);
                 return fileDataAsUint8Array;
             }
+        });
+
+        //ping
+        ipcMain.handle('backendNetworkService:ping', async (event:Electron.IpcMainEvent, ip: string):Promise<boolean> => {
+            let answer = await ping.promise.probe(ip);
+
+            console.log("MainMediaClientFramework, ping-answer: ", ip, answer);
+
+            return answer.alive;
         });
     }
 }

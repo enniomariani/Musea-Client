@@ -17,3 +17,7 @@ contextBridge.exposeInMainWorld("backendFileService", {
     deleteFile: (path: string) => ipcRenderer.invoke('mediaServerFramework:deleteFile', path),
     loadFile: (path: string) => ipcRenderer.invoke('mediaServerFramework:loadFile', path)
 });
+
+contextBridge.exposeInMainWorld("backendNetworkService", {
+    ping: (ip: string) => ipcRenderer.invoke('backendNetworkService:ping', ip)
+});
