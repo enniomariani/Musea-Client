@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
 import {
     NetworkConnectionHandler
 } from "../../../../public_html/js/renderer/mediaClientFramework/network/NetworkConnectionHandler";
@@ -13,8 +13,8 @@ const onClose = jest.fn();
 const onError = jest.fn();
 const onDataReceived = jest.fn();
 
-const ip:string = "127.0.0.1";
-const url:string = "ws://" + ip + ":5000";
+const firstIP:string = "127.0.0.1";
+const firstURL:string = "ws://" + firstIP + ":5000";
 
 const mockBackendNetworkService:jest.Mocked<IBackenNetworkService> = {
     ping: jest.fn(),
@@ -32,11 +32,11 @@ afterEach(() => {
 describe("createConnection() ", ()=>{
     it("should call connectToServer on the newly created networkInterface with the correct parameters", ()=>{
         //method to test
-        connectionHandler.createConnection(ip, onOpen, onError, onClose, onDataReceived);
+        connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //tests
         expect(mockNetworkInterface.connectToServer).toHaveBeenCalledTimes(1);
-        expect(mockNetworkInterface.connectToServer).toHaveBeenCalledWith(url, onOpen, onError, onClose, onDataReceived);
+        expect(mockNetworkInterface.connectToServer).toHaveBeenCalledWith(firstURL, onOpen, onError, expect.anything(), expect.anything());
     });
 
     it("should return true if the created networkInterface returns true", ()=>{
@@ -45,7 +45,7 @@ describe("createConnection() ", ()=>{
         mockNetworkInterface.connectToServer.mockReturnValueOnce(true);
 
         //method to test
-        success = connectionHandler.createConnection(ip, onOpen, onError, onClose, onDataReceived);
+        success = connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //tests
         expect(success).toBe(true);
@@ -57,7 +57,7 @@ describe("createConnection() ", ()=>{
         mockNetworkInterface.connectToServer.mockReturnValueOnce(false);
 
         //method to test
-        success = connectionHandler.createConnection(ip, onOpen, onError, onClose, onDataReceived);
+        success = connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //tests
         expect(success).toBe(false);
@@ -69,12 +69,48 @@ describe("createConnection() ", ()=>{
         let logSpy = jest.spyOn(console, "error");
 
         //method to test
-        connectionHandler.createConnection(ip, onOpen, onError, onClose, onDataReceived);
-        success = connectionHandler.createConnection(ip, onOpen, onError, onClose, onDataReceived);
+        connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
+        success = connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //tests
         expect(success).toBe(false);
         expect(logSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("should call the passed onClose callback with the correct ip, if the connection was closed", ()=>{
+        let secondIP:string = "127.0.0.2";
+        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen, onError, onClose)=>{
+            if(url !== firstURL)
+                onClose();
+            return true;
+        });
+
+        //method to test
+        connectionHandler.createConnection(firstIP, jest.fn(), jest.fn(), jest.fn(), jest.fn());
+        connectionHandler.createConnection(secondIP, onOpen, onError, onClose, onDataReceived);
+
+        //tests
+        expect(onClose).toHaveBeenCalledTimes(1);
+        expect(onClose).toHaveBeenCalledWith(secondIP);
+    });
+
+    it("should call the passed onDataReceived callback with the correct ip, if the connection received data", ()=>{
+        let secondIP:string = "127.0.0.2";
+        let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFE]);
+
+        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen, onError, onClose, onDataReceived)=>{
+            if(url !== firstURL)
+                onDataReceived(data);
+            return true;
+        });
+
+        //method to test
+        connectionHandler.createConnection(firstIP, jest.fn(), jest.fn(), jest.fn(), jest.fn());
+        connectionHandler.createConnection(secondIP, onOpen, onError, onClose, onDataReceived);
+
+        //tests
+        expect(onDataReceived).toHaveBeenCalledTimes(1);
+        expect(onDataReceived).toHaveBeenCalledWith(secondIP, data);
     });
 });
 
@@ -83,10 +119,10 @@ describe("sendData() ", ()=>{
         //setup
         const data:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
         mockNetworkInterface.connectToServer.mockReturnValue(true);
-        connectionHandler.createConnection(ip, onOpen, onError, onClose, onDataReceived);
+        connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //method to test
-        connectionHandler.sendData(ip, data);
+        connectionHandler.sendData(firstIP, data);
 
         //tests
         expect(mockNetworkInterface.sendDataToServer).toHaveBeenCalledTimes(1);
@@ -99,10 +135,10 @@ describe("sendData() ", ()=>{
         let success: boolean;
         mockNetworkInterface.connectToServer.mockReturnValue(true);
         mockNetworkInterface.sendDataToServer.mockReturnValue(false);
-        connectionHandler.createConnection(ip, onOpen, onError, onClose, onDataReceived);
+        connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //method to test
-        success = connectionHandler.sendData(ip, data);
+        success = connectionHandler.sendData(firstIP, data);
 
         //tests
         expect(success).toBe(false);
@@ -115,7 +151,7 @@ describe("sendData() ", ()=>{
         let logSpy = jest.spyOn(console, "error");
 
         //method to test
-        success = connectionHandler.sendData(ip, data);
+        success = connectionHandler.sendData(firstIP, data);
 
         //tests
         expect(success).toBe(false);
@@ -127,10 +163,10 @@ describe("closeConnection() ", ()=>{
     it("should call networkInterface.closeConnection", ()=>{
         //setup
         mockNetworkInterface.connectToServer.mockReturnValue(true);
-        connectionHandler.createConnection(ip, onOpen, onError, onClose, onDataReceived);
+        connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //method to test
-        connectionHandler.closeConnection(ip);
+        connectionHandler.closeConnection(firstIP);
 
         //tests
         expect(mockNetworkInterface.closeConnection).toHaveBeenCalledTimes(1);
@@ -140,11 +176,11 @@ describe("closeConnection() ", ()=>{
         //setup
         let success:boolean;
         mockNetworkInterface.connectToServer.mockReturnValue(true);
-        connectionHandler.createConnection(ip, onOpen, onError, onClose, onDataReceived);
+        connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //method to test
-        connectionHandler.closeConnection(ip);
-        success = connectionHandler.createConnection(ip, onOpen, onError, onClose, onDataReceived);
+        connectionHandler.closeConnection(firstIP);
+        success = connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //tests
         expect(success).toBe(true);
@@ -155,7 +191,7 @@ describe("closeConnection() ", ()=>{
         let logSpy = jest.spyOn(console, "error");
 
         //method to test
-        connectionHandler.closeConnection(ip);
+        connectionHandler.closeConnection(firstIP);
 
         //tests
         expect(logSpy).toHaveBeenCalledTimes(1);
@@ -167,11 +203,11 @@ describe("ping() ", ()=>{
         //setup
 
         //method to test
-        await connectionHandler.ping(ip);
+        await connectionHandler.ping(firstIP);
 
         //tests
         expect(mockBackendNetworkService.ping).toHaveBeenCalledTimes(1);
-        expect(mockBackendNetworkService.ping).toHaveBeenCalledWith(ip);
+        expect(mockBackendNetworkService.ping).toHaveBeenCalledWith(firstIP);
     });
 
     it("should return true if mockBackendNetworkService.ping returns true", async ()=>{
@@ -180,7 +216,7 @@ describe("ping() ", ()=>{
         mockBackendNetworkService.ping.mockReturnValue(true);
 
         //method to test
-        answer = await connectionHandler.ping(ip);
+        answer = await connectionHandler.ping(firstIP);
 
         //tests
         expect(answer).toBe(true);
@@ -192,7 +228,7 @@ describe("ping() ", ()=>{
         mockBackendNetworkService.ping.mockReturnValue(false);
 
         //method to test
-        answer = await connectionHandler.ping(ip);
+        answer = await connectionHandler.ping(firstIP);
 
         //tests
         expect(answer).toBe(false);

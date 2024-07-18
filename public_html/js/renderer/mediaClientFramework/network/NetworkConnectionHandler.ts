@@ -1,4 +1,12 @@
-import {IOnReceivedData, NetworkInterface} from "./NetworkInterface";
+import {NetworkInterface} from "./NetworkInterface";
+
+export interface IOnReceivedConnectionData{
+    (ip:string, data:Uint8Array):void
+}
+
+export interface IOnClosedConnection{
+    (ip:string):void
+}
 
 export  class NetworkConnectionHandler{
 
@@ -18,11 +26,11 @@ export  class NetworkConnectionHandler{
      * @param {string} ip - Unique identifier for the connection.
      * @param {Function} onOpen - Callback for when the connection opens.
      * @param {Function} onError - Callback for when an error occurs.
-     * @param {Function} onClosed - Callback for when the connection closes.
-     * @param {IOnReceivedData} onDataReceived - Callback for when data is received.
+     * @param {IOnClosedConnection} onClosed - Callback for when the connection closes.
+     * @param {IOnReceivedConnectionData} onDataReceived - Callback for when data is received.
      * @returns {boolean} - Returns true if the connection is successfully created, otherwise false.
      */
-    createConnection(ip: string, onOpen: Function = null, onError: Function = null, onClosed: Function = null, onDataReceived: IOnReceivedData = null): boolean {
+    createConnection(ip: string, onOpen: Function, onError: Function, onClosed: IOnClosedConnection = null, onDataReceived: IOnReceivedConnectionData = null): boolean {
         const url:string = "ws://" + ip + ":5000";
 
         if (this._connections.has(ip)) {
@@ -31,7 +39,17 @@ export  class NetworkConnectionHandler{
         }
 
         const networkInterface:NetworkInterface = this._networkInterfaceFactory;
-        const success:boolean = networkInterface.connectToServer(url, onOpen, onError, onClosed, onDataReceived);
+        const success:boolean = networkInterface.connectToServer(url, onOpen, onError,
+            ()=>{
+                console.log("Connection-Handler: CLOSE: ", ip);
+                if(onClosed)
+                    onClosed(ip);
+            },
+            (data:Uint8Array)=>{
+                console.log("Connection-Handler: DATA RECEIVED: ", ip, data);
+                if(onDataReceived)
+                    onDataReceived(ip, data);
+            });
 
         if (success)
             this._connections.set(ip, networkInterface);

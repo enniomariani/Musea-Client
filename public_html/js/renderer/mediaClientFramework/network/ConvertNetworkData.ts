@@ -57,6 +57,14 @@ export class ConvertNetworkData {
         return result;
     }
 
+    /**
+     * decodes the passed data into an array of strings and Uint8Arrays.
+     *
+     * Returns INTERPRETATION_ERROR as  the first element of the array if the data is not valid
+     *
+     * @param {Uint8Array} data
+     * @returns {(string | Uint8Array)[]}
+     */
     static decodeCommand(data: Uint8Array): (string | Uint8Array)[] {
         const parts: (string | Uint8Array)[] = [];
         const decoder: TextDecoder = new TextDecoder();

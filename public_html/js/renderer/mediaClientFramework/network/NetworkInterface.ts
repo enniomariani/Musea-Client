@@ -37,7 +37,7 @@ export class NetworkInterface extends EventTarget{
      * @param {Function} onError
      * @param {Function} onClosed
      * @param {IOnReceivedData} onDataReceived
-     * @returns {boolean}
+     * @returns {boolean}   returns true if the connection is not already open yet. The connection is not open yet, for that listen to the "open" event
      */
     connectToServer(url:string, onOpen:Function = null, onError:Function = null, onClosed:Function = null, onDataReceived:IOnReceivedData = null):boolean {
 
