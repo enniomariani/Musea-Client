@@ -4,6 +4,7 @@ import {Tag} from "./Tag";
 
 
 export class MediaStation{
+
     private _id:number;
     private _name:string;
     private _mediaApps:MediaApp[] = [];
@@ -18,6 +19,30 @@ export class MediaStation{
 
     constructor(id:number) {
         this._id = id;
+    }
+
+    getNextMediaAppId():number{
+        let actualID:number = this._mediaAppIdCounter;
+        this._mediaAppIdCounter++;
+        return actualID;
+    }
+
+    getNextFolderId():number{
+        let actualID:number = this._folderIdCounter;
+        this._folderIdCounter++;
+        return actualID;
+    }
+
+    getNextTagId():number{
+        let actualID:number = this._tagIdCounter;
+        this._tagIdCounter++;
+        return actualID;
+    }
+
+    getNextContentId():number{
+        let actualID:number = this._contentIdCounter;
+        this._contentIdCounter++;
+        return actualID;
     }
 
     get id(): number {
@@ -38,5 +63,9 @@ export class MediaStation{
 
     set mediaApps(value: MediaApp[]) {
         this._mediaApps = value;
+    }
+
+    get rootFolder(): Folder {
+        return this._rootFolder;
     }
 }

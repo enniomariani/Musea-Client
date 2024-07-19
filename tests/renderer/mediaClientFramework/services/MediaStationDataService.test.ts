@@ -16,7 +16,7 @@ let mediaStationDataService:MediaStationDataService;
 
 beforeEach(() => {
     mockMediaStationLocalMetaDAta = new MockMediaStationLocalMetaData();
-    mockMediaStationRepository = new MockMediaStationRepository(mockMediaStationLocalMetaDAta);
+    mockMediaStationRepository = new MockMediaStationRepository();
     mediaStationDataService = new MediaStationDataService(mockMediaStationRepository);
 });
 
@@ -65,7 +65,7 @@ describe("renameMediaStation() ", ()=>{
         });
 
         //method to test
-        mediaStationDataService.renameMediaStation(createdID, newName);
+        mediaStationDataService.changeName(createdID, newName);
 
         //tests
         expect(mockMediaStationRepository.findMediaStation).toHaveBeenCalledTimes(1);
@@ -89,7 +89,7 @@ describe("getNameOfMediaStation() ", ()=>{
         });
 
         //method to test
-        nameReturned = mediaStationDataService.getNameOfMediaStation(createdID);
+        nameReturned = mediaStationDataService.getName(createdID);
 
         //tests
         expect(nameReturned).toBe(newName);

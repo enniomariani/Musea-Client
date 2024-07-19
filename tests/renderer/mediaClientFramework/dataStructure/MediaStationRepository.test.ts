@@ -256,7 +256,7 @@ describe("updateAndSaveMediaStation() ", ()=>{
         let receivedId:number;
         let mediaStation:MediaStation;
         let newIp:string = "222.222.222.20";
-        let controllerApp:MediaApp = new MediaApp();
+        let controllerApp:MediaApp = new MediaApp(0);
         controllerApp.role = MediaApp.ROLE_CONTROLLER;
         controllerApp.ip = "100.100.20.10";
         let mapToSave:Map<string, string> = new Map();

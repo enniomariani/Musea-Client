@@ -22,7 +22,7 @@ export class MediaStationDataService{
         this._mediaStationRepository.deleteMediaStation(id);
     }
 
-    renameMediaStation(id:number, newName:string):void{
+    changeName(id:number, newName:string):void{
         let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(id);
 
         mediaStation.name = newName;
@@ -30,7 +30,7 @@ export class MediaStationDataService{
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
-    getNameOfMediaStation(id:number):string{
+    getName(id:number):string{
         return this._mediaStationRepository.findMediaStation(id).name;
     }
 }

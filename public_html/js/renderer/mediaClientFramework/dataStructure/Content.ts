@@ -8,7 +8,9 @@ export class Content{
     private _media:IMedia[] = [];
     private _tagIds:number[] = [];
 
-    constructor() {}
+    constructor(id:number) {
+        this._id = id;
+    }
 
     getMaxDuration():number {
         let i:number;
@@ -30,10 +32,6 @@ export class Content{
 
     get id(): number {
         return this._id;
-    }
-
-    set id(value: number) {
-        this._id = value;
     }
 
     get name(): string {

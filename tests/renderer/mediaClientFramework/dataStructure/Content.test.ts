@@ -5,7 +5,7 @@ import {Image, Video} from "../../../../public_html/js/renderer/mediaClientFrame
 let content:Content;
 
 beforeEach(() => {
-    content = new Content();
+    content = new Content(0);
 });
 
 afterEach(() => {
