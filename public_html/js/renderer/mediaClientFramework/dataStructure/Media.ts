@@ -1,17 +1,22 @@
-import {MediaApp} from "./MediaApp";
-
-
 export interface IMedia{
     idOnMediaApp:number
-    mediaApp:MediaApp
+    mediaAppId:number
+    exportToJSON:any
 }
 
 export class BaseMedia implements IMedia{
 
-    private _idOnMediaApp:number;
-    private _mediaApp:MediaApp;
+    protected _idOnMediaApp:number;
+    protected _mediaAppId:number;
 
     constructor() {}
+
+    exportToJSON():any{
+        return {
+            idOnMediaApp: this._idOnMediaApp,
+            mediaAppId: this._mediaAppId
+        }
+    }
 
     get idOnMediaApp(): number {
         return this._idOnMediaApp;
@@ -21,12 +26,12 @@ export class BaseMedia implements IMedia{
         this._idOnMediaApp = value;
     }
 
-    get mediaApp(): MediaApp {
-        return this._mediaApp;
+    get mediaAppId(): number {
+        return this._mediaAppId;
     }
 
-    set mediaApp(value: MediaApp) {
-        this._mediaApp = value;
+    set mediaAppId(value: number) {
+        this._mediaAppId = value;
     }
 }
 
@@ -41,6 +46,14 @@ export class Video extends BaseMedia implements IMedia{
 
     constructor() {
         super();
+    }
+
+    exportToJSON():any{
+        return {
+            idOnMediaApp: this._idOnMediaApp,
+            mediaAppId: this._mediaAppId,
+            duration: this._duration
+        }
     }
 
     get duration(): number {

@@ -27,10 +27,14 @@ export class MediaStationRepository{
     }
 
     addMediaStation(name:string):number{
-        let newMediaStation:MediaStation = new MediaStation(++this._mediaStationIdCounter);
+        let newMediaStation:MediaStation = new MediaStation(this._mediaStationIdCounter);
+
         newMediaStation.name = name;
+        newMediaStation.rootFolder.name = "root";
 
         this._allMediaStations.set(this._mediaStationIdCounter, newMediaStation);
+
+        this._mediaStationIdCounter++;
 
         this._mediaStationMetaData.save(this.getNameControllerMap());
         return newMediaStation.id;

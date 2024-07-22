@@ -1,24 +1,39 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
 import {Folder} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Folder";
 import {MockContent} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockContent";
 import {MockFolder} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockFolder";
+import {Content} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Content";
 
 let folder:Folder;
 let subFolder1:Folder = new Folder(1);
+subFolder1.name = "subF1";
 let subFolder2:Folder = new Folder(2);
+subFolder2.name = "subF2";
 let subFolder3:Folder = new Folder(3);
+subFolder3.name = "subF2";
 let content1:MockContent = new MockContent(0);
 let content2:MockContent = new MockContent(1);
 let content3:MockContent = new MockContent(2);
 let content4:MockContent = new MockContent(3);
+content4.name = "mockContent4";
 
 subFolder2.addSubFolder(subFolder3);
 subFolder1.addContent(content1);
 subFolder1.addContent(content2);
 subFolder3.addContent(content3);
 
+const expectedJSON:any = {
+    id: 3,
+    name: "myName",
+    contents: [{id:content4.id, name: content4.name}],
+    subFolders: [{id:1, name: subFolder1.name, subFolders: [], contents:[]}, {id:2, name: subFolder2.name, subFolders: [{id:3, name: subFolder3.name, subFolders:[], contents: []}], contents:[]}]
+};
+
+let id;
+let createContentMock = jest.fn(id).mockReturnValue(content4);
+
 beforeEach(() => {
-    folder = new Folder(0);
+    folder = new Folder(0, createContentMock);
     folder.addContent(content4);
     folder.addSubFolder(subFolder1);
     folder.addSubFolder(subFolder2);
@@ -26,6 +41,76 @@ beforeEach(() => {
 
 afterEach(() => {
     jest.clearAllMocks();
+});
+
+describe("exportToJSON() ", ()=>{
+    it("should receive a valid JSON that contains all set properties of the folder", ()=>{
+        //setup
+        let receivedJSON:any;
+        folder = new Folder(3, createContentMock);
+        folder.addContent(content4);
+        folder.addSubFolder(subFolder1);
+        folder.addSubFolder(subFolder2);
+
+        content4.exportToJSON.mockReturnValueOnce({id:content4.id, name: content4.name});
+
+        folder.name = "myName";
+        folder.parentFolder = new MockFolder(10);
+
+        //method to test
+        receivedJSON = folder.exportToJSON();
+
+        //tests
+        expect(JSON.stringify(receivedJSON)).not.toBe(undefined);
+        expect(receivedJSON).toMatchObject(expectedJSON);
+    });
+});
+
+describe("importFromJSON() ", () => {
+    it("should set all properties for itself and the subfolders according to the passed json", () => {
+        //setup
+        folder = new Folder(0, createContentMock);
+
+        //method to test
+        folder.importFromJSON(expectedJSON);
+
+        //tests
+        expect(folder.id).toBe(expectedJSON.id);
+        expect(folder.name).toBe(expectedJSON.name);
+
+        expect(folder.subFolders.length).toBe(2);
+        expect(folder.subFolders[0].id).toBe(1);
+        expect(folder.subFolders[0].name).toBe("subF1");
+        expect(folder.subFolders[1].id).toBe(2);
+        expect(folder.subFolders[1].name).toBe("subF2");
+
+        expect(folder.contents.length).toBe(1);
+        expect(folder.contents[0].id).toBe(content4.id);
+    });
+
+    it("should pass all properties it got for its content to content.importFromJSON", () => {
+        //setup
+        let createContentMock = jest.fn(id).mockReturnValue(content4);
+        folder = new Folder(0, createContentMock);
+
+        //method to test
+        folder.importFromJSON(expectedJSON);
+
+        //tests
+        expect(content4.importFromJSON).toHaveBeenCalledTimes(1);
+        expect(content4.importFromJSON).toHaveBeenCalledWith(expectedJSON.contents[0]);
+    });
+
+    it("should set the passed parent-Folder", () => {
+        //setup
+        let parentFolder:MockFolder = new MockFolder(30);
+
+        //method to test
+        folder.importFromJSON(expectedJSON, parentFolder);
+
+        //tests
+        expect(folder.parentFolder).toEqual(parentFolder);
+    });
 });
 
 describe("addContent() and containsContent() ", ()=>{
@@ -65,6 +150,36 @@ describe("addContent(), removeContent() and containsContent() ", ()=>{
 
         //tests
         expect(answer).toBe(false);
+    });
+});
+
+describe("addContent(), getAllContents()", ()=>{
+    it("adding two contents should give 2 contents back", ()=>{
+        //setup
+        let content1:MockContent = new MockContent(0);
+        let content2:MockContent = new MockContent(1);
+        let allContents:Map<number, Content>;
+
+        //method to test
+        folder.addContent(content1);
+        folder.addContent(content2);
+        allContents = folder.getAllContents();
+
+        //tests
+        expect(allContents.get(0)).toBe(content1);
+        expect(allContents.get(1)).toBe(content2);
+    });
+
+    it("adding no contents should give an empty Map back", ()=>{
+        //setup
+        folder = new Folder(0);
+        let allContents:Map<number, Content>;
+
+        //method to test
+        allContents = folder.getAllContents();
+
+        //tests
+        expect(allContents.size).toBe(0);
     });
 });
 

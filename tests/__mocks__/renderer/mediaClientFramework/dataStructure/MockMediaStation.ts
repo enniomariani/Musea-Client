@@ -7,6 +7,9 @@ export class MockMediaStation extends MediaStation{
     getNextContentId: jest.Mock;
     getNextFolderId: jest.Mock;
     getNextTagId: jest.Mock;
+    exportToJSON: jest.Mock;
+    importFromJSON: jest.Mock;
+    getControllerIp: jest.Mock;
 
     private _rootFolderMock: MockFolder = new MockFolder(0);
 
@@ -16,9 +19,16 @@ export class MockMediaStation extends MediaStation{
         this.getNextContentId = jest.fn();
         this.getNextFolderId = jest.fn();
         this.getNextTagId = jest.fn();
+        this.exportToJSON = jest.fn();
+        this.importFromJSON = jest.fn();
+        this.getControllerIp = jest.fn();
     }
 
     get rootFolder(): MockFolder {
         return this._rootFolderMock;
+    }
+
+    set rootFolder(folder:MockFolder) {
+        this._rootFolderMock = folder;
     }
 }

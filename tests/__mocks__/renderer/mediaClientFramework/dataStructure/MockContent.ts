@@ -4,9 +4,13 @@ import {Content} from "../../../../../public_html/js/renderer/mediaClientFramewo
 export class MockContent extends Content{
 
     getMaxDuration: jest.Mock;
+    importFromJSON: jest.Mock;
+    exportToJSON: jest.Mock;
 
     constructor(id) {
         super(id);
         this.getMaxDuration = jest.fn();
+        this.importFromJSON = jest.fn();
+        this.exportToJSON = jest.fn();
     }
 }

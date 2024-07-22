@@ -82,7 +82,7 @@ describe("loadMediaStations() ", ()=>{
 describe("addMediaStation() ", ()=>{
     it("should return the ID of the created mediaStation", ()=>{
         //setup
-        let expectedId:number = 1;
+        let expectedId:number = 0;
         let receivedId:number;
 
         //method to test

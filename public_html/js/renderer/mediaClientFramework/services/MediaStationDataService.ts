@@ -23,7 +23,7 @@ export class MediaStationDataService{
     }
 
     changeName(id:number, newName:string):void{
-        let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(id);
+        let mediaStation:MediaStation = this._findMediaStation(id);
 
         mediaStation.name = newName;
 
@@ -32,5 +32,14 @@ export class MediaStationDataService{
 
     getName(id:number):string{
         return this._mediaStationRepository.findMediaStation(id).name;
+    }
+
+    private _findMediaStation(id: number): MediaStation {
+        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(id);
+
+        if (!mediaStation)
+            throw new Error("Mediastation with this ID does not exist: " + id);
+        else
+            return mediaStation;
     }
 }

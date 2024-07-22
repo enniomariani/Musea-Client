@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
 import {Content} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Content";
 import {Image, Video} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Media";
 
@@ -10,6 +10,76 @@ beforeEach(() => {
 
 afterEach(() => {
     jest.clearAllMocks();
+});
+
+const tagIds:number[] = [10,20, 30,11];
+const expectedJSON:any = {
+    id: 0,
+    name: "myName",
+    tagIds: tagIds,
+    media: [{mediaAppId: 0, type: "video", idOnMediaApp: 20, duration: 300}, {mediaAppId: 1, type: "image", idOnMediaApp: 10}]
+};
+
+
+describe("importFromJSON() ", () => {
+    it("should set all properties for itself", () => {
+        //setup
+        content = new Content(0);
+
+        //method to test
+        content.importFromJSON(expectedJSON);
+
+        //tests
+        expect(content.id).toBe(expectedJSON.id);
+        expect(content.name).toBe(expectedJSON.name);
+    });
+
+    it("should set all media correctly", () => {
+        //setup
+        let video:Video;
+        content = new Content(0);
+
+        //method to test
+        content.importFromJSON(expectedJSON);
+
+        //tests
+        expect(content.media.length).toBe(2);
+        expect(content.media[0].mediaAppId).toBe(expectedJSON.media[0].mediaAppId);
+        expect(content.media[0].idOnMediaApp).toBe(expectedJSON.media[0].idOnMediaApp);
+        expect(content.media[0]).toBeInstanceOf(Video);
+        video = content.media[0] as Video;
+        expect(video.duration).toBe(expectedJSON.media[0].duration);
+        expect(content.media[1].mediaAppId).toBe(expectedJSON.media[1].mediaAppId);
+        expect(content.media[1].idOnMediaApp).toBe(expectedJSON.media[1].idOnMediaApp);
+    });
+});
+
+describe("exportToJSON() ", ()=>{
+    it("should receive a valid JSON that contains all set properties of the content", ()=>{
+        //setup
+
+        let receivedJSON:any;
+        content.name = "myName";
+        content.tagIds = tagIds;
+        let video:Video = new Video();
+        video.idOnMediaApp = 20;
+        video.mediaAppId = 0;
+        video.duration = 300;
+
+        let image:Image = new Image();
+        image.idOnMediaApp = 10;
+        image.mediaAppId = 1;
+
+        content.media.push(video, image)
+
+
+        //method to test
+        receivedJSON = content.exportToJSON();
+
+        //tests
+        expect(JSON.stringify(receivedJSON)).not.toBe(undefined);
+        expect(receivedJSON).toMatchObject(expectedJSON);
+    });
 });
 
 describe("getMaxDuration() ", ()=>{

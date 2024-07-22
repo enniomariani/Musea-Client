@@ -77,11 +77,13 @@ export class NetworkService {
      * sends a command to the ip which asks for the content file saved on it. The media-app should
      * return an empty JSON if there is no content-file or the JSON of the content-file
      *
+     * Returns null if there was no response from the controller-app during the timeout passed
+     *
      * @param {string} ip
      * @param {number} timeout  in MS
-     * @returns {Promise<string>}
+     * @returns {Promise<string|null>}
      */
-    async getContentFileFrom(ip:string, timeout:number = 3000):Promise<string>{
+    async getContentFileFrom(ip:string, timeout:number = 3000):Promise<string|null>{
         return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("content", "get"), timeout, null);
     }
 

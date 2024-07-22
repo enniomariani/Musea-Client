@@ -35,7 +35,7 @@ export class ContentManager{
     }
 
     changeName(mediaStation:MediaStation,id:number, name:string):void{
-        let content:Content = mediaStation.rootFolder.findContent(id);
+        let content:Content = this.getContent(mediaStation, id);
 
         if(!content)
             throw new Error("Content with ID does not exist: "+ id);
@@ -50,9 +50,5 @@ export class ContentManager{
             throw new Error("Folder with ID does not exist: "+ folderId);
 
         folder.removeContent(id);
-    }
-
-    getDuration(mediaStation:MediaStation, contentId:number):number{
-        return null;
     }
 }

@@ -6,16 +6,11 @@ import {
     MockMediaStationRepository
 } from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
 import {MediaStation} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaStation";
-import {
-    MockMediaStationLocalMetaData
-} from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockMediaStationLocalMetaData";
 
 let mockMediaStationRepository:MockMediaStationRepository;
-let mockMediaStationLocalMetaDAta:MockMediaStationLocalMetaData;
 let mediaStationDataService:MediaStationDataService;
 
 beforeEach(() => {
-    mockMediaStationLocalMetaDAta = new MockMediaStationLocalMetaData();
     mockMediaStationRepository = new MockMediaStationRepository();
     mediaStationDataService = new MediaStationDataService(mockMediaStationRepository);
 });
@@ -54,9 +49,11 @@ describe("createMediaStation() ", ()=>{
 });
 
 describe("renameMediaStation() ", ()=>{
+    let createdID:number = 5;
+
     it("should call findMediaStation and updateMediaStation from the repo", ()=>{
         let newName:string = "mediaStationNameNeu";
-        let createdID:number = 5;
+
         let createdMediaStation:MediaStation = new MediaStation(createdID);
 
         mockMediaStationRepository.findMediaStation.mockImplementation((idArg)=>{
@@ -72,6 +69,14 @@ describe("renameMediaStation() ", ()=>{
         expect(mockMediaStationRepository.findMediaStation).toHaveBeenCalledWith(createdID);
         expect(mockMediaStationRepository.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepository.updateMediaStation).toHaveBeenCalledWith(createdMediaStation);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", ()=>{
+        //setup
+        mockMediaStationRepository.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        expect(()=> mediaStationDataService.changeName(createdID,"testName")).toThrow(new Error("Mediastation with this ID does not exist: " + createdID));
     });
 });
 
