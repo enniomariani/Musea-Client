@@ -1,7 +1,7 @@
 import {
     ContentNetworkService
 } from "../../../../../public_html/js/renderer/mediaClientFramework/services/ContentNetworkService";
-import {MockNetworkService} from "../network/MockNetworkService";
+import {MockNetworkService} from "./MockNetworkService";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();
 

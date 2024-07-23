@@ -5,7 +5,7 @@ export class Content {
 
     private _id: number;
     private _name: string;
-    private _media: IMedia[] = [];
+    private _media: Map<number, IMedia> = new Map();
     private _tagIds: number[] = [];
 
     constructor(id: number) {
@@ -48,7 +48,7 @@ export class Content {
                     media.mediaAppId = json.media[i].mediaAppId;
 
                 if (media)
-                    this._media.push(media);
+                    this._media.set(media.mediaAppId, media);
             }
         }
     }
@@ -89,19 +89,17 @@ export class Content {
     }
 
     getMaxDuration(): number {
-        let i: number;
         let highestDuration: number = 0;
         let video: Video;
 
-        for (i = 0; i < this._media.length; i++) {
-
-            if (this._media[i] instanceof Video) {
-                video = this._media[i] as Video;
+        this._media.forEach((media:IMedia)=>{
+            if (media instanceof Video) {
+                video = media as Video;
 
                 if (video.duration > highestDuration)
                     highestDuration = video.duration;
             }
-        }
+        });
 
         return highestDuration;
     }
@@ -118,12 +116,8 @@ export class Content {
         this._name = value;
     }
 
-    get media(): IMedia[] {
+    get media(): Map<number, IMedia> {
         return this._media;
-    }
-
-    set media(value: IMedia[]) {
-        this._media = value;
     }
 
     get tagIds(): number[] {

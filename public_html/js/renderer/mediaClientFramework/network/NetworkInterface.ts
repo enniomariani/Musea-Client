@@ -53,6 +53,7 @@ export class NetworkInterface extends EventTarget{
         this._onDataReceivedCallBack = onDataReceived;
 
         this._connection = new WebSocket(url);
+        this._connection.binaryType = "arraybuffer";
 
         this._connection.addEventListener("error", this._onConnectionErrorFunc);
         this._connection.addEventListener("open", this._onConnectionOpenFunc);
@@ -97,7 +98,7 @@ export class NetworkInterface extends EventTarget{
     }
 
     private _onDataReceived(e):void {
-        console.log("WebSocketConnection: Data received: ", typeof e.data, e.data);
+        console.log("WebSocketConnection: Data received: ", e.data);
 
         let dataAsArray:Uint8Array;
 
@@ -105,8 +106,10 @@ export class NetworkInterface extends EventTarget{
         //cases the data is sent as string (because the server.send-function used in the tests sends always strings)
         if(typeof e.data === "string")
             dataAsArray = this._stringToUint8Array(e.data);
+        else if (e.data instanceof ArrayBuffer)
+            dataAsArray = new Uint8Array(e.data);
         else
-            dataAsArray = e.data;
+            throw new Error("Websocket received data which is neither a string nor a Uint8Array!")
 
         if(this._onDataReceivedCallBack)
             this._onDataReceivedCallBack(dataAsArray);

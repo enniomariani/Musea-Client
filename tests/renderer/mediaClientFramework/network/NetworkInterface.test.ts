@@ -138,6 +138,16 @@ describe("connectToServer(): ", () => {
         expect(onDataReceivedHandler).toBeCalledTimes(1);
         expect(onDataReceivedHandler).toHaveBeenCalledWith(data);
     });
+
+    test("throws an error if the received data is not a Uint8Array or a string", async () =>{
+        let onDataReceivedHandler = jest.fn();
+        let data:Blob = new Blob();
+
+        networkInterface.connectToServer(serverPath, null, null, null, onDataReceivedHandler);
+        await server.connected; //wait until client connected to server, otherwise the events would not have been fired
+        expect(()=> server.send(data)).toThrow("Websocket received data which is neither a string nor a Uint8Array!");
+        server.close();
+    });
 });
 
 describe("sendDataToServer() ", ()=>{

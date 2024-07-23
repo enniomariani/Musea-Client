@@ -28,23 +28,20 @@ export class ModelMain extends EventTarget {
         //for TEST-PURPOSES!! TO DO: REMOVE
         let mcf:MediaClientFramework = new MediaClientFramework();
 
-        let connectionHandler:NetworkConnectionHandler = new NetworkConnectionHandler();
-        console.log("EXECUTE PING-COMMANDS...")
-        let answer1:boolean = await connectionHandler.ping("127.0.0.1");
-
-        console.log("ANSWER1 localhost: ", answer1)
-
-        let firstMediaStationId:number = mcf.mediaStationDataService.createMediaStation("firstMediaStation");
+        let firstMediaStationId:number = mcf.mediaStationDataService.createMediaStation("111");
         console.log("FIRST MEDIA-STATIONID: ", firstMediaStationId)
-        mcf.mediaStationDataService.changeName(firstMediaStationId, "firstMediaStationChangedName!");
 
         mcf.mediaAppService.createMediaApp(firstMediaStationId, "localhost", "myControllerApp");
-        mcf.mediaAppService.createMediaApp(firstMediaStationId, "127.0.0.2", "myOtherMediaApp");
 
-        mcf.contentService.createContent(firstMediaStationId, 0, "myFirstContent");
-        mcf.contentService.createContent(firstMediaStationId, 0, "mySecondContent");
 
-        await mcf.mediaStationNetworkService.syncMediaStation(firstMediaStationId);
+        console.log("IS MEDIA-APP PC REACHABLE?" , await mcf.mediaAppService.pcRespondsToPing(0,0));
+        console.log("IS MEDIA-APP APP ONLINE?" , await mcf.mediaAppService.isOnline(0,0));
 
+        await mcf.mediaAppService.connectAndRegisterToMediaApp(0,0)
+
+        console.log("DOWNLOAD RESULT: ", await mcf.mediaStationNetworkService.downloadContentsOfMediaStation(0));
+
+        console.log("GET NAME OF MEDIASTATION: ", mcf.mediaStationDataService.getName(0));
+        console.log("GET NAME OF CONTENTS: ", mcf.folderService.getAllContentsInFolder(0,0));
     }
 }

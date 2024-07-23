@@ -43,6 +43,8 @@ export class MediaStation{
     importFromJSON(json:any):void{
         let mediaApp:MediaApp;
 
+        console.log("IMPORT MEDIA-STATION FROM JSON: ", json)
+
         if(this._jsonPropertyExists(json, "name"))
             this._name = json.name;
         if(this._jsonPropertyExists(json, "folderIdCounter"))

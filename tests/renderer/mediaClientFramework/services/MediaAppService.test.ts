@@ -5,7 +5,7 @@ import {
 } from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
 import {MediaApp} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaApp";
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
-import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramework/network/MockNetworkService";
+import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramework/services/MockNetworkService";
 
 let mediaAppService:MediaAppService;
 let mockMediaStationRepo:MockMediaStationRepository;
@@ -337,6 +337,148 @@ describe("changeIp() ", ()=> {
         //method to test
         try{
             mediaAppService.changeIp(0, mediaAppId, newIp);
+        }catch(error){
+            result = true;
+        }
+
+        //tests
+        expect(result).toBe(true);
+    });
+});
+
+describe("connectAndRegisterToMediaApp() ", ()=> {
+
+    it("should call networkService.openConnection and sendRegistration", async () => {
+        //setup
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
+        mockNetworkService.sendRegistration.mockReturnValueOnce(true);
+        setupMediaAppWithName(true);
+
+        //method to test
+        await mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId);
+
+        //tests
+        expect(mockNetworkService.openConnection).toHaveBeenCalledTimes(1);
+        expect(mockNetworkService.openConnection).toHaveBeenCalledWith(ip);
+
+        expect(mockNetworkService.sendRegistration).toHaveBeenCalledTimes(1);
+        expect(mockNetworkService.sendRegistration).toHaveBeenCalledWith(ip);
+    });
+
+    it("should return true if the connection could be established and the registration was accepted", async () => {
+        //setup
+        let answer:boolean;
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
+        mockNetworkService.sendRegistration.mockReturnValueOnce(true);
+        setupMediaAppWithName(true);
+
+        //method to test
+        answer = await mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId);
+
+        //tests
+        expect(answer).toBe(true);
+    });
+
+    it("should return false if the connection could not been established", async () => {
+        //setup
+        let answer:boolean;
+        mockNetworkService.openConnection.mockReturnValueOnce(false);
+        mockNetworkService.sendRegistration.mockReturnValueOnce(true);
+        setupMediaAppWithName(true);
+
+        //method to test
+        answer = await mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("should return false if the connection could be established but the registration was rejected", async () => {
+        //setup
+        let answer:boolean;
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
+        mockNetworkService.sendRegistration.mockReturnValueOnce(false);
+        setupMediaAppWithName(true);
+
+        //method to test
+        answer = await mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
+        //setup
+        let result:boolean = false;
+        setupMediaAppWithName(false);
+
+        //method to test
+        try{
+            await mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId);
+        }catch(error){
+            result = true;
+        }
+
+        //tests
+        expect(result).toBe(true);
+    });
+
+    it("should throw an error if the MediaApp ID could not be found", async ()=>{
+        //setup
+        let result:boolean = false;
+        setupMediaAppWithName(true, false);
+
+        //method to test
+        try{
+            await mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId);
+        }catch(error){
+            result = true;
+        }
+
+        //tests
+        expect(result).toBe(true);
+    });
+});
+
+describe("unregisterAndCloseMediaApp() ", ()=> {
+
+    it("should call networkService.openConnection and sendRegistration", async () => {
+        //setup
+        mockNetworkService.unregisterAndCloseConnection.mockReturnValueOnce(true);
+        setupMediaAppWithName(true);
+
+        //method to test
+        await mediaAppService.unregisterAndCloseMediaApp(0, mediaAppId);
+
+        //tests
+        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
+        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(ip);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
+        //setup
+        let result:boolean = false;
+        setupMediaAppWithName(false);
+
+        //method to test
+        try{
+            await mediaAppService.unregisterAndCloseMediaApp(0, mediaAppId);
+        }catch(error){
+            result = true;
+        }
+
+        //tests
+        expect(result).toBe(true);
+    });
+
+    it("should throw an error if the MediaApp ID could not be found", async ()=>{
+        //setup
+        let result:boolean = false;
+        setupMediaAppWithName(true, false);
+
+        //method to test
+        try{
+            await mediaAppService.unregisterAndCloseMediaApp(0, mediaAppId);
         }catch(error){
             result = true;
         }

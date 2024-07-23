@@ -60,7 +60,7 @@ export class InitSettings {
 
             //this is necessary because the path to the data-folder is in public_html/daten in the dev-environment but
             //in the resources-folder in the production-environment. If in the production-env nothing is specified as path, it looks in the asar-package
-            pathToDataFolder = environment === 'development' ? join(this._dirname, '..', '..', 'daten\\') : join(process.resourcesPath, '\\daten\\');
+            pathToDataFolder = environment === 'development' ? join(this._dirname, '..', '..', '..', 'daten\\') : join(process.resourcesPath, '\\daten\\');
 
             console.log("Main: send global-settings-json to renderer: ", allSettingsByName, pathToDataFolder, this.settingsValidationErrors);
 

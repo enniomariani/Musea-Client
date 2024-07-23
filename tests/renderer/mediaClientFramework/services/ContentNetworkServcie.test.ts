@@ -3,7 +3,7 @@ import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework
 import {
     ContentNetworkService
 } from "../../../../public_html/js/renderer/mediaClientFramework/services/ContentNetworkService";
-import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramework/network/MockNetworkService";
+import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramework/services/MockNetworkService";
 import {MediaApp} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaApp";
 
 let contentNetworkService:ContentNetworkService;

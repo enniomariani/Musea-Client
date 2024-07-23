@@ -77,6 +77,29 @@ export class MediaAppService{
         return await this._networkService.pcRespondsToPing(ip);
     }
 
+    async connectAndRegisterToMediaApp(mediaStationId:number, mediaAppId:number):Promise<boolean>{
+        let ip:string = this._getMediaApp(mediaStationId, mediaAppId).ip;
+
+        return new Promise(async (resolve, reject)=> {
+            if(!await this._networkService.openConnection(ip))
+                resolve(false);
+
+            if(!await this._networkService.sendRegistration(ip))
+                resolve(false);
+
+            resolve(true);
+        });
+    }
+
+    async unregisterAndCloseMediaApp(mediaStationId:number, mediaAppId:number):Promise<void>{
+        let ip:string = this._getMediaApp(mediaStationId, mediaAppId).ip;
+
+        return new Promise(async (resolve)=> {
+            await this._networkService.unregisterAndCloseConnection(ip);
+            resolve();
+        });
+    }
+
     private _getMediaApp(mediaStationId:number, mediaAppId:number):MediaApp {
         let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
         let mediaApp:MediaApp;

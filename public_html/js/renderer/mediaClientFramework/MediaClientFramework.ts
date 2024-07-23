@@ -7,6 +7,7 @@ import {NetworkConnectionHandler} from "./network/NetworkConnectionHandler";
 import {ContentService} from "./services/ContentService";
 import {ContentNetworkService} from "./services/ContentNetworkService";
 import {MediaStationNetworkService} from "./services/MediaStationNetworkService";
+import {FolderService} from "./services/FolderService";
 
 
 export class MediaClientFramework{
@@ -21,6 +22,7 @@ export class MediaClientFramework{
     private _mediaStationDataService:MediaStationDataService = new MediaStationDataService(this._mediaStationRepository);
     private _mediaStationNetworkService:MediaStationNetworkService = new MediaStationNetworkService(this._networkService, this._mediaStationRepository);
     private _mediaAppService:MediaAppService = new MediaAppService(this._mediaStationRepository, this._networkService);
+    private _folderService:FolderService = new FolderService(this._mediaStationRepository);
     private _contentService:ContentService = new ContentService(this._mediaStationRepository, this._contentNetworkService);
 
     constructor() {
@@ -30,15 +32,19 @@ export class MediaClientFramework{
         return this._mediaStationDataService;
     }
 
+    get mediaStationNetworkService(): MediaStationNetworkService {
+        return this._mediaStationNetworkService;
+    }
+
     get mediaAppService(): MediaAppService {
         return this._mediaAppService;
     }
 
-    get contentService(): ContentService {
-        return this._contentService;
+    get folderService(): FolderService {
+        return this._folderService;
     }
 
-    get mediaStationNetworkService(): MediaStationNetworkService {
-        return this._mediaStationNetworkService;
+    get contentService(): ContentService {
+        return this._contentService;
     }
 }

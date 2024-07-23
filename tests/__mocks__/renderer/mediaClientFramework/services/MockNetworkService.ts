@@ -1,6 +1,6 @@
 import {NetworkService} from "../../../../../public_html/js/renderer/mediaClientFramework/services/NetworkService";
-import {MockNetworkInterface} from "./MockNetworkInterface";
-import {MockNetworkConnectionHandler} from "./MockNetworkConnectionHandler";
+import {MockNetworkInterface} from "../network/MockNetworkInterface";
+import {MockNetworkConnectionHandler} from "../network/MockNetworkConnectionHandler";
 
 const mockNetworkConnectionHandler:MockNetworkConnectionHandler = new MockNetworkConnectionHandler();
 
@@ -10,6 +10,10 @@ export class MockNetworkService extends NetworkService{
     closeConnection: jest.Mock;
     pcRespondsToPing: jest.Mock;
     isMediaAppOnline: jest.Mock;
+    sendRegistration: jest.Mock;
+    unregisterAndCloseConnection: jest.Mock;
+
+
     getContentFileFrom: jest.Mock;
     sendMediaFileToIp: jest.Mock;
     sendContentFileTo: jest.Mock;
@@ -22,6 +26,9 @@ export class MockNetworkService extends NetworkService{
         this.closeConnection = jest.fn();
         this.pcRespondsToPing = jest.fn();
         this.isMediaAppOnline = jest.fn();
+        this.sendRegistration = jest.fn();
+        this.unregisterAndCloseConnection = jest.fn();
+
         this.getContentFileFrom = jest.fn();
         this.sendMediaFileToIp = jest.fn();
         this.sendContentFileTo = jest.fn();

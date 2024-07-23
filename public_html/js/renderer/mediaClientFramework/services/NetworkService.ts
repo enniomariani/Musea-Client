@@ -6,32 +6,48 @@ export class NetworkService {
 
     private _networkConnectionHandler: NetworkConnectionHandler;
     private _dataReceivedPromises: Map<string, { resolve: (value:any) => void, reject: (error: any) => void }>;
+    private _onConnectionClosedPromises: Map<string, { resolve: () => void, reject: () => void }>;
 
     constructor(networkConnectionHandler: NetworkConnectionHandler = new NetworkConnectionHandler()) {
         this._networkConnectionHandler = networkConnectionHandler;
         this._dataReceivedPromises = new Map();
+        this._onConnectionClosedPromises = new Map();
     }
 
+    /**
+     * opens a connection to the passed ip
+     *
+     * rejects the promise with an error message if the connection can not be opened
+     *
+     * @param {string} ip
+     * @returns {Promise<boolean>}
+     */
     async openConnection(ip: string): Promise<boolean> {
-        console.log("NetworkService: create connection: ", ip);
 
         return new Promise((resolve, reject) => {
-            this._networkConnectionHandler.createConnection(
-                ip,
-                () => {
-                    console.log("NetworkService: CONNECTION ESTABLISHED TO: ", ip);
-                    resolve(true);
-                },
-                (error) => {
-                    reject(error);
-                },
-                this._onConnectionClosed.bind(this),
-                this._onDataReceived.bind(this)
-            );
+            if(this._networkConnectionHandler.hasConnection(ip)){
+                console.info("Connection is already open: ", ip);
+                resolve(true);
+            }
+            else{
+                this._networkConnectionHandler.createConnection(
+                    ip,
+                    () => {
+                        console.log("CONNECTION ESTABLISHED TO: ", ip);
+                        resolve(true);
+                    },
+                    (error) => {
+                        reject(error);
+                    },
+                    this._onConnectionClosed.bind(this),
+                    this._onDataReceived.bind(this)
+                );
+            }
         });
     }
 
     public closeConnection(ip:string):void{
+        console.log("Networkservice: close connection: ", ip)
         this._networkConnectionHandler.closeConnection(ip);
     }
 
@@ -44,6 +60,7 @@ export class NetworkService {
      * @returns {Promise<boolean>}
      */
     async pcRespondsToPing(ip: string, timeout: number = 3000): Promise<boolean> {
+        console.log("net-service: ping icmp")
         return new Promise((resolve, reject) => {
             const timer = setTimeout(() => {
                 resolve(false);
@@ -73,6 +90,14 @@ export class NetworkService {
         return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "ping"), timeout, false);
     }
 
+    async sendRegistration(ip:string, timeout:number = 3000):Promise<boolean>{
+        return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "admin"), timeout, false);
+    }
+
+    async unregisterAndCloseConnection(ip:string, timeout:number = 3000):Promise<void>{
+        return this._createConnectionClosedPromise(ip, ConvertNetworkData.encodeCommand("network", "disconnect"), timeout);
+    }
+
     /**
      * sends a command to the ip which asks for the content file saved on it. The media-app should
      * return an empty JSON if there is no content-file or the JSON of the content-file
@@ -84,7 +109,7 @@ export class NetworkService {
      * @returns {Promise<string|null>}
      */
     async getContentFileFrom(ip:string, timeout:number = 3000):Promise<string|null>{
-        return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("content", "get"), timeout, null);
+        return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("contents", "get"), timeout, null);
     }
 
     /**
@@ -102,7 +127,7 @@ export class NetworkService {
     }
 
     public sendContentFileTo(ip:string, contentFileJSON:string):void{
-        this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("content", "put", contentFileJSON));
+        this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("contents", "put", contentFileJSON));
     }
 
     public sendMediaControlTo(ip:string, command:string):void{
@@ -114,10 +139,41 @@ export class NetworkService {
     }
 
     private _onConnectionClosed(ip:string): void {
-        console.info('Connection closed: ', ip);
+        console.info('Connection closed: ', ip, this._onConnectionClosedPromises);
+        const promise = this._onConnectionClosedPromises.get(ip);
+
+        if (promise) {
+            this._onConnectionClosedPromises.delete(ip);
+            promise.resolve();
+        }
     }
 
-    private _createNetworkPromise(ip, command:Uint8Array, timeout:number, rejectValue:any):Promise<any>{
+    private _createConnectionClosedPromise(ip:string, command:Uint8Array, timeout:number):Promise<void>{
+        return new Promise((resolve, reject) => {
+            const timer = setTimeout(() => {
+                console.log("Networkservice: close connection after timeout")
+                this._onConnectionClosedPromises.delete(ip);
+                this.closeConnection(ip);
+                resolve();
+            }, timeout);
+
+            this._onConnectionClosedPromises.set(ip, {
+                resolve: () => {
+                    clearTimeout(timer);
+                    resolve();
+                },
+                reject: () => {
+                    clearTimeout(timer);
+                    reject();
+                }
+            });
+
+            console.log("Networkservice: send command: ", command)
+            this._networkConnectionHandler.sendData(ip, command);
+        });
+    }
+
+    private _createNetworkPromise(ip:string, command:Uint8Array, timeout:number, rejectValue:any):Promise<any>{
         return new Promise((resolve, reject) => {
             const timer = setTimeout(() => {
                 this._dataReceivedPromises.delete(ip);
@@ -154,7 +210,12 @@ export class NetworkService {
                     promise.resolve(true);
                     this._dataReceivedPromises.delete(ip);
                 }
-            }else if(convertedData[0] === "content" && convertedData[1] === "put" && convertedData[2] !== null){
+            }else if(convertedData[0] === "network" && convertedData[1] === "registration"){
+                if (promise) {
+                    promise.resolve(convertedData[2] === "accepted");
+                    this._dataReceivedPromises.delete(ip);
+                }
+            } else if(convertedData[0] === "contents" && convertedData[1] === "put" && convertedData[2] !== null){
                 if (promise) {
                     promise.resolve(convertedData[2]);
                     this._dataReceivedPromises.delete(ip);
@@ -164,7 +225,8 @@ export class NetworkService {
                     promise.resolve(parseInt(convertedData[2]));
                     this._dataReceivedPromises.delete(ip);
                 }
-            }
+            }else
+                console.error("Non-valid network-command received: ", convertedData);
         }
 
         //if the client answers with a not-defined command, reject the promise and return null

@@ -32,6 +32,7 @@ export class MediaStationNetworkService{
         const controllerIP:string = mediaStation.getControllerIp();
         let contentsJSON:string;
 
+
         return new Promise(async (resolve, reject) =>{
 
             if(!controllerIP){
@@ -53,13 +54,21 @@ export class MediaStationNetworkService{
         });
     }
 
-    async syncMediaStation(mediaStationId:number){
+    async syncMediaStation(mediaStationId:number):Promise<void>{
+        console.log("SYNC MEDIA STATION: ", mediaStationId)
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let json:string = mediaStation.exportToJSON();
+        let connectionCreated:boolean;
 
-        await this._networkService.openConnection(mediaStation.getControllerIp());
+        return new Promise(async (resolve, reject) =>{
+            let ip:string = mediaStation.getControllerIp();
 
-        this._networkService.sendContentFileTo(mediaStation.getControllerIp(), json);
+            connectionCreated = await this._networkService.openConnection(ip);
+            console.log("CONNECTION CREATED?",connectionCreated)
+
+            this._networkService.sendContentFileTo(ip, json);
+            resolve();
+        });
     }
 
     private _findMediaStation(id: number): MediaStation {

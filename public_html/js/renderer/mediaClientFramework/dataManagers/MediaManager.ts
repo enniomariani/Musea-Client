@@ -1,0 +1,98 @@
+import {MediaStation} from "../dataStructure/MediaStation";
+import {Image, Video} from "../dataStructure/Media";
+import {Content} from "../dataStructure/Content";
+
+export class MediaManager{
+
+    static MEDIA_TYPE_VIDEO:string = "TYPE_VIDEO";
+    static MEDIA_TYPE_IMAGE:string = "TYPE_IMAGE";
+
+    constructor(){}
+
+    /**
+     * creates an Image-Object, adds it to the media-array of the content and returns the object
+     *
+     * throws an error if contentId can not be found in the mediaStation-folders
+     *
+     * @param {MediaStation} mediaStation
+     * @param {number} contentId
+     * @param {number} mediaAppId
+     * @returns {Image}
+     */
+    createImage(mediaStation:MediaStation, contentId:number, mediaAppId:number):Image{
+        let content:Content = mediaStation.rootFolder.findContent(contentId);
+
+        if(!content)
+            throw new Error("Content with ID could not be found: "+ contentId);
+
+        let newImage:Image = new Image();
+
+        newImage.idOnMediaApp = -1;
+        newImage.mediaAppId = mediaAppId;
+
+        content.media.set(mediaAppId, newImage);
+
+        return newImage;
+    }
+
+    /**
+     * creates an Video-Object, adds it to the media-array of the content and returns the object
+     *
+     * throws an error if contentId can not be found in the mediaStation-folders
+     *
+     * @param {MediaStation} mediaStation
+     * @param {number} contentId
+     * @param {number} mediaAppId
+     * @param {number} duration
+     * @returns {Video}
+     */
+    createVideo(mediaStation:MediaStation, contentId:number, mediaAppId:number, duration:number):Video{
+        let content:Content = mediaStation.rootFolder.findContent(contentId);
+
+        if(!content)
+            throw new Error("Content with ID could not be found: "+ contentId);
+
+        let newVideo:Video = new Video();
+
+        newVideo.idOnMediaApp = -1;
+        newVideo.mediaAppId = mediaAppId;
+        newVideo.duration = duration;
+
+        content.media.set(mediaAppId, newVideo);
+
+        return newVideo;
+    }
+
+    /**
+     * returns one of the static MEDIA_TYPE strings of this class and null if there is not a media set for the mediaAppId
+     *
+     * throws an error if contentId can not be found in the mediaStation-folders
+     *
+     * @param {MediaStation} mediaStation
+     * @param {number} contentId
+     * @param {number} mediaAppId
+     * @returns {string | null}
+     */
+    getMediaType(mediaStation:MediaStation, contentId:number, mediaAppId:number):string|null{
+        let content:Content = mediaStation.rootFolder.findContent(contentId);
+
+        if(!content)
+            throw new Error("Content with ID could not be found: "+ contentId);
+
+        if(content.media.get(mediaAppId) instanceof Image)
+            return MediaManager.MEDIA_TYPE_IMAGE;
+        else if(content.media.get(mediaAppId) instanceof Video)
+            return MediaManager.MEDIA_TYPE_VIDEO;
+        else
+            return null;
+    }
+
+    deleteMedia(mediaStation:MediaStation, contentId:number, mediaAppId:number):void{
+        // let folder:Folder = mediaStation.rootFolder.findFolder(folderId);
+        //
+        // if(!folder)
+        //     throw new Error("Folder with ID does not exist: "+ folderId);
+        //
+        // folder.removeContent(id);
+    }
+}

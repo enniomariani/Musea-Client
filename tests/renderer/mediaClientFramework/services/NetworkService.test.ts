@@ -62,6 +62,21 @@ describe("openConnection() ",  ()=>{
         expect(answer).toBe(true);
     });
 
+    it("should return true if connection already exists and print an info", async()=>{
+        //setup
+        let answer:boolean;
+        let logSpy = jest.spyOn(console, "info");
+        mockOpenConnection();
+
+        mockNetworkConnectionHandler.hasConnection.mockReturnValueOnce(true);
+        //method to test
+        answer = await networkService.openConnection(ip1);
+
+        //tests
+        expect(answer).toBe(true);
+        expect(logSpy).toHaveBeenCalledTimes(1);
+    });
+
     it("should return false if connection was not created succesfully", async()=>{
         //setup
         let answer:boolean;
@@ -136,7 +151,7 @@ describe("closeConnection() ",  ()=> {
     });
 });
 
-describe("checkIfPCisReachable() ",  ()=>{
+describe("pcRespondsToPing() ",  ()=>{
     it("should call mockNetworkConnectionHandler.ping and return its answer", async()=>{
         //setup
         let answer:boolean;
@@ -178,7 +193,7 @@ describe("checkIfPCisReachable() ",  ()=>{
     });
 });
 
-describe("checkIfMediaAppIsReachable() ",  ()=>{
+describe("isMediaAppOnline() ",  ()=>{
     it("should call mockNetworkConnectionHandler.sendData with a ping-command", async()=>{
         //setup
         let pongCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "pong");
@@ -247,10 +262,156 @@ describe("checkIfMediaAppIsReachable() ",  ()=>{
     });
 });
 
+describe("sendRegistration() ",  ()=>{
+    it("should call networkConnectionHandler.sendData with a registration-command", async()=>{
+        //setup
+        let registrationAcceptedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "accepted");
+        mockOpenConnectionAndReceiveDataLater(ip1, registrationAcceptedCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        await networkService.sendRegistration(ip1);
+
+        //tests
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("network", "register", "admin"));
+    });
+
+    it("should return true if it received a registration-accepted-command", async()=>{
+        //setup
+        let registrationAcceptedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "accepted");
+        let answer:boolean;
+        mockOpenConnectionAndReceiveDataLater(ip1, registrationAcceptedCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.isMediaAppOnline(ip1);
+
+        //tests
+        expect(answer).toBe(true);
+    });
+
+    it("should return false if it received a registration-rejected-command", async()=>{
+        //setup
+        let registrationRejectedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "rejected");
+        let answer:boolean;
+        mockOpenConnectionAndReceiveDataLater(ip1, registrationRejectedCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.isMediaAppOnline(ip1);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("should return null if it received a wrong command", async()=>{
+        //setup
+        let pongCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "acceppted");
+        let answer:boolean;
+        mockOpenConnectionAndReceiveDataLater(ip1, pongCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.isMediaAppOnline(ip1);
+
+        //tests
+        expect(answer).toBe(null);
+    });
+
+    it("should return false if it received nothing after 3 seconds", async()=>{
+        //setup
+        let answer:boolean;
+        let answerPromise:Promise<boolean>;
+        jest.useFakeTimers();
+
+        mockOpenConnection();
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answerPromise = networkService.isMediaAppOnline(ip1);
+
+        // Fast-forward until all timers have been executed
+        jest.advanceTimersByTime(3000);
+
+        answer = await answerPromise;
+
+        //tests
+        expect(answer).toBe(false);
+
+        //tidy up
+        jest.useRealTimers();
+    });
+});
+
+describe("unregisterAndClose() ",  ()=>{
+    it("should call networkConnectionHandler.sendData with the correct close-connection-command", async()=>{
+        //setup
+        jest.useFakeTimers();
+
+        //method to test
+        networkService.unregisterAndCloseConnection(ip1);
+
+        jest.advanceTimersByTime(3000);
+
+        //tests
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("network", "disconnect"));
+
+        //tidy up
+        jest.useRealTimers();
+    });
+
+    it("should call networkConnectionHandler.closeConnection if the connection was not closed by the server after the timeout", async()=>{
+        //setup
+        jest.useFakeTimers();
+
+        //method to test
+        networkService.unregisterAndCloseConnection(ip1);
+
+        // Fast-forward until all timers have been executed
+        jest.advanceTimersByTime(3000);
+
+        //tests
+        expect(mockNetworkConnectionHandler.closeConnection).toHaveBeenCalledTimes(1);
+        expect(mockNetworkConnectionHandler.closeConnection).toHaveBeenCalledWith(ip1);
+
+        //tidy up
+        jest.useRealTimers();
+    });
+
+    it("should NOT call networkConnectionHandler.closeConnection if the connection was closed by the server before the timeout", async()=>{
+        //setup
+        let onCloseFunc:any;
+        jest.useFakeTimers();
+        mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip, onOpen, onError, onClose, onDataReceived)=>{
+            onOpen();
+            onCloseFunc = onClose;
+        });
+
+        mockNetworkConnectionHandler.sendData.mockImplementationOnce((ip, command)=>{
+            onCloseFunc(ip);
+        });
+
+        //method to test
+        await networkService.openConnection(ip1);
+        networkService.unregisterAndCloseConnection(ip1);
+
+        // Fast-forward until all timers have been executed
+        jest.advanceTimersByTime(3000);
+
+        //tests
+        expect(mockNetworkConnectionHandler.closeConnection).toHaveBeenCalledTimes(0);
+
+        //tidy up
+        jest.useRealTimers();
+    });
+});
+
 describe("getContentFileFrom() ",  ()=>{
     it("should call mockNetworkConnectionHandler.sendData with the correct-command", async()=>{
         //setup
-        let contentCommand:Uint8Array = ConvertNetworkData.encodeCommand("content", "get");
+        let contentCommand:Uint8Array = ConvertNetworkData.encodeCommand("contents", "get");
 
         mockOpenConnectionAndReceiveDataLater(ip1, contentCommand);
 
@@ -266,7 +427,7 @@ describe("getContentFileFrom() ",  ()=>{
     it("should return the content-JSON-string if it received a correct content-command", async()=>{
         //setup
         let contentJSON:string = "{content-JSON}";
-        let contentCommand:Uint8Array = ConvertNetworkData.encodeCommand("content", "put", contentJSON);
+        let contentCommand:Uint8Array = ConvertNetworkData.encodeCommand("contents", "put", contentJSON);
         mockOpenConnectionAndReceiveDataLater(ip1, contentCommand);
 
         let answer:string;
@@ -278,10 +439,11 @@ describe("getContentFileFrom() ",  ()=>{
         expect(answer).toBe(contentJSON);
     });
 
-    it("should return null if it received a wrong command", async()=>{
+    it("should return null and print an error if it received a wrong command", async()=>{
         //setup
         let wrongCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "poiiing");
         let answer:string;
+        let logSpy = jest.spyOn(console, "error");
         mockOpenConnectionAndReceiveDataLater(ip1, wrongCommand);
 
         //method to test
@@ -290,6 +452,7 @@ describe("getContentFileFrom() ",  ()=>{
 
         //tests
         expect(answer).toBe(null);
+        expect(logSpy).toHaveBeenCalledTimes(1);
     });
 
     it("should return null if it received nothing after 3 seconds", async()=>{
@@ -336,7 +499,7 @@ describe("sendMediaFileToIp() ",  ()=>{
         expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, contentCommand);
     });
 
-    it("should return the id of the newly saved media if it received a correct content-command", async()=>{
+    it("should return the id of the newly saved media if it received a correct media-command", async()=>{
         //setup
         let returnedID:number = 20;
         let contentCommand:Uint8Array = ConvertNetworkData.encodeCommand("media", "put", returnedID.toString());
@@ -399,7 +562,7 @@ describe("sendContentFileTo() ",  ()=>{
 
         //tests
         expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
-        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("content", "put", contentFileData));
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("contents", "put", contentFileData));
     });
 });
 

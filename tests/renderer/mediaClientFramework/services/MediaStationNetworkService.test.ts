@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
-import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramework/network/MockNetworkService";
+import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramework/services/MockNetworkService";
 import {
     MediaStationNetworkService
 } from "../../../../public_html/js/renderer/mediaClientFramework/services/MediaStationNetworkService";
@@ -91,13 +91,13 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(() => mediaStationNetworkService.syncMediaStation(0)).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
+        expect( () => mediaStationNetworkService.syncMediaStation(0)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });
 
 describe("syncMediaStation() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(0);
-    it("should pass the json-string and the controller-ip from the mediaStation object to the network-service", () => {
+    it("should pass the json-string and the controller-ip from the mediaStation object to the network-service", async() => {
         //setup
         let mockJSON: string = "{mock-json: 1}";
         let ip: string = "192.168.1.1";
@@ -105,9 +105,10 @@ describe("syncMediaStation() ", () => {
         mockMediaStation.exportToJSON.mockReturnValueOnce(mockJSON);
         mockMediaStation.getControllerIp.mockReturnValueOnce(ip);
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
 
         //method to test
-        mediaStationNetworkService.syncMediaStation(0);
+        await mediaStationNetworkService.syncMediaStation(0);
 
         //tests
         expect(mockNetworkService.sendContentFileTo).toHaveBeenCalledTimes(1);
@@ -116,9 +117,10 @@ describe("syncMediaStation() ", () => {
 
     it("should throw an error if the mediaStationId could not be found", () => {
         //setup
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(() => mediaStationNetworkService.syncMediaStation(0)).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
+        expect(() => mediaStationNetworkService.syncMediaStation(0)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });

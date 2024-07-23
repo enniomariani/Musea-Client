@@ -57,6 +57,10 @@ export  class NetworkConnectionHandler{
         return success;
     }
 
+    hasConnection(ip:string):boolean{
+        return this._connections.has(ip);
+    }
+
     /**
      * Sends data to a specific connection.
      *

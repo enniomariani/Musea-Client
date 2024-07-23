@@ -43,14 +43,16 @@ describe("importFromJSON() ", () => {
         content.importFromJSON(expectedJSON);
 
         //tests
-        expect(content.media.length).toBe(2);
-        expect(content.media[0].mediaAppId).toBe(expectedJSON.media[0].mediaAppId);
-        expect(content.media[0].idOnMediaApp).toBe(expectedJSON.media[0].idOnMediaApp);
-        expect(content.media[0]).toBeInstanceOf(Video);
-        video = content.media[0] as Video;
+        expect(content.media.size).toBe(2);
+        video = content.media.get(0) as Video;
+        expect(video).not.toBeNull();
+        expect(video).not.toBeUndefined();
+        expect(video.mediaAppId).toBe(expectedJSON.media[0].mediaAppId);
         expect(video.duration).toBe(expectedJSON.media[0].duration);
-        expect(content.media[1].mediaAppId).toBe(expectedJSON.media[1].mediaAppId);
-        expect(content.media[1].idOnMediaApp).toBe(expectedJSON.media[1].idOnMediaApp);
+        expect(video.idOnMediaApp).toBe(expectedJSON.media[0].idOnMediaApp);
+
+        expect(content.media.get(1).mediaAppId).toBe(expectedJSON.media[1].mediaAppId);
+        expect(content.media.get(1).idOnMediaApp).toBe(expectedJSON.media[1].idOnMediaApp);
     });
 });
 
@@ -70,7 +72,8 @@ describe("exportToJSON() ", ()=>{
         image.idOnMediaApp = 10;
         image.mediaAppId = 1;
 
-        content.media.push(video, image)
+        content.media.set(video.mediaAppId, video)
+        content.media.set(image.mediaAppId, image)
 
 
         //method to test
@@ -91,7 +94,8 @@ describe("getMaxDuration() ", ()=>{
         for(let i:number = 0; i < values.length; i++){
             video = new Video();
             video.duration = values[i];
-            content.media.push(video);
+            video.mediaAppId = i;
+            content.media.set(i, video);
         }
 
         //tests
@@ -104,7 +108,8 @@ describe("getMaxDuration() ", ()=>{
 
         for(let i:number = 0; i < 5; i++){
             image = new Image();
-            content.media.push(image);
+            image.mediaAppId = i;
+            content.media.set(i,image);
         }
 
         //tests

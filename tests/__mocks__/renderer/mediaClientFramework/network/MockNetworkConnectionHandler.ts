@@ -15,6 +15,7 @@ export class MockNetworkConnectionHandler extends NetworkConnectionHandler{
     sendData: jest.Mock;
     closeConnection: jest.Mock;
     ping: jest.Mock;
+    hasConnection: jest.Mock;
 
     constructor() {
         super(()=> mockNetworkInterface, mockBackendNetworkService);
@@ -22,5 +23,6 @@ export class MockNetworkConnectionHandler extends NetworkConnectionHandler{
         this.sendData = jest.fn();
         this.closeConnection = jest.fn();
         this.ping = jest.fn();
+        this.hasConnection = jest.fn();
     }
 }
