@@ -27,8 +27,6 @@ const jsonMock: any = {
 
 beforeEach(() => {
     mediaStation = new MediaStation(0);
-    mediaStation.mediaApps.push(mediaApp1);
-    mediaStation.mediaApps.push(mediaApp2);
 });
 
 afterEach(() => {
@@ -49,6 +47,8 @@ describe("exportToJSON() ", () => {
         mediaStation.getNextContentId();
         mediaStation.name = "myName";
         mediaStation.rootFolder = mockFolder;
+        mediaStation.addMediaApp(mediaApp1.id, mediaApp1.name, mediaApp1.ip, mediaApp1.role)
+        mediaStation.addMediaApp(mediaApp2.id, mediaApp2.name, mediaApp2.ip, mediaApp2.role)
 
         //method to test
         receivedJSONstr = mediaStation.exportToJSON();
@@ -66,6 +66,8 @@ describe("importFromJSON() ", () => {
         //setup
         mediaStation = new MediaStation(0);
         let mockFolder: MockFolder = new MockFolder(0);
+        let mediaApp1:MediaApp;
+        let mediaApp2:MediaApp;
         mediaStation.rootFolder = mockFolder;
 
         //method to test
@@ -77,16 +79,18 @@ describe("importFromJSON() ", () => {
         expect(mediaStation.getNextContentId()).toBe(jsonMock.contentIdCounter);
         expect(mediaStation.getNextMediaAppId()).toBe(jsonMock.mediaAppIdCounter);
         expect(mediaStation.getNextTagId()).toBe(jsonMock.tagIdCounter);
-        expect(mediaStation.mediaApps.length).toBe(2);
 
-        expect(mediaStation.mediaApps[0].id).toBe(0);
-        expect(mediaStation.mediaApps[0].name).toBe(mediaApp1.name);
-        expect(mediaStation.mediaApps[0].ip).toBe(mediaApp1.ip);
-        expect(mediaStation.mediaApps[0].role).toBe(mediaApp1.role);
-        expect(mediaStation.mediaApps[1].id).toBe(1);
-        expect(mediaStation.mediaApps[1].name).toBe(mediaApp2.name);
-        expect(mediaStation.mediaApps[1].ip).toBe(mediaApp2.ip);
-        expect(mediaStation.mediaApps[1].role).toBe(mediaApp2.role);
+        mediaApp1 = mediaStation.getMediaApp(0);
+        mediaApp2 = mediaStation.getMediaApp(1);
+
+        expect(mediaApp1.id).toBe(0);
+        expect(mediaApp1.name).toBe(mediaApp1.name);
+        expect(mediaApp1.ip).toBe(mediaApp1.ip);
+        expect(mediaApp1.role).toBe(mediaApp1.role);
+        expect(mediaApp2.id).toBe(1);
+        expect(mediaApp2.name).toBe(mediaApp2.name);
+        expect(mediaApp2.ip).toBe(mediaApp2.ip);
+        expect(mediaApp2.role).toBe(mediaApp2.role);
     });
 
     it("should pass the properties got for all folders to the root-folder", () => {
@@ -107,19 +111,19 @@ describe("getControllerIp() ", () => {
     it("should return the IP of the controller-app", () => {
         //setup
         let returnValue: string;
+        mediaStation.addMediaApp(mediaApp1.id, mediaApp1.name, mediaApp1.ip, mediaApp1.role);
 
         //method to test
         returnValue = mediaStation.getControllerIp();
 
         //tests
-        expect(returnValue).toEqual(mediaApp1.ip);
+        expect(returnValue).toBe(mediaApp1.ip);
     });
 
     it("should return null and print an error if there is no controller-app", () => {
         //setup
         let returnValue: string;
         let logSpy: any = jest.spyOn(global.console, 'error');
-        mediaStation.mediaApps = [];
 
         //method to test
         returnValue = mediaStation.getControllerIp();
@@ -197,5 +201,28 @@ describe("getNextTagId() ", () => {
             console.log("got id: ", answerPerCall[i], " expected ID: ", idPerCall[i])
             expect(answerPerCall[i]).toBe(idPerCall[i]);
         }
+    });
+});
+
+describe("addMediaApp() and getMediaApp()", () => {
+    it("getMediApp should return the mediaApp that was created with addMediaApp()", () => {
+        //setup
+        let receivedMediaApp:MediaApp;
+        let mediaApp:MediaApp = new MediaApp(0);
+        mediaApp.ip = "localhost"
+        mediaApp.name = "firstMediaApp"
+        mediaApp.role = MediaApp.ROLE_CONTROLLER;
+
+        //method to test
+        mediaStation.addMediaApp(0, mediaApp.name, mediaApp.ip, mediaApp.role);
+        receivedMediaApp = mediaStation.getMediaApp(0);
+
+        //tests
+        expect(receivedMediaApp).toStrictEqual(mediaApp);
+    });
+
+    it("getMediaApp() should throw an error if it does not exist", () => {
+        //tests
+        expect(()=>mediaStation.getMediaApp(20)).toThrow(new Error("Media App with the following ID does not exist: 20"))
     });
 });

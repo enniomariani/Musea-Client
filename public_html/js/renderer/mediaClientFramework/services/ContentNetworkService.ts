@@ -15,7 +15,7 @@ export class ContentNetworkService{
         this._networkService = networkService;
     }
 
-    sendCommandPlay(mediaApps:MediaApp[], contentId:number|null):void{
+    sendCommandPlay(mediaApps:Map<number, MediaApp>, contentId:number|null):void{
         let command:string =  ContentNetworkService.COMMAND_PLAY;
 
         if(contentId)
@@ -24,15 +24,15 @@ export class ContentNetworkService{
         this._sendCommandToAllMediaApps(mediaApps, command);
     }
 
-    sendCommandStop(mediaApps:MediaApp[]):void{
+    sendCommandStop(mediaApps:Map<number, MediaApp>):void{
         this._sendCommandToAllMediaApps(mediaApps, ContentNetworkService.COMMAND_STOP);
     }
 
-    sendCommandPause(mediaApps:MediaApp[]):void{
+    sendCommandPause(mediaApps:Map<number, MediaApp>):void{
         this._sendCommandToAllMediaApps(mediaApps, ContentNetworkService.COMMAND_PAUSE);
     }
 
-    sendCommandSeek(mediaApps:MediaApp[], pos:number):void{
+    sendCommandSeek(mediaApps:Map<number, MediaApp>, pos:number):void{
         let command:string =  ContentNetworkService.COMMAND_SEEK;
 
         if(pos < 0){
@@ -46,16 +46,12 @@ export class ContentNetworkService{
         this._sendCommandToAllMediaApps(mediaApps, command);
     }
 
-    private _sendCommandToAllMediaApps(mediaApps:MediaApp[], command:string):void{
-        let mediaApp:MediaApp;
-
-        for(let i:number = 0; i < mediaApps.length; i++){
-            mediaApp = mediaApps[i];
-
+    private _sendCommandToAllMediaApps(mediaApps:Map<number, MediaApp>, command:string):void{
+        mediaApps.forEach((mediaApp:MediaApp)=>{
             if(mediaApp.ip && mediaApp.ip !== "")
                 this._networkService.sendMediaControlTo(mediaApp.ip, command);
             else
                 console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
-        }
+        })
     }
 }

@@ -7,6 +7,7 @@ const mockBackendFileService: jest.Mocked<IBackendFileService> = {
     saveFile: jest.fn(),
     loadFile: jest.fn(),
     deleteFile: jest.fn(),
+    fileExists: jest.fn()
 }
 
 const pathToFolder:string = "path-to-folder";
@@ -142,5 +143,48 @@ describe("init() and loadFile() ", () => {
         expect(mockBackendFileService.loadFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.loadFile).toHaveBeenCalledWith(pathToFolder + pathToLoad);
         expect(fileData).toEqual(null);
+    });
+});
+
+describe("init () and fileExists() ", () => {
+    it("should return true if backendFileService.fileExists returns true", async () => {
+        //setup
+        let answer:boolean;
+        let pathToLoad:string = pathToFolder + "0\\2.1.jpeg";
+
+        mockBackendFileService.fileExists.mockImplementationOnce((path:string):boolean=>{
+            console.log("MOCK PATH: ", path, pathToLoad)
+            if(path === pathToLoad)
+                return true;
+            else
+                return false;
+        });
+
+        //method to test
+        mediaFileService.init(pathToFolder);
+        answer = mediaFileService.fileExists(0, 2,1,"jpeg")
+
+        //tests
+        expect(answer).toBe(true);
+    });
+
+    it("should return false if backendFileService.fileExists returns false", async () => {
+        //setup
+        let answer:boolean;
+        let pathToLoad:string = "0\\6.2.jpeg";
+
+        mockBackendFileService.fileExists.mockImplementationOnce((path:string):boolean=>{
+            if(path === pathToLoad)
+                return true;
+            else
+                return false;
+        });
+
+        //method to test
+        mediaFileService.init(pathToFolder);
+        answer = mediaFileService.fileExists(0, 2,1,"jpeg")
+
+        //tests
+        expect(answer).toBe(false);
     });
 });

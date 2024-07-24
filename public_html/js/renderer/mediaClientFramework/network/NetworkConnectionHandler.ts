@@ -46,7 +46,6 @@ export  class NetworkConnectionHandler{
                     onClosed(ip);
             },
             (data:Uint8Array)=>{
-                console.log("Connection-Handler: DATA RECEIVED: ", ip, data);
                 if(onDataReceived)
                     onDataReceived(ip, data);
             });

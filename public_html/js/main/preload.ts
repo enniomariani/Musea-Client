@@ -13,11 +13,14 @@ contextBridge.exposeInMainWorld("backend", {
 });
 
 contextBridge.exposeInMainWorld("backendFileService", {
-    saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('mediaServerFramework:saveFile', path, data),
-    deleteFile: (path: string) => ipcRenderer.invoke('mediaServerFramework:deleteFile', path),
-    loadFile: (path: string) => ipcRenderer.invoke('mediaServerFramework:loadFile', path)
+    saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('mediaClientFramework:saveFile', path, data),
+    deleteFile: (path: string) => ipcRenderer.invoke('mediaClientFramework:deleteFile', path),
+    loadFile: (path: string) => ipcRenderer.invoke('mediaClientFramework:loadFile', path),
+    fileExists: (path: string) => ipcRenderer.invoke('mediaClientFramework:fileExists', path)
 });
 
 contextBridge.exposeInMainWorld("backendNetworkService", {
     ping: (ip: string) => ipcRenderer.invoke('backendNetworkService:ping', ip)
 });
+
+console.log("Preload-script ended");

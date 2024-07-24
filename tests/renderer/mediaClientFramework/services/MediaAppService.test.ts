@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {MediaAppService} from "../../../../public_html/js/renderer/mediaClientFramework/services/MediaAppService";
 import {
     MockMediaStationRepository
@@ -21,11 +21,18 @@ function setupMediaAppWithName(repoReturnsMediaStation:boolean, addMediaStation:
     mediaApp = new MediaApp(mediaAppId);
     mediaStation = new MockMediaStation(mediaStationId);
 
+    let answerMap:Map<number, MediaApp> = new Map();
+    answerMap.set(0, new MediaApp(0));
+    answerMap.set(1, new MediaApp(1));
+    mediaStation.getAllMediaApps.mockReturnValue(answerMap);
+
     mediaApp.ip = ip;
     mediaApp.name = name;
 
-    if(addMediaStation)
-        mediaStation.mediaApps.push(mediaApp);
+    if(addMediaStation){
+        mediaStation.getAllMediaApps.mockReturnValue(answerMap);
+        mediaStation.getMediaApp.mockReturnValue(mediaApp);
+    }
 
     mockMediaStationRepo.findMediaStation.mockImplementation((id) => {
         return repoReturnsMediaStation? mediaStation: null;
@@ -57,11 +64,8 @@ describe("createMediaApp() ", ()=>{
         mediaAppService.createMediaApp(0, ip, name);
 
         //tests
-        expect(mediaStation.mediaApps.length).toBe(1);
-        expect(mediaStation.mediaApps[0].ip).toBe(ip);
-        expect(mediaStation.mediaApps[0].name).toBe(name);
-        expect(mediaStation.mediaApps[0].id).toBe(mediaAppId);
-        expect(mediaStation.mediaApps[0].role).toBe(MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation.addMediaApp).toHaveBeenCalledTimes(1);
+        expect(mediaStation.addMediaApp).toHaveBeenCalledWith(mediaAppId,name, ip, MediaApp.ROLE_CONTROLLER);
 
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mediaStation);
@@ -80,8 +84,8 @@ describe("createMediaApp() ", ()=>{
         mediaAppService.createMediaApp(0, ip, name);
 
         //tests
-        expect(mediaStation.mediaApps.length).toBe(1);
-        expect(mediaStation.mediaApps[0].role).toBe(MediaApp.ROLE_DEFAULT);
+        expect(mediaStation.addMediaApp).toHaveBeenCalledTimes(1);
+        expect(mediaStation.addMediaApp).toHaveBeenCalledWith(mediaAppId,name, ip, MediaApp.ROLE_DEFAULT);
     });
 
     it("should return the ID of the newly created mediaApp", ()=>{
@@ -303,7 +307,7 @@ describe("changeIp() ", ()=> {
     it("should call mediaStationRepository.updateMediaStation if media-App ID is higher than 0", () => {
         //setup
         setupMediaAppWithName(true, true, 0);
-        mediaStation.mediaApps.push(new MediaApp(1))
+        mediaStation.getMediaApp.mockReturnValue(new MediaApp(1));
 
         //method to test
         mediaAppService.changeIp(0, 1, newIp);

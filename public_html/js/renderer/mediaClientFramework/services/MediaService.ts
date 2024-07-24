@@ -12,20 +12,51 @@ export class MediaService {
         this._mediaManager = mediaManager;
     }
 
-    addImage(mediaStationId: number, contentId: number, mediaAppId: number): void {
+    /**
+     * creates a new Image-object and adds it to the content
+     *
+     * also caches the image!
+     *
+     * throws an error if the mediastation, the content or the mediaApp do not exist
+     *
+     * @param {number} mediaStationId
+     * @param {number} contentId
+     * @param {number} mediaAppId
+     * @param {string} fileExtension
+     * @param {Uint8Array} payload
+     */
+    addImageAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, fileExtension:string, payload:Uint8Array): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
         this._mediaManager.createImage(mediaStation, contentId, mediaAppId);
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
+
+        this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, payload);
     }
 
-    addVideo(mediaStationId: number, contentId: number, mediaAppId: number, duration:number): void {
+    /**
+     * creates a new Video-object and adds it to the content
+     *
+     * also caches the image!
+     *
+     * throws an error if the mediastation, the content or the mediaApp do not exist
+     *
+     * @param {number} mediaStationId
+     * @param {number} contentId
+     * @param {number} mediaAppId
+     * @param {number} duration
+     * @param {string} fileExtension
+     * @param {Uint8Array} payload
+     */
+    addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, duration:number, fileExtension:string, payload:Uint8Array): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
         this._mediaManager.createVideo(mediaStation, contentId, mediaAppId, duration);
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
+
+        this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, payload);
     }
 
     getMediaType(mediaStationId:number, contentId:number, mediaAppId:number): string{

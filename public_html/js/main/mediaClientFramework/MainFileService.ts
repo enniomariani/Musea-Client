@@ -47,6 +47,10 @@ export class MainFileService {
         return MainFileService.FILE_SAVED_SUCCESSFULLY;
     }
 
+    fileExists(path:string):boolean{
+        return fs.existsSync(path);
+    }
+
     /**
      * deletes files and directories (recursive)
      *

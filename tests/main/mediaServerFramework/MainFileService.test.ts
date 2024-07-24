@@ -190,3 +190,37 @@ describe("loadFile () ", () => {
         expect(returnValue).toEqual(null);
     });
 });
+
+describe("fileExists () ", () => {
+    it("should return true if fs.existsSync returns true", () => {
+        //setup
+        let filePath: string = "/path/to/existent/directory/file.txt";
+        let returnValue: boolean;
+
+        mockedFs.existsSync.mockImplementation((path: string): boolean => {
+            return true
+        });
+
+        //method to test
+        returnValue = fileService.fileExists(filePath);
+
+        //method to test / expect
+        expect(returnValue).toBe(true);
+    });
+
+    it("should return false if fs.existsSync returns false", () => {
+        //setup
+        let filePath: string = "/path/to/nonexistent/directory/file.txt";
+        let returnValue: boolean;
+
+        mockedFs.existsSync.mockImplementation((path: string): boolean => {
+            return false
+        });
+
+        //method to test
+        returnValue = fileService.fileExists(filePath);
+
+        //method to test / expect
+        expect(returnValue).toBe(false);
+    });
+});

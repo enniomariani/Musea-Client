@@ -15,28 +15,18 @@ export class MediaAppService{
 
     createMediaApp(mediaStationId:number, ip:string, name:string):number{
         let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
-        let mediAppId:number;
-        let mediaApp:MediaApp;
+        let mediaAppId:number;
 
         if(!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
 
-        mediAppId = mediaStation.getNextMediaAppId();
-        mediaApp = new MediaApp(mediAppId);
+        mediaAppId = mediaStation.getNextMediaAppId();
 
-        mediaApp.ip = ip;
-        mediaApp.name = name;
-
-        if(mediAppId === 0)
-            mediaApp.role = MediaApp.ROLE_CONTROLLER;
-        else if(mediAppId > 0)
-            mediaApp.role = MediaApp.ROLE_DEFAULT;
-
-        mediaStation.mediaApps.push(mediaApp);
+        mediaStation.addMediaApp(mediaAppId, name, ip,mediaAppId === 0? MediaApp.ROLE_CONTROLLER: MediaApp.ROLE_DEFAULT );
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
 
-        return mediAppId;
+        return mediaAppId;
     }
 
     getName(mediaStationId:number, mediaAppId:number):string{
@@ -107,10 +97,7 @@ export class MediaAppService{
         if(!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
 
-        mediaApp = mediaStation.mediaApps[mediaAppId];
-
-        if(!mediaApp)
-            throw new Error("MediaApp with this ID does not exist: " + mediaAppId);
+        mediaApp = mediaStation.getMediaApp(mediaAppId);
 
         return mediaApp;
     }

@@ -1,15 +1,8 @@
 import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
-import {ContentService} from "../../../../public_html/js/renderer/mediaClientFramework/services/ContentService";
 import {
     MockMediaStationRepository
 } from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
-import {MockContentManager} from "../../../__mocks__/renderer/mediaClientFramework/dataManagers/MockContentManager";
-import {MockContent} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockContent";
-import {MediaApp} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaApp";
-import {
-    MockContentNetworkService
-} from "../../../__mocks__/renderer/mediaClientFramework/services/MockContentNetworkService";
 import {MockMediaManager} from "../../../__mocks__/renderer/mediaClientFramework/dataManagers/MockMediaManager";
 import {Image, Video} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Media";
 import {MediaService} from "../../../../public_html/js/renderer/mediaClientFramework/services/MediaService";
@@ -21,10 +14,8 @@ let mockMediaManager:MockMediaManager;
 
 const mediaStationId:number = 0;
 const contentId:number = 12;
-let mockContent:MockContent;
 
 beforeEach(() => {
-    mockContent = new MockContent(contentId);
     mockMediaStationRepo = new MockMediaStationRepository();
     mockMediaManager = new MockMediaManager();
     mediaService = new MediaService(mockMediaStationRepo, mockMediaManager);
@@ -34,16 +25,19 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-describe("addImage() ", ()=> {
+describe("addImageAndCacheIt() ", ()=> {
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
     let image:Image = new Image();
+    let fileExtension:string = "jpeg";
+    let payload:Uint8Array = new Uint8Array([0x00, 0xFF, 0x12, 0xEF]);
+
     it("should call contentManager.createImage with the correct arguments", () => {
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(image);
 
         //method to test
-        mediaService.addImage(mediaStationId,contentId,0);
+        mediaService.addImageAndCacheIt(mediaStationId,contentId,0, fileExtension, payload);
 
         //tests
         expect(mockMediaManager.createImage).toHaveBeenCalledTimes(1);
@@ -56,11 +50,24 @@ describe("addImage() ", ()=> {
         mockMediaManager.createImage.mockReturnValueOnce(image);
 
         //method to test
-        mediaService.addImage(mediaStationId,contentId,0);
+        mediaService.addImageAndCacheIt(mediaStationId,contentId,0, fileExtension, payload);
 
         //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
+    });
+
+    it("should call mediaStationRepository.cacheMedia with the correct arguments", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaManager.createImage.mockReturnValueOnce(image);
+
+        //method to test
+        mediaService.addImageAndCacheIt(mediaStationId,contentId,0, fileExtension, payload);
+
+        //tests
+        expect(mockMediaStationRepo.cacheMedia).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.cacheMedia).toHaveBeenCalledWith(mediaStationId,contentId,0, fileExtension, payload);
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
@@ -68,20 +75,23 @@ describe("addImage() ", ()=> {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(()=> mediaService.addImage(mediaStationId,contentId,0)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+        expect(()=> mediaService.addImageAndCacheIt(mediaStationId,contentId,0, fileExtension, payload)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
-describe("addVideo() ", ()=> {
+describe("addVideoAndCacheIt() ", ()=> {
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
     let video:Video = new Video();
-    it("should call contentManager.createImage with the correct arguments", () => {
+    let fileExtension:string = "mp4";
+    let payload:Uint8Array = new Uint8Array([0x00, 0xFF, 0x12, 0xEF]);
+
+    it("should call contentManager.createVideo with the correct arguments", () => {
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
         //method to test
-        mediaService.addVideo(mediaStationId,contentId,0, 199);
+        mediaService.addVideoAndCacheIt(mediaStationId,contentId,0, 199, fileExtension, payload);
 
         //tests
         expect(mockMediaManager.createVideo).toHaveBeenCalledTimes(1);
@@ -94,11 +104,24 @@ describe("addVideo() ", ()=> {
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
         //method to test
-        mediaService.addVideo(mediaStationId,contentId,0, 199);
+        mediaService.addVideoAndCacheIt(mediaStationId,contentId,0, 199, fileExtension, payload);
 
         //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
+    });
+
+    it("should call mediaStationRepository.cacheMedia with the correct arguments", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaManager.createImage.mockReturnValueOnce(video);
+
+        //method to test
+        mediaService.addVideoAndCacheIt(mediaStationId,contentId,0, 199, fileExtension, payload);
+
+        //tests
+        expect(mockMediaStationRepo.cacheMedia).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.cacheMedia).toHaveBeenCalledWith(mediaStationId,contentId,0, fileExtension, payload);
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
@@ -106,7 +129,7 @@ describe("addVideo() ", ()=> {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(()=> mediaService.addVideo(mediaStationId,contentId,0, 199)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+        expect(()=> mediaService.addVideoAndCacheIt(mediaStationId,contentId,0, 199, fileExtension, payload)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 

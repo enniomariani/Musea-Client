@@ -38,22 +38,22 @@ export class ContentService {
     sendCommandPlay(mediaStationId: number, contentId: number): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
-        this._contentNetworkService.sendCommandPlay(mediaStation.mediaApps, contentId);
+        this._contentNetworkService.sendCommandPlay(mediaStation.getAllMediaApps(), contentId);
     }
 
     sendCommandStop(mediaStationId: number): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        this._contentNetworkService.sendCommandStop(mediaStation.mediaApps);
+        this._contentNetworkService.sendCommandStop(mediaStation.getAllMediaApps());
     }
 
     sendCommandPause(mediaStationId: number): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        this._contentNetworkService.sendCommandPause(mediaStation.mediaApps);
+        this._contentNetworkService.sendCommandPause(mediaStation.getAllMediaApps());
     }
 
     sendCommandSeek(mediaStationId: number, pos: number): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        this._contentNetworkService.sendCommandSeek(mediaStation.mediaApps, pos);
+        this._contentNetworkService.sendCommandSeek(mediaStation.getAllMediaApps(), pos);
     }
 
     private _findMediaStation(id: number): MediaStation {

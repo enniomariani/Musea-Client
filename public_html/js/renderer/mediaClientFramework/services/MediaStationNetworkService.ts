@@ -1,6 +1,7 @@
 import {NetworkService} from "./NetworkService";
-import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
+import {ICachedMedia, MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
+import {MediaApp} from "../dataStructure/MediaApp";
 
 
 export class MediaStationNetworkService{
@@ -54,14 +55,42 @@ export class MediaStationNetworkService{
         });
     }
 
+    //TO DO: WRITE TESTS FOR THE SENDING MEDIA!!
     async syncMediaStation(mediaStationId:number):Promise<void>{
         console.log("SYNC MEDIA STATION: ", mediaStationId)
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let json:string = mediaStation.exportToJSON();
         let connectionCreated:boolean;
+        let cachedMedia:ICachedMedia[];
+        let mediaApp:MediaApp;
 
         return new Promise(async (resolve, reject) =>{
-            let ip:string = mediaStation.getControllerIp();
+            let ip:string;
+            let fileData:Uint8Array;
+            let idOnMediaApp:number;
+
+            //send all media to the media-apps
+            cachedMedia = this._mediaStationRepo.cachedMedia.get(mediaStationId);
+
+            console.log("FOUND CACHED MEDIA: ", cachedMedia);
+
+            for(const media of cachedMedia){
+                console.log("SEND MEDIA: ", media);
+                mediaApp = mediaStation.getMediaApp(media.mediaAppId);
+                fileData = await this._mediaStationRepo.getCachedMedia(mediaStationId, media.contentId, media.mediaAppId, media.fileExtension);
+
+                connectionCreated = await this._networkService.openConnection(mediaApp.ip);
+                console.log("CONNECTION CREATED?",connectionCreated)
+
+                idOnMediaApp = await this._networkService.sendMediaFileToIp(mediaApp.ip, media.fileExtension, fileData);
+                console.log("RECEIVED ID FROM MEDIA-APP: ", idOnMediaApp);
+
+                if(idOnMediaApp){
+                    this._mediaStationRepo.deleteCachedMedia(mediaStationId,media.contentId, media.mediaAppId);
+                }
+            }
+            //send content-file (last step in synchronisation)
+            ip = mediaStation.getControllerIp();
 
             connectionCreated = await this._networkService.openConnection(ip);
             console.log("CONNECTION CREATED?",connectionCreated)

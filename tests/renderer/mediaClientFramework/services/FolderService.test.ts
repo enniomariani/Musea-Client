@@ -6,7 +6,6 @@ import {
     MockMediaStationRepository
 } from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
 import {MockFolder} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockFolder";
-import {Content} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Content";
 import {MockContent} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockContent";
 
 let folderService:FolderService;

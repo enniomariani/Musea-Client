@@ -127,7 +127,11 @@ describe("changeName() ", ()=> {
 describe("sendCommandPlay() ", ()=> {
 
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
-    mockMediaStation.mediaApps = [new MediaApp(0), new MediaApp(1)];
+    let answerMap:Map<number, MediaApp> = new Map();
+    answerMap.set(0, new MediaApp(0));
+    answerMap.set(1, new MediaApp(1));
+    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+
     const contentId:number = 22;
 
     it("should call contentNetworkService.sendCommandPlay with the correct arguments", () => {
@@ -139,7 +143,7 @@ describe("sendCommandPlay() ", ()=> {
 
         //tests
         expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledWith(mockMediaStation.mediaApps, contentId);
+        expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledWith(answerMap, contentId);
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
@@ -154,7 +158,10 @@ describe("sendCommandPlay() ", ()=> {
 describe("sendCommandStop() ", ()=> {
 
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
-    mockMediaStation.mediaApps = [new MediaApp(0), new MediaApp(1)];
+    let answerMap:Map<number, MediaApp> = new Map();
+    answerMap.set(0, new MediaApp(0));
+    answerMap.set(1, new MediaApp(1));
+    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
 
     it("should call contentNetworkService.sendCommandStop with the correct arguments", () => {
         //setup
@@ -165,7 +172,7 @@ describe("sendCommandStop() ", ()=> {
 
         //tests
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledWith(mockMediaStation.mediaApps);
+        expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledWith(answerMap);
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
@@ -180,7 +187,10 @@ describe("sendCommandStop() ", ()=> {
 describe("sendCommandPause() ", ()=> {
 
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
-    mockMediaStation.mediaApps = [new MediaApp(0), new MediaApp(1)];
+    let answerMap:Map<number, MediaApp> = new Map();
+    answerMap.set(0, new MediaApp(0));
+    answerMap.set(1, new MediaApp(1));
+    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
 
     it("should call contentNetworkService.sendCommandPause with the correct arguments", () => {
         //setup
@@ -191,7 +201,7 @@ describe("sendCommandPause() ", ()=> {
 
         //tests
         expect(mockContentNetworkService.sendCommandPause).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandPause).toHaveBeenCalledWith(mockMediaStation.mediaApps);
+        expect(mockContentNetworkService.sendCommandPause).toHaveBeenCalledWith(answerMap);
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
@@ -206,7 +216,10 @@ describe("sendCommandPause() ", ()=> {
 describe("sendCommandSeek() ", ()=> {
 
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
-    mockMediaStation.mediaApps = [new MediaApp(0), new MediaApp(1)];
+    let answerMap:Map<number, MediaApp> = new Map();
+    answerMap.set(0, new MediaApp(0));
+    answerMap.set(1, new MediaApp(1));
+    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
     const seekPos:number = 200;
 
     it("should call contentNetworkService.sendCommandSeek with the correct arguments", () => {
@@ -218,7 +231,7 @@ describe("sendCommandSeek() ", ()=> {
 
         //tests
         expect(mockContentNetworkService.sendCommandSeek).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandSeek).toHaveBeenCalledWith(mockMediaStation.mediaApps,seekPos);
+        expect(mockContentNetworkService.sendCommandSeek).toHaveBeenCalledWith(answerMap,seekPos);
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{

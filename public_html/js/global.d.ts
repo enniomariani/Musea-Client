@@ -22,6 +22,7 @@ declare global {
         saveFile(path:string, data:Uint8Array):string;
         deleteFile(path:string):string;
         loadFile(path:string):Prowmise<Uint8Array|null>;
+        fileExists(path:string):boolean;
     }
 
     interface IBackenNetworkService{

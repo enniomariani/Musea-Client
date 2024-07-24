@@ -8,24 +8,41 @@ import {ContentService} from "./services/ContentService";
 import {ContentNetworkService} from "./services/ContentNetworkService";
 import {MediaStationNetworkService} from "./services/MediaStationNetworkService";
 import {FolderService} from "./services/FolderService";
+import {MediaService} from "./services/MediaService";
 
 
-export class MediaClientFramework{
+export class MediaClientFramework {
+    private _mediaStationMetaData: MediaStationLocalMetaData;
+    private _mediaStationRepository: MediaStationRepository;
 
-    private _mediaStationMetaData:MediaStationLocalMetaData = new MediaStationLocalMetaData();
-    private _mediaStationRepository:MediaStationRepository = new MediaStationRepository(this._mediaStationMetaData);
+    private _networkConnectionHandler: NetworkConnectionHandler;
+    private _networkService: NetworkService;
+    private _contentNetworkService: ContentNetworkService;
 
-    private _networkConnectionHandler:NetworkConnectionHandler = new NetworkConnectionHandler();
-    private _networkService:NetworkService = new NetworkService(this._networkConnectionHandler);
-    private _contentNetworkService:ContentNetworkService = new ContentNetworkService(this._networkService);
+    private _mediaStationDataService: MediaStationDataService;
+    private _mediaStationNetworkService: MediaStationNetworkService;
+    private _mediaAppService: MediaAppService;
 
-    private _mediaStationDataService:MediaStationDataService = new MediaStationDataService(this._mediaStationRepository);
-    private _mediaStationNetworkService:MediaStationNetworkService = new MediaStationNetworkService(this._networkService, this._mediaStationRepository);
-    private _mediaAppService:MediaAppService = new MediaAppService(this._mediaStationRepository, this._networkService);
-    private _folderService:FolderService = new FolderService(this._mediaStationRepository);
-    private _contentService:ContentService = new ContentService(this._mediaStationRepository, this._contentNetworkService);
+    private _folderService: FolderService;
+    private _contentService: ContentService;
+    private _mediaService:MediaService;
 
-    constructor() {
+    constructor(pathToDataFolder: string) {
+        this._mediaStationMetaData = new MediaStationLocalMetaData();
+        this._mediaStationRepository = new MediaStationRepository(this._mediaStationMetaData, pathToDataFolder);
+
+        this._networkConnectionHandler = new NetworkConnectionHandler();
+        this._networkService = new NetworkService(this._networkConnectionHandler);
+        this._contentNetworkService = new ContentNetworkService(this._networkService);
+
+        this._mediaStationDataService = new MediaStationDataService(this._mediaStationRepository);
+        this._mediaStationNetworkService = new MediaStationNetworkService(this._networkService, this._mediaStationRepository);
+        this._mediaAppService = new MediaAppService(this._mediaStationRepository, this._networkService);
+
+
+        this._folderService = new FolderService(this._mediaStationRepository);
+        this._contentService = new ContentService(this._mediaStationRepository, this._contentNetworkService);
+        this._mediaService = new MediaService(this._mediaStationRepository);
     }
 
     get mediaStationDataService(): MediaStationDataService {
@@ -46,5 +63,9 @@ export class MediaClientFramework{
 
     get contentService(): ContentService {
         return this._contentService;
+    }
+
+    get mediaService(): MediaService {
+        return this._mediaService;
     }
 }

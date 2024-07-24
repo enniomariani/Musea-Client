@@ -13,7 +13,7 @@ const contentId:number = 12;
 let mediaApp1:MediaApp;
 let mediaApp2:MediaApp;
 let mediaApp3:MediaApp;
-let mediaApps:MediaApp[];
+let mediaApps:Map<number, MediaApp>
 
 beforeEach(() => {
     mediaApp1 = new MediaApp(0);
@@ -23,8 +23,10 @@ beforeEach(() => {
     mediaApp3 = new MediaApp(2);
     mediaApp3.ip = "127.0.0.3";
 
-    mediaApps = [];
-    mediaApps.push(mediaApp1, mediaApp2, mediaApp3);
+    mediaApps = new Map();
+    mediaApps.set(0, mediaApp1);
+    mediaApps.set(1, mediaApp2);
+    mediaApps.set(2, mediaApp3);
 
     mockNetworkService = new MockNetworkService();
     contentNetworkService = new ContentNetworkService(mockNetworkService);

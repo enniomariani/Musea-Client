@@ -1,5 +1,3 @@
-import path from "node:path";
-
 
 export class MediaFileService {
 
@@ -26,16 +24,26 @@ export class MediaFileService {
      */
     saveFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string, payload:Uint8Array):void{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
+
+        console.log("Save Media-File: ", this._pathToFolder + pathToFile, payload);
         this._backendFileService.saveFile(this._pathToFolder + pathToFile, payload);
     }
 
     deleteFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):void{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
+
+        console.log("Delete Media-File: ",  this._pathToFolder + pathToFile);
         this._backendFileService.deleteFile(this._pathToFolder + pathToFile);
+    }
+
+    fileExists(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):boolean{
+        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
+        return this._backendFileService.fileExists(this._pathToFolder + pathToFile);
     }
 
     async loadFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):Promise<Uint8Array | null>{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
+        console.log("Load Media-File: ",  this._pathToFolder + pathToFile);
         return this._backendFileService.loadFile(this._pathToFolder + pathToFile);
     }
 

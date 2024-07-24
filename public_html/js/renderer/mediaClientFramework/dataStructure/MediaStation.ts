@@ -6,7 +6,7 @@ import {Tag} from "./Tag";
 export class MediaStation{
     private _id:number;
     private _name:string;
-    private _mediaApps:MediaApp[] = [];
+    private _mediaApps:Map<number, MediaApp> = new Map();
     private _rootFolder:Folder = new Folder(0);
 
     private _folderIdCounter:number = 0;
@@ -21,7 +21,6 @@ export class MediaStation{
     }
 
     exportToJSON():string{
-        let mediaApp:MediaApp;
         let json:any = {
             name: this._name,
             folderIdCounter : this._folderIdCounter,
@@ -33,10 +32,10 @@ export class MediaStation{
             rootFolder : this._rootFolder.exportToJSON(),
         };
 
-        for(let i:number = 0; i < this._mediaApps.length; i++){
-            mediaApp = this._mediaApps[i];
+        this._mediaApps.forEach((mediaApp:MediaApp)=>{
             json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
-        }
+        })
+
         return JSON.stringify(json);
     }
 
@@ -68,7 +67,7 @@ export class MediaStation{
                 if(this._jsonPropertyExists(json.mediaApps[i], "role"))
                     mediaApp.role = json.mediaApps[i].role;
 
-                this._mediaApps.push(mediaApp);
+                this._mediaApps.set(mediaApp.id, mediaApp);
             }
         }
 
@@ -89,13 +88,16 @@ export class MediaStation{
      * @returns {string | null}
      */
     getControllerIp():string | null{
-        let mediaApp:MediaApp;
+        let result:string;
 
-        for(let i:number = 0; i < this._mediaApps.length; i++){
-            mediaApp = this._mediaApps[i];
+        this._mediaApps.forEach((mediaApp:MediaApp) =>{
+            console.log("CHECK MEDIA APP: ", mediaApp, mediaApp.role === MediaApp.ROLE_CONTROLLER)
             if(mediaApp.role === MediaApp.ROLE_CONTROLLER)
-                return mediaApp.ip;
-        }
+                result =  mediaApp.ip;
+        });
+
+        if(result)
+            return result;
 
         console.error("No controller-app is set for mediaStation: ", this._id, this._name)
         return null;
@@ -125,6 +127,27 @@ export class MediaStation{
         return actualID;
     }
 
+    addMediaApp(id:number, name:string, ip:string, role:string):void{
+        let mediaApp:MediaApp = new MediaApp(id);
+        mediaApp.ip = ip;
+        mediaApp.name = name;
+        mediaApp.role = role;
+
+        this._mediaApps.set(id, mediaApp);
+    }
+
+    getMediaApp(id:number):MediaApp{
+
+        if(this._mediaApps.has(id))
+            return this._mediaApps.get(id);
+        else
+            throw new Error("Media App with the following ID does not exist: "+ id);
+    }
+
+    getAllMediaApps():Map<number, MediaApp>{
+        return this._mediaApps;
+    }
+
     get id(): number {
         return this._id;
     }
@@ -135,14 +158,6 @@ export class MediaStation{
 
     set name(value: string) {
         this._name = value;
-    }
-
-    get mediaApps(): MediaApp[] {
-        return this._mediaApps;
-    }
-
-    set mediaApps(value: MediaApp[]) {
-        this._mediaApps = value;
     }
 
     get rootFolder(): Folder {
