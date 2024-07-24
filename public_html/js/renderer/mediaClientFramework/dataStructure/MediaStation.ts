@@ -91,7 +91,6 @@ export class MediaStation{
         let result:string;
 
         this._mediaApps.forEach((mediaApp:MediaApp) =>{
-            console.log("CHECK MEDIA APP: ", mediaApp, mediaApp.role === MediaApp.ROLE_CONTROLLER)
             if(mediaApp.role === MediaApp.ROLE_CONTROLLER)
                 result =  mediaApp.ip;
         });
@@ -137,7 +136,6 @@ export class MediaStation{
     }
 
     getMediaApp(id:number):MediaApp{
-
         if(this._mediaApps.has(id))
             return this._mediaApps.get(id);
         else

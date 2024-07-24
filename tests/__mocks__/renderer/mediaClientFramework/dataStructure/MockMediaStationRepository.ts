@@ -1,4 +1,3 @@
-
 import {
     MediaStationRepository
 } from "../../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaStationRepository";
@@ -20,6 +19,7 @@ export class MockMediaStationRepository extends MediaStationRepository{
     isMediaCached: jest.Mock;
     deleteCachedMedia: jest.Mock;
     getCachedMedia: jest.Mock;
+    getAllCachedMedia: jest.Mock;
 
     constructor() {
         super(mockMediaStationLocalMetaData, "fakePathToMediaFolder", mockMediaFileService);
@@ -33,5 +33,6 @@ export class MockMediaStationRepository extends MediaStationRepository{
         this.isMediaCached = jest.fn();
         this.deleteCachedMedia = jest.fn();
         this.getCachedMedia = jest.fn();
+        this.getAllCachedMedia = jest.fn();
     }
 }

@@ -2,6 +2,12 @@ import {NetworkService} from "./NetworkService";
 import {ICachedMedia, MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp} from "../dataStructure/MediaApp";
+import {Content} from "../dataStructure/Content";
+import {IMedia} from "../dataStructure/Media";
+
+export interface IOnSyncStep{
+    (message:string):void
+}
 
 
 export class MediaStationNetworkService{
@@ -56,11 +62,11 @@ export class MediaStationNetworkService{
     }
 
     //TO DO: WRITE TESTS FOR THE SENDING MEDIA!!
-    async syncMediaStation(mediaStationId:number):Promise<void>{
+    async syncMediaStation(mediaStationId:number, onSyncStep:IOnSyncStep):Promise<void>{
         console.log("SYNC MEDIA STATION: ", mediaStationId)
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        let json:string = mediaStation.exportToJSON();
-        let connectionCreated:boolean;
+        let json:string;
+        let connectionIsOpen:boolean;
         let cachedMedia:ICachedMedia[];
         let mediaApp:MediaApp;
 
@@ -68,32 +74,65 @@ export class MediaStationNetworkService{
             let ip:string;
             let fileData:Uint8Array;
             let idOnMediaApp:number;
+            let content:Content;
+            let media:IMedia;
+            let allCachedMedia:ICachedMedia[];
+            let allMediaOperationsByMediaApp:Map<MediaApp, ICachedMedia[]> = new Map();
 
             //send all media to the media-apps
-            cachedMedia = this._mediaStationRepo.cachedMedia.get(mediaStationId);
+            allCachedMedia = this._mediaStationRepo.getAllCachedMedia().get(mediaStationId);
+
+            //save all cachedMedia by their mediaApp, because all media-operations are executed per media-app (all actions for media-app 1 first,
+            //then for media app 2, etc.
+            for(const cachedMedia of allCachedMedia){
+                mediaApp = mediaStation.getMediaApp(cachedMedia.mediaAppId);
+
+                if(!allMediaOperationsByMediaApp.has(mediaApp))
+                    allMediaOperationsByMediaApp.set(mediaApp, []);
+
+                allMediaOperationsByMediaApp.get(mediaApp).push(cachedMedia);
+            }
 
             console.log("FOUND CACHED MEDIA: ", cachedMedia);
 
-            for(const media of cachedMedia){
-                console.log("SEND MEDIA: ", media);
-                mediaApp = mediaStation.getMediaApp(media.mediaAppId);
-                fileData = await this._mediaStationRepo.getCachedMedia(mediaStationId, media.contentId, media.mediaAppId, media.fileExtension);
+            for(const [mediaApp, allCachedMedia] of allMediaOperationsByMediaApp){
+                onSyncStep("Verbindung mit Medien-App wird aufgebaut: " + mediaApp.name + "/" + mediaApp.ip);
 
-                connectionCreated = await this._networkService.openConnection(mediaApp.ip);
-                console.log("CONNECTION CREATED?",connectionCreated)
+                connectionIsOpen = await this._networkService.openConnection(mediaApp.ip);
 
-                idOnMediaApp = await this._networkService.sendMediaFileToIp(mediaApp.ip, media.fileExtension, fileData);
-                console.log("RECEIVED ID FROM MEDIA-APP: ", idOnMediaApp);
+                if(connectionIsOpen){
+                    onSyncStep("Verbindung mit Medien-App hergestellt!");
+                }else{
+                    onSyncStep("Verbindung mit Medien-App konnte nicht hergestellt werden!");
+                }
 
-                if(idOnMediaApp){
-                    this._mediaStationRepo.deleteCachedMedia(mediaStationId,media.contentId, media.mediaAppId);
+                for(const cachedMedia of allCachedMedia){
+                    // console.log("SEND MEDIA: ", cachedMedia);
+                    // fileData = await this._mediaStationRepo.getCachedMedia(mediaStationId, cachedMedia.contentId, cachedMedia.mediaAppId, cachedMedia.fileExtension);
+
+                    // idOnMediaApp = await this._networkService.sendMediaFileToIp(mediaApp.ip, cachedMedia.fileExtension, fileData);
+                    // console.log("RECEIVED ID FROM MEDIA-APP: ", idOnMediaApp);
+                    //
+                    // if(idOnMediaApp){
+                    //     content = mediaStation.rootFolder.findContent(cachedMedia.contentId);
+                    //     media = content.media.get(cachedMedia.mediaAppId);
+                    //     media.idOnMediaApp = idOnMediaApp;
+                    //
+                    //     console.log("SET NEW ID FOR MEDIA: ", content.id, media.mediaAppId, idOnMediaApp)
+                    //
+                    //     this._mediaStationRepo.deleteCachedMedia(mediaStationId,cachedMedia.contentId, cachedMedia.mediaAppId);
+                    // }
                 }
             }
             //send content-file (last step in synchronisation)
             ip = mediaStation.getControllerIp();
 
-            connectionCreated = await this._networkService.openConnection(ip);
-            console.log("CONNECTION CREATED?",connectionCreated)
+            connectionIsOpen = await this._networkService.openConnection(ip);
+            console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?",connectionIsOpen);
+
+            json = mediaStation.exportToJSON();
+
+            console.log("SEND CONTENTS-FILE: ", json);
 
             this._networkService.sendContentFileTo(ip, json);
             resolve();

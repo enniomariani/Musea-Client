@@ -210,7 +210,7 @@ describe("deleteMediaStation() ", ()=>{
 
         mediaStationRepo.addMediaStation("testName1");
         receivedId = mediaStationRepo.addMediaStation("testName2");
-        mediaStationRepo.cachedMedia.set(receivedId, [{contentId: 0, mediaAppId: 2, fileExtension: "jpeg"}, {contentId: 22, mediaAppId: 23, fileExtension: "mp4"}])
+        mediaStationRepo.getAllCachedMedia().set(receivedId, [{contentId: 0, mediaAppId: 2, fileExtension: "jpeg"}, {contentId: 22, mediaAppId: 23, fileExtension: "mp4"}])
 
         //method to test
         mediaStationRepo.deleteMediaStation(receivedId);
@@ -219,7 +219,7 @@ describe("deleteMediaStation() ", ()=>{
         expect(mockMediaFileService.deleteFile).toHaveBeenCalledTimes(2);
         expect(mockMediaFileService.deleteFile).toHaveBeenNthCalledWith(1, receivedId, 0, 2, "jpeg");
         expect(mockMediaFileService.deleteFile).toHaveBeenNthCalledWith(2, receivedId, 22, 23, "mp4");
-        expect(mediaStationRepo.cachedMedia.get(receivedId)).toBeUndefined();
+        expect(mediaStationRepo.getAllCachedMedia().get(receivedId)).toBeUndefined();
     });
 });
 
@@ -319,11 +319,11 @@ describe("cacheMedia() ", ()=>{
         mediaStationRepo.cacheMedia(0,1,2,"jpeg", data);
 
         //tests
-        expect(mediaStationRepo.cachedMedia.get(0)).not.toBeNull();
-        expect(mediaStationRepo.cachedMedia.get(0)).not.toBeUndefined();
-        expect(mediaStationRepo.cachedMedia.get(0)[0].mediaAppId).toBe(2);
-        expect(mediaStationRepo.cachedMedia.get(0)[0].contentId).toBe(1);
-        expect(mediaStationRepo.cachedMedia.get(0)[0].fileExtension).toBe("jpeg");
+        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeNull();
+        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeUndefined();
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].mediaAppId).toBe(2);
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].contentId).toBe(1);
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].fileExtension).toBe("jpeg");
     });
 
     it("should add the cached media to cachedMedia if the mediastation already exists and has already a cached file set", ()=>{
@@ -335,12 +335,12 @@ describe("cacheMedia() ", ()=>{
         mediaStationRepo.cacheMedia(0,2,2,"mp4", data);
 
         //tests
-        expect(mediaStationRepo.cachedMedia.get(0)).not.toBeNull();
-        expect(mediaStationRepo.cachedMedia.get(0)).not.toBeUndefined();
-        expect(mediaStationRepo.cachedMedia.get(0).length).toBe(2);
-        expect(mediaStationRepo.cachedMedia.get(0)[1].mediaAppId).toBe(2);
-        expect(mediaStationRepo.cachedMedia.get(0)[1].contentId).toBe(2);
-        expect(mediaStationRepo.cachedMedia.get(0)[1].fileExtension).toBe("mp4");
+        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeNull();
+        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeUndefined();
+        expect(mediaStationRepo.getAllCachedMedia().get(0).length).toBe(2);
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[1].mediaAppId).toBe(2);
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[1].contentId).toBe(2);
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[1].fileExtension).toBe("mp4");
     });
 });
 
@@ -370,7 +370,7 @@ describe("isMediaCached() ", ()=>{
 describe("deleteCachedMedia() ", ()=>{
     it("should call mediaFileService.deleteFile with the passed parameters", ()=>{
         //setup
-        mediaStationRepo.cachedMedia.set(0, [{contentId: 3, mediaAppId: 3, fileExtension: "mp4"}, {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
+        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 3, mediaAppId: 3, fileExtension: "mp4"}, {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
 
         //method to test
         mediaStationRepo.deleteCachedMedia(0,1,2);
@@ -382,41 +382,41 @@ describe("deleteCachedMedia() ", ()=>{
 
     it("should remove the cached media from cachedMedia but other entries should be preserved, element to delete is first in array", ()=>{
         //setup
-        mediaStationRepo.cachedMedia.set(0, [{contentId: 3, mediaAppId: 3, fileExtension: "mp4"}, {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
+        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 3, mediaAppId: 3, fileExtension: "mp4"}, {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
 
         //method to test
         mediaStationRepo.deleteCachedMedia(0,3,3);
 
         //tests
-        expect(mediaStationRepo.cachedMedia.get(0)).not.toBeUndefined();
-        expect(mediaStationRepo.cachedMedia.get(0)[0].contentId).toBe(1);
-        expect(mediaStationRepo.cachedMedia.get(0)[0].mediaAppId).toBe(2);
-        expect(mediaStationRepo.cachedMedia.get(0)[0].fileExtension).toBe("jpeg");
+        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeUndefined();
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].contentId).toBe(1);
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].mediaAppId).toBe(2);
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].fileExtension).toBe("jpeg");
     });
 
     it("should remove the cached media from cachedMedia but other entries should be preserved, element to delete is last in array", ()=>{
         //setup
-        mediaStationRepo.cachedMedia.set(0, [{contentId: 3, mediaAppId: 3, fileExtension: "mp4"}, {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
+        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 3, mediaAppId: 3, fileExtension: "mp4"}, {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
 
         //method to test
         mediaStationRepo.deleteCachedMedia(0,1,2);
 
         //tests
-        expect(mediaStationRepo.cachedMedia.get(0)).not.toBeUndefined();
-        expect(mediaStationRepo.cachedMedia.get(0)[0].contentId).toBe(3);
-        expect(mediaStationRepo.cachedMedia.get(0)[0].mediaAppId).toBe(3);
-        expect(mediaStationRepo.cachedMedia.get(0)[0].fileExtension).toBe("mp4");
+        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeUndefined();
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].contentId).toBe(3);
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].mediaAppId).toBe(3);
+        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].fileExtension).toBe("mp4");
     });
 
     it("should remove the cached media to cachedMedia and remove the mediaStationId if there are no cached media left", ()=>{
         //setup
-        mediaStationRepo.cachedMedia.set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
+        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
 
         //method to test
         mediaStationRepo.deleteCachedMedia(0,1,2);
 
         //tests
-        expect(mediaStationRepo.cachedMedia.get(0)).toBeUndefined();
+        expect(mediaStationRepo.getAllCachedMedia().get(0)).toBeUndefined();
     });
 
 });

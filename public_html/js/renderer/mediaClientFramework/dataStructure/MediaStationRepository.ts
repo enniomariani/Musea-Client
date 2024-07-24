@@ -132,6 +132,10 @@ export class MediaStationRepository{
         return await this._mediaFileService.loadFile(mediaStationId, contentId, mediaAppId, fileExtension);
     }
 
+    getAllCachedMedia():Map<number, ICachedMedia[]>{
+        return this._cachedMedia;
+    }
+
     private getNameControllerMap():Map<string, string> {
         let map:Map<string, string> = new Map();
         let controllerIp:string;
@@ -142,9 +146,5 @@ export class MediaStationRepository{
         });
 
         return map;
-    }
-
-    get cachedMedia(): Map<number, ICachedMedia[]> {
-        return this._cachedMedia;
     }
 }

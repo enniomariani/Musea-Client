@@ -4,6 +4,10 @@ import {MediaManager} from "../dataManagers/MediaManager";
 
 
 export class MediaService {
+    static FILE_EXTENSION_IMAGE_JPEG:string = "jpeg";
+    static FILE_EXTENSION_IMAGE_PNG:string = "png";
+    static FILE_EXTENSION_VIDEO_MP4:string = "mp4";
+
     private _mediaStationRepository: MediaStationRepository;
     private _mediaManager: MediaManager;
 
@@ -22,11 +26,14 @@ export class MediaService {
      * @param {number} mediaStationId
      * @param {number} contentId
      * @param {number} mediaAppId
-     * @param {string} fileExtension
+     * @param {string} fileExtension    must be one of the static FILE_EXTENSION_IMAGE variables of MediaService
      * @param {Uint8Array} payload
      */
     addImageAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, fileExtension:string, payload:Uint8Array): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        if(!(fileExtension === MediaService.FILE_EXTENSION_IMAGE_PNG || fileExtension === MediaService.FILE_EXTENSION_IMAGE_JPEG))
+            throw new Error("Non-valid file-extension passed: " +  fileExtension);
 
         this._mediaManager.createImage(mediaStation, contentId, mediaAppId);
 
@@ -46,11 +53,14 @@ export class MediaService {
      * @param {number} contentId
      * @param {number} mediaAppId
      * @param {number} duration
-     * @param {string} fileExtension
+     * @param {string} fileExtension    must be one of the static FILE_EXTENSION_VIDEO variables of MediaService
      * @param {Uint8Array} payload
      */
     addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, duration:number, fileExtension:string, payload:Uint8Array): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        if(fileExtension !== MediaService.FILE_EXTENSION_VIDEO_MP4)
+            throw new Error("Non-valid file-extension passed: " +  fileExtension);
 
         this._mediaManager.createVideo(mediaStation, contentId, mediaAppId, duration);
 

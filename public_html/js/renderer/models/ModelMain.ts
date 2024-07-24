@@ -2,6 +2,7 @@ import {CreateGlobalSettings} from "./globalSettings/CreateGlobalSettings";
 import {GlobalSettings} from "./globalSettings/GlobalSettings";
 import {MediaClientFramework} from "../mediaClientFramework/MediaClientFramework";
 import {NetworkConnectionHandler} from "../mediaClientFramework/network/NetworkConnectionHandler";
+import {MediaService} from "../mediaClientFramework/services/MediaService";
 
 export class ModelMain extends EventTarget {
     private _globalSettings:GlobalSettings;
@@ -49,12 +50,12 @@ export class ModelMain extends EventTarget {
         console.log("GET NAME OF CONTENTS: ", mcf.folderService.getAllContentsInFolder(0,0));
 
         //add media
-        mcf.mediaService.addImageAndCacheIt(0,1,0,"jpeg", new Uint8Array([0x00, 0xFF, 0x11]))
-        mcf.mediaService.addImageAndCacheIt(0,1,1,"png", new Uint8Array([0x00, 0xFF, 0x11]))
+        mcf.mediaService.addImageAndCacheIt(0,1,0,MediaService.FILE_EXTENSION_IMAGE_JPEG, new Uint8Array([0x00, 0xFF, 0x11]))
+        mcf.mediaService.addImageAndCacheIt(0,1,1,MediaService.FILE_EXTENSION_IMAGE_PNG, new Uint8Array([0x00, 0xFF, 0x11]))
 
-        mcf.mediaService.addImageAndCacheIt(0,2,0,"mp4", new Uint8Array([0x00, 0xFF, 0x11]))
+        mcf.mediaService.addVideoAndCacheIt(0,2,0,130,MediaService.FILE_EXTENSION_VIDEO_MP4, new Uint8Array([0x00, 0xFF, 0x11]))
 
-        await mcf.mediaStationNetworkService.syncMediaStation(0);
+        await mcf.mediaStationNetworkService.syncMediaStation(0, (message:string) =>{console.log("SYNC-MESSAGE: ", message)});
 
         mcf.contentService.sendCommandPlay(0, 1);
     }

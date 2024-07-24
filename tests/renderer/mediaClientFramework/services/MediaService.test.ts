@@ -28,7 +28,7 @@ afterEach(() => {
 describe("addImageAndCacheIt() ", ()=> {
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
     let image:Image = new Image();
-    let fileExtension:string = "jpeg";
+    let fileExtension:string = MediaService.FILE_EXTENSION_IMAGE_JPEG;
     let payload:Uint8Array = new Uint8Array([0x00, 0xFF, 0x12, 0xEF]);
 
     it("should call contentManager.createImage with the correct arguments", () => {
@@ -77,12 +77,21 @@ describe("addImageAndCacheIt() ", ()=> {
         //tests
         expect(()=> mediaService.addImageAndCacheIt(mediaStationId,contentId,0, fileExtension, payload)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
+
+    it("should throw an error if the passed fileExtension is not one of the MediaService.FILE_EXTENSION_IMAGE vars", () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaManager.createImage.mockReturnValueOnce(image);
+
+        //tests
+        expect(()=> mediaService.addImageAndCacheIt(mediaStationId,contentId,0, "otherFileExtension", payload)).toThrow(new Error("Non-valid file-extension passed: otherFileExtension"));
+    });
 });
 
 describe("addVideoAndCacheIt() ", ()=> {
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
     let video:Video = new Video();
-    let fileExtension:string = "mp4";
+    let fileExtension:string = MediaService.FILE_EXTENSION_VIDEO_MP4;
     let payload:Uint8Array = new Uint8Array([0x00, 0xFF, 0x12, 0xEF]);
 
     it("should call contentManager.createVideo with the correct arguments", () => {
@@ -130,6 +139,15 @@ describe("addVideoAndCacheIt() ", ()=> {
 
         //tests
         expect(()=> mediaService.addVideoAndCacheIt(mediaStationId,contentId,0, 199, fileExtension, payload)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+
+    it("should throw an error if the passed fileExtension is not one of the MediaService.FILE_EXTENSION_VIDEO vars", () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaManager.createImage.mockReturnValueOnce(video);
+
+        //tests
+        expect(()=> mediaService.addVideoAndCacheIt(mediaStationId,contentId,0, 150,"otherFileExtension", payload)).toThrow(new Error("Non-valid file-extension passed: otherFileExtension"));
     });
 });
 
