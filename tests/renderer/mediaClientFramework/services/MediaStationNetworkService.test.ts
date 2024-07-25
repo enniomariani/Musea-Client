@@ -12,6 +12,9 @@ import {
     ICachedMedia
 } from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaStationRepository";
 import {MediaApp} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaApp";
+import {MockFolder} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockFolder";
+import {MockContent} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockContent";
+import {Image} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Media";
 
 let mediaStationNetworkService: MediaStationNetworkService;
 let mockMediaStationRepo: MockMediaStationRepository;
@@ -33,8 +36,8 @@ describe("downloadContentsOfMediaStation() ", () => {
     it("should call mediaStation.importFromJSON with the JSON passed from networkService.getContentFileFrom", async () => {
         //setup
         let answer: string;
-        const controllerIp:string = "127.0.0.1";
-        const correctJSON:any = {name: "mediaStationX"};
+        const controllerIp: string = "127.0.0.1";
+        const correctJSON: any = {name: "mediaStationX"};
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSON));
@@ -51,7 +54,7 @@ describe("downloadContentsOfMediaStation() ", () => {
     it("should return an error if the controller-app is not reachable within the timeout set in NetworkService", async () => {
         //setup
         let answer: string;
-        const controllerIp:string = "127.0.0.1";
+        const controllerIp: string = "127.0.0.1";
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(null);
@@ -66,7 +69,7 @@ describe("downloadContentsOfMediaStation() ", () => {
     it("should return an error if the controller-app returned an empty JSON (which means there wasn't saved any before)", async () => {
         //setup
         let answer: string;
-        const controllerIp:string = "127.0.0.1";
+        const controllerIp: string = "127.0.0.1";
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
         mockNetworkService.getContentFileFrom.mockReturnValueOnce("{}");
@@ -96,32 +99,38 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect( () => mediaStationNetworkService.downloadContentsOfMediaStation(0)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
+        expect(() => mediaStationNetworkService.downloadContentsOfMediaStation(0)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });
 
 describe("syncMediaStation() ", () => {
-    const fileData:Uint8Array = new Uint8Array([0x00, 0xFF, 0xEE, 0xAA])
+    //it's a complex method, so a lot of setup is necesary!!!
+
+    const fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEE, 0xAA])
     let mockMediaStation: MockMediaStation = new MockMediaStation(0);
-    let mediaApp1:MediaApp = new MediaApp(0);
+    let controllerIp: string = "192.168.1.1";
+    let mockJSON: string = "{mock-json: 1}";
+    let mockOnSyncStep: IOnSyncStep;
+    let mockContent0: MockContent;
+    let mockContent2: MockContent;
+    let image1: Image;
+    let image2: Image;
+    let mocksCalled:string[];
+
+    let mediaApp1: MediaApp = new MediaApp(0);
     mediaApp1.name = "controller";
     mediaApp1.ip = "127.0.0.1";
-    mediaApp1.role = MediaApp.ROLE_CONTROLLER;
-    let mediaApp2:MediaApp = new MediaApp(1);
+    let mediaApp2: MediaApp = new MediaApp(1);
     mediaApp2.name = "second media app";
     mediaApp2.ip = "127.0.0.2";
-    mediaApp2.role = MediaApp.ROLE_DEFAULT;
 
-    mockMediaStation.getMediaApp.mockImplementation((id)=>{
-        if(id === 0)
-            return mediaApp1;
-        else if(id === 1)
-            return mediaApp2;
-        else
-            throw new Error("MOCK-ERROR: MEDIA APP ID NOT DEFINED!");
+    mockMediaStation.getMediaApp.mockImplementation((id) => {
+        if (id === 0) return mediaApp1;
+        else if (id === 1) return mediaApp2;
+        else throw new Error("MOCK-ERROR: MEDIA APP ID NOT DEFINED!");
     })
 
-    let mockCachedMedia:ICachedMedia[] = [
+    let mockCachedMedia: ICachedMedia[] = [
         {contentId: 0, mediaAppId: 0, fileExtension: "jpeg"},
         {contentId: 0, mediaAppId: 1, fileExtension: "mp4"},
         {contentId: 2, mediaAppId: 0, fileExtension: "jpeg"},
@@ -129,79 +138,157 @@ describe("syncMediaStation() ", () => {
     ];
 
     //mock-data
-    beforeEach(()=>{
+    beforeEach(() => {
+        mocksCalled = [];
+        mockOnSyncStep = jest.fn();
 
-        mockMediaStationRepo.getAllCachedMedia.mockImplementation(()=>{
-            let map:Map<number, ICachedMedia[]> = new Map();
+        mockMediaStationRepo.getAllCachedMedia.mockImplementation(() => {
+            mocksCalled.push("mockMediaStationRepo.getAllCachedMedia");
+            let map: Map<number, ICachedMedia[]> = new Map();
             map.set(0, mockCachedMedia);
             return map;
         });
 
-        mockMediaStationRepo.getCachedMedia.mockImplementation((mediaStationId: number, contentId:number, mediaAppId:number, fileExtension:string):Uint8Array =>{
-            if(mediaStationId === mockMediaStation.id){
-                let passedCMedia:ICachedMedia = {contentId, mediaAppId, fileExtension};
+        mockMediaStationRepo.getCachedMediaFile.mockImplementation((mediaStationId: number, contentId: number, mediaAppId: number, fileExtension: string): Uint8Array => {
+            mocksCalled.push("mockMediaStationRepo.getCachedMediaFile");
+            if (mediaStationId === mockMediaStation.id) {
+                let passedCMedia: ICachedMedia = {contentId, mediaAppId, fileExtension};
 
-                let foundCachedMedia:ICachedMedia = mockCachedMedia.find(function (cachedMedia:ICachedMedia) {
-                    return cachedMedia.mediaAppId === passedCMedia.mediaAppId &&cachedMedia.contentId === passedCMedia.contentId &&cachedMedia.fileExtension === passedCMedia.fileExtension  ;
+                let foundCachedMedia: ICachedMedia = mockCachedMedia.find(function (cachedMedia: ICachedMedia) {
+                    return cachedMedia.mediaAppId === passedCMedia.mediaAppId && cachedMedia.contentId === passedCMedia.contentId && cachedMedia.fileExtension === passedCMedia.fileExtension;
                 });
 
-                if(foundCachedMedia)
-                    return fileData;
-                else
-                    return null;
+                if (foundCachedMedia) return fileData;
+                else return null;
+            } else
+                return null;
+        });
+
+        mockMediaStationRepo.getCachedMediaFile.mockImplementation((mediaStationId: number, contentId: number, mediaAppId: number, fileExtension: string): Promise<Uint8Array | null> => {
+            mocksCalled.push("mockMediaStationRepo.getCachedMediaFile");
+            let foundCachedMedia: ICachedMedia = mockCachedMedia.find(function (cachedMedia: ICachedMedia) {
+                return cachedMedia.mediaAppId === mediaAppId && cachedMedia.contentId === contentId && cachedMedia.fileExtension === fileExtension;
+            });
+            if (mediaStationId === 0 && foundCachedMedia)
+                return new Promise((resolve) => resolve(fileData));
+            else
+                return new Promise((resolve) => resolve(null));
+        });
+        let counter:number = 0;
+        mockNetworkService.sendMediaFileToIp.mockImplementation(() => {
+            mocksCalled.push("mockNetworkService.sendMediaFileToIp");
+            if(counter === 0){
+                counter++;
+                return 99;
             }else
                 return null;
         });
+
+        image1 = new Image();
+        image1.idOnMediaApp = -1;
+        image2 = new Image();
+        image2.idOnMediaApp = -1;
+
+        mockContent0 = new MockContent(0);
+        mockContent2 = new MockContent(2);
+        mockContent0.media.set(0, image1)
+        mockContent2.media.set(0, image2)
+        mockMediaStation.rootFolder = new MockFolder(0);
+
+        mockMediaStation.rootFolder.findContent.mockImplementation((contentId: number) => {
+            mocksCalled.push("mockMediaStation.rootFolder.findContent");
+            if (contentId === 0) return mockContent0;
+            else if (contentId === 2) return mockContent2;
+            else return null;
+        });
+
+        mockMediaStation.exportToJSON.mockImplementation(()=>{
+            mocksCalled.push("mockMediaStation.exportToJSON");
+            return mockJSON
+        });
+
+        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
+
+        mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
     })
 
 
-    it("should call the mockOnSyncStep with the text, that the connection is opening and if it succeeded or not", async() => {
-        //setup
-        let mockJSON: string = "{mock-json: 1}";
-        let ip: string = "192.168.1.1";
-        let mockOnSyncStep:IOnSyncStep = jest.fn();
-
-        mockMediaStation.exportToJSON.mockReturnValueOnce(mockJSON);
-        mockMediaStation.getControllerIp.mockReturnValueOnce(ip);
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve)=>resolve(true)));
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve)=>resolve(false)));
-
+    it("should call the callback mockOnSyncStep with the text, that the connection is opening and if it succeeded or not", async () => {
         //method to test
         await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
-        expect(mockOnSyncStep).toHaveBeenCalledTimes(4);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(1,"Verbindung mit Medien-App wird aufgebaut: " + mediaApp1.name + "/" + mediaApp1.ip);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(2,"Verbindung mit Medien-App hergestellt!");
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(3,"Verbindung mit Medien-App wird aufgebaut: " + mediaApp2.name + "/" + mediaApp2.ip);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(4,"Verbindung mit Medien-App konnte nicht hergestellt werden!");
+        expect(mockOnSyncStep).toHaveBeenCalledTimes(8);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(1, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp1.name + "/" + mediaApp1.ip);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(2, "Verbindung mit Medien-App hergestellt.");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(7, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp2.name + "/" + mediaApp2.ip);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(8, "Verbindung mit Medien-App konnte nicht hergestellt werden!");
     });
 
-    it("should pass the json-string and the controller-ip from the mediaStation object to the network-service", async() => {
-        //setup
-        let mockJSON: string = "{mock-json: 1}";
-        let ip: string = "192.168.1.1";
-        let mockOnSyncStep:IOnSyncStep = jest.fn();
+    it("should send the file-data to the media-app if the connection is open", async () => {
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
-        mockMediaStation.exportToJSON.mockReturnValueOnce(mockJSON);
-        mockMediaStation.getControllerIp.mockReturnValueOnce(ip);
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockNetworkService.openConnection.mockReturnValueOnce(true);
+        //tests
+        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenCalledTimes(2);
+        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(1, mediaApp1.ip, mockCachedMedia[0].fileExtension, fileData);
+        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(2, mediaApp1.ip, mockCachedMedia[2].fileExtension, fileData);
+    });
 
+    it("if it got a media-ID back from the media-App, set the ID of the media-object to this ID", async () => {
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        expect(image1.idOnMediaApp).toBe(99);
+        expect(image2.idOnMediaApp).toBe(-1);
+    });
+
+    it("should call the callback mockOnSyncStep with the text, that it is trying to send a media and if it succeeded or not", async () => {
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        expect(mockOnSyncStep).toHaveBeenCalledTimes(8);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(3, "Medium wird gesendet: " + mockCachedMedia[0].fileExtension);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(4, "Medium erfolgreich gesendet.");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(5, "Medium wird gesendet: " + mockCachedMedia[2].fileExtension);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(6, "Medium konnte nicht gesendet oder empfangen werden!");
+    });
+
+    it("call mediaStationRepo.deleteCachedMedia for every media that got succesfully sent to the media-app", async () => {
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledWith( 0,0, 0);
+    });
+
+    it("should pass the json-string and the controller-ip from the mediaStation object to the network-service", async () => {
         //method to test
         await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
         expect(mockNetworkService.sendContentFileTo).toHaveBeenCalledTimes(1);
-        expect(mockNetworkService.sendContentFileTo).toHaveBeenCalledWith(ip, mockJSON);
+        expect(mockNetworkService.sendContentFileTo).toHaveBeenCalledWith(controllerIp, mockJSON);
+    });
+
+    it("sending the JSON should be the last thing to do in the method", async () => {
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        console.log("mock calls: ",mocksCalled)
+        expect(mocksCalled.indexOf("mockMediaStation.exportToJSON")).toBe(mocksCalled.length - 1);
     });
 
     it("should throw an error if the mediaStationId could not be found", () => {
         //setup
-        let mockOnSyncStep:IOnSyncStep = jest.fn();
-        mockNetworkService.openConnection.mockReturnValueOnce(true);
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+        mockMediaStationRepo.findMediaStation = jest.fn();
+        mockMediaStationRepo.findMediaStation.mockReturnValue(null);
 
         //tests
         expect(() => mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));

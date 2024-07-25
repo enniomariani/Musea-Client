@@ -128,7 +128,7 @@ export class MediaStationRepository{
             this._cachedMedia.delete(mediaStationId);
     }
 
-    async getCachedMedia(mediaStationId: number, contentId:number, mediaAppId:number, fileExtension:string):Promise<Uint8Array|null>{
+    async getCachedMediaFile(mediaStationId: number, contentId:number, mediaAppId:number, fileExtension:string):Promise<Uint8Array|null>{
         return await this._mediaFileService.loadFile(mediaStationId, contentId, mediaAppId, fileExtension);
     }
 

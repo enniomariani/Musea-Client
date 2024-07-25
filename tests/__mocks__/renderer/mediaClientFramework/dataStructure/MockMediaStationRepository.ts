@@ -18,7 +18,7 @@ export class MockMediaStationRepository extends MediaStationRepository{
     cacheMedia: jest.Mock;
     isMediaCached: jest.Mock;
     deleteCachedMedia: jest.Mock;
-    getCachedMedia: jest.Mock;
+    getCachedMediaFile: jest.Mock;
     getAllCachedMedia: jest.Mock;
 
     constructor() {
@@ -32,7 +32,7 @@ export class MockMediaStationRepository extends MediaStationRepository{
         this.cacheMedia = jest.fn();
         this.isMediaCached = jest.fn();
         this.deleteCachedMedia = jest.fn();
-        this.getCachedMedia = jest.fn();
+        this.getCachedMediaFile = jest.fn();
         this.getAllCachedMedia = jest.fn();
     }
 }

@@ -421,10 +421,10 @@ describe("deleteCachedMedia() ", ()=>{
 
 });
 
-describe("getCachedMedia() ", ()=>{
+describe("getCachedMediaFile() ", ()=>{
     it("should call mediaFileService.loadFile with the passed parameters", async ()=>{
         //method to test
-        await mediaStationRepo.getCachedMedia(0,1,2, "jpeg");
+        await mediaStationRepo.getCachedMediaFile(0,1,2, "jpeg");
 
         //tests
         expect(mockMediaFileService.loadFile).toHaveBeenCalledTimes(1);
@@ -438,7 +438,7 @@ describe("getCachedMedia() ", ()=>{
         mockMediaFileService.loadFile.mockReturnValueOnce(data);
 
         //method to test
-        answer = await mediaStationRepo.getCachedMedia(0,1,2, "jpeg");
+        answer = await mediaStationRepo.getCachedMediaFile(0,1,2, "jpeg");
 
         //tests
         expect(answer).toEqual(data);
