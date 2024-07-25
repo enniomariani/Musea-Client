@@ -143,8 +143,9 @@ export class NetworkService {
         const promise = this._onConnectionClosedPromises.get(ip);
 
         if (promise) {
-            this._onConnectionClosedPromises.delete(ip);
+            console.log("CONNECTION CLOSED WITH PROMISE: ", promise)
             promise.resolve();
+            this._onConnectionClosedPromises.delete(ip);
         }
     }
 

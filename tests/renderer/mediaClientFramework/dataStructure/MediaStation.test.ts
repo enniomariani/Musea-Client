@@ -61,6 +61,31 @@ describe("exportToJSON() ", () => {
     });
 });
 
+describe("importMediaAppsFromJSON() ", () => {
+    it("should set all properties of the media-apps according to the JSON", () => {
+        //setup
+        mediaStation = new MediaStation(0);
+        let mediaApp1:MediaApp;
+        let mediaApp2:MediaApp;
+
+        //method to test
+        mediaStation.importMediaAppsFromJSON(jsonMock);
+
+        //tests
+        mediaApp1 = mediaStation.getMediaApp(0);
+        mediaApp2 = mediaStation.getMediaApp(1);
+
+        expect(mediaApp1.id).toBe(0);
+        expect(mediaApp1.name).toBe(mediaApp1.name);
+        expect(mediaApp1.ip).toBe(mediaApp1.ip);
+        expect(mediaApp1.role).toBe(mediaApp1.role);
+        expect(mediaApp2.id).toBe(1);
+        expect(mediaApp2.name).toBe(mediaApp2.name);
+        expect(mediaApp2.ip).toBe(mediaApp2.ip);
+        expect(mediaApp2.role).toBe(mediaApp2.role);
+    });
+});
+
 describe("importFromJSON() ", () => {
     it("should set all properties according to the passed json", () => {
         //setup

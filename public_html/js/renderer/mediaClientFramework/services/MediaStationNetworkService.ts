@@ -9,7 +9,6 @@ export interface IOnSyncStep{
     (message:string):void
 }
 
-
 export class MediaStationNetworkService{
 
     static CONTENT_DOWNLOAD_SUCCESS:string = "contents of mediaStation received and saved: ";
@@ -29,6 +28,8 @@ export class MediaStationNetworkService{
      * gets the controller-ip of the passed mediaStation, sends the command to download the content-file of this controller-app
      * and saves the contents-json to the mediaStation.
      *
+     * The registration will be kept alive and the connection open after this method
+     *
      * Always resolves the promise with different strings (see statics in this class), only throws an error if the passed mediaStationId does not exist
      *
      * @param {number} id
@@ -36,9 +37,28 @@ export class MediaStationNetworkService{
      */
     async downloadContentsOfMediaStation(id:number):Promise<string>{
         let mediaStation: MediaStation = this._findMediaStation(id);
+        return this._downloadContentsFromMediaStationAndSendToMediaStation(mediaStation, mediaStation.importFromJSON);
+    }
+
+    /**
+     * gets the controller-ip of the passed mediaStation, sends the command to download the content-file of this controller-app
+     * and saves the media-app information to the mediaStation.
+     *
+     * Disconnects and closes the connection after it received the data
+     *
+     * Always resolves the promise with different strings (see statics in this class), only throws an error if the passed mediaStationId does not exist
+     *
+     * @param {number} id
+     * @returns {Promise<string>}
+     */
+    async downloadOnlyMediaAppDataFromMediaStation(id:number):Promise<string>{
+        let mediaStation: MediaStation = this._findMediaStation(id);
+        return this._downloadContentsFromMediaStationAndSendToMediaStation(mediaStation, mediaStation.importMediaAppsFromJSON, true);
+    }
+
+    private _downloadContentsFromMediaStationAndSendToMediaStation(mediaStation:MediaStation, functionToCallAtMediStation:Function, closeConnection:boolean = false):Promise<string>{
         const controllerIP:string = mediaStation.getControllerIp();
         let contentsJSON:string;
-
 
         return new Promise(async (resolve, reject) =>{
 
@@ -55,8 +75,9 @@ export class MediaStationNetworkService{
                 resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIP);
             }
             else{
-                mediaStation.importFromJSON(JSON.parse(contentsJSON));
-                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_SUCCESS + id);
+                functionToCallAtMediStation(JSON.parse(contentsJSON));
+                await this._networkService.unregisterAndCloseConnection(controllerIP);
+                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_SUCCESS + mediaStation.id);
             }
         });
     }

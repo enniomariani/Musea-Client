@@ -10,6 +10,9 @@ export class MockMediaStation extends MediaStation{
     getNextTagId: jest.Mock;
     exportToJSON: jest.Mock;
     importFromJSON: jest.Mock;
+    importMediaAppsFromJSON: jest.Mock;
+
+
     getControllerIp: jest.Mock;
     addMediaApp: jest.Mock;
     getMediaApp: jest.Mock;
@@ -25,6 +28,8 @@ export class MockMediaStation extends MediaStation{
         this.getNextTagId = jest.fn();
         this.exportToJSON = jest.fn();
         this.importFromJSON = jest.fn();
+        this.importMediaAppsFromJSON = jest.fn();
+
         this.getControllerIp = jest.fn();
         this.addMediaApp = jest.fn();
         this.getMediaApp = jest.fn();

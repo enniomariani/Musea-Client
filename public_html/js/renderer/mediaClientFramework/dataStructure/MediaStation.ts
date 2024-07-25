@@ -39,21 +39,8 @@ export class MediaStation{
         return JSON.stringify(json);
     }
 
-    importFromJSON(json:any):void{
+    importMediaAppsFromJSON(json:any):void{
         let mediaApp:MediaApp;
-
-        console.log("IMPORT MEDIA-STATION FROM JSON: ", json)
-
-        if(this._jsonPropertyExists(json, "name"))
-            this._name = json.name;
-        if(this._jsonPropertyExists(json, "folderIdCounter"))
-            this._folderIdCounter = json.folderIdCounter;
-        if(this._jsonPropertyExists(json, "contentIdCounter"))
-            this._contentIdCounter= json.contentIdCounter;
-        if(this._jsonPropertyExists(json, "mediaAppIdCounter"))
-            this._mediaAppIdCounter = json.mediaAppIdCounter;
-        if(this._jsonPropertyExists(json, "tagIdCounter"))
-            this._tagIdCounter = json.tagIdCounter;
 
         if(json.mediaApps){
             for(let i:number = 0; i < json.mediaApps.length; i++){
@@ -70,6 +57,28 @@ export class MediaStation{
                 this._mediaApps.set(mediaApp.id, mediaApp);
             }
         }
+    }
+
+    /**
+     * imports the whole data-structure from the JSON
+     *
+     * @param json
+     */
+    importFromJSON(json:any):void{
+        console.log("IMPORT MEDIA-STATION FROM JSON: ", json)
+
+        if(this._jsonPropertyExists(json, "name"))
+            this._name = json.name;
+        if(this._jsonPropertyExists(json, "folderIdCounter"))
+            this._folderIdCounter = json.folderIdCounter;
+        if(this._jsonPropertyExists(json, "contentIdCounter"))
+            this._contentIdCounter= json.contentIdCounter;
+        if(this._jsonPropertyExists(json, "mediaAppIdCounter"))
+            this._mediaAppIdCounter = json.mediaAppIdCounter;
+        if(this._jsonPropertyExists(json, "tagIdCounter"))
+            this._tagIdCounter = json.tagIdCounter;
+
+        this.importMediaAppsFromJSON(json);
 
         if(this._jsonPropertyExists(json, "rootFolder"))
             this._rootFolder.importFromJSON(json.rootFolder);
