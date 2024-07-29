@@ -2,7 +2,7 @@
   "extends": "./tsconfig-base.json",
   "files": [],
   "references": [
-    { "path": "./public_html" },
+    { "path": "./src" },
     { "path": "./tests" }
   ]
 }

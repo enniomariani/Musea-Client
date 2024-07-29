@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
 import {
     NetworkConnectionHandler
-} from "../../../../public_html/js/renderer/mediaClientFramework/network/NetworkConnectionHandler";
+} from "../../../../src/js/renderer/mediaClientFramework/network/NetworkConnectionHandler";
 import {MockNetworkInterface} from "../../../__mocks__/renderer/mediaClientFramework/network/MockNetworkInterface";
 
 

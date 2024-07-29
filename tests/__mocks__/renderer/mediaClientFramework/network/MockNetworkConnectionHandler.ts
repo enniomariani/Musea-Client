@@ -1,6 +1,6 @@
 import {
     NetworkConnectionHandler
-} from "../../../../../public_html/js/renderer/mediaClientFramework/network/NetworkConnectionHandler";
+} from "../../../../../src/js/renderer/mediaClientFramework/network/NetworkConnectionHandler";
 import {MockNetworkInterface} from "./MockNetworkInterface";
 
 const mockBackendNetworkService:jest.Mocked<IBackenNetworkService> = {

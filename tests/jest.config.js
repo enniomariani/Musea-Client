@@ -9,5 +9,5 @@ export default {
   testEnvironment: 'node',
   moduleFileExtensions: ['js', 'ts','d.ts'],
   moduleNameMapper,
-  modulePaths: ['<rootDir>','<rootDir>../public_html/js']
+  modulePaths: ['<rootDir>','<rootDir>../src/js']
 };

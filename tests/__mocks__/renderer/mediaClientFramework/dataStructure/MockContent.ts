@@ -1,4 +1,4 @@
-import {Content} from "../../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Content";
+import {Content} from "../../../../../src/js/renderer/mediaClientFramework/dataStructure/Content";
 
 
 export class MockContent extends Content{

@@ -1,6 +1,6 @@
 import {
     MediaStationLocalMetaData
-} from "../../../../../public_html/js/renderer/mediaClientFramework/fileHandling/MediaStationLocalMetaData";
+} from "../../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaStationLocalMetaData";
 
 export class MockMediaStationLocalMetaData extends MediaStationLocalMetaData{
 

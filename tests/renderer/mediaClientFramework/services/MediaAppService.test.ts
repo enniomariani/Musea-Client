@@ -1,9 +1,9 @@
 import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
-import {MediaAppService} from "../../../../public_html/js/renderer/mediaClientFramework/services/MediaAppService";
+import {MediaAppService} from "../../../../src/js/renderer/mediaClientFramework/services/MediaAppService";
 import {
     MockMediaStationRepository
 } from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
-import {MediaApp} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaApp";
+import {MediaApp} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/MediaApp";
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
 import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramework/services/MockNetworkService";
 

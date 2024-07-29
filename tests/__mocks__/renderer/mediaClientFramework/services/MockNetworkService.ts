@@ -1,4 +1,4 @@
-import {NetworkService} from "../../../../../public_html/js/renderer/mediaClientFramework/services/NetworkService";
+import {NetworkService} from "../../../../../src/js/renderer/mediaClientFramework/services/NetworkService";
 import {MockNetworkInterface} from "../network/MockNetworkInterface";
 import {MockNetworkConnectionHandler} from "../network/MockNetworkConnectionHandler";
 

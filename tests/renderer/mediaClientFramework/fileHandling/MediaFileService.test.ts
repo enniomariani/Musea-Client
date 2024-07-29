@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MediaFileService} from "../../../../public_html/js/renderer/mediaClientFramework/fileHandling/MediaFileService";
+import {MediaFileService} from "../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaFileService";
 
 let mediaFileService:MediaFileService;
 

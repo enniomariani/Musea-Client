@@ -3,21 +3,21 @@
   "compilerOptions": {
     "rootDir": "./",
     "types": ["jest"],
-    "baseUrl": "../public_html/js",
+    "baseUrl": "../src/js",
     "paths": {
-      "../public_html/js/*": [
-        "../public_html/js/*"
+      "../src/js/*": [
+        "../src/js/*"
       ]
     }
   },
   "compileOnSave": false,
   "include": [
-    "../public_html/js",
+    "../src/js",
     "../**/*.ts",
-    "../public_html/js/global.d.ts",
-    "../public_html/js/**/*.ts"
+    "../src/js/global.d.ts",
+    "../src/js/**/*.ts"
   ],
   "references": [
-    { "path": "../public_html" }
+    { "path": "../src" }
   ]
 }

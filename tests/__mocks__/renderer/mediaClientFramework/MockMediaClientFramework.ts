@@ -1,49 +1,56 @@
-import {MediaClientFramework} from "../../../../public_html/js/renderer/mediaClientFramework/MediaClientFramework";
+import {
+    IMediaClientFramework
+} from "../../../../src/js/renderer/mediaClientFramework/MediaClientFramework";
 import {
     MediaStationDataService
-} from "../../../../public_html/js/renderer/mediaClientFramework/services/MediaStationDataService";
+} from "../../../../src/js/renderer/mediaClientFramework/services/MediaStationDataService";
 import {
     MediaStationNetworkService
-} from "../../../../public_html/js/renderer/mediaClientFramework/services/MediaStationNetworkService";
-import {MediaAppService} from "../../../../public_html/js/renderer/mediaClientFramework/services/MediaAppService";
-import {FolderService} from "../../../../public_html/js/renderer/mediaClientFramework/services/FolderService";
-import {ContentService} from "../../../../public_html/js/renderer/mediaClientFramework/services/ContentService";
-import {MediaService} from "../../../../public_html/js/renderer/mediaClientFramework/services/MediaService";
+} from "../../../../src/js/renderer/mediaClientFramework/services/MediaStationNetworkService";
+import {MediaAppService} from "../../../../src/js/renderer/mediaClientFramework/services/MediaAppService";
+import {FolderService} from "../../../../src/js/renderer/mediaClientFramework/services/FolderService";
+import {ContentService} from "../../../../src/js/renderer/mediaClientFramework/services/ContentService";
+import {MediaService} from "../../../../src/js/renderer/mediaClientFramework/services/MediaService";
 import {MockMediaStationDataService} from "./services/MockMediaStationDataService";
 import {MockMediaStationNetworkService} from "./services/MockMediaStationNetworkService";
 import {MockMediaAppService} from "./services/MockMediaAppService";
 import {MockFolderService} from "./services/MockFolderService";
 import {MockContentService} from "./services/MockContentService";
 import {MockMediaService} from "./services/MockMediaService";
+import {MockContent} from "./dataStructure/MockContent";
 
+export class MockMediaClientFramework implements  IMediaClientFramework{
 
-export class MockMediaClientFramework extends MediaClientFramework{
+    private _mockMediaStationDataService: MockMediaStationDataService = new MockMediaStationDataService();
+    private _mockMediaStationNetworkService: MockMediaStationNetworkService = new MockMediaStationNetworkService();
+    private _mockMediaAppService: MockMediaAppService = new MockMediaAppService();
+    private _mockFolderService: MockFolderService = new MockFolderService();
+    private _mockContentService: MockContentService = new MockContentService();
+    private _mockMediaService: MockMediaService = new MockMediaService();
 
-    constructor(path) {
-        super(path);
+    constructor() {}
+
+    get mediaStationDataService(): MockMediaStationDataService {
+        return this._mockMediaStationDataService;
     }
 
-    get mediaStationDataService(): MediaStationDataService {
-        return new MockMediaStationDataService();
+    get mediaStationNetworkService(): MockMediaStationNetworkService {
+        return this._mockMediaStationNetworkService;
     }
 
-    get mediaStationNetworkService(): MediaStationNetworkService {
-        return new MockMediaStationNetworkService();
+    get mediaAppService(): MockMediaAppService {
+        return this._mockMediaAppService;
     }
 
-    get mediaAppService(): MediaAppService {
-        return new MockMediaAppService();
+    get folderService(): MockFolderService {
+        return this._mockFolderService;
     }
 
-    get folderService(): FolderService {
-        return new MockFolderService();
+    get contentService(): MockContentService {
+        return this._mockContentService;
     }
 
-    get contentService(): ContentService {
-        return new MockContentService();
-    }
-
-    get mediaService(): MediaService {
-        return new MockMediaService();
+    get mediaService(): MockMediaService {
+        return this._mockMediaService;
     }
 }

@@ -2,9 +2,9 @@ import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/glo
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
 import {
     ContentNetworkService
-} from "../../../../public_html/js/renderer/mediaClientFramework/services/ContentNetworkService";
+} from "../../../../src/js/renderer/mediaClientFramework/services/ContentNetworkService";
 import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramework/services/MockNetworkService";
-import {MediaApp} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaApp";
+import {MediaApp} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/MediaApp";
 
 let contentNetworkService:ContentNetworkService;
 let mockNetworkService:MockNetworkService;

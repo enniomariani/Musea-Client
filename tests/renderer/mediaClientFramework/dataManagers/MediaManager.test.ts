@@ -1,8 +1,8 @@
 import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
-import {MediaManager} from "../../../../public_html/js/renderer/mediaClientFramework/dataManagers/MediaManager";
+import {MediaManager} from "../../../../src/js/renderer/mediaClientFramework/dataManagers/MediaManager";
 import {MockContent} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockContent";
-import {Image, Video} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Media";
+import {Image, Video} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/Media";
 
 let mediaManager:MediaManager;
 let mockMediaStation:MockMediaStation;

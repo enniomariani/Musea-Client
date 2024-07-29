@@ -1,4 +1,4 @@
-import {MediaManager} from "../../../../../public_html/js/renderer/mediaClientFramework/dataManagers/MediaManager";
+import {MediaManager} from "../../../../../src/js/renderer/mediaClientFramework/dataManagers/MediaManager";
 
 export class MockMediaManager extends MediaManager{
 

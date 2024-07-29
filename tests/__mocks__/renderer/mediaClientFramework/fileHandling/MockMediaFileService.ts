@@ -1,6 +1,6 @@
 import {
     MediaFileService
-} from "../../../../../public_html/js/renderer/mediaClientFramework/fileHandling/MediaFileService";
+} from "../../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaFileService";
 
 const mockBackendFileService: jest.Mocked<IBackendFileService> = {
     saveFile: jest.fn(),

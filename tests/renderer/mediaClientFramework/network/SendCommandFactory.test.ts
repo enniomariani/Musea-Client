@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {SendCommandFactory} from "../../../../public_html/js/renderer/mediaClientFramework/network/SendCommandFactory";
+import {SendCommandFactory} from "../../../../src/js/renderer/mediaClientFramework/network/SendCommandFactory";
 import {ConvertNetworkData} from "renderer/mediaClientFramework/network/ConvertNetworkData";
 
 let sendCommandFactory:SendCommandFactory;

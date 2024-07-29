@@ -3,18 +3,18 @@ import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramewo
 import {
     IOnSyncStep,
     MediaStationNetworkService
-} from "../../../../public_html/js/renderer/mediaClientFramework/services/MediaStationNetworkService";
+} from "../../../../src/js/renderer/mediaClientFramework/services/MediaStationNetworkService";
 import {
     MockMediaStationRepository
 } from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
 import {
     ICachedMedia
-} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaStationRepository";
-import {MediaApp} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/MediaApp";
+} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/MediaStationRepository";
+import {MediaApp} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/MediaApp";
 import {MockFolder} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockFolder";
 import {MockContent} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockContent";
-import {Image} from "../../../../public_html/js/renderer/mediaClientFramework/dataStructure/Media";
+import {Image} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/Media";
 
 let mediaStationNetworkService: MediaStationNetworkService;
 let mockMediaStationRepo: MockMediaStationRepository;
