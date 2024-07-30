@@ -1,0 +1,130 @@
+import {Image, IMedia, Video} from "./Media";
+
+
+export class Content {
+
+    private _id: number;
+    private _name: string;
+    private _media: Map<number, IMedia> = new Map();
+    private _tagIds: number[] = [];
+
+    constructor(id: number) {
+        this._id = id;
+    }
+
+    importFromJSON(json: any): void {
+        let media: IMedia;
+
+        if (this._jsonPropertyExists(json, "id"))
+            this._id = json.id;
+
+        if (this._jsonPropertyExists(json, "name"))
+            this._name = json.name;
+
+        if (this._jsonPropertyExists(json, "media")) {
+            for (let i: number = 0; i < json.media.length; i++) {
+                console.log("MEDIA found: ", json.media[i]);
+
+                if (this._jsonPropertyExists(json.media[i], "type")) {
+                    switch (json.media[i].type) {
+                        case    "video":
+                            let video:Video = new Video();
+                            if (this._jsonPropertyExists(json.media[i], "duration"))
+                                video.duration = json.media[i].duration;
+                            media = video;
+                            break;
+                        case    "image":
+                            media = new Image();
+                            break;
+                        default:
+                            media = null;
+                    }
+                }
+
+                if (this._jsonPropertyExists(json.media[i], "idOnMediaApp") && media)
+                    media.idOnMediaApp = json.media[i].idOnMediaApp;
+
+                if (this._jsonPropertyExists(json.media[i], "mediaAppId") && media)
+                    media.mediaAppId = json.media[i].mediaAppId;
+
+                if (media)
+                    this._media.set(media.mediaAppId, media);
+            }
+        }
+    }
+
+    private _jsonPropertyExists(json: any, propName: string): boolean {
+        if(json.hasOwnProperty(propName))
+            return true;
+        else
+            throw new Error("Content: missing property in JSON: " + propName);
+    }
+
+    exportToJSON(): any {
+        let allMedia: any[] = [];
+        let image: Image;
+        let video: Video;
+
+        this._media.forEach((media: IMedia) => {
+            if (media instanceof Image) {
+                image = media;
+                allMedia.push({mediaAppId: image.mediaAppId, type: "image", idOnMediaApp: image.idOnMediaApp});
+            } else if (media instanceof Video) {
+                video = media;
+                allMedia.push({
+                    mediaAppId: video.mediaAppId,
+                    type: "video",
+                    idOnMediaApp: video.idOnMediaApp,
+                    duration: video.duration
+                });
+            }
+        });
+
+        return {
+            id: this._id,
+            name: this._name,
+            tagIds: this._tagIds,
+            media: allMedia
+        };
+    }
+
+    getMaxDuration(): number {
+        let highestDuration: number = 0;
+        let video: Video;
+
+        this._media.forEach((media:IMedia)=>{
+            if (media instanceof Video) {
+                video = media as Video;
+
+                if (video.duration > highestDuration)
+                    highestDuration = video.duration;
+            }
+        });
+
+        return highestDuration;
+    }
+
+    get id(): number {
+        return this._id;
+    }
+
+    get name(): string {
+        return this._name;
+    }
+
+    set name(value: string) {
+        this._name = value;
+    }
+
+    get media(): Map<number, IMedia> {
+        return this._media;
+    }
+
+    get tagIds(): number[] {
+        return this._tagIds;
+    }
+
+    set tagIds(value: number[]) {
+        this._tagIds = value;
+    }
+}

@@ -61,7 +61,7 @@ describe("createMediaApp() ", ()=>{
         });
 
         //method to test
-        mediaAppService.createMediaApp(0, ip, name);
+        mediaAppService.createMediaApp(0, name, ip);
 
         //tests
         expect(mediaStation.addMediaApp).toHaveBeenCalledTimes(1);
@@ -81,7 +81,7 @@ describe("createMediaApp() ", ()=>{
         });
 
         //method to test
-        mediaAppService.createMediaApp(0, ip, name);
+        mediaAppService.createMediaApp(0, name, ip);
 
         //tests
         expect(mediaStation.addMediaApp).toHaveBeenCalledTimes(1);
