@@ -17,7 +17,9 @@ export class NetworkService {
     /**
      * opens a connection to the passed ip
      *
-     * rejects the promise with an error message if the connection can not be opened
+     * resolves the promise with false if the connection could not be opened
+     *
+     * should not throw an error
      *
      * @param {string} ip
      * @returns {Promise<boolean>}
@@ -36,8 +38,8 @@ export class NetworkService {
                         console.log("CONNECTION ESTABLISHED TO: ", ip);
                         resolve(true);
                     },
-                    (error) => {
-                        reject(error);
+                    () => {
+                        resolve(false);
                     },
                     this._onConnectionClosed.bind(this),
                     this._onDataReceived.bind(this)

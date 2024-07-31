@@ -23,6 +23,10 @@ export  class NetworkConnectionHandler{
     /**
      * Creates and stores a new connection.
      *
+     * If the connection already exists it prints an error, but does not throw an error
+     *
+     * If the connection could not be openend, it calls onError()
+     *
      * @param {string} ip - Unique identifier for the connection.
      * @param {Function} onOpen - Callback for when the connection opens.
      * @param {Function} onError - Callback for when an error occurs.

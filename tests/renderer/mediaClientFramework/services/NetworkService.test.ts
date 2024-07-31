@@ -81,10 +81,10 @@ describe("openConnection() ",  ()=>{
         //setup
         let answer:boolean;
         mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip, onOpen, onError)=>{
-            onError("connection-ERROR");
+            onError();
         });
         //method to test
-        answer = await networkService.openConnection(ip1).catch(error => false);
+        answer = await networkService.openConnection(ip1);
 
         //tests
         expect(answer).toBe(false);

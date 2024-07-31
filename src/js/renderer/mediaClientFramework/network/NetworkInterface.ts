@@ -32,6 +32,8 @@ export class NetworkInterface extends EventTarget{
      *
      * the callback-functions are triggered before the events
      *
+     * calls onError if the connection could not be opened
+     *
      * @param {string} url
      * @param {Function} onOpen
      * @param {Function} onError
@@ -52,7 +54,15 @@ export class NetworkInterface extends EventTarget{
         this._onClosed = onClosed;
         this._onDataReceivedCallBack = onDataReceived;
 
-        this._connection = new WebSocket(url);
+        try{
+            this._connection = new WebSocket(url);
+        }catch(error){
+            console.error("NetworkInterface Error: ", error);
+            if(onError)
+                onError();
+            return;
+        }
+
         this._connection.binaryType = "arraybuffer";
 
         this._connection.addEventListener("error", this._onConnectionErrorFunc);
