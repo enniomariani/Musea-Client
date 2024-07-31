@@ -4,6 +4,7 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp} from "../dataStructure/MediaApp";
 import {Content} from "../dataStructure/Content";
 import {IMedia} from "../dataStructure/Media";
+import {expect} from "@jest/globals";
 
 export interface IOnSyncStep{
     (message:string):void
@@ -138,14 +139,21 @@ export class MediaStationNetworkService{
             // send content-file (last step in synchronisation)
             ip = mediaStation.getControllerIp();
 
+            onSyncStep("Sende contents.json an Controller-App: " + ip);
+
             connectionIsOpen = await this._networkService.openConnection(ip);
             console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?",connectionIsOpen);
 
-            json = mediaStation.exportToJSON();
+            if(connectionIsOpen){
+                onSyncStep("Verbindung mit Controller-App hergestellt. Sende Daten...");
+                json = mediaStation.exportToJSON();
 
-            console.log("SEND CONTENTS-FILE: ", json);
+                console.log("SEND CONTENTS-FILE: ", json);
 
-            this._networkService.sendContentFileTo(ip, json);
+                this._networkService.sendContentFileTo(ip, json);
+            }else
+                onSyncStep("Controller-App nicht erreichbar!");
+
             resolve();
         });
     }

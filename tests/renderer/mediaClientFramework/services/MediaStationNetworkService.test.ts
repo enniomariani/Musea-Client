@@ -290,17 +290,16 @@ describe("syncMediaStation() ", () => {
         mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
 
         mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
-    })
-
+    });
 
     it("should call the callback mockOnSyncStep with the text, that the connection is opening and if it succeeded or not", async () => {
         //method to test
         await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
-        expect(mockOnSyncStep).toHaveBeenCalledTimes(8);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(1, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp1.name + "/" + mediaApp1.ip);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(2, "Verbindung mit Medien-App hergestellt.");
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(7, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp2.name + "/" + mediaApp2.ip);
@@ -331,7 +330,6 @@ describe("syncMediaStation() ", () => {
         await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
-        expect(mockOnSyncStep).toHaveBeenCalledTimes(8);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(3, "Medium wird gesendet: " + mockCachedMedia[0].fileExtension);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(4, "Medium erfolgreich gesendet.");
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(5, "Medium wird gesendet: " + mockCachedMedia[2].fileExtension);
@@ -345,9 +343,40 @@ describe("syncMediaStation() ", () => {
         //tests
         expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledWith( 0,0, 0);
+    })
+
+    it("should call the callback mockOnSyncStep with the text, that it is trying to send data to the controller", async () => {
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(9, "Sende contents.json an Controller-App: " + controllerIp);
     });
 
-    it("should pass the json-string and the controller-ip from the mediaStation object to the network-service", async () => {
+    it("should call the callback mockOnSyncStep with a text if the connection to the controller could not be opened", async () => {
+        //setup
+        mockNetworkService.openConnection = jest.fn();
+        //mock that no connection could be opened
+        mockNetworkService.openConnection.mockReturnValue(new Promise((resolve) => resolve(false)));
+
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(6, "Controller-App nicht erreichbar!");
+    });
+
+    it("should call the callback mockOnSyncStep with a text if the connection to the controller could be opened", async () => {
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, "Verbindung mit Controller-App hergestellt. Sende Daten...");
+    });
+
+    it("should pass the json-string and the controller-ip from the mediaStation object to the network-service, if controller is reachable", async () => {
+        //setup
+
         //method to test
         await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 

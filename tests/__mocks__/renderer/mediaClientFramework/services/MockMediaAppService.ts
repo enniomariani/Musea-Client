@@ -8,6 +8,7 @@ const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepo
 
 export class MockMediaAppService extends MediaAppService{
     createMediaApp: jest.Mock;
+    getAllMediaApps: jest.Mock;
     getName: jest.Mock;
     changeName: jest.Mock;
     getIp: jest.Mock;
@@ -20,6 +21,7 @@ export class MockMediaAppService extends MediaAppService{
     constructor() {
         super(mockMediaStationRepo, mockNetworkService);
         this.createMediaApp = jest.fn();
+        this.getAllMediaApps = jest.fn();
         this.getName = jest.fn();
         this.changeName = jest.fn();
         this.getIp = jest.fn();
