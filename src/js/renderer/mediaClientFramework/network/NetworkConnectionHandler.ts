@@ -30,16 +30,20 @@ export  class NetworkConnectionHandler{
      * @param {IOnReceivedConnectionData} onDataReceived - Callback for when data is received.
      * @returns {boolean} - Returns true if the connection is successfully created, otherwise false.
      */
-    createConnection(ip: string, onOpen: Function, onError: Function, onClosed: IOnClosedConnection = null, onDataReceived: IOnReceivedConnectionData = null): boolean {
+    createConnection(ip: string, onOpen: Function, onError: Function, onClosed: IOnClosedConnection = null, onDataReceived: IOnReceivedConnectionData = null): void {
         const url:string = "ws://" + ip + ":5000";
 
         if (this._connections.has(ip)) {
             console.error(`Connection to ip ${ip} already exists.`);
-            return false;
+            return;
         }
 
         const networkInterface:NetworkInterface = this._networkInterfaceFactory;
-        const success:boolean = networkInterface.connectToServer(url, onOpen, onError,
+        networkInterface.connectToServer(url, ()=>{
+            console.log("create connection!")
+                this._connections.set(ip, networkInterface);
+                onOpen();
+            }, onError,
             ()=>{
                 console.log("Connection-Handler: CLOSE: ", ip);
                 if(onClosed)
@@ -49,11 +53,6 @@ export  class NetworkConnectionHandler{
                 if(onDataReceived)
                     onDataReceived(ip, data);
             });
-
-        if (success)
-            this._connections.set(ip, networkInterface);
-
-        return success;
     }
 
     hasConnection(ip:string):boolean{

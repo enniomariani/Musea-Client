@@ -51,6 +51,8 @@ export class MediaStationRepository{
 
         this._mediaStationIdCounter++;
 
+        this._cachedMedia.set(newMediaStation.id, []);
+
         this._mediaStationMetaData.save(this.getNameControllerMap());
         return newMediaStation.id;
     }

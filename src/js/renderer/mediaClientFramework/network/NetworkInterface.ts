@@ -37,14 +37,14 @@ export class NetworkInterface extends EventTarget{
      * @param {Function} onError
      * @param {Function} onClosed
      * @param {IOnReceivedData} onDataReceived
-     * @returns {boolean}   returns true if the connection is not already open yet. The connection is not open yet, for that listen to the "open" event
+     * @returns {}
      */
-    connectToServer(url:string, onOpen:Function = null, onError:Function = null, onClosed:Function = null, onDataReceived:IOnReceivedData = null):boolean {
+    connectToServer(url:string, onOpen:Function = null, onError:Function = null, onClosed:Function = null, onDataReceived:IOnReceivedData = null):void {
 
         //return false if the Websocket exists and is connecting (state 0), opening (state 1) or closing (state 2)
         if (this._connection !== null && this._connection.readyState !== 3) {
             console.log("WebSocketConnection: connection already exists and is not closed!");
-            return false;
+            return;
         }
 
         this._onOpen = onOpen;
@@ -59,8 +59,6 @@ export class NetworkInterface extends EventTarget{
         this._connection.addEventListener("open", this._onConnectionOpenFunc);
         this._connection.addEventListener("close", this._onConnectionClosedFunc);
         this._connection.addEventListener("message", this._onDataReceivedFunc);
-
-        return true;
     }
 
     private _onConnectionOpen():void {

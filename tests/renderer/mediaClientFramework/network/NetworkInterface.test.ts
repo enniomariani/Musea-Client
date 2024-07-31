@@ -19,16 +19,14 @@ describe("connectToServer(): ", () => {
 
         let eventHandler = jest.fn();
         let serverEventHandler = jest.fn();
-        let connectionInitialised:boolean;
 
         server.on("connection", serverEventHandler);
 
         networkInterface.addEventListener(NetworkInterface.CONNECTED, eventHandler);
-        connectionInitialised = networkInterface.connectToServer(serverPath);
+        networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
         expect(networkInterface.connected).toBe(true);
-        expect(connectionInitialised).toBe(true);
         expect(eventHandler).toBeCalledTimes(1);
         expect(serverEventHandler).toBeCalledTimes(1);
 
@@ -44,10 +42,9 @@ describe("connectToServer(): ", () => {
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
         networkInterface.addEventListener(NetworkInterface.CONNECTED, eventHandler);
-        connectionInitialised = networkInterface.connectToServer(serverPath);
+        networkInterface.connectToServer(serverPath);
 
         expect(networkInterface.connected).toBe(true);
-        expect(connectionInitialised).toBe(false);
         expect(eventHandler).toBeCalledTimes(0);
 
         networkInterface.removeEventListener(NetworkInterface.CONNECTED, eventHandler);

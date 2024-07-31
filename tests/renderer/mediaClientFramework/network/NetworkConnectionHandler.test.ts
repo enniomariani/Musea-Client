@@ -36,53 +36,45 @@ describe("createConnection() ", () => {
 
         //tests
         expect(mockNetworkInterface.connectToServer).toHaveBeenCalledTimes(1);
-        expect(mockNetworkInterface.connectToServer).toHaveBeenCalledWith(firstURL, onOpen, onError, expect.anything(), expect.anything());
+        expect(mockNetworkInterface.connectToServer).toHaveBeenCalledWith(firstURL, expect.anything(), onError, expect.anything(), expect.anything());
     });
 
-    it("should return true if the created networkInterface returns true", () => {
+    it("should call onOpen if the connection was created succesfully", () => {
         //setup
-        let success: boolean = false;
-        mockNetworkInterface.connectToServer.mockReturnValueOnce(true);
+        mockNetworkInterface.connectToServer = jest.fn();
+        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen)=>{
+            onOpen();
+        });
 
         //method to test
-        success = connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
+        connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //tests
-        expect(success).toBe(true);
+        expect(onOpen).toHaveBeenCalledTimes(1);
     });
 
-    it("should return false if the created networkInterface returns false", () => {
-        //setup
-        let success: boolean = true;
-        mockNetworkInterface.connectToServer.mockReturnValueOnce(false);
+    it("should print an error if the connection already exists", () => {
 
-        //method to test
-        success = connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
-
-        //tests
-        expect(success).toBe(false);
-    });
-
-    it("should return false and print an error if the connection already exists", () => {
-        let success: boolean = true;
-        mockNetworkInterface.connectToServer.mockReturnValue(true);
+        mockNetworkInterface.connectToServer = jest.fn();
+        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen)=>{
+            onOpen();
+        });
         let logSpy = jest.spyOn(console, "error");
 
         //method to test
         connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
-        success = connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
+        connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //tests
-        expect(success).toBe(false);
         expect(logSpy).toHaveBeenCalledTimes(1);
     });
 
     it("should call the passed onClose callback with the correct ip, if the connection was closed", () => {
         let secondIP: string = "127.0.0.2";
+        mockNetworkInterface.connectToServer = jest.fn();
         mockNetworkInterface.connectToServer.mockImplementation((url, onOpen, onError, onClose) => {
             if (url !== firstURL)
                 onClose();
-            return true;
         });
 
         //method to test
@@ -117,8 +109,9 @@ describe("createConnection() ", () => {
 describe("hasConnection() ", () => {
     it("return true if a connection with the passed ip was created and not closed", () => {
         //setup
-        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen, onError, onClose) => {
-            return true;
+        mockNetworkInterface.connectToServer = jest.fn();
+        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen)=>{
+            onOpen();
         });
         connectionHandler.createConnection(firstIP, jest.fn(), jest.fn(), jest.fn(), jest.fn());
 
@@ -128,8 +121,9 @@ describe("hasConnection() ", () => {
 
     it("return false if a connection with the passed ip was created and closed afterwards", () => {
         //setup
-        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen, onError, onClose) => {
-            return true;
+        mockNetworkInterface.connectToServer = jest.fn();
+        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen)=>{
+            onOpen();
         });
         connectionHandler.createConnection(firstIP, jest.fn(), jest.fn(), jest.fn(), jest.fn());
         connectionHandler.closeConnection(firstIP);
@@ -149,7 +143,10 @@ describe("sendData() ", () => {
     it("should call networkInterface.sendDataToServer with the data if the connection exists", () => {
         //setup
         const data: Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
-        mockNetworkInterface.connectToServer.mockReturnValue(true);
+        mockNetworkInterface.connectToServer = jest.fn();
+        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen)=>{
+            onOpen();
+        });
         connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //method to test
@@ -193,7 +190,9 @@ describe("sendData() ", () => {
 describe("closeConnection() ", () => {
     it("should call networkInterface.closeConnection", () => {
         //setup
-        mockNetworkInterface.connectToServer.mockReturnValue(true);
+        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen)=>{
+            onOpen();
+        });
         connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //method to test
@@ -205,16 +204,16 @@ describe("closeConnection() ", () => {
 
     it("should remove the connection from the active ones", () => {
         //setup
-        let success: boolean;
+        let logSpy = jest.spyOn(console, "error");
         mockNetworkInterface.connectToServer.mockReturnValue(true);
         connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //method to test
         connectionHandler.closeConnection(firstIP);
-        success = connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
+        connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived);
 
         //tests
-        expect(success).toBe(true);
+        expect(logSpy).toHaveBeenCalledTimes(1);
     });
 
     it("should print an error if the connection does not exist", () => {
