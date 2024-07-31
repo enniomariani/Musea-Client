@@ -3,6 +3,11 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp} from "../dataStructure/MediaApp";
 import {NetworkService} from "./NetworkService";
 
+export interface IMediaAppData{
+    ip:string
+    name:string
+    isController:boolean
+}
 
 export class MediaAppService{
     private _mediaStationRepository:MediaStationRepository;
@@ -27,6 +32,21 @@ export class MediaAppService{
         this._mediaStationRepository.updateMediaStation(mediaStation);
 
         return mediaAppId;
+    }
+
+    getAllMediaApps(mediaStationId:number):Map<number, IMediaAppData>{
+        let map:Map<number, IMediaAppData> = new Map();
+        let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
+        let allMediaApps:Map<number, MediaApp> = mediaStation.getAllMediaApps();
+
+        if(!mediaStation)
+            throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
+
+        allMediaApps.forEach((mediaApp:MediaApp)=>{
+            map.set(mediaApp.id, {name: mediaApp.name, ip: mediaApp.ip, isController: mediaApp.role === MediaApp.ROLE_CONTROLLER});
+        });
+
+        return map;
     }
 
     getName(mediaStationId:number, mediaAppId:number):string{

@@ -1,5 +1,8 @@
 import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
-import {MediaAppService} from "../../../../src/js/renderer/mediaClientFramework/services/MediaAppService";
+import {
+    IMediaAppData,
+    MediaAppService
+} from "../../../../src/js/renderer/mediaClientFramework/services/MediaAppService";
 import {
     MockMediaStationRepository
 } from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
@@ -11,33 +14,48 @@ let mediaAppService:MediaAppService;
 let mockMediaStationRepo:MockMediaStationRepository;
 let mockNetworkService:MockNetworkService;
 
-let ip:string = "127.0.0.1";
-let name:string = "media-App X";
+let ip1:string = "127.0.0.1";
+let name1:string = "media-App X";
+let role1:string = MediaApp.ROLE_CONTROLLER;
+
+let ip2:string = "127.0.0.2";
+let name2:string = "media-App 2";
+let role2:string = MediaApp.ROLE_DEFAULT;
+
+
 let mediaAppId: number = 0;
 let mediaStation: MockMediaStation;
-let mediaApp: MediaApp;
+let mediaApp1: MediaApp;
+let mediaApp2: MediaApp;
 
 function setupMediaAppWithName(repoReturnsMediaStation:boolean, addMediaStation:boolean = true, mediaStationId:number = 0): MediaApp {
-    mediaApp = new MediaApp(mediaAppId);
+    mediaApp1 = new MediaApp(0);
+    mediaApp2 = new MediaApp(1);
+    mediaApp1 = new MediaApp(mediaAppId);
     mediaStation = new MockMediaStation(mediaStationId);
 
-    let answerMap:Map<number, MediaApp> = new Map();
-    answerMap.set(0, new MediaApp(0));
-    answerMap.set(1, new MediaApp(1));
-    mediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    mediaApp1.ip = ip1;
+    mediaApp1.name = name1;
+    mediaApp1.role = role1;
 
-    mediaApp.ip = ip;
-    mediaApp.name = name;
+    mediaApp2.ip = ip2;
+    mediaApp2.name = name2;
+    mediaApp2.role = role2;
+
+    let answerMap:Map<number, MediaApp> = new Map();
+    answerMap.set(0, mediaApp1);
+    answerMap.set(1, mediaApp2);
+    mediaStation.getAllMediaApps.mockReturnValue(answerMap);
 
     if(addMediaStation){
         mediaStation.getAllMediaApps.mockReturnValue(answerMap);
-        mediaStation.getMediaApp.mockReturnValue(mediaApp);
+        mediaStation.getMediaApp.mockReturnValue(mediaApp1);
     }
 
     mockMediaStationRepo.findMediaStation.mockImplementation((id) => {
         return repoReturnsMediaStation? mediaStation: null;
     });
-    return mediaApp;
+    return mediaApp1;
 }
 
 beforeEach(() => {
@@ -61,11 +79,11 @@ describe("createMediaApp() ", ()=>{
         });
 
         //method to test
-        mediaAppService.createMediaApp(0, name, ip);
+        mediaAppService.createMediaApp(0, name1, ip1);
 
         //tests
         expect(mediaStation.addMediaApp).toHaveBeenCalledTimes(1);
-        expect(mediaStation.addMediaApp).toHaveBeenCalledWith(mediaAppId,name, ip, MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation.addMediaApp).toHaveBeenCalledWith(mediaAppId,name1, ip1, MediaApp.ROLE_CONTROLLER);
 
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mediaStation);
@@ -81,11 +99,11 @@ describe("createMediaApp() ", ()=>{
         });
 
         //method to test
-        mediaAppService.createMediaApp(0, name, ip);
+        mediaAppService.createMediaApp(0, name1, ip1);
 
         //tests
         expect(mediaStation.addMediaApp).toHaveBeenCalledTimes(1);
-        expect(mediaStation.addMediaApp).toHaveBeenCalledWith(mediaAppId,name, ip, MediaApp.ROLE_DEFAULT);
+        expect(mediaStation.addMediaApp).toHaveBeenCalledWith(mediaAppId,name1, ip1, MediaApp.ROLE_DEFAULT);
     });
 
     it("should return the ID of the newly created mediaApp", ()=>{
@@ -99,7 +117,7 @@ describe("createMediaApp() ", ()=>{
         });
 
         //method to test
-        result = mediaAppService.createMediaApp(0, ip, name);
+        result = mediaAppService.createMediaApp(0, ip1, name1);
 
         //tests
         expect(result).toBe(mediaAppId);
@@ -114,7 +132,44 @@ describe("createMediaApp() ", ()=>{
 
         //method to test
         try{
-            mediaAppService.createMediaApp(0, ip, name);
+            mediaAppService.createMediaApp(0, ip1, name1);
+        }catch(error){
+            result = true;
+        }
+
+        //tests
+        expect(result).toBe(true);
+    });
+});
+
+describe("getAllMediaApps() ", ()=> {
+    it("should call mediaStation.getAllMediaApps and convert ip, name and role to a map", () => {
+        //setup
+        let returnValue:Map<number, IMediaAppData>;
+        setupMediaAppWithName(true);
+
+        //method to test
+        returnValue = mediaAppService.getAllMediaApps(0);
+
+        //tests
+        expect(returnValue.size).toBe(2);
+        expect(returnValue.get(0).name).toBe(name1);
+        expect(returnValue.get(0).ip).toBe(ip1);
+        expect(returnValue.get(0).isController).toBe(true);
+
+        expect(returnValue.get(1).name).toBe(name2);
+        expect(returnValue.get(1).ip).toBe(ip2);
+        expect(returnValue.get(1).isController).toBe(false);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", ()=>{
+        //setup
+        let result:boolean = false;
+        setupMediaAppWithName(false);
+
+        //method to test
+        try{
+            mediaAppService.getAllMediaApps(0);
         }catch(error){
             result = true;
         }
@@ -134,7 +189,7 @@ describe("getName() ", ()=> {
         returnValue = mediaAppService.getName(0, mediaAppId);
 
         //tests
-        expect(returnValue).toBe(name);
+        expect(returnValue).toBe(name1);
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
@@ -179,10 +234,10 @@ describe("changeName() ", ()=> {
         //method to test
         mediaAppService.changeName(0, mediaAppId, newName);
 
-        console.log("media-app: ", mediaApp)
+        console.log("media-app: ", mediaApp1)
 
         //tests
-        expect(mediaApp.name).toBe(newName);
+        expect(mediaApp1.name).toBe(newName);
     });
 
     it("should call mediaStationRepository.updateMediaStation", () => {
@@ -241,7 +296,7 @@ describe("getIp() ", ()=> {
         returnValue = mediaAppService.getIp(0, mediaAppId);
 
         //tests
-        expect(returnValue).toBe(ip);
+        expect(returnValue).toBe(ip1);
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
@@ -286,10 +341,10 @@ describe("changeIp() ", ()=> {
         //method to test
         mediaAppService.changeIp(0, mediaAppId, newIp);
 
-        console.log("media-app: ", mediaApp)
+        console.log("media-app: ", mediaApp1)
 
         //tests
-        expect(mediaApp.ip).toBe(newIp);
+        expect(mediaApp1.ip).toBe(newIp);
     });
 
     it("should call mediaStationRepository.updateAndSaveMediaStation if media-App ID is 0", () => {
@@ -363,10 +418,10 @@ describe("connectAndRegisterToMediaApp() ", ()=> {
 
         //tests
         expect(mockNetworkService.openConnection).toHaveBeenCalledTimes(1);
-        expect(mockNetworkService.openConnection).toHaveBeenCalledWith(ip);
+        expect(mockNetworkService.openConnection).toHaveBeenCalledWith(ip1);
 
         expect(mockNetworkService.sendRegistration).toHaveBeenCalledTimes(1);
-        expect(mockNetworkService.sendRegistration).toHaveBeenCalledWith(ip);
+        expect(mockNetworkService.sendRegistration).toHaveBeenCalledWith(ip1);
     });
 
     it("should return true if the connection could be established and the registration was accepted", async () => {
@@ -456,7 +511,7 @@ describe("unregisterAndCloseMediaApp() ", ()=> {
 
         //tests
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
-        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(ip);
+        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(ip1);
     });
 
     it("should throw an error if the mediaStationId could not be found", async ()=>{
