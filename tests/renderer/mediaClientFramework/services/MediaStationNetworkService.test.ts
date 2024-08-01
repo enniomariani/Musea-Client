@@ -115,6 +115,15 @@ describe("downloadOnlyMediaAppDataFromMediaStation() ", () => {
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIp);
     });
 
+    it("should call unregisterAndCloseConnection() at the end", async () => {
+        //method to test
+        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
+
+        //tests
+        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
+        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(controllerIp);
+    });
+
     it("should return an error if there is no controller-ip specified", async () => {
         //setup
         mockMediaStation.getControllerIp = jest.fn();
@@ -222,6 +231,16 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         //tests
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP);
+    });
+
+    it("should NOT call unregisterAndCloseConnection() at the end", async () => {
+        //setup
+
+        //method to test
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+
+        //tests
+        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(0);
     });
 
     it("should throw an error if the mediaStationId could not be found", () => {

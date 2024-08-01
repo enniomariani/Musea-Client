@@ -91,7 +91,10 @@ export class MediaStationNetworkService{
             }
             else{
                 functionToCallAtMediStation(JSON.parse(contentsJSON));
-                await this._networkService.unregisterAndCloseConnection(controllerIP);
+
+                if(closeConnection)
+                    await this._networkService.unregisterAndCloseConnection(controllerIP);
+
                 resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_SUCCESS + mediaStation.id);
             }
         });
