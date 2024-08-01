@@ -69,6 +69,14 @@ export class MediaService {
         this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, payload);
     }
 
+    /**
+     * returns one of the types (static vars) in MediaManager or null if there was no media set
+     *
+     * @param {number} mediaStationId
+     * @param {number} contentId
+     * @param {number} mediaAppId
+     * @returns {string}
+     */
     getMediaType(mediaStationId:number, contentId:number, mediaAppId:number): string{
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
