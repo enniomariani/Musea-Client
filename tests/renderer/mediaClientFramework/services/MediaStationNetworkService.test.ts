@@ -42,6 +42,8 @@ describe("downloadOnlyMediaAppDataFromMediaStation() ", () => {
 
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
+        mockNetworkService.sendRegistration.mockReturnValueOnce(true);
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSON));
     });
 
@@ -62,6 +64,31 @@ describe("downloadOnlyMediaAppDataFromMediaStation() ", () => {
         //tests
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(controllerIp);
+    });
+
+
+    it("should return an error if the connection to the controller could not be opened", async () => {
+        //setup
+        mockNetworkService.openConnection = jest.fn();
+        mockNetworkService.openConnection.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
+
+        //tests
+        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
+    });
+
+    it("should return an error if the app could not register itself in the controller", async () => {
+        //setup
+        mockNetworkService.sendRegistration = jest.fn();
+        mockNetworkService.sendRegistration.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
+
+        //tests
+        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
     });
 
     it("should return an error if the controller-app is not reachable within the timeout set in NetworkService", async () => {
@@ -111,17 +138,23 @@ describe("downloadOnlyMediaAppDataFromMediaStation() ", () => {
 });
 
 describe("downloadContentsOfMediaStation() ", () => {
-    let mockMediaStation: MockMediaStation = new MockMediaStation(0);
+    let mockMediaStation: MockMediaStation ;
+    let answer: string;
+    const controllerIp: string = "127.0.0.1";
+    const correctJSON: any = {name: "mediaStationX"};
 
-    it("should call mediaStation.importFromJSON with the JSON passed from networkService.getContentFileFrom", async () => {
-        //setup
-        let answer: string;
-        const controllerIp: string = "127.0.0.1";
-        const correctJSON: any = {name: "mediaStationX"};
+    beforeEach(() => {
+        answer = null;
+        mockMediaStation = new MockMediaStation(0);
+
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
+        mockNetworkService.sendRegistration.mockReturnValueOnce(true);
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSON));
+    });
 
+    it("should call mediaStation.importFromJSON with the JSON passed from networkService.getContentFileFrom", async () => {
         //method to test
         answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
 
@@ -131,12 +164,33 @@ describe("downloadContentsOfMediaStation() ", () => {
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_SUCCESS + "0");
     });
 
-    it("should return an error if the controller-app is not reachable within the timeout set in NetworkService", async () => {
+    it("should return an error if the connection to the controller could not be opened", async () => {
         //setup
-        let answer: string;
-        const controllerIp: string = "127.0.0.1";
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
+        mockNetworkService.openConnection = jest.fn();
+        mockNetworkService.openConnection.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+
+        //tests
+        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
+    });
+
+    it("should return an error if the app could not register itself in the controller", async () => {
+        //setup
+        mockNetworkService.sendRegistration = jest.fn();
+        mockNetworkService.sendRegistration.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+
+        //tests
+        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
+    });
+
+    it("should return an error if the content-file was not received within the timeout set in NetworkService", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(null);
 
         //method to test
@@ -148,10 +202,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
     it("should return an error if the controller-app returned an empty JSON (which means there wasn't saved any before)", async () => {
         //setup
-        let answer: string;
-        const controllerIp: string = "127.0.0.1";
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
+        mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce("{}");
 
         //method to test
@@ -163,8 +214,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
     it("should return an error if there is no controller-ip specified", async () => {
         //setup
-        let answer: string;
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStation.getControllerIp = jest.fn();
         mockMediaStation.getControllerIp.mockReturnValueOnce(null);
 
         //method to test
@@ -176,6 +226,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
     it("should throw an error if the mediaStationId could not be found", () => {
         //setup
+        mockMediaStationRepo.findMediaStation = jest.fn();
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests

@@ -125,20 +125,12 @@ describe("createMediaApp() ", ()=>{
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
         //setup
-        let result:boolean = false;
         mockMediaStationRepo.findMediaStation.mockImplementationOnce((id)=>{
             return null;
         });
 
-        //method to test
-        try{
-            mediaAppService.createMediaApp(0, ip1, name1);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(()=>mediaAppService.createMediaApp(0, ip1, name1)).toThrow(Error("Mediastation with this ID does not exist: 0"));
     });
 });
 
@@ -164,18 +156,10 @@ describe("getAllMediaApps() ", ()=> {
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(false);
 
-        //method to test
-        try{
-            mediaAppService.getAllMediaApps(0);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(()=>mediaAppService.getAllMediaApps(0)).toThrow(Error("Mediastation with this ID does not exist: 0"));
     });
 });
 
@@ -194,34 +178,18 @@ describe("getName() ", ()=> {
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(false);
 
-        //method to test
-        try{
-            mediaAppService.getName(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(()=>mediaAppService.getName(0, mediaAppId)).toThrow(Error("Mediastation with this ID does not exist: 0"));
     });
 
     it("should throw an error if the MediaApp ID could not be found", ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(true, false);
 
-        //method to test
-        try{
-            mediaAppService.getName(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(()=>mediaAppService.getName(0, mediaAppId)).toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
 
@@ -254,34 +222,19 @@ describe("changeName() ", ()=> {
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(false);
 
-        //method to test
-        try{
-            mediaAppService.changeName(0, mediaAppId, newName);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(()=>mediaAppService.changeName(0, mediaAppId, newName)).toThrow(Error("Mediastation with this ID does not exist: 0"));
+
     });
 
     it("should throw an error if the MediaApp ID could not be found", ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(true, false);
 
-        //method to test
-        try{
-            mediaAppService.changeName(0, mediaAppId, newName);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(()=>mediaAppService.changeName(0, mediaAppId, newName)).toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
 
@@ -301,34 +254,18 @@ describe("getIp() ", ()=> {
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(false);
 
-        //method to test
-        try{
-            mediaAppService.getIp(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(()=>mediaAppService.getIp(0, mediaAppId)).toThrow(Error("Mediastation with this ID does not exist: 0"));
     });
 
     it("should throw an error if the MediaApp ID could not be found", ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(true, false);
 
-        //method to test
-        try{
-            mediaAppService.getIp(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(()=>mediaAppService.getIp(0, mediaAppId)).toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
 
@@ -374,34 +311,18 @@ describe("changeIp() ", ()=> {
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(false);
 
-        //method to test
-        try{
-            mediaAppService.changeIp(0, mediaAppId, newIp);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(()=>mediaAppService.changeIp(0, mediaAppId, newIp)).toThrow(Error("Mediastation with this ID does not exist: 0"));
     });
 
     it("should throw an error if the MediaApp ID could not be found", ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(true, false);
 
-        //method to test
-        try{
-            mediaAppService.changeIp(0, mediaAppId, newIp);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(()=>mediaAppService.changeIp(0, mediaAppId, newIp)).toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
 
@@ -468,34 +389,18 @@ describe("connectAndRegisterToMediaApp() ", ()=> {
 
     it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(false);
 
-        //method to test
-        try{
-            await mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
     });
 
     it("should throw an error if the MediaApp ID could not be found", async ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(true, false);
 
-        //method to test
-        try{
-            await mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
 
@@ -516,34 +421,19 @@ describe("unregisterAndCloseMediaApp() ", ()=> {
 
     it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(false);
 
-        //method to test
-        try{
-            await mediaAppService.unregisterAndCloseMediaApp(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(mediaAppService.unregisterAndCloseMediaApp(0, mediaAppId)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
+
     });
 
     it("should throw an error if the MediaApp ID could not be found", async ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(true, false);
 
-        //method to test
-        try{
-            await mediaAppService.unregisterAndCloseMediaApp(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(mediaAppService.unregisterAndCloseMediaApp(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
 
@@ -579,34 +469,18 @@ describe("isOnline() ", ()=> {
 
     it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(false);
 
-        //method to test
-        try{
-            await mediaAppService.isOnline(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(mediaAppService.isOnline(0, mediaAppId)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
     });
 
     it("should throw an error if the MediaApp ID could not be found", async ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(true, false);
 
-        //method to test
-        try{
-            await mediaAppService.isOnline(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(mediaAppService.isOnline(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
 
@@ -642,33 +516,17 @@ describe("pcRespondsToPing() ", ()=> {
 
     it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(false);
 
-        //method to test
-        try{
-            await mediaAppService.pcRespondsToPing(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(mediaAppService.pcRespondsToPing(0, mediaAppId)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
     });
 
     it("should throw an error if the MediaApp ID could not be found", async ()=>{
         //setup
-        let result:boolean = false;
         setupMediaAppWithName(true, false);
 
-        //method to test
-        try{
-            await mediaAppService.pcRespondsToPing(0, mediaAppId);
-        }catch(error){
-            result = true;
-        }
-
         //tests
-        expect(result).toBe(true);
+        expect(mediaAppService.pcRespondsToPing(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });

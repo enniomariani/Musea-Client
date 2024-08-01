@@ -68,6 +68,20 @@ export class MediaStationNetworkService{
                 return;
             }
 
+            let connection:boolean = await this._networkService.openConnection(controllerIP);
+
+            if(!connection){
+                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
+                return;
+            }
+
+            let registration:boolean = await this._networkService.sendRegistration(controllerIP);
+
+            if(!registration){
+                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
+                return;
+            }
+
             contentsJSON = await this._networkService.getContentFileFrom(controllerIP);
 
             if(contentsJSON === null){

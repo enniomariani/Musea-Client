@@ -37,10 +37,11 @@ export class MediaAppService{
     getAllMediaApps(mediaStationId:number):Map<number, IMediaAppData>{
         let map:Map<number, IMediaAppData> = new Map();
         let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
-        let allMediaApps:Map<number, MediaApp> = mediaStation.getAllMediaApps();
 
         if(!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
+
+        let allMediaApps:Map<number, MediaApp> = mediaStation.getAllMediaApps();
 
         allMediaApps.forEach((mediaApp:MediaApp)=>{
             map.set(mediaApp.id, {name: mediaApp.name, ip: mediaApp.ip, isController: mediaApp.role === MediaApp.ROLE_CONTROLLER});
@@ -115,10 +116,15 @@ export class MediaAppService{
         let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
         let mediaApp:MediaApp;
 
+        console.log("GET Media-station: ", mediaStation)
+
         if(!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
 
         mediaApp = mediaStation.getMediaApp(mediaAppId);
+
+        if(!mediaApp)
+            throw new Error("Media-App with this ID does not exist: " + mediaAppId);
 
         return mediaApp;
     }
