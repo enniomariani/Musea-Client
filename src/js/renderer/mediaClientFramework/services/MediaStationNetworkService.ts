@@ -38,7 +38,7 @@ export class MediaStationNetworkService{
      */
     async downloadContentsOfMediaStation(id:number):Promise<string>{
         let mediaStation: MediaStation = this._findMediaStation(id);
-        return this._downloadContentsFromMediaStationAndSendToMediaStation(mediaStation, mediaStation.importFromJSON);
+        return this._downloadContentsFromMediaStationAndSendToMediaStation(mediaStation, mediaStation.importFromJSON.bind(mediaStation));
     }
 
     /**
@@ -54,7 +54,7 @@ export class MediaStationNetworkService{
      */
     async downloadOnlyMediaAppDataFromMediaStation(id:number):Promise<string>{
         let mediaStation: MediaStation = this._findMediaStation(id);
-        return this._downloadContentsFromMediaStationAndSendToMediaStation(mediaStation, mediaStation.importMediaAppsFromJSON, true);
+        return this._downloadContentsFromMediaStationAndSendToMediaStation(mediaStation, mediaStation.importMediaAppsFromJSON.bind(mediaStation), true);
     }
 
     private _downloadContentsFromMediaStationAndSendToMediaStation(mediaStation:MediaStation, functionToCallAtMediStation:Function, closeConnection:boolean = false):Promise<string>{
