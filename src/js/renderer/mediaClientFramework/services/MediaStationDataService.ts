@@ -19,6 +19,7 @@ export class MediaStationDataService{
     }
 
     deleteMediaStation(id:number):void{
+        this._findMediaStation(id);
         this._mediaStationRepository.deleteMediaStation(id);
     }
 
@@ -30,8 +31,16 @@ export class MediaStationDataService{
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
+    getControllerIp(id:number):string|null{
+        let mediaStation:MediaStation = this._findMediaStation(id);
+
+        return mediaStation.getControllerIp();
+    }
+
     getName(id:number):string{
-        return this._mediaStationRepository.findMediaStation(id).name;
+        let mediaStation:MediaStation = this._findMediaStation(id);
+
+        return mediaStation.name;
     }
 
     private _findMediaStation(id: number): MediaStation {
