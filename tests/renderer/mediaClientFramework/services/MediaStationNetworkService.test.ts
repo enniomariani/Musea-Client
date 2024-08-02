@@ -395,6 +395,17 @@ describe("syncMediaStation() ", () => {
         expect(image2.idOnMediaApp).toBe(-1);
     });
 
+    it("it should NOT throw if mediaStationRepo.getAllCachedMedia() returns an empty Map", async () => {
+        //setup
+        mockMediaStationRepo.getAllCachedMedia = jest.fn();
+        mockMediaStationRepo.getAllCachedMedia.mockImplementation(() => {
+            let map: Map<number, ICachedMedia[]> = new Map();
+            return map;
+        });
+        //test
+        await expect(mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep)).resolves.not.toThrow();
+    });
+
     it("should call the callback mockOnSyncStep with the text, that it is trying to send a media and if it succeeded or not", async () => {
         //method to test
         await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);

@@ -5,21 +5,21 @@ import {MediaApp} from "../dataStructure/MediaApp";
 import {Content} from "../dataStructure/Content";
 import {IMedia} from "../dataStructure/Media";
 
-export interface IOnSyncStep{
-    (message:string):void
+export interface IOnSyncStep {
+    (message: string): void
 }
 
-export class MediaStationNetworkService{
+export class MediaStationNetworkService {
 
-    static CONTENT_DOWNLOAD_SUCCESS:string = "contents of mediaStation received and saved: ";
-    static CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM:string = "download of contents of mediaStation failed, because controller-app did not answer: ";
-    static CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER:string = "download of contents of mediaStation failed, because controller-app does not have a contents.json file saved: ";
-    static CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP:string = "download of contents of mediaStation failed, because there is no controller-ip specified!";
+    static CONTENT_DOWNLOAD_SUCCESS: string = "contents of mediaStation received and saved: ";
+    static CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM: string = "download of contents of mediaStation failed, because controller-app did not answer: ";
+    static CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER: string = "download of contents of mediaStation failed, because controller-app does not have a contents.json file saved: ";
+    static CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP: string = "download of contents of mediaStation failed, because there is no controller-ip specified!";
 
-    private _networkService:NetworkService;
-    private _mediaStationRepo:MediaStationRepository;
+    private _networkService: NetworkService;
+    private _mediaStationRepo: MediaStationRepository;
 
-    constructor(networkService: NetworkService, mediaStationRepo:MediaStationRepository) {
+    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository) {
         this._networkService = networkService;
         this._mediaStationRepo = mediaStationRepo;
     }
@@ -35,7 +35,7 @@ export class MediaStationNetworkService{
      * @param {number} id
      * @returns {Promise<string>}
      */
-    async downloadContentsOfMediaStation(id:number):Promise<string>{
+    async downloadContentsOfMediaStation(id: number): Promise<string> {
         let mediaStation: MediaStation = this._findMediaStation(id);
         return this._downloadContentsFromMediaStationAndSendToMediaStation(mediaStation, mediaStation.importFromJSON.bind(mediaStation));
     }
@@ -51,47 +51,46 @@ export class MediaStationNetworkService{
      * @param {number} id
      * @returns {Promise<string>}
      */
-    async downloadOnlyMediaAppDataFromMediaStation(id:number):Promise<string>{
+    async downloadOnlyMediaAppDataFromMediaStation(id: number): Promise<string> {
         let mediaStation: MediaStation = this._findMediaStation(id);
         return this._downloadContentsFromMediaStationAndSendToMediaStation(mediaStation, mediaStation.importMediaAppsFromJSON.bind(mediaStation), true);
     }
 
-    private _downloadContentsFromMediaStationAndSendToMediaStation(mediaStation:MediaStation, functionToCallAtMediStation:Function, closeConnection:boolean = false):Promise<string>{
-        const controllerIP:string = mediaStation.getControllerIp();
-        let contentsJSON:string;
+    private _downloadContentsFromMediaStationAndSendToMediaStation(mediaStation: MediaStation, functionToCallAtMediStation: Function, closeConnection: boolean = false): Promise<string> {
+        const controllerIP: string = mediaStation.getControllerIp();
+        let contentsJSON: string;
 
-        return new Promise(async (resolve, reject) =>{
+        return new Promise(async (resolve, reject) => {
 
-            if(!controllerIP){
+            if (!controllerIP) {
                 resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP);
                 return;
             }
 
-            let connection:boolean = await this._networkService.openConnection(controllerIP);
+            let connection: boolean = await this._networkService.openConnection(controllerIP);
 
-            if(!connection){
+            if (!connection) {
                 resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
                 return;
             }
 
-            let registration:boolean = await this._networkService.sendRegistration(controllerIP);
+            let registration: boolean = await this._networkService.sendRegistration(controllerIP);
 
-            if(!registration){
+            if (!registration) {
                 resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
                 return;
             }
 
             contentsJSON = await this._networkService.getContentFileFrom(controllerIP);
 
-            if(contentsJSON === null){
+            if (contentsJSON === null) {
                 resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
-            }else if(contentsJSON === "{}"){
+            } else if (contentsJSON === "{}") {
                 resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIP);
-            }
-            else{
+            } else {
                 functionToCallAtMediStation(JSON.parse(contentsJSON));
 
-                if(closeConnection)
+                if (closeConnection)
                     await this._networkService.unregisterAndCloseConnection(controllerIP);
 
                 resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_SUCCESS + mediaStation.id);
@@ -110,77 +109,82 @@ export class MediaStationNetworkService{
      * @param {IOnSyncStep} onSyncStep  Is called after every new network-operation and receives a string with info about what is going on
      * @returns {Promise<void>}
      */
-    async syncMediaStation(mediaStationId:number, onSyncStep:IOnSyncStep):Promise<void>{
+    async syncMediaStation(mediaStationId: number, onSyncStep: IOnSyncStep): Promise<void> {
         console.log("SYNC MEDIA STATION: ", mediaStationId)
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        let json:string;
-        let connectionIsOpen:boolean;
-        let mediaApp:MediaApp;
+        let json: string;
+        let connectionIsOpen: boolean;
+        let mediaApp: MediaApp;
 
-        return new Promise(async (resolve, reject) =>{
-            let ip:string;
-            let allCachedMedia:ICachedMedia[];
-            let allMediaOperationsByMediaApp:Map<MediaApp, ICachedMedia[]> = new Map();
+        return new Promise(async (resolve, reject) => {
+            let ip: string;
+            let cachedMediaOfAllMediaStations: Map<number, ICachedMedia[]>;
+            let allCachedMedia: ICachedMedia[];
+            let allMediaOperationsByMediaApp: Map<MediaApp, ICachedMedia[]> = new Map();
 
             //send all media to the media-apps
-            allCachedMedia = this._mediaStationRepo.getAllCachedMedia().get(mediaStationId);
+            cachedMediaOfAllMediaStations = this._mediaStationRepo.getAllCachedMedia();
+            allCachedMedia = cachedMediaOfAllMediaStations.get(mediaStationId);
 
-            //save all cachedMedia by their mediaApp, because all media-operations are executed per media-app (all actions for media-app 1 first,
-            //then for media app 2, etc.
-            for(const cachedMedia of allCachedMedia){
-                mediaApp = mediaStation.getMediaApp(cachedMedia.mediaAppId);
+            if (allCachedMedia) {
+                //save all cachedMedia by their mediaApp, because all media-operations are executed per media-app (all actions for media-app 1 first,
+                //then for media app 2, etc.
+                for (const cachedMedia of allCachedMedia) {
+                    mediaApp = mediaStation.getMediaApp(cachedMedia.mediaAppId);
 
-                if(!allMediaOperationsByMediaApp.has(mediaApp))
-                    allMediaOperationsByMediaApp.set(mediaApp, []);
+                    if (!allMediaOperationsByMediaApp.has(mediaApp))
+                        allMediaOperationsByMediaApp.set(mediaApp, []);
 
-                allMediaOperationsByMediaApp.get(mediaApp).push(cachedMedia);
-            }
+                    allMediaOperationsByMediaApp.get(mediaApp).push(cachedMedia);
+                }
 
-            console.log("FOUND CACHED MEDIA: ", allMediaOperationsByMediaApp);
+                console.log("FOUND CACHED MEDIA: ", allMediaOperationsByMediaApp);
 
-            //loop through all existing media apps in the mediastation and try to connect to them
-            for(const [mediaApp, allCachedMedia] of allMediaOperationsByMediaApp){
-                onSyncStep("Verbindung mit Medien-App wird aufgebaut: " + mediaApp.name + "/" + mediaApp.ip);
+                //loop through all existing media apps in the mediastation and try to connect to them
+                for (const [mediaApp, allCachedMedia] of allMediaOperationsByMediaApp) {
+                    onSyncStep("Verbindung mit Medien-App wird aufgebaut: " + mediaApp.name + "/" + mediaApp.ip);
 
-                connectionIsOpen = await this._networkService.openConnection(mediaApp.ip);
+                    connectionIsOpen = await this._networkService.openConnection(mediaApp.ip);
 
-                //if the connection could be established to a media-app, send it all media that are cached
-                if(connectionIsOpen){
-                    onSyncStep("Verbindung mit Medien-App hergestellt.");
-                    await this._sendMediaFilesToMediaApp(mediaStation, allCachedMedia, mediaApp.ip, onSyncStep);
-                }else{
-                    onSyncStep("Verbindung mit Medien-App konnte nicht hergestellt werden!");
+                    //if the connection could be established to a media-app, send it all media that are cached
+                    if (connectionIsOpen) {
+                        onSyncStep("Verbindung mit Medien-App hergestellt.");
+                        await this._sendMediaFilesToMediaApp(mediaStation, allCachedMedia, mediaApp.ip, onSyncStep);
+                    } else {
+                        onSyncStep("Verbindung mit Medien-App konnte nicht hergestellt werden!");
+                    }
                 }
             }
+
             // send content-file (last step in synchronisation)
             ip = mediaStation.getControllerIp();
 
             onSyncStep("Sende contents.json an Controller-App: " + ip);
 
             connectionIsOpen = await this._networkService.openConnection(ip);
-            console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?",connectionIsOpen);
+            console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?", connectionIsOpen);
 
-            if(connectionIsOpen){
+            if (connectionIsOpen) {
                 onSyncStep("Verbindung mit Controller-App hergestellt. Sende Daten...");
                 json = mediaStation.exportToJSON();
 
                 console.log("SEND CONTENTS-FILE: ", json);
 
                 this._networkService.sendContentFileTo(ip, json);
-            }else
+            } else
                 onSyncStep("Controller-App nicht erreichbar!");
 
             resolve();
         });
     }
 
-    private async _sendMediaFilesToMediaApp(mediaStation:MediaStation, allCachedMedia:ICachedMedia[], ipMediaApp:string, onSyncStep:IOnSyncStep):Promise<void>{
-        let fileData:Uint8Array;
-        let idOnMediaApp:number;
-        let content:Content;
-        let media:IMedia;
+    private async _sendMediaFilesToMediaApp(mediaStation: MediaStation, allCachedMedia: ICachedMedia[], ipMediaApp: string, onSyncStep: IOnSyncStep): Promise<void> {
+        let fileData: Uint8Array;
+        let idOnMediaApp: number;
+        let content: Content;
+        let media: IMedia;
 
-        for(const cachedMedia of allCachedMedia){
+        for (const cachedMedia of allCachedMedia) {
             onSyncStep("Medium wird gesendet: " + cachedMedia.fileExtension);
             console.log("SEND MEDIA: ", cachedMedia);
             fileData = await this._mediaStationRepo.getCachedMediaFile(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId, cachedMedia.fileExtension);
@@ -188,7 +192,7 @@ export class MediaStationNetworkService{
             idOnMediaApp = await this._networkService.sendMediaFileToIp(ipMediaApp, cachedMedia.fileExtension, fileData);
             console.log("RECEIVED ID FROM MEDIA-APP: ", idOnMediaApp);
 
-            if(idOnMediaApp !== null && idOnMediaApp !== undefined && idOnMediaApp >= 0){
+            if (idOnMediaApp !== null && idOnMediaApp !== undefined && idOnMediaApp >= 0) {
                 onSyncStep("Medium erfolgreich gesendet.");
                 content = mediaStation.rootFolder.findContent(cachedMedia.contentId);
                 media = content.media.get(cachedMedia.mediaAppId);
@@ -196,8 +200,8 @@ export class MediaStationNetworkService{
 
                 console.log("SET NEW ID FOR MEDIA: ", content.id, media.idOnMediaApp, idOnMediaApp)
 
-                this._mediaStationRepo.deleteCachedMedia(mediaStation.id,cachedMedia.contentId, cachedMedia.mediaAppId);
-            }else
+                this._mediaStationRepo.deleteCachedMedia(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId);
+            } else
                 onSyncStep("Medium konnte nicht gesendet oder empfangen werden!");
         }
     }
