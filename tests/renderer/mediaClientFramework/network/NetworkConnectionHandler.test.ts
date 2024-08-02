@@ -78,12 +78,25 @@ describe("createConnection() ", () => {
         });
 
         //method to test
-        connectionHandler.createConnection(firstIP, jest.fn(), jest.fn(), jest.fn(), jest.fn(),mockNetworkInterface);
         connectionHandler.createConnection(secondIP, onOpen, onError, onClose, onDataReceived, mockNetworkInterface);
 
         //tests
         expect(onClose).toHaveBeenCalledTimes(1);
         expect(onClose).toHaveBeenCalledWith(secondIP);
+    });
+
+    it("should remove the connection of the active connections if the connection was closed", () => {
+        mockNetworkInterface.connectToServer = jest.fn();
+        mockNetworkInterface.connectToServer.mockImplementation((url, onOpen, onError, onClose) => {
+            onOpen();
+            onClose();
+        });
+
+        //method to test
+        connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived, mockNetworkInterface);
+
+        //tests
+        expect(connectionHandler.hasConnection(firstIP)).toBe(false);
     });
 
     it("should call the passed onDataReceived callback with the correct ip, if the connection received data", () => {

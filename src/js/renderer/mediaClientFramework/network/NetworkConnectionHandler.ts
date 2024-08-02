@@ -47,6 +47,7 @@ export  class NetworkConnectionHandler{
             }, onError,
             ()=>{
                 console.log("Connection-Handler: CLOSE: ", ip);
+                this._connections.delete(ip);
                 if(onClosed)
                     onClosed(ip);
             },
