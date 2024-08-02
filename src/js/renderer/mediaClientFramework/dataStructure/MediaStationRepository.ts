@@ -1,6 +1,7 @@
 import {MediaStation} from "./MediaStation";
 import {MediaStationLocalMetaData} from "../fileHandling/MediaStationLocalMetaData";
 import {MediaFileService} from "../fileHandling/MediaFileService";
+import {MediaApp} from "./MediaApp";
 
 export interface ICachedMedia{
     contentId:number
@@ -30,19 +31,27 @@ export class MediaStationRepository{
         this._mediaStationMetaData.init(this._pathToMainFolder + "savedMediaStations.json")
     }
 
-    async loadMediaStations():Promise<Map<string, string>>{
-        let loadedMetaData:Map<string, string>;
+        async loadMediaStations():Promise<Map<string, string>>{
+            let loadedMetaData:Map<string, string>;
+            let mediaStation:MediaStation;
+            let id:number;
 
-        loadedMetaData = await this._mediaStationMetaData.load();
+            loadedMetaData = await this._mediaStationMetaData.load();
 
-        if(loadedMetaData){
-            loadedMetaData.forEach((values, key) => {
-                this.addMediaStation(key, false);
-            });
+            if(loadedMetaData){
+                loadedMetaData.forEach((controllerIp, key) => {
+                    id = this.addMediaStation(key, false);
+                    mediaStation = this.findMediaStation(id);
+
+                    console.log("CHECK: ", key, controllerIp)
+
+                    if(controllerIp)
+                        mediaStation.addMediaApp(0, "Controller-App", controllerIp, MediaApp.ROLE_CONTROLLER);
+                });
+            }
+
+            return new Promise((resolve) =>{resolve(loadedMetaData)});
         }
-
-        return new Promise((resolve) =>{resolve(loadedMetaData)});
-    }
 
     addMediaStation(name:string, save:boolean = true):number{
         let newMediaStation:MediaStation = this._mediaStationFactory(this._mediaStationIdCounter);
@@ -56,7 +65,9 @@ export class MediaStationRepository{
 
         this._cachedMedia.set(newMediaStation.id, []);
 
-        this._mediaStationMetaData.save(this.getNameControllerMap());
+        if(save)
+            this._mediaStationMetaData.save(this.getNameControllerMap());
+
         return newMediaStation.id;
     }
 

@@ -8,6 +8,7 @@ import {
 } from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockMediaStationLocalMetaData";
 import {MockMediaFileService} from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockMediaFileService";
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
+import {MediaApp} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/MediaApp";
 
 let mediaStationRepo:MediaStationRepository;
 let mockMediaFileService:MockMediaFileService;
@@ -29,7 +30,7 @@ let returnedMetaData:Map<string, string> = new Map();
 let key1:string = "mediaStation1";
 let key2:string = "mediaStation2";
 let key3:string = "mediaStation3";
-returnedMetaData.set(key1, "");
+returnedMetaData.set(key1, null);
 returnedMetaData.set(key2, "192.168.2.1");
 returnedMetaData.set(key3, "192.168.2.100");
 
@@ -63,6 +64,48 @@ describe("loadMediaStations() ", ()=>{
         expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(1, key1, false);
         expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(2, key2, false);
         expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(3, key3, false);
+    });
+
+    it("should call addMediaApp() for each mediastation which has a controller-app saved", async () =>{
+        //setup
+        const mediaStation1:MockMediaStation =new MockMediaStation(0);
+        const mediaStation2:MockMediaStation =new MockMediaStation(1);
+        const mediaStation3:MockMediaStation =new MockMediaStation(2);
+        const addMediaStationSpy = jest.spyOn(mediaStationRepo, 'addMediaStation');
+
+        addMediaStationSpy.mockImplementation((id:string)=>{
+            if(id === key1)
+                return 0;
+            else if(id === key2)
+                return 1;
+            else if(id === key3)
+                return 2;
+        });
+
+        const findMediaStationSpy = jest.spyOn(mediaStationRepo, 'findMediaStation');
+        findMediaStationSpy.mockImplementation((id:number)=>{
+            if(id === 0)
+                return mediaStation1;
+            else if(id === 1)
+                return mediaStation2;
+            else if(id === 2)
+                return mediaStation3;
+        });
+
+        mockMediaStationLocalMetaData.load.mockImplementation(()=>{
+            return returnedMetaData;
+        });
+
+        //method to test
+        await mediaStationRepo.loadMediaStations();
+
+        //tests
+        expect(mediaStationRepo.findMediaStation).toHaveBeenCalledTimes(3);
+        expect(mediaStation1.addMediaApp).toHaveBeenCalledTimes(0);
+        expect(mediaStation2.addMediaApp).toHaveBeenCalledTimes(1);
+        expect(mediaStation2.addMediaApp).toHaveBeenCalledWith(0, "Controller-App", "192.168.2.1", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation3.addMediaApp).toHaveBeenCalledTimes(1);
+        expect(mediaStation3.addMediaApp).toHaveBeenCalledWith(0, "Controller-App", "192.168.2.100", MediaApp.ROLE_CONTROLLER);
     });
 
     it("should return the map it got from the loading-service", async () =>{
@@ -104,18 +147,29 @@ describe("addMediaStation() ", ()=>{
         expect(receivedId).toEqual(expectedId);
     });
 
-    it("should call mediaMetaDataService.save() with the mediastation-names and controller-ips", ()=>{
+    it("should call mediaMetaDataService.save() with the mediastation-names and controller-ips if save = true", ()=>{
         //setup
         let testName:string = "testNameXY";
         let mapToSave:Map<string, string> = new Map();
         mapToSave.set(testName, "mock-controller-ip");
 
         //method to test
-        mediaStationRepo.addMediaStation(testName);
+        mediaStationRepo.addMediaStation(testName, true);
 
         //tests
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(1)
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledWith(mapToSave)
+    });
+
+    it("should NOT call mediaMetaDataService.save() if save = false", ()=>{
+        //setup
+        let testName:string = "testNameXY";
+
+        //method to test
+        mediaStationRepo.addMediaStation(testName, false);
+
+        //tests
+        expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(0)
     });
 });
 
