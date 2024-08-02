@@ -60,9 +60,9 @@ describe("loadMediaStations() ", ()=>{
 
         //tests
         expect(mediaStationRepo.addMediaStation).toHaveBeenCalledTimes(3);
-        expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(1, key1);
-        expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(2, key2);
-        expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(3, key3);
+        expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(1, key1, false);
+        expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(2, key2, false);
+        expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(3, key3, false);
     });
 
     it("should return the map it got from the loading-service", async () =>{

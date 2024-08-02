@@ -37,14 +37,14 @@ export class MediaStationRepository{
 
         if(loadedMetaData){
             loadedMetaData.forEach((values, key) => {
-                this.addMediaStation(key);
+                this.addMediaStation(key, false);
             });
         }
 
         return new Promise((resolve) =>{resolve(loadedMetaData)});
     }
 
-    addMediaStation(name:string):number{
+    addMediaStation(name:string, save:boolean = true):number{
         let newMediaStation:MediaStation = this._mediaStationFactory(this._mediaStationIdCounter);
 
         newMediaStation.name = name;
