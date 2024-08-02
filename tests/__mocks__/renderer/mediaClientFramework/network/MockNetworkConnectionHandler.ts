@@ -6,7 +6,6 @@ import {MockNetworkInterface} from "./MockNetworkInterface";
 const mockBackendNetworkService:jest.Mocked<IBackenNetworkService> = {
     ping: jest.fn(),
 }
-const mockNetworkInterface:MockNetworkInterface = new MockNetworkInterface();
 
 
 export class MockNetworkConnectionHandler extends NetworkConnectionHandler{
@@ -18,7 +17,7 @@ export class MockNetworkConnectionHandler extends NetworkConnectionHandler{
     hasConnection: jest.Mock;
 
     constructor() {
-        super(()=> mockNetworkInterface, mockBackendNetworkService);
+        super(MockNetworkInterface, mockBackendNetworkService);
         this.createConnection = jest.fn();
         this.sendData = jest.fn();
         this.closeConnection = jest.fn();

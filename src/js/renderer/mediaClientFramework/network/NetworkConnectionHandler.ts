@@ -11,12 +11,10 @@ export interface IOnClosedConnection{
 export  class NetworkConnectionHandler{
 
     private _connections: Map<string, NetworkInterface>;
-    private _networkInterfaceFactory: NetworkInterface;
     private _backenNetworkService:IBackenNetworkService;
 
-    constructor(networkInterfaceFactory = () => new NetworkInterface(), backenNetworkService:IBackenNetworkService = window.backendNetworkService) {
+    constructor( backenNetworkService:IBackenNetworkService = window.backendNetworkService) {
         this._connections = new Map();
-        this._networkInterfaceFactory = networkInterfaceFactory();
         this._backenNetworkService = backenNetworkService;
     }
 
@@ -32,9 +30,10 @@ export  class NetworkConnectionHandler{
      * @param {Function} onError - Callback for when an error occurs.
      * @param {IOnClosedConnection} onClosed - Callback for when the connection closes.
      * @param {IOnReceivedConnectionData} onDataReceived - Callback for when data is received.
+     * @param {NetworkInterface} networkInterface - a new instance for this connection
      * @returns {boolean} - Returns true if the connection is successfully created, otherwise false.
      */
-    createConnection(ip: string, onOpen: Function, onError: Function, onClosed: IOnClosedConnection = null, onDataReceived: IOnReceivedConnectionData = null): void {
+    createConnection(ip: string, onOpen: Function, onError: Function, onClosed: IOnClosedConnection = null,  onDataReceived: IOnReceivedConnectionData = null, networkInterface:NetworkInterface = new NetworkInterface()): void {
         const url:string = "ws://" + ip + ":5000";
 
         if (this._connections.has(ip)) {
@@ -42,9 +41,7 @@ export  class NetworkConnectionHandler{
             return;
         }
 
-        const networkInterface:NetworkInterface = this._networkInterfaceFactory;
         networkInterface.connectToServer(url, ()=>{
-            console.log("create connection!")
                 this._connections.set(ip, networkInterface);
                 onOpen();
             }, onError,

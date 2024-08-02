@@ -278,7 +278,7 @@ describe("syncMediaStation() ", () => {
         if (id === 0) return mediaApp1;
         else if (id === 1) return mediaApp2;
         else throw new Error("MOCK-ERROR: MEDIA APP ID NOT DEFINED!");
-    })
+    });
 
     let mockCachedMedia: ICachedMedia[] = [
         {contentId: 0, mediaAppId: 0, fileExtension: "jpeg"},
