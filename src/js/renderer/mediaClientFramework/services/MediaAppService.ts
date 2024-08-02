@@ -29,7 +29,10 @@ export class MediaAppService{
 
         mediaStation.addMediaApp(mediaAppId, name, ip,mediaAppId === 0? MediaApp.ROLE_CONTROLLER: MediaApp.ROLE_DEFAULT );
 
-        this._mediaStationRepository.updateMediaStation(mediaStation);
+        if(mediaAppId === 0)
+            this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
+        else
+            this._mediaStationRepository.updateMediaStation(mediaStation);
 
         return mediaAppId;
     }
@@ -71,6 +74,8 @@ export class MediaAppService{
         let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
 
         this._getMediaApp(mediaStationId, mediaAppId).ip = ip;
+
+        console.log("ID: ", mediaAppId)
 
         if(mediaAppId === 0)
             this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
@@ -115,8 +120,6 @@ export class MediaAppService{
     private _getMediaApp(mediaStationId:number, mediaAppId:number):MediaApp {
         let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
         let mediaApp:MediaApp;
-
-        console.log("GET Media-station: ", mediaStation)
 
         if(!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + mediaStationId);

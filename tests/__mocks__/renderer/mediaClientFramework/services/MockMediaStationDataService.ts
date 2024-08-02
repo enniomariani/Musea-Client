@@ -12,6 +12,7 @@ export class MockMediaStationDataService extends MediaStationDataService{
     deleteMediaStation: jest.Mock;
     changeName: jest.Mock;
     getName: jest.Mock;
+    getControllerIp: jest.Mock;
 
     constructor() {
         super(mockMediaStationRepo);
@@ -20,5 +21,6 @@ export class MockMediaStationDataService extends MediaStationDataService{
         this.deleteMediaStation = jest.fn();
         this.changeName = jest.fn();
         this.getName = jest.fn();
+        this.getControllerIp = jest.fn();
     }
 }

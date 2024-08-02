@@ -84,7 +84,30 @@ describe("createMediaApp() ", ()=>{
         //tests
         expect(mediaStation.addMediaApp).toHaveBeenCalledTimes(1);
         expect(mediaStation.addMediaApp).toHaveBeenCalledWith(mediaAppId,name1, ip1, MediaApp.ROLE_CONTROLLER);
+    });
 
+    it("should call mediaStationRepository.updateAndSaveMediaStation if media-App ID is 0", () => {
+        //setup
+        setupMediaAppWithName(true, true, 0);
+        mediaStation.getNextMediaAppId.mockReturnValueOnce(0);
+
+        //method to test
+        mediaAppService.createMediaApp(0, name1, ip1);
+
+        //tests
+        expect(mockMediaStationRepo.updateAndSaveMediaStation).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.updateAndSaveMediaStation).toHaveBeenCalledWith(mediaStation);
+    });
+
+    it("should call mediaStationRepository.updateMediaStation if media-App ID is higher than 0", () => {
+        //setup
+        setupMediaAppWithName(true, true, 0);
+        mediaStation.getNextMediaAppId.mockReturnValueOnce(2);
+
+        //method to test
+        mediaAppService.createMediaApp(0, name1, ip1);
+
+        //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mediaStation);
     });
@@ -201,8 +224,6 @@ describe("changeName() ", ()=> {
 
         //method to test
         mediaAppService.changeName(0, mediaAppId, newName);
-
-        console.log("media-app: ", mediaApp1)
 
         //tests
         expect(mediaApp1.name).toBe(newName);
