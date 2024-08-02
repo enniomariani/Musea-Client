@@ -1,5 +1,4 @@
 import {NetworkService} from "../../../../../src/js/renderer/mediaClientFramework/services/NetworkService";
-import {MockNetworkInterface} from "../network/MockNetworkInterface";
 import {MockNetworkConnectionHandler} from "../network/MockNetworkConnectionHandler";
 
 const mockNetworkConnectionHandler:MockNetworkConnectionHandler = new MockNetworkConnectionHandler();

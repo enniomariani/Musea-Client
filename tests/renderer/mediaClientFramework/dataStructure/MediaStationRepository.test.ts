@@ -6,7 +6,6 @@ import {MediaStation} from "../../../../src/js/renderer/mediaClientFramework/dat
 import {
     MockMediaStationLocalMetaData
 } from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockMediaStationLocalMetaData";
-import {MediaApp} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/MediaApp";
 import {MockMediaFileService} from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockMediaFileService";
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
 
@@ -48,7 +47,7 @@ describe("loadMediaStations() ", ()=>{
         expect(mockMediaStationLocalMetaData.load).toHaveBeenCalledTimes(1);
     });
 
-    it("should call addMediaStation() for each of the loaded media-station-names", () =>{
+    it("should call addMediaStation() for each of the loaded media-station-names", async () =>{
         //setup
         jest.spyOn(mediaStationRepo, "addMediaStation");
 
@@ -57,7 +56,7 @@ describe("loadMediaStations() ", ()=>{
         });
 
         //method to test
-        mediaStationRepo.loadMediaStations();
+        await mediaStationRepo.loadMediaStations();
 
         //tests
         expect(mediaStationRepo.addMediaStation).toHaveBeenCalledTimes(3);
@@ -66,22 +65,29 @@ describe("loadMediaStations() ", ()=>{
         expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(3, key3);
     });
 
-    it("should not throw an error if loaded data is null", () =>{
+    it("should return the map it got from the loading-service", async () =>{
         //setup
-        let errorThrown:boolean = false;
+        let answer:Map<string, string>;
+
         mockMediaStationLocalMetaData.load.mockImplementation(()=>{
-            return null;
+            return returnedMetaData;
         });
 
         //method to test
-        try{
-            mediaStationRepo.loadMediaStations();
-        }catch(error){
-            errorThrown = true;
-        }
+        answer = await mediaStationRepo.loadMediaStations();
 
         //tests
-        expect(errorThrown).toBe(false);
+        expect(answer).toStrictEqual(returnedMetaData);
+    });
+
+    it("should not throw an error if loaded map is empty", () =>{
+        //setup
+        mockMediaStationLocalMetaData.load.mockImplementation(()=>{
+            return new Map();
+        });
+
+        //tests
+        expect(()=>mediaStationRepo.loadMediaStations()).not.toThrow();
     });
 });
 

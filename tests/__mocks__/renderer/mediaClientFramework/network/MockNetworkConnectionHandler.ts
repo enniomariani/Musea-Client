@@ -1,7 +1,6 @@
 import {
     NetworkConnectionHandler
 } from "../../../../../src/js/renderer/mediaClientFramework/network/NetworkConnectionHandler";
-import {MockNetworkInterface} from "./MockNetworkInterface";
 
 const mockBackendNetworkService:jest.Mocked<IBackenNetworkService> = {
     ping: jest.fn(),
@@ -17,7 +16,7 @@ export class MockNetworkConnectionHandler extends NetworkConnectionHandler{
     hasConnection: jest.Mock;
 
     constructor() {
-        super(MockNetworkInterface, mockBackendNetworkService);
+        super(mockBackendNetworkService);
         this.createConnection = jest.fn();
         this.sendData = jest.fn();
         this.closeConnection = jest.fn();

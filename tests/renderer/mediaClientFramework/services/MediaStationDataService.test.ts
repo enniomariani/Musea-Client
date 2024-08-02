@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {
     MediaStationDataService
 } from "../../../../src/js/renderer/mediaClientFramework/services/MediaStationDataService";
@@ -20,12 +20,26 @@ afterEach(() => {
 });
 
 describe("loadMediaStations() ", ()=>{
-    it("should call loadMediaStations() from the repo", ()=>{
+    it("should return the map it got from the repo", async () =>{
+        //setup
+        let returnedMetaData:Map<string, string> = new Map();
+        let key1:string = "mediaStation1";
+        let key2:string = "mediaStation2";
+        let key3:string = "mediaStation3";
+        returnedMetaData.set(key1, "");
+        returnedMetaData.set(key2, "192.168.2.1");
+        returnedMetaData.set(key3, "192.168.2.100");
+        let answer:Map<string, string>;
+
+        mockMediaStationRepository.loadMediaStations.mockImplementation(()=>{
+            return returnedMetaData;
+        });
+
         //method to test
-        mediaStationDataService.loadMediaStations();
+        answer = await mediaStationDataService.loadMediaStations();
 
         //tests
-        expect(mockMediaStationRepository.loadMediaStations).toHaveBeenCalledTimes(1);
+        expect(answer).toStrictEqual(returnedMetaData);
     });
 });
 

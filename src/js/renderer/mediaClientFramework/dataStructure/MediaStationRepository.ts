@@ -27,18 +27,21 @@ export class MediaStationRepository{
         this._mediaStationFactory = mediaStationFactory;
 
         this._mediaFileService.init(this._pathToMainFolder)
+        this._mediaStationMetaData.init(this._pathToMainFolder + "savedMediaStations.json")
     }
 
-    loadMediaStations():void{
+    async loadMediaStations():Promise<Map<string, string>>{
         let loadedMetaData:Map<string, string>;
 
-        loadedMetaData = this._mediaStationMetaData.load();
+        loadedMetaData = await this._mediaStationMetaData.load();
 
         if(loadedMetaData){
-            loadedMetaData.forEach((values, keys) => {
-                this.addMediaStation(keys);
+            loadedMetaData.forEach((values, key) => {
+                this.addMediaStation(key);
             });
         }
+
+        return new Promise((resolve) =>{resolve(loadedMetaData)});
     }
 
     addMediaStation(name:string):number{

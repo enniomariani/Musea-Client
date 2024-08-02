@@ -10,8 +10,8 @@ export class MediaStationDataService{
         this._mediaStationRepository = mediaStationRepo;
     }
 
-    loadMediaStations():void {
-        this._mediaStationRepository.loadMediaStations();
+    async loadMediaStations():Promise<Map<string, string>> {
+        return this._mediaStationRepository.loadMediaStations();
     }
 
     createMediaStation(name:string):number{
