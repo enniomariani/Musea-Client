@@ -85,6 +85,11 @@ export class MediaAppService{
 
     async isOnline(mediaStationId:number, mediaAppId:number):Promise<boolean>{
         let ip:string = this._getMediaApp(mediaStationId, mediaAppId).ip;
+        let connection: boolean = await this._networkService.openConnection(ip);
+
+        if (!connection)
+            return new Promise((resolve) =>{resolve(false)});
+
         return await this._networkService.isMediaAppOnline(ip);
     }
 

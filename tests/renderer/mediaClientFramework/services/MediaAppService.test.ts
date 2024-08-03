@@ -460,11 +460,42 @@ describe("unregisterAndCloseMediaApp() ", ()=> {
 
 describe("isOnline() ", ()=> {
 
+    it("should call networkService.openConnection", async () => {
+        //setup
+        let returnValue:boolean;
+        setupMediaAppWithName(true);
+
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
+        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
+
+        //method to test
+        await mediaAppService.isOnline(0, mediaAppId);
+
+        //tests
+        expect(mockNetworkService.openConnection).toHaveBeenCalledTimes(1);
+    });
+
+    it("should return false if networkService.openConnection returns false", async () => {
+        //setup
+        let returnValue:boolean;
+        setupMediaAppWithName(true);
+
+        mockNetworkService.openConnection.mockReturnValueOnce(false);
+        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
+
+        //method to test
+        returnValue = await mediaAppService.isOnline(0, mediaAppId);
+
+        //tests
+        expect(returnValue).toBe(false);
+    });
+
     it("should return true if networkService.isMediaAppOnline returns true", async () => {
         //setup
         let returnValue:boolean;
         setupMediaAppWithName(true);
 
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
 
         //method to test
@@ -474,11 +505,12 @@ describe("isOnline() ", ()=> {
         expect(returnValue).toBe(true);
     });
 
-    it("should return true if networkService.isMediaAppOnline returns false", async () => {
+    it("should return false if networkService.isMediaAppOnline returns false", async () => {
         //setup
         let returnValue:boolean;
         setupMediaAppWithName(true);
 
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
 
         //method to test
