@@ -31,27 +31,27 @@ export class MediaStationRepository{
         this._mediaStationMetaData.init(this._pathToMainFolder + "savedMediaStations.json")
     }
 
-        async loadMediaStations():Promise<Map<string, string>>{
-            let loadedMetaData:Map<string, string>;
-            let mediaStation:MediaStation;
-            let id:number;
+    async loadMediaStations():Promise<Map<string, string>>{
+        let loadedMetaData:Map<string, string>;
+        let mediaStation:MediaStation;
+        let id:number;
 
-            loadedMetaData = await this._mediaStationMetaData.load();
+        loadedMetaData = await this._mediaStationMetaData.load();
 
-            if(loadedMetaData){
-                loadedMetaData.forEach((controllerIp, key) => {
-                    id = this.addMediaStation(key, false);
-                    mediaStation = this.findMediaStation(id);
+        if(loadedMetaData){
+            loadedMetaData.forEach((controllerIp, key) => {
+                id = this.addMediaStation(key, false);
+                mediaStation = this.findMediaStation(id);
 
-                    console.log("CHECK: ", key, controllerIp)
+                console.log("CHECK: ", key, controllerIp)
 
-                    if(controllerIp)
-                        mediaStation.addMediaApp(0, "Controller-App", controllerIp, MediaApp.ROLE_CONTROLLER);
-                });
-            }
-
-            return new Promise((resolve) =>{resolve(loadedMetaData)});
+                if(controllerIp)
+                    mediaStation.addMediaApp(0, "Controller-App nicht erreichbar", controllerIp, MediaApp.ROLE_CONTROLLER);
+            });
         }
+
+        return new Promise((resolve) =>{resolve(loadedMetaData)});
+    }
 
     addMediaStation(name:string, save:boolean = true):number{
         let newMediaStation:MediaStation = this._mediaStationFactory(this._mediaStationIdCounter);

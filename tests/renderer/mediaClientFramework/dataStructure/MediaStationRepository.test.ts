@@ -103,9 +103,9 @@ describe("loadMediaStations() ", ()=>{
         expect(mediaStationRepo.findMediaStation).toHaveBeenCalledTimes(3);
         expect(mediaStation1.addMediaApp).toHaveBeenCalledTimes(0);
         expect(mediaStation2.addMediaApp).toHaveBeenCalledTimes(1);
-        expect(mediaStation2.addMediaApp).toHaveBeenCalledWith(0, "Controller-App", "192.168.2.1", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation2.addMediaApp).toHaveBeenCalledWith(0, "Controller-App nicht erreichbar", "192.168.2.1", MediaApp.ROLE_CONTROLLER);
         expect(mediaStation3.addMediaApp).toHaveBeenCalledTimes(1);
-        expect(mediaStation3.addMediaApp).toHaveBeenCalledWith(0, "Controller-App", "192.168.2.100", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation3.addMediaApp).toHaveBeenCalledWith(0, "Controller-App nicht erreichbar", "192.168.2.100", MediaApp.ROLE_CONTROLLER);
     });
 
     it("should return the map it got from the loading-service", async () =>{
