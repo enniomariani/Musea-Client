@@ -76,8 +76,6 @@ export class MediaStation{
             this._folderIdCounter = json.folderIdCounter;
         if(this._jsonPropertyExists(json, "contentIdCounter"))
             this._contentIdCounter= json.contentIdCounter;
-        if(this._jsonPropertyExists(json, "mediaAppIdCounter"))
-            this._mediaAppIdCounter = json.mediaAppIdCounter;
         if(this._jsonPropertyExists(json, "tagIdCounter"))
             this._tagIdCounter = json.tagIdCounter;
 
