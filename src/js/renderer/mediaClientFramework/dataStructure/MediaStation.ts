@@ -42,9 +42,12 @@ export class MediaStation{
     importMediaAppsFromJSON(json:any):void{
         let mediaApp:MediaApp;
 
+        if(this._jsonPropertyExists(json, "mediaAppIdCounter"))
+            this._mediaAppIdCounter = json.mediaAppIdCounter;
+
         if(json.mediaApps){
             for(let i:number = 0; i < json.mediaApps.length; i++){
-                console.log("FOUND MEDIA-APP IN JSON: ", json.mediaApps[i], json.mediaApps[i].id, json.mediaApps[i].name)
+                console.    log("FOUND MEDIA-APP IN JSON: ", json.mediaApps[i], json.mediaApps[i].id, json.mediaApps[i].name)
                 if(this._jsonPropertyExists(json.mediaApps[i], "id"))
                     mediaApp = new MediaApp(json.mediaApps[i].id);
                 if(this._jsonPropertyExists(json.mediaApps[i], "name"))

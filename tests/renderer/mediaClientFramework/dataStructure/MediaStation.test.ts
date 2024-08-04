@@ -75,6 +75,8 @@ describe("importMediaAppsFromJSON() ", () => {
         mediaApp1 = mediaStation.getMediaApp(0);
         mediaApp2 = mediaStation.getMediaApp(1);
 
+        expect(mediaStation.getNextMediaAppId()).toBe(jsonMock.mediaAppIdCounter);
+
         expect(mediaApp1.id).toBe(0);
         expect(mediaApp1.name).toBe(mediaApp1.name);
         expect(mediaApp1.ip).toBe(mediaApp1.ip);
