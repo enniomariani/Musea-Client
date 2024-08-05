@@ -86,6 +86,20 @@ describe("importMediaAppsFromJSON() ", () => {
         expect(mediaApp2.ip).toBe(mediaApp2.ip);
         expect(mediaApp2.role).toBe(mediaApp2.role);
     });
+
+    it("should remove the already added mediaApps from the array", () => {
+        //setup
+        mediaStation = new MediaStation(0);
+
+        mediaStation.addMediaApp(0,"test1", "127.0.0.1", MediaApp.ROLE_CONTROLLER)
+        mediaStation.addMediaApp(1,"test1", "127.0.0.1", MediaApp.ROLE_DEFAULT)
+
+        //method to test
+        mediaStation.importMediaAppsFromJSON({mediaAppIdCounter: 2});
+
+        //tests
+        expect(mediaStation.getAllMediaApps().size).toBe(0);
+    });
 });
 
 describe("importFromJSON() ", () => {
@@ -98,7 +112,7 @@ describe("importFromJSON() ", () => {
         mediaStation.rootFolder = mockFolder;
 
         //method to test
-        mediaStation.importFromJSON(jsonMock);
+        mediaStation.importFromJSON(jsonMock, new MockFolder(0));
 
         //tests
         expect(mediaStation.name).toBe(jsonMock.name);
@@ -126,11 +140,39 @@ describe("importFromJSON() ", () => {
         mediaStation.rootFolder = new MockFolder(0);
 
         //method to test
-        mediaStation.importFromJSON(jsonMock);
+        mediaStation.importFromJSON(jsonMock, new MockFolder(0));
 
         //tests
         expect(mediaStation.rootFolder.importFromJSON).toHaveBeenCalledTimes(1);
         expect(mediaStation.rootFolder.importFromJSON).toHaveBeenCalledWith({id: 0, name: "Test", subfolders: []});
+    });
+
+    it("should reset the root folder", () => {
+        //setup
+        mediaStation = new MediaStation(0);
+        const mockRootFolder:MockFolder = new MockFolder(2);
+        mockRootFolder.name = "testName"
+
+        //method to test
+        mediaStation.importFromJSON(jsonMock, mockRootFolder);
+
+        //tests
+        expect(mediaStation.rootFolder.id).toBe(2);
+        expect(mediaStation.rootFolder.name).toBe(mockRootFolder.name);
+    });
+
+    it("should remove the already added mediaApps from the array", () => {
+        //setup
+        mediaStation = new MediaStation(0);
+
+        mediaStation.addMediaApp(0,"test1", "127.0.0.1", MediaApp.ROLE_CONTROLLER)
+        mediaStation.addMediaApp(1,"test1", "127.0.0.1", MediaApp.ROLE_DEFAULT)
+
+        //method to test
+        mediaStation.importMediaAppsFromJSON({mediaAppIdCounter: 2});
+
+        //tests
+        expect(mediaStation.getAllMediaApps().size).toBe(0);
     });
 });
 

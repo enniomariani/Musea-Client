@@ -34,7 +34,7 @@ export class MediaStation{
 
         this._mediaApps.forEach((mediaApp:MediaApp)=>{
             json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
-        })
+        });
 
         return JSON.stringify(json);
     }
@@ -44,6 +44,8 @@ export class MediaStation{
 
         if(this._jsonPropertyExists(json, "mediaAppIdCounter"))
             this._mediaAppIdCounter = json.mediaAppIdCounter;
+
+        this._mediaApps = new Map();
 
         if(json.mediaApps){
             for(let i:number = 0; i < json.mediaApps.length; i++){
@@ -63,11 +65,16 @@ export class MediaStation{
     }
 
     /**
+     * TO DO: when tags are added, also reset the tags-array before adding!
+     *
      * imports the whole data-structure from the JSON
      *
+     * before it imports the data, it delets the root-folder and all mediaApps
+     *
      * @param json
+     * @param {Folder} newRootFolder
      */
-    importFromJSON(json:any):void{
+    importFromJSON(json:any, newRootFolder:Folder = new Folder(0)):void{
         console.log("IMPORT MEDIA-STATION FROM JSON: ", json)
 
         if(this._jsonPropertyExists(json, "name"))
@@ -81,8 +88,10 @@ export class MediaStation{
 
         this.importMediaAppsFromJSON(json);
 
-        if(this._jsonPropertyExists(json, "rootFolder"))
+        if(this._jsonPropertyExists(json, "rootFolder")){
+            this._rootFolder = newRootFolder;
             this._rootFolder.importFromJSON(json.rootFolder);
+        }
     }
 
     private _jsonPropertyExists(json:any, propName:string): boolean {
