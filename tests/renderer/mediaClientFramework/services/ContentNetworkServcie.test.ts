@@ -52,6 +52,20 @@ describe("sendCommandPlay() ", ()=> {
         expect(mockNetworkService.sendMediaControlTo).toHaveBeenNthCalledWith(3, mediaApp3.ip, command);
     });
 
+    it("should call networkService.sendMediaControlTo for every mediaApp defined in the mediaStation with the correct PLAY-command, if contentId = 0", () => {
+        //setup
+        const command:string =ContentNetworkService.COMMAND_PLAY + "_0";
+
+        //method to test
+        contentNetworkService.sendCommandPlay(mediaApps,0);
+
+        //tests
+        expect(mockNetworkService.sendMediaControlTo).toHaveBeenCalledTimes(3);
+        expect(mockNetworkService.sendMediaControlTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, command);
+        expect(mockNetworkService.sendMediaControlTo).toHaveBeenNthCalledWith(2, mediaApp2.ip, command);
+        expect(mockNetworkService.sendMediaControlTo).toHaveBeenNthCalledWith(3, mediaApp3.ip, command);
+    });
+
     it("should call networkService.sendMediaControlTo for every mediaApp defined in the mediaStation with the correct PLAY-command if there is no contentId passed", () => {
         //setup
         const command:string =ContentNetworkService.COMMAND_PLAY;

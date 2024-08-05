@@ -18,7 +18,7 @@ export class ContentNetworkService{
     sendCommandPlay(mediaApps:Map<number, MediaApp>, contentId:number|null):void{
         let command:string =  ContentNetworkService.COMMAND_PLAY;
 
-        if(contentId)
+        if(contentId !== null)
             command += "_" + contentId.toString();
 
         this._sendCommandToAllMediaApps(mediaApps, command);
