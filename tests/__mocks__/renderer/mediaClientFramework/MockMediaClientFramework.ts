@@ -18,15 +18,16 @@ import {MockFolderService} from "./services/MockFolderService";
 import {MockContentService} from "./services/MockContentService";
 import {MockMediaService} from "./services/MockMediaService";
 import {MockContent} from "./dataStructure/MockContent";
+import {MockMediaStationCacheService} from "./services/MockMediaStationCacheService";
 
 export class MockMediaClientFramework implements  IMediaClientFramework{
-
     private _mockMediaStationDataService: MockMediaStationDataService = new MockMediaStationDataService();
     private _mockMediaStationNetworkService: MockMediaStationNetworkService = new MockMediaStationNetworkService();
     private _mockMediaAppService: MockMediaAppService = new MockMediaAppService();
     private _mockFolderService: MockFolderService = new MockFolderService();
     private _mockContentService: MockContentService = new MockContentService();
     private _mockMediaService: MockMediaService = new MockMediaService();
+    private _mockMediaStationCacheService: MockMediaStationCacheService = new MockMediaStationCacheService();
 
     constructor() {}
 
@@ -52,5 +53,9 @@ export class MockMediaClientFramework implements  IMediaClientFramework{
 
     get mediaService(): MockMediaService {
         return this._mockMediaService;
+    }
+
+    get mockMediaStationCacheService(): MockMediaStationCacheService {
+        return this._mockMediaStationCacheService;
     }
 }
