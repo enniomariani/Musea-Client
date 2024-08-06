@@ -4,6 +4,8 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp} from "../dataStructure/MediaApp";
 import {Content} from "../dataStructure/Content";
 import {IMedia} from "../dataStructure/Media";
+import {ContentFileService} from "../fileHandling/ContentFileService";
+import {ContentService} from "./ContentService";
 
 export interface IOnSyncStep {
     (message: string): void
@@ -18,10 +20,12 @@ export class MediaStationNetworkService {
 
     private _networkService: NetworkService;
     private _mediaStationRepo: MediaStationRepository;
+    private _contentFileService:ContentFileService;
 
-    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository) {
+    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository, contentFileService:ContentFileService) {
         this._networkService = networkService;
         this._mediaStationRepo = mediaStationRepo;
+        this._contentFileService = contentFileService;
     }
 
     /**
@@ -115,6 +119,7 @@ export class MediaStationNetworkService {
         let json: string;
         let connectionIsOpen: boolean;
         let mediaApp: MediaApp;
+        let allMediaAppsWereSynced:boolean = true;
 
         return new Promise(async (resolve, reject) => {
             let ip: string;
@@ -150,29 +155,35 @@ export class MediaStationNetworkService {
                     if (connectionIsOpen) {
                         onSyncStep("Verbindung mit Medien-App hergestellt.");
                         await this._sendMediaFilesToMediaApp(mediaStation, allCachedMedia, mediaApp.ip, onSyncStep);
+                        this._contentFileService.saveFile(mediaStationId, mediaStation.exportToJSON());
                     } else {
+                        allMediaAppsWereSynced = false;
                         onSyncStep("Verbindung mit Medien-App konnte nicht hergestellt werden!");
                     }
                 }
             }
 
-            // send content-file (last step in synchronisation)
-            ip = mediaStation.getControllerIp();
+            if(allMediaAppsWereSynced){
+                // send content-file (last step in synchronisation)
+                ip = mediaStation.getControllerIp();
 
-            onSyncStep("Sende contents.json an Controller-App: " + ip);
+                onSyncStep("Sende contents.json an Controller-App: " + ip);
 
-            connectionIsOpen = await this._networkService.openConnection(ip);
-            console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?", connectionIsOpen);
+                connectionIsOpen = await this._networkService.openConnection(ip);
+                console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?", connectionIsOpen);
 
-            if (connectionIsOpen) {
-                onSyncStep("Verbindung mit Controller-App hergestellt. Sende Daten...");
-                json = mediaStation.exportToJSON();
+                if (connectionIsOpen) {
+                    onSyncStep("Verbindung mit Controller-App hergestellt. Sende Daten...");
+                    json = mediaStation.exportToJSON();
 
-                console.log("SEND CONTENTS-FILE: ", json);
+                    console.log("SEND CONTENTS-FILE: ", json);
 
-                this._networkService.sendContentFileTo(ip, json);
-            } else
-                onSyncStep("Controller-App nicht erreichbar!");
+                    this._networkService.sendContentFileTo(ip, json);
+
+                    this._contentFileService.deleteFile(mediaStationId);
+                } else
+                    onSyncStep("Controller-App nicht erreichbar!");
+            }
 
             resolve();
         });

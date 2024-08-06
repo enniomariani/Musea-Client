@@ -53,7 +53,7 @@ export class MediaClientFramework implements IMediaClientFramework {
         this._contentFileService = new ContentFileService();
 
         this._mediaStationDataService = new MediaStationDataService(this._mediaStationRepository);
-        this._mediaStationNetworkService = new MediaStationNetworkService(this._networkService, this._mediaStationRepository);
+        this._mediaStationNetworkService = new MediaStationNetworkService(this._networkService, this._mediaStationRepository, this._contentFileService);
         this._mediaStationCacheService = new MediaStationCacheService(this._contentFileService, this._mediaStationRepository);
         this._mediaAppService = new MediaAppService(this._mediaStationRepository, this._networkService);
 
