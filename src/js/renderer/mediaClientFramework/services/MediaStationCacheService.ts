@@ -22,12 +22,12 @@ export class MediaStationCacheService{
         this._contentFileService.saveFile(id, mediaStation.exportToJSON());
     }
 
-    isMediaStationCached(id:number):boolean{
+    async isMediaStationCached(id:number):Promise<boolean>{
         let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(id);
 
         if(!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + id);
 
-        return this._contentFileService.fileExists(id);
+        return await this._contentFileService.fileExists(id);
     }
 }

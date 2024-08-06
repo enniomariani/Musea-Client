@@ -16,19 +16,20 @@ export class ContentFileService {
         let textEncoder: TextEncoder = new TextEncoder();
         let fileData: Uint8Array = textEncoder.encode(contentJSONstr);
 
-        console.log("Save Media-File: ", pathToFile, contentJSONstr);
+        console.log("Save contents-File: ", pathToFile, contentJSONstr);
         this._backendFileService.saveFile(pathToFile, fileData);
     }
 
     deleteFile(mediaStationId: number): void {
         let pathToFile: string = this._createFilePath(mediaStationId);
 
-        console.log("Delete Media-File: ", pathToFile);
+        console.log("Delete contents-File: ", pathToFile);
         this._backendFileService.deleteFile(pathToFile);
     }
 
-    fileExists(mediaStationId: number): boolean {
+    async fileExists(mediaStationId: number): Promise<boolean> {
         let pathToFile: string = this._createFilePath(mediaStationId);
+        console.log("FILE EXISTS? ", this._backendFileService.fileExists(pathToFile))
         return this._backendFileService.fileExists(pathToFile);
     }
 
