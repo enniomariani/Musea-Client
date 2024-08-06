@@ -127,17 +127,19 @@ describe("init () and fileExists() ", () => {
         let answer: boolean;
         let pathToLoad: string = "\\0\\0.json";
 
-        mockBackendFileService.fileExists.mockImplementationOnce((path: string): boolean => {
+        mockBackendFileService.fileExists.mockImplementationOnce((path: string): Promise<boolean> => {
             console.log("MOCK PATH: ", path, pathToLoad)
-            if (path === pathToFolder + pathToLoad)
-                return true;
-            else
-                return false;
+            return new Promise((resolve) =>{
+                if (path === pathToFolder + pathToLoad)
+                    resolve(true)
+                else
+                    resolve(false)
+            });
         });
 
         //method to test
         contentFileService.init(pathToFolder);
-        answer = contentFileService.fileExists(0);
+        answer = await contentFileService.fileExists(0);
 
         //tests
         expect(answer).toBe(true);
@@ -148,16 +150,18 @@ describe("init () and fileExists() ", () => {
         let answer: boolean;
         let pathToLoad: string = "\\1\\1.json";
 
-        mockBackendFileService.fileExists.mockImplementationOnce((path: string): boolean => {
-            if (path === pathToLoad)
-                return true;
-            else
-                return false;
+        mockBackendFileService.fileExists.mockImplementationOnce((path: string): Promise<boolean> => {
+            return new Promise((resolve) =>{
+                if (path === pathToLoad)
+                    resolve(true)
+                else
+                    resolve(false)
+            });
         });
 
         //method to test
         contentFileService.init(pathToFolder);
-        answer = contentFileService.fileExists(2)
+        answer = await contentFileService.fileExists(2)
 
         //tests
         expect(answer).toBe(false);

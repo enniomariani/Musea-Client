@@ -29,8 +29,9 @@ export class ContentFileService {
 
     async fileExists(mediaStationId: number): Promise<boolean> {
         let pathToFile: string = this._createFilePath(mediaStationId);
-        console.log("FILE EXISTS? ", this._backendFileService.fileExists(pathToFile))
-        return this._backendFileService.fileExists(pathToFile);
+        let fileExists:boolean = await this._backendFileService.fileExists(pathToFile);
+        console.log("FILE EXISTS? ", fileExists)
+        return fileExists;
     }
 
     async loadFile(mediaStationId: number): Promise<any> {

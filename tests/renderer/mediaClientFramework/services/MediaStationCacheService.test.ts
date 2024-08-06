@@ -61,7 +61,7 @@ describe("cacheMediaStation() ", ()=> {
 
 describe("isMediaStationCached() ", ()=> {
 
-    it("should return true if fileExists from contentFileService returns true", () => {
+    it("should return true if fileExists from contentFileService returns true", async () => {
         // setup
         let mockMediaStation:MockMediaStation = new MockMediaStation(15);
         mockMediaStationRepo.findMediaStation.mockImplementation((id) =>{
@@ -75,13 +75,13 @@ describe("isMediaStationCached() ", ()=> {
         let answer:boolean;
 
         //method to test
-        answer = mediaStationCacheService.isMediaStationCached(12);
+        answer = await mediaStationCacheService.isMediaStationCached(12);
 
         //tests
         expect(answer).toBe(true);
     });
 
-    it("should return false if fileExists from contentFileService returns false", () => {
+    it("should return false if fileExists from contentFileService returns false", async () => {
         // setup
         let mockMediaStation:MockMediaStation = new MockMediaStation(15);
         mockMediaStationRepo.findMediaStation.mockImplementation((id) =>{
@@ -95,7 +95,7 @@ describe("isMediaStationCached() ", ()=> {
         let answer:boolean;
 
         //method to test
-        answer = mediaStationCacheService.isMediaStationCached(12);
+        answer = await mediaStationCacheService.isMediaStationCached(12);
 
         //tests
         expect(answer).toBe(false);
@@ -108,6 +108,6 @@ describe("isMediaStationCached() ", ()=> {
         })
 
         //tests
-        expect(()=>mediaStationCacheService.isMediaStationCached(12)).toThrow(Error("Mediastation with this ID does not exist: 12"));
+        expect(mediaStationCacheService.isMediaStationCached(12)).rejects.toThrow(Error("Mediastation with this ID does not exist: 12"));
     });
 });
