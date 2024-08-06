@@ -126,6 +126,7 @@ export class MediaStationNetworkService {
             let cachedMediaOfAllMediaStations: Map<number, ICachedMedia[]>;
             let allCachedMedia: ICachedMedia[];
             let allMediaOperationsByMediaApp: Map<MediaApp, ICachedMedia[]> = new Map();
+            let registration:boolean;
 
             //send all media to the media-apps
             cachedMediaOfAllMediaStations = this._mediaStationRepo.getAllCachedMedia();
@@ -151,14 +152,22 @@ export class MediaStationNetworkService {
 
                     connectionIsOpen = await this._networkService.openConnection(mediaApp.ip);
 
+                    if(!connectionIsOpen){
+                        onSyncStep("Verbindung mit Medien-App konnte nicht hergestellt werden!");
+                        allMediaAppsWereSynced = false;
+                        continue;
+                    }
+
+                    registration = await this._networkService.sendRegistration(mediaApp.ip);
+
                     //if the connection could be established to a media-app, send it all media that are cached
-                    if (connectionIsOpen) {
+                    if (registration) {
                         onSyncStep("Verbindung mit Medien-App hergestellt.");
                         await this._sendMediaFilesToMediaApp(mediaStation, allCachedMedia, mediaApp.ip, onSyncStep);
                         this._contentFileService.saveFile(mediaStationId, mediaStation.exportToJSON());
                     } else {
                         allMediaAppsWereSynced = false;
-                        onSyncStep("Verbindung mit Medien-App konnte nicht hergestellt werden!");
+                        onSyncStep("Medien-App ist erreichbar, aber von einer anderen App blockiert.");
                     }
                 }
             }
@@ -173,14 +182,26 @@ export class MediaStationNetworkService {
                 console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?", connectionIsOpen);
 
                 if (connectionIsOpen) {
-                    onSyncStep("Verbindung mit Controller-App hergestellt. Sende Daten...");
-                    json = mediaStation.exportToJSON();
+                    onSyncStep("Verbindung mit Controller-App hergestellt. Sende Registrierungs-Anfrage...");
 
-                    console.log("SEND CONTENTS-FILE: ", json);
+                    registration = await this._networkService.sendRegistration(ip);
 
-                    this._networkService.sendContentFileTo(ip, json);
+                    console.log("beim controller registriert? ", registration)
 
-                    this._contentFileService.deleteFile(mediaStationId);
+                    if(registration){
+                        onSyncStep("Verbindung mit Controller-App hergestellt. Sende Daten...");
+                        json = mediaStation.exportToJSON();
+
+                        console.log("SEND CONTENTS-FILE: ", json);
+
+                        this._networkService.sendContentFileTo(ip, json);
+
+                        this._contentFileService.deleteFile(mediaStationId);
+
+                        onSyncStep("Daten übermittelt.");
+                    }else
+                        onSyncStep("Controller-App ist erreichbar, aber von einer anderen App blockiert.");
+
                 } else
                     onSyncStep("Controller-App nicht erreichbar!");
             }
@@ -199,6 +220,7 @@ export class MediaStationNetworkService {
             onSyncStep("Medium wird gesendet: " + cachedMedia.fileExtension);
             console.log("SEND MEDIA: ", cachedMedia);
             fileData = await this._mediaStationRepo.getCachedMediaFile(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId, cachedMedia.fileExtension);
+            console.log("LOADED DATA: ", fileData)
 
             idOnMediaApp = await this._networkService.sendMediaFileToIp(ipMediaApp, cachedMedia.fileExtension, fileData);
             console.log("RECEIVED ID FROM MEDIA-APP: ", idOnMediaApp);
@@ -212,8 +234,10 @@ export class MediaStationNetworkService {
                 console.log("SET NEW ID FOR MEDIA: ", content.id, media.idOnMediaApp, idOnMediaApp)
 
                 this._mediaStationRepo.deleteCachedMedia(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId);
-            } else
+            } else{
+                console.log("MEDIUM KONNTE NICHT GESENDET ODER EMPFANGEN WERDEN!")
                 onSyncStep("Medium konnte nicht gesendet oder empfangen werden!");
+            }
         }
     }
 
