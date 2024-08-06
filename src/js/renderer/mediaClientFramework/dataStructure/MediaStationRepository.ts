@@ -126,8 +126,8 @@ export class MediaStationRepository{
         cachedMediaArr.push( {contentId: contentId, mediaAppId:mediaAppId, fileExtension:fileExtension});
     }
 
-    isMediaCached(mediaStationId: number, contentId:number, mediaAppId:number, fileExtension:string): boolean{
-        return this._mediaFileService.fileExists(mediaStationId, contentId, mediaAppId, fileExtension);
+    async isMediaCached(mediaStationId: number, contentId:number, mediaAppId:number, fileExtension:string): Promise<boolean>{
+        return await this._mediaFileService.fileExists(mediaStationId, contentId, mediaAppId, fileExtension);
     }
 
     deleteCachedMedia(mediaStationId: number, contentId:number, mediaAppId:number):void{

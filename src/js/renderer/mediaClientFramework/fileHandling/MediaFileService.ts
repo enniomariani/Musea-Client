@@ -36,9 +36,9 @@ export class MediaFileService {
         this._backendFileService.deleteFile(this._pathToFolder + pathToFile);
     }
 
-    fileExists(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):boolean{
+    async fileExists(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):Promise<boolean>{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
-        return this._backendFileService.fileExists(this._pathToFolder + pathToFile);
+        return await this._backendFileService.fileExists(this._pathToFolder + pathToFile);
     }
 
     async loadFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):Promise<Uint8Array | null>{

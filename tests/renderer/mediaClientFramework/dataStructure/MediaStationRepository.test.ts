@@ -418,13 +418,13 @@ describe("isMediaCached() ", ()=>{
         expect(mockMediaFileService.fileExists).toHaveBeenCalledWith(0, 1,2, "jpeg");
     });
 
-    it("should return what mediaFileService.fileExists returns", ()=>{
+    it("should return what mediaFileService.fileExists returns", async ()=>{
         //setup
         let answer:boolean;
         mockMediaFileService.fileExists.mockReturnValueOnce(true);
 
         //method to test
-        answer = mediaStationRepo.isMediaCached(0,1,2, "jpeg");
+        answer = await mediaStationRepo.isMediaCached(0,1,2, "jpeg");
 
         //tests
         expect(answer).toBe(true);
