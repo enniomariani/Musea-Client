@@ -3,9 +3,11 @@ import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepos
 import {
     MediaStationNetworkService
 } from "../../../../../src/js/renderer/mediaClientFramework/services/MediaStationNetworkService";
+import {MockContentFileService} from "../fileHandling/MockContentFileService";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
+const mockContentFileService:MockContentFileService = new MockContentFileService();
 
 
 export class MockMediaStationNetworkService extends MediaStationNetworkService{
@@ -14,7 +16,7 @@ export class MockMediaStationNetworkService extends MediaStationNetworkService{
     syncMediaStation: jest.Mock;
 
     constructor() {
-        super(mockNetworkService, mockMediaStationRepo);
+        super(mockNetworkService, mockMediaStationRepo, mockContentFileService);
         this.downloadContentsOfMediaStation = jest.fn();
         this.downloadOnlyMediaAppDataFromMediaStation = jest.fn();
         this.syncMediaStation = jest.fn();
