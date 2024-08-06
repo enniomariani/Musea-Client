@@ -15,17 +15,24 @@ export class ContentNetworkService{
         this._networkService = networkService;
     }
 
-    sendCommandPlay(mediaApps:Map<number, MediaApp>, contentId:number|null):void{
+    sendCommandPlay(mediaApp:MediaApp, mediaId:number|null):void{
         let command:string =  ContentNetworkService.COMMAND_PLAY;
 
-        if(contentId !== null)
-            command += "_" + contentId.toString();
+        if(mediaApp.ip === "")
+            console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
+        else{
+            if(mediaId !== null)
+                command += "_" + mediaId.toString();
 
-        this._sendCommandToAllMediaApps(mediaApps, command);
+            this._networkService.sendMediaControlTo(mediaApp.ip, command);
+        }
     }
 
-    sendCommandStop(mediaApps:Map<number, MediaApp>):void{
-        this._sendCommandToAllMediaApps(mediaApps, ContentNetworkService.COMMAND_STOP);
+    sendCommandStop(mediaApp:MediaApp):void{
+        if(mediaApp.ip === "")
+            console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
+        else
+            this._networkService.sendMediaControlTo(mediaApp.ip, ContentNetworkService.COMMAND_STOP);
     }
 
     sendCommandPause(mediaApps:Map<number, MediaApp>):void{

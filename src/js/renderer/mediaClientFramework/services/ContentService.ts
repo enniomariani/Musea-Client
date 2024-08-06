@@ -38,12 +38,21 @@ export class ContentService {
     sendCommandPlay(mediaStationId: number, contentId: number): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
-        this._contentNetworkService.sendCommandPlay(mediaStation.getAllMediaApps(), contentId);
+       let content:Content = this._contentManager.getContent(mediaStation, contentId);
+
+            for (const [key, item] of content.media) {
+                console.log("CHECK PLAY-CALL: ", item, item.idOnMediaApp)
+                if(item.idOnMediaApp !== -1)
+                    this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.mediaAppId), item.idOnMediaApp);
+                else
+                    this._contentNetworkService.sendCommandStop(mediaStation.getMediaApp(item.mediaAppId));
+            }
     }
 
     sendCommandStop(mediaStationId: number): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        this._contentNetworkService.sendCommandStop(mediaStation.getAllMediaApps());
+        for (const [key, item] of mediaStation.getAllMediaApps())
+                this._contentNetworkService.sendCommandStop(item);
     }
 
     sendCommandPause(mediaStationId: number): void {
