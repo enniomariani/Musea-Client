@@ -68,9 +68,13 @@ describe("loadMediaStations() ", ()=>{
 
     it("should call addMediaApp() for each mediastation which has a controller-app saved", async () =>{
         //setup
+        const idREturnedFrom2:number = 1100;
+        const idREturnedFrom3:number = 123222;
         const mediaStation1:MockMediaStation =new MockMediaStation(0);
         const mediaStation2:MockMediaStation =new MockMediaStation(1);
+        mediaStation2.getNextMediaAppId.mockReturnValueOnce(idREturnedFrom2);
         const mediaStation3:MockMediaStation =new MockMediaStation(2);
+        mediaStation3.getNextMediaAppId.mockReturnValueOnce(idREturnedFrom3);
         const addMediaStationSpy = jest.spyOn(mediaStationRepo, 'addMediaStation');
 
         addMediaStationSpy.mockImplementation((id:string)=>{
@@ -103,9 +107,9 @@ describe("loadMediaStations() ", ()=>{
         expect(mediaStationRepo.findMediaStation).toHaveBeenCalledTimes(3);
         expect(mediaStation1.addMediaApp).toHaveBeenCalledTimes(0);
         expect(mediaStation2.addMediaApp).toHaveBeenCalledTimes(1);
-        expect(mediaStation2.addMediaApp).toHaveBeenCalledWith(0, "Controller-App nicht erreichbar", "192.168.2.1", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation2.addMediaApp).toHaveBeenCalledWith(idREturnedFrom2, "Controller-App nicht erreichbar", "192.168.2.1", MediaApp.ROLE_CONTROLLER);
         expect(mediaStation3.addMediaApp).toHaveBeenCalledTimes(1);
-        expect(mediaStation3.addMediaApp).toHaveBeenCalledWith(0, "Controller-App nicht erreichbar", "192.168.2.100", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation3.addMediaApp).toHaveBeenCalledWith(idREturnedFrom3, "Controller-App nicht erreichbar", "192.168.2.100", MediaApp.ROLE_CONTROLLER);
     });
 
     it("should return the map it got from the loading-service", async () =>{

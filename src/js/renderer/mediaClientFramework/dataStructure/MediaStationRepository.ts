@@ -43,10 +43,10 @@ export class MediaStationRepository{
                 id = this.addMediaStation(key, false);
                 mediaStation = this.findMediaStation(id);
 
-                console.log("CHECK: ", key, controllerIp)
+                console.log("CHECK: ", id, key, controllerIp)
 
                 if(controllerIp)
-                    mediaStation.addMediaApp(0, "Controller-App nicht erreichbar", controllerIp, MediaApp.ROLE_CONTROLLER);
+                    mediaStation.addMediaApp(mediaStation.getNextMediaAppId(), "Controller-App nicht erreichbar", controllerIp, MediaApp.ROLE_CONTROLLER);
             });
         }
 
