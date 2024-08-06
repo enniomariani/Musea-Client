@@ -371,6 +371,10 @@ describe("syncMediaStation() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
 
+        mockNetworkService.sendRegistration.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistration.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistration.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+
         mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
     });
 
@@ -426,6 +430,25 @@ describe("syncMediaStation() ", () => {
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(6, "Medium konnte nicht gesendet oder empfangen werden!");
     });
 
+    it("should call the callback mockOnSyncStep with a text that the registration failed, if it failed for a media-app", async () => {
+        //setup
+        mockNetworkService.openConnection = jest.fn();
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistration = jest.fn();
+        mockNetworkService.sendRegistration.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistration.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
+        mockNetworkService.sendRegistration.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+
+
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(8, "Medien-App ist erreichbar, aber von einer anderen App blockiert.");
+    });
+
     it("call mediaStationRepo.deleteCachedMedia for every media that got succesfully sent to the media-app", async () => {
         //method to test
         await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
@@ -474,7 +497,26 @@ describe("syncMediaStation() ", () => {
         await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(14, "Verbindung mit Controller-App hergestellt. Sende Daten...");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(14, "Verbindung mit Controller-App hergestellt. Sende Registrierungs-Anfrage...");
+    });
+
+    it("should call the callback mockOnSyncStep with a text if the connection to the controller could be opened but the registration failed", async () => {
+        //setup
+        mockNetworkService.openConnection = jest.fn();
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistration = jest.fn();
+        mockNetworkService.sendRegistration.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistration.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistration.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
+
+
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(15, "Controller-App ist erreichbar, aber von einer anderen App blockiert.");
     });
 
     it("should pass the json-string and the controller-ip from the mediaStation object to the network-service, if controller is reachable and , if all mediaApps have been synced", async () => {
