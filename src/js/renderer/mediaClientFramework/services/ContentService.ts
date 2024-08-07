@@ -3,6 +3,7 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {Content} from "../dataStructure/Content";
 import {ContentManager} from "../dataManagers/ContentManager";
 import {ContentNetworkService} from "./ContentNetworkService";
+import {IMedia} from "../dataStructure/Media";
 
 
 export class ContentService {
@@ -34,25 +35,26 @@ export class ContentService {
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
-
+    //TO DO: ACTUALIZE TEST!
     sendCommandPlay(mediaStationId: number, contentId: number): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        let media:IMedia;
 
-       let content:Content = this._contentManager.getContent(mediaStation, contentId);
+        let content:Content = this._contentManager.getContent(mediaStation, contentId);
 
-            for (const [key, item] of content.media) {
-                console.log("CHECK PLAY-CALL: ", item, item.idOnMediaApp)
-                if(item.idOnMediaApp !== -1)
-                    this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.mediaAppId), item.idOnMediaApp);
-                else
-                    this._contentNetworkService.sendCommandStop(mediaStation.getMediaApp(item.mediaAppId));
-            }
+        for (const [key, item] of mediaStation.getAllMediaApps()){
+            media = content.media.get(item.id);
+            if(media && media.idOnMediaApp !== -1)
+                this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.id), media.idOnMediaApp);
+            else
+                this._contentNetworkService.sendCommandStop(mediaStation.getMediaApp(item.id));
+        }
     }
 
     sendCommandStop(mediaStationId: number): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         for (const [key, item] of mediaStation.getAllMediaApps())
-                this._contentNetworkService.sendCommandStop(item);
+            this._contentNetworkService.sendCommandStop(item);
     }
 
     sendCommandPause(mediaStationId: number): void {

@@ -184,6 +184,21 @@ describe("sendCommandPlay() ", ()=> {
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledWith(mediaApp1);
     });
 
+    it("should call contentNetworkService.sendCommandStop for all mediaApps where no media was defined", () => {
+        //setup
+        mockContentManager.getContent = jest.fn();
+        mockContentManager.getContent.mockReturnValue(mockContent);
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockContent.media.set(1, null)
+
+        //method to test
+        contentService.sendCommandPlay(mediaStationId,contentId);
+
+        //tests
+        expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledTimes(2);
+        expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledWith(mediaApp1);
+    });
+
     it("should throw an error if the mediaStationId could not be found", ()=>{
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
