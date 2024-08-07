@@ -2,6 +2,7 @@ import {MediaStation} from "./MediaStation";
 import {MediaStationLocalMetaData} from "../fileHandling/MediaStationLocalMetaData";
 import {MediaFileService} from "../fileHandling/MediaFileService";
 import {MediaApp} from "./MediaApp";
+import {ContentFileService} from "../fileHandling/ContentFileService";
 
 export interface ICachedMedia{
     contentId:number
@@ -16,21 +17,25 @@ export class MediaStationRepository{
 
     private _mediaStationMetaData:MediaStationLocalMetaData;
     private _mediaFileService:MediaFileService;
+    private _contentFileService:ContentFileService;
     private _mediaStationFactory: (id: number) => MediaStation;
 
     private _pathToMainFolder:string;
     private _cachedMedia:Map<number, ICachedMedia[]> = new Map();
 
-    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaFileService:MediaFileService = new MediaFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id)) {
+    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaFileService:MediaFileService = new MediaFileService(),contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id)) {
         this._mediaStationMetaData = mediaStationMetaData;
         this._pathToMainFolder = pathToMainFolder;
         this._mediaFileService = mediaFileService;
+        this._contentFileService = contentFileService;
         this._mediaStationFactory = mediaStationFactory;
 
         this._mediaFileService.init(this._pathToMainFolder)
+        this._contentFileService.init(this._pathToMainFolder)
         this._mediaStationMetaData.init(this._pathToMainFolder + "savedMediaStations.json")
     }
 
+    //TO DO: also load the cached media! Best approach: get all files in the folder of the mediastation
     async loadMediaStations():Promise<Map<string, string>>{
         let loadedMetaData:Map<string, string>;
         let mediaStation:MediaStation;
@@ -39,15 +44,17 @@ export class MediaStationRepository{
         loadedMetaData = await this._mediaStationMetaData.load();
 
         if(loadedMetaData){
-            loadedMetaData.forEach((controllerIp, key) => {
+            for (let [key, controllerIp] of loadedMetaData) {
                 id = this.addMediaStation(key, false);
                 mediaStation = this.findMediaStation(id);
 
                 console.log("CHECK: ", id, key, controllerIp)
 
-                if(controllerIp)
+                if(await this.isMediaStationCached(id))
+                    mediaStation.importFromJSON(await this._contentFileService.loadFile(id));
+                else if(controllerIp)
                     mediaStation.addMediaApp(mediaStation.getNextMediaAppId(), "Controller-App nicht erreichbar", controllerIp, MediaApp.ROLE_CONTROLLER);
-            });
+            }
         }
 
         return new Promise((resolve) =>{resolve(loadedMetaData)});
@@ -85,8 +92,12 @@ export class MediaStationRepository{
      *
      * @param {number} id
      */
-    deleteMediaStation(id:number):void {
+    async deleteMediaStation(id:number):Promise<void> {
         let mediaArr:ICachedMedia[];
+
+        if(await this.isMediaStationCached(id))
+            this.removeCachedMediaStation(id);
+
         this._allMediaStations.delete(id);
         this._mediaStationMetaData.save(this.getNameControllerMap());
 
@@ -112,6 +123,30 @@ export class MediaStationRepository{
         this.updateMediaStation(mediaStation);
 
         this._mediaStationMetaData.save(this.getNameControllerMap());
+    }
+
+    cacheMediaStation(id:number):void{
+        let mediaStation:MediaStation = this._allMediaStations.get(id);
+        if(!mediaStation)
+            throw new Error(String("Caching MediaStation not possible, because ID does not exist in the repo: "+ id));
+
+        this._contentFileService.saveFile(id,mediaStation.exportToJSON() );
+    }
+
+    removeCachedMediaStation(id:number):void{
+        let mediaStation:MediaStation = this._allMediaStations.get(id);
+        if(!mediaStation)
+            throw new Error(String("Deleting MediaStation-Cache not possible, because ID does not exist in the repo: "+ id));
+
+        this._contentFileService.deleteFile(id);
+    }
+
+    async isMediaStationCached(id:number):Promise<boolean>{
+        let mediaStation:MediaStation = this._allMediaStations.get(id);
+        if(!mediaStation)
+            throw new Error(String("Checking MediaStation-Cache not possible, because ID does not exist in the repo: "+ id));
+
+        return await this._contentFileService.fileExists(id);
     }
 
     cacheMedia(mediaStationId: number, contentId:number, mediaAppId:number,fileExtension:string, payload:Uint8Array):void{

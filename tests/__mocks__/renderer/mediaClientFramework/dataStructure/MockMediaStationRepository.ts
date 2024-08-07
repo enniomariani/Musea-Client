@@ -3,9 +3,11 @@ import {
 } from "../../../../../src/js/renderer/mediaClientFramework/dataStructure/MediaStationRepository";
 import {MockMediaStationLocalMetaData} from "../fileHandling/MockMediaStationLocalMetaData";
 import {MockMediaFileService} from "../fileHandling/MockMediaFileService";
+import {MockContentFileService} from "../fileHandling/MockContentFileService";
 
 const mockMediaStationLocalMetaData:MockMediaStationLocalMetaData = new MockMediaStationLocalMetaData();
 const mockMediaFileService:MockMediaFileService = new MockMediaFileService();
+const mockContentFileService:MockContentFileService = new MockContentFileService();
 
 export class MockMediaStationRepository extends MediaStationRepository{
 
@@ -21,8 +23,12 @@ export class MockMediaStationRepository extends MediaStationRepository{
     getCachedMediaFile: jest.Mock;
     getAllCachedMedia: jest.Mock;
 
+    cacheMediaStation: jest.Mock;
+    removeCachedMediaStation: jest.Mock;
+    isMediaStationCached: jest.Mock;
+
     constructor() {
-        super(mockMediaStationLocalMetaData, "fakePathToMediaFolder", mockMediaFileService);
+        super(mockMediaStationLocalMetaData, "fakePathToMediaFolder", mockMediaFileService, mockContentFileService);
         this.loadMediaStations = jest.fn();
         this.addMediaStation = jest.fn();
         this.findMediaStation = jest.fn();
@@ -34,5 +40,9 @@ export class MockMediaStationRepository extends MediaStationRepository{
         this.deleteCachedMedia = jest.fn();
         this.getCachedMediaFile = jest.fn();
         this.getAllCachedMedia = jest.fn();
+
+        this.cacheMediaStation = jest.fn();
+        this.removeCachedMediaStation = jest.fn();
+        this.isMediaStationCached = jest.fn();
     }
 }

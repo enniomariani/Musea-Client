@@ -2,9 +2,6 @@ import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepos
 import {
     MediaStationCacheService
 } from "../../../../../src/js/renderer/mediaClientFramework/services/MediaStationCacheService";
-import {MockContentFileService} from "../fileHandling/MockContentFileService";
-
-const mockContentFileService:MockContentFileService = new MockContentFileService();
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
 
 
@@ -13,7 +10,7 @@ export class MockMediaStationCacheService extends MediaStationCacheService {
     isMediaStationCached: jest.Mock;
 
     constructor() {
-        super(mockContentFileService, mockMediaStationRepo);
+        super(mockMediaStationRepo);
         this.cacheMediaStation = jest.fn();
         this.isMediaStationCached = jest.fn();
     }

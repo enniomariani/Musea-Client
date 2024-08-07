@@ -20,12 +20,10 @@ export class MediaStationNetworkService {
 
     private _networkService: NetworkService;
     private _mediaStationRepo: MediaStationRepository;
-    private _contentFileService:ContentFileService;
 
-    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository, contentFileService:ContentFileService) {
+    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository) {
         this._networkService = networkService;
         this._mediaStationRepo = mediaStationRepo;
-        this._contentFileService = contentFileService;
     }
 
     /**
@@ -71,9 +69,24 @@ export class MediaStationNetworkService {
                 return;
             }
 
+            let pingResult:boolean = await this._networkService.pcRespondsToPing(controllerIP);
+
+            if(!pingResult) {
+                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
+                return;
+            }
+
             let connection: boolean = await this._networkService.openConnection(controllerIP);
 
             if (!connection) {
+                console.log("NO CONNECTION")
+                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
+                return;
+            }
+
+            let appIsOnline:boolean = await this._networkService.isMediaAppOnline(controllerIP);
+
+            if(!appIsOnline) {
                 resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
                 return;
             }
@@ -81,6 +94,7 @@ export class MediaStationNetworkService {
             let registration: boolean = await this._networkService.sendRegistration(controllerIP);
 
             if (!registration) {
+                console.log("NO registration")
                 resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
                 return;
             }
@@ -113,7 +127,7 @@ export class MediaStationNetworkService {
      * @param {IOnSyncStep} onSyncStep  Is called after every new network-operation and receives a string with info about what is going on
      * @returns {Promise<void>}
      */
-    async syncMediaStation(mediaStationId: number, onSyncStep: IOnSyncStep): Promise<void> {
+    async syncMediaStation(mediaStationId: number, onSyncStep: IOnSyncStep): Promise<boolean> {
         console.log("SYNC MEDIA STATION: ", mediaStationId)
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let json: string;
@@ -164,7 +178,7 @@ export class MediaStationNetworkService {
                     if (registration) {
                         onSyncStep("Verbindung mit Medien-App hergestellt.");
                         await this._sendMediaFilesToMediaApp(mediaStation, allCachedMedia, mediaApp.ip, onSyncStep);
-                        this._contentFileService.saveFile(mediaStationId, mediaStation.exportToJSON());
+                        this._mediaStationRepo.cacheMediaStation(mediaStationId);
                     } else {
                         allMediaAppsWereSynced = false;
                         onSyncStep("Medien-App ist erreichbar, aber von einer anderen App blockiert.");
@@ -196,9 +210,11 @@ export class MediaStationNetworkService {
 
                         this._networkService.sendContentFileTo(ip, json);
 
-                        this._contentFileService.deleteFile(mediaStationId);
+                        this._mediaStationRepo.removeCachedMediaStation(mediaStationId);
 
                         onSyncStep("Daten übermittelt.");
+                        resolve(true)
+                        return;
                     }else
                         onSyncStep("Controller-App ist erreichbar, aber von einer anderen App blockiert.");
 
@@ -206,7 +222,7 @@ export class MediaStationNetworkService {
                     onSyncStep("Controller-App nicht erreichbar!");
             }
 
-            resolve();
+            resolve(false);
         });
     }
 

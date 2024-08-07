@@ -7,8 +7,6 @@ import {MockContentFileService} from "../fileHandling/MockContentFileService";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
-const mockContentFileService:MockContentFileService = new MockContentFileService();
-
 
 export class MockMediaStationNetworkService extends MediaStationNetworkService{
     downloadContentsOfMediaStation: jest.Mock;
@@ -16,7 +14,7 @@ export class MockMediaStationNetworkService extends MediaStationNetworkService{
     syncMediaStation: jest.Mock;
 
     constructor() {
-        super(mockNetworkService, mockMediaStationRepo, mockContentFileService);
+        super(mockNetworkService, mockMediaStationRepo);
         this.downloadContentsOfMediaStation = jest.fn();
         this.downloadOnlyMediaAppDataFromMediaStation = jest.fn();
         this.syncMediaStation = jest.fn();

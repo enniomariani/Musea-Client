@@ -39,8 +39,6 @@ export class MediaClientFramework implements IMediaClientFramework {
     protected _contentService: ContentService;
     protected _mediaService: MediaService;
 
-    protected _contentFileService: ContentFileService;
-
     constructor(pathToDataFolder: string) {
         this._mediaStationMetaData = new MediaStationLocalMetaData();
 
@@ -50,12 +48,9 @@ export class MediaClientFramework implements IMediaClientFramework {
         this._networkService = new NetworkService(this._networkConnectionHandler);
         this._contentNetworkService = new ContentNetworkService(this._networkService);
 
-        this._contentFileService = new ContentFileService();
-        this._contentFileService.init(pathToDataFolder);
-
         this._mediaStationDataService = new MediaStationDataService(this._mediaStationRepository);
-        this._mediaStationNetworkService = new MediaStationNetworkService(this._networkService, this._mediaStationRepository, this._contentFileService);
-        this._mediaStationCacheService = new MediaStationCacheService(this._contentFileService, this._mediaStationRepository);
+        this._mediaStationNetworkService = new MediaStationNetworkService(this._networkService, this._mediaStationRepository);
+        this._mediaStationCacheService = new MediaStationCacheService(this._mediaStationRepository);
         this._mediaAppService = new MediaAppService(this._mediaStationRepository, this._networkService);
 
 

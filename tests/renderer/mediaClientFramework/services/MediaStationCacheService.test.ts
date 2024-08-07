@@ -12,13 +12,11 @@ import {
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
 
 let mediaStationCacheService:MediaStationCacheService;
-let mockContentFileService:MockContentFileService;
 let mockMediaStationRepo:MockMediaStationRepository;
 
 beforeEach(() => {
-    mockContentFileService = new MockContentFileService();
     mockMediaStationRepo = new MockMediaStationRepository();
-    mediaStationCacheService = new MediaStationCacheService(mockContentFileService, mockMediaStationRepo);
+    mediaStationCacheService = new MediaStationCacheService(mockMediaStationRepo);
 });
 
 afterEach(() => {
@@ -29,12 +27,7 @@ describe("cacheMediaStation() ", ()=> {
 
     it("should call saveFile from contentFileService with correct parameters", () => {
         // setup
-        let mockJSON:any = {
-            test: "asfasf",
-            test2: true
-        };
         let mockMediaStation:MockMediaStation = new MockMediaStation(12);
-        mockMediaStation.exportToJSON.mockReturnValueOnce(mockJSON)
         mockMediaStationRepo.findMediaStation.mockImplementation((id) =>{
             if(id === 12)
                 return mockMediaStation;
@@ -44,8 +37,8 @@ describe("cacheMediaStation() ", ()=> {
         mediaStationCacheService.cacheMediaStation(12);
 
         //tests
-        expect(mockContentFileService.saveFile).toHaveBeenCalledTimes(1);
-        expect(mockContentFileService.saveFile).toHaveBeenCalledWith(12, mockJSON);
+        expect(mockMediaStationRepo.cacheMediaStation).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.cacheMediaStation).toHaveBeenCalledWith(12);
     });
 
     it("should throw an error if the mediaStationId could not be found", async ()=>{
@@ -61,14 +54,14 @@ describe("cacheMediaStation() ", ()=> {
 
 describe("isMediaStationCached() ", ()=> {
 
-    it("should return true if fileExists from contentFileService returns true", async () => {
+    it("should return true if isMediaStationCached from mediaStationRepo returns true", async () => {
         // setup
         let mockMediaStation:MockMediaStation = new MockMediaStation(15);
         mockMediaStationRepo.findMediaStation.mockImplementation((id) =>{
             if(id === 12)
                 return mockMediaStation;
         });
-        mockContentFileService.fileExists.mockImplementationOnce((id) =>{
+        mockMediaStationRepo.isMediaStationCached.mockImplementationOnce((id) =>{
             if(id === 12)
                 return true;
         })
@@ -81,14 +74,14 @@ describe("isMediaStationCached() ", ()=> {
         expect(answer).toBe(true);
     });
 
-    it("should return false if fileExists from contentFileService returns false", async () => {
+    it("should return false if isMediaStationCached from mediaStationRepo returns false", async () => {
         // setup
         let mockMediaStation:MockMediaStation = new MockMediaStation(15);
         mockMediaStationRepo.findMediaStation.mockImplementation((id) =>{
             if(id === 12)
                 return mockMediaStation;
         });
-        mockContentFileService.fileExists.mockImplementationOnce((id) =>{
+        mockMediaStationRepo.isMediaStationCached.mockImplementationOnce((id) =>{
             if(id === 12)
                 return false;
         })

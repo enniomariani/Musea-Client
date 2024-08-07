@@ -9,16 +9,24 @@ import {
 import {MockMediaFileService} from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockMediaFileService";
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
 import {MediaApp} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/MediaApp";
+import {
+    MockContentFileService
+} from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockContentFileService";
+import {
+    MockMediaStationRepository
+} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
 
 let mediaStationRepo:MediaStationRepository;
 let mockMediaFileService:MockMediaFileService;
+let mockContentFileService:MockContentFileService;
 let mockMediaStationLocalMetaData:MockMediaStationLocalMetaData;
 
 beforeEach(() => {
     mockMediaStationLocalMetaData = new MockMediaStationLocalMetaData();
     mockMediaFileService = new MockMediaFileService();
+    mockContentFileService = new MockContentFileService();
 
-    mediaStationRepo = new MediaStationRepository(mockMediaStationLocalMetaData, "fakePathToDataFolder", mockMediaFileService,
+    mediaStationRepo = new MediaStationRepository(mockMediaStationLocalMetaData, "fakePathToDataFolder", mockMediaFileService,mockContentFileService,
         (id:number) => new MockMediaStation(id));
 });
 
@@ -96,6 +104,9 @@ describe("loadMediaStations() ", ()=>{
                 return mediaStation3;
         });
 
+        const isMediaStationCachedSpy = jest.spyOn(mediaStationRepo, 'isMediaStationCached').
+        mockReturnValue(new Promise((resolve)=>{resolve(false)}));
+
         mockMediaStationLocalMetaData.load.mockImplementation(()=>{
             return returnedMetaData;
         });
@@ -125,6 +136,59 @@ describe("loadMediaStations() ", ()=>{
 
         //tests
         expect(answer).toStrictEqual(returnedMetaData);
+    });
+
+    it("should call loadFile from cached media station if media station was cached", async () =>{
+        //setup
+        let answer:Map<string, string>;
+        let mockJSON:any = {
+            testkey: "asdfadsf",
+            testKEy2: true
+        }
+        let mockMediaStation1:MockMediaStation = new MockMediaStation(0);
+        let mockMediaStation2:MockMediaStation = new MockMediaStation(1);
+        let mockMediaStation3:MockMediaStation = new MockMediaStation(2);
+
+        mockMediaStationLocalMetaData.load.mockImplementation(()=>{
+            return returnedMetaData;
+        });
+
+        const isMediaStationCachedSpy = jest.spyOn(mediaStationRepo, 'isMediaStationCached').mockImplementation(async (id:number)=>{
+            return new Promise((resolve)=>{
+                if(id === 1)
+                    resolve(true);
+                else
+                    resolve(false);
+            });
+        });
+
+        const addMediaStationSpy = jest.spyOn(mediaStationRepo, 'addMediaStation').mockImplementation((name:string) =>{
+            if(name === key1)
+                return 0;
+            else if(name === key2)
+                return 1;
+            else if(name === key3)
+                return 2;
+        })
+
+        const findMediaStationSpy = jest.spyOn(mediaStationRepo, 'findMediaStation').mockImplementation((id:number) =>{
+            if(id === 0)
+                return mockMediaStation1;
+            else if(id === 1)
+                return mockMediaStation2;
+            else if(id === 2)
+                return mockMediaStation3;
+        })
+
+        mockContentFileService.loadFile.mockReturnValueOnce(mockJSON);
+
+
+        //method to test
+        answer = await mediaStationRepo.loadMediaStations();
+
+        //tests
+        expect(mockMediaStation2.importFromJSON).toHaveBeenCalledTimes(1);
+        expect(mockMediaStation2.importFromJSON).toHaveBeenCalledWith(mockJSON);
     });
 
     it("should not throw an error if loaded map is empty", () =>{
@@ -216,7 +280,7 @@ describe("findMediaStation() ", ()=>{
 });
 
 describe("deleteMediaStation() ", ()=>{
-    it("should remove the mediastation-object from the repository", ()=>{
+    it("should remove the mediastation-object from the repository", async ()=>{
         //setup
         let receivedId:number;
         let nameMediaStation:string = "testName";
@@ -226,14 +290,14 @@ describe("deleteMediaStation() ", ()=>{
         mediaStationRepo.addMediaStation("testName2");
 
         //method to test
-        mediaStationRepo.deleteMediaStation(receivedId);
+        await mediaStationRepo.deleteMediaStation(receivedId);
         foundMediaStation = mediaStationRepo.findMediaStation(receivedId);
 
         //tests
         expect(foundMediaStation).toEqual(null);
     });
 
-    it("should call mediaMetaDataService.save() with an empty Map if there was only one mediastation", ()=>{
+    it("should call mediaMetaDataService.save() with an empty Map if there was only one mediastation", async ()=>{
         //setup
         let receivedId:number;
         let nameMediaStation:string = "testName";
@@ -242,14 +306,14 @@ describe("deleteMediaStation() ", ()=>{
         receivedId = mediaStationRepo.addMediaStation(nameMediaStation);
 
         //method to test
-        mediaStationRepo.deleteMediaStation(receivedId);
+        await mediaStationRepo.deleteMediaStation(receivedId);
 
         //tests
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(2)
         expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(2, mapToSave)
     });
 
-    it("should call mediaMetaDataService.save() with a map with 1 entry if there were 2 mediastations", ()=>{
+    it("should call mediaMetaDataService.save() with a map with 1 entry if there were 2 mediastations", async ()=>{
         //setup
         let receivedId:number;
         let mapToSave:Map<string, string> = new Map();
@@ -259,14 +323,14 @@ describe("deleteMediaStation() ", ()=>{
         receivedId = mediaStationRepo.addMediaStation("testName2");
 
         //method to test
-        mediaStationRepo.deleteMediaStation(receivedId);
+        await mediaStationRepo.deleteMediaStation(receivedId);
 
         //tests
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(3)
         expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(3, mapToSave)
     });
 
-    it("should remove any cached media if there are some and clear the cachedMedia map", ()=>{
+    it("should remove any cached media if there are some and clear the cachedMedia map", async ()=>{
         //setup
         let receivedId:number;
         let mapToSave:Map<string, string> = new Map();
@@ -277,13 +341,43 @@ describe("deleteMediaStation() ", ()=>{
         mediaStationRepo.getAllCachedMedia().set(receivedId, [{contentId: 0, mediaAppId: 2, fileExtension: "jpeg"}, {contentId: 22, mediaAppId: 23, fileExtension: "mp4"}])
 
         //method to test
-        mediaStationRepo.deleteMediaStation(receivedId);
+        await mediaStationRepo.deleteMediaStation(receivedId);
 
         //tests
         expect(mockMediaFileService.deleteFile).toHaveBeenCalledTimes(2);
         expect(mockMediaFileService.deleteFile).toHaveBeenNthCalledWith(1, receivedId, 0, 2, "jpeg");
         expect(mockMediaFileService.deleteFile).toHaveBeenNthCalledWith(2, receivedId, 22, 23, "mp4");
         expect(mediaStationRepo.getAllCachedMedia().get(receivedId)).toBeUndefined();
+    });
+
+    it("should remove cached mediastation if it was cached", async ()=>{
+        //setup
+        let receivedId:number;
+        let mapToSave:Map<string, string> = new Map();
+        mapToSave.set("testName1", "")
+
+        mediaStationRepo.addMediaStation("testName1");
+        receivedId = mediaStationRepo.addMediaStation("testName2");
+
+        let spy = jest.spyOn(mediaStationRepo, 'isMediaStationCached').mockImplementation(async (id) =>{
+            return new Promise(resolve =>{
+                if(id === receivedId)
+                    resolve(true)
+                else
+                    resolve(false)
+            })
+
+        });
+
+        let spyRemoveCachedStation = jest.spyOn(mediaStationRepo, 'removeCachedMediaStation')
+
+
+        //method to test
+        await mediaStationRepo.deleteMediaStation(receivedId);
+
+        //tests
+        expect(spyRemoveCachedStation).toHaveBeenCalledTimes(1);
+        expect(spyRemoveCachedStation).toHaveBeenCalledWith(receivedId);
     });
 });
 
@@ -507,4 +601,76 @@ describe("getCachedMediaFile() ", ()=>{
         //tests
         expect(answer).toEqual(data);
     });
+});
+
+describe("cacheMediaStation() ", ()=>{
+    it("should call contentFileService.saveFile with the exported JSON from the mediaStation", async ()=>{
+        //setup
+        let mockJSON:any = {
+            test: "teststring",
+            testBoolean: false
+        }
+        let receivedId:number = mediaStationRepo.addMediaStation("testName1");
+        let mediaStation:MockMediaStation = mediaStationRepo.findMediaStation(receivedId) as MockMediaStation;
+        mediaStation.exportToJSON.mockReturnValue(mockJSON);
+
+        //method to test
+        await mediaStationRepo.cacheMediaStation(0);
+
+        //tests
+        expect(mockContentFileService.saveFile).toHaveBeenCalledTimes(1);
+        expect(mockContentFileService.saveFile).toHaveBeenCalledWith(0, mockJSON);
+    })
+
+    it("throw an error if mediastation id does not exist", ()=>{
+        //setup
+        let spy = jest.spyOn(mediaStationRepo, 'findMediaStation').mockReturnValue(null);
+
+        //method to test
+        expect(()=>mediaStationRepo.cacheMediaStation(0)).toThrow(Error("Caching MediaStation not possible, because ID does not exist in the repo: 0"));
+    })
+});
+
+describe("removeCachedMediaStation() ", ()=>{
+    it("should call contentFileService.deleteFile with the correct ID", async ()=>{
+        //setup
+        let receivedId:number = mediaStationRepo.addMediaStation("testName1");
+        let mediaStation:MockMediaStation = mediaStationRepo.findMediaStation(receivedId) as MockMediaStation;
+
+        //method to test
+        await mediaStationRepo.removeCachedMediaStation(0);
+
+        //tests
+        expect(mockContentFileService.deleteFile).toHaveBeenCalledTimes(1);
+        expect(mockContentFileService.deleteFile).toHaveBeenCalledWith(0);
+    })
+
+    it("throw an error if mediastation id does not exist", ()=>{
+        //method to test
+        expect(()=>mediaStationRepo.removeCachedMediaStation(0)).toThrow(Error("Deleting MediaStation-Cache not possible, because ID does not exist in the repo: 0"));
+    })
+});
+
+describe("isMediaStationCached() ", ()=>{
+    it("should call contentFileService.deleteFile with the correct ID", async ()=>{
+        //setup
+        let receivedId:number = mediaStationRepo.addMediaStation("testName1");
+        let mediaStation:MockMediaStation = mediaStationRepo.findMediaStation(receivedId) as MockMediaStation;
+        mockContentFileService.fileExists.mockImplementationOnce((id) =>{
+            if(id === 0)
+                return true;
+        });
+        let answer:boolean;
+
+        //method to test
+        answer = await mediaStationRepo.isMediaStationCached(0);
+
+        //tests
+        expect(answer).toBe(true)
+    })
+
+    it("throw an error if mediastation id does not exist", async ()=>{
+        //method to test
+        await expect(mediaStationRepo.isMediaStationCached(0)).rejects.toThrow(Error("Checking MediaStation-Cache not possible, because ID does not exist in the repo: 0"));
+    })
 });

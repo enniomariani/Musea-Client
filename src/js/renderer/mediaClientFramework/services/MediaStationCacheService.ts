@@ -1,15 +1,12 @@
-import {ContentFileService} from "../fileHandling/ContentFileService";
 import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
 
 
 export class MediaStationCacheService{
 
-    private _contentFileService:ContentFileService;
     private _mediaStationRepository:MediaStationRepository;
 
-    constructor(contentFileService:ContentFileService, mediaStationRepo:MediaStationRepository) {
-        this._contentFileService = contentFileService;
+    constructor(mediaStationRepo:MediaStationRepository) {
         this._mediaStationRepository = mediaStationRepo;
     }
 
@@ -19,7 +16,7 @@ export class MediaStationCacheService{
         if(!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + id);
 
-        this._contentFileService.saveFile(id, mediaStation.exportToJSON());
+        this._mediaStationRepository.cacheMediaStation(id);
     }
 
     async isMediaStationCached(id:number):Promise<boolean>{
@@ -28,6 +25,6 @@ export class MediaStationCacheService{
         if(!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + id);
 
-        return await this._contentFileService.fileExists(id);
+        return await this._mediaStationRepository.isMediaStationCached(id);
     }
 }
