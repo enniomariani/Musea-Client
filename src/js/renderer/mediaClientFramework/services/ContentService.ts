@@ -35,7 +35,7 @@ export class ContentService {
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
-    //TO DO: ACTUALIZE TEST!
+
     sendCommandPlay(mediaStationId: number, contentId: number): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let media:IMedia;
