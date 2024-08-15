@@ -4,15 +4,11 @@ import {
     MediaStationLocalMetaData
 } from "../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaStationLocalMetaData";
 import {file} from "@babel/types";
+import {MockBackendFileService} from "../../../__mocks__/main/MockBackendFileService";
 
 let mediaStationLocalMetaData: MediaStationLocalMetaData;
 
-const mockBackendFileService: jest.Mocked<IBackendFileService> = {
-    saveFile: jest.fn(),
-    loadFile: jest.fn(),
-    deleteFile: jest.fn(),
-    fileExists: jest.fn()
-}
+let mockBackendFileService:MockBackendFileService;
 
 const pathToSave: string = "path-to-folder/mediastations.json";
 let data: Map<string, string>;
@@ -41,6 +37,8 @@ beforeEach(() => {
 
     jsonToSaveStr = JSON.stringify(jsonToSave);
     fileData = textEncoder.encode(jsonToSaveStr);
+
+    mockBackendFileService = new MockBackendFileService();
     mediaStationLocalMetaData = new MediaStationLocalMetaData(mockBackendFileService);
 });
 

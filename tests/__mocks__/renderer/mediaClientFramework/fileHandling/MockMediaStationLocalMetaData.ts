@@ -1,13 +1,7 @@
 import {
     MediaStationLocalMetaData
 } from "../../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaStationLocalMetaData";
-
-const mockBackendFileService: jest.Mocked<IBackendFileService> = {
-    saveFile: jest.fn(),
-    loadFile: jest.fn(),
-    deleteFile: jest.fn(),
-    fileExists: jest.fn()
-}
+import {MockBackendFileService} from "../../../main/MockBackendFileService";
 
 export class MockMediaStationLocalMetaData extends MediaStationLocalMetaData{
 
@@ -15,7 +9,7 @@ export class MockMediaStationLocalMetaData extends MediaStationLocalMetaData{
     save: jest.Mock;
 
     constructor() {
-        super(mockBackendFileService);
+        super(new MockBackendFileService());
         this.load = jest.fn();
         this.save = jest.fn();
     }

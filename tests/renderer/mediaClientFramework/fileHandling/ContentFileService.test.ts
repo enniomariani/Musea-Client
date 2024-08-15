@@ -1,14 +1,10 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {ContentFileService} from "../../../../src/js/renderer/mediaClientFramework/fileHandling/ContentFileService";
+import {MockBackendFileService} from "../../../__mocks__/main/MockBackendFileService";
 
 let contentFileService: ContentFileService;
 
-const mockBackendFileService: jest.Mocked<IBackendFileService> = {
-    saveFile: jest.fn(),
-    loadFile: jest.fn(),
-    deleteFile: jest.fn(),
-    fileExists: jest.fn()
-}
+let mockBackendFileService: MockBackendFileService;
 
 const pathToFolder: string = "path-to-folder";
 let jsonToSave: any;
@@ -30,6 +26,8 @@ beforeEach(() => {
 
     jsonToSaveStr = JSON.stringify(jsonToSave);
     fileData = textEncoder.encode(jsonToSaveStr);
+
+    mockBackendFileService = new MockBackendFileService();
 
     contentFileService = new ContentFileService(mockBackendFileService);
 });

@@ -1,15 +1,6 @@
-import {
-    MediaFileService
-} from "../../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaFileService";
 import {ContentFileService} from "../../../../../src/js/renderer/mediaClientFramework/fileHandling/ContentFileService";
+import {MockBackendFileService} from "../../../main/MockBackendFileService";
 
-const mockBackendFileService: jest.Mocked<IBackendFileService> = {
-    saveFile: jest.fn(),
-    loadFile: jest.fn(),
-    deleteFile: jest.fn(),
-    fileExists: jest.fn(),
-    getAllFileNamesInFolder: jest.fn()
-}
 
 export class MockContentFileService extends ContentFileService{
 
@@ -20,7 +11,7 @@ export class MockContentFileService extends ContentFileService{
     loadFile: jest.Mock;
 
     constructor() {
-        super(mockBackendFileService);
+        super(new MockBackendFileService());
         this.init = jest.fn();
         this.saveFile = jest.fn();
         this.deleteFile = jest.fn();
