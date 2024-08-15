@@ -1,9 +1,7 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MediaFileService} from "../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaFileService";
 import {
     MediaStationLocalMetaData
 } from "../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaStationLocalMetaData";
-import {file} from "@babel/types";
 
 let mediaStationLocalMetaData: MediaStationLocalMetaData;
 
@@ -11,7 +9,8 @@ const mockBackendFileService: jest.Mocked<IBackendFileService> = {
     saveFile: jest.fn(),
     loadFile: jest.fn(),
     deleteFile: jest.fn(),
-    fileExists: jest.fn()
+    fileExists: jest.fn(),
+    getAllFileNamesInFolder: jest.fn()
 }
 
 const pathToSave: string = "path-to-folder/mediastations.json";
