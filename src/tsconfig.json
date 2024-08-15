@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig-base.json",
+  "compilerOptions": {
+    "outDir": "../build",
+    "rootDir": ".",
+    "types": ["jest"],
+  },
+  "compileOnSave": true,
+  "include": [
+    "js/**/*.ts", "js/**/*.js"
+  ],
+  "exclude": [
+    "../tests"
+  ]
+}
