@@ -35,6 +35,7 @@ export class MediaStationRepository{
         this._mediaStationMetaData.init(this._pathToMainFolder + "savedMediaStations.json")
     }
 
+    //TO DO: also load the cached media! Best approach: get all files in the folder of the mediastation
     async loadMediaStations():Promise<Map<string, string>>{
         let loadedMetaData:Map<string, string>;
         let mediaStation:MediaStation;
@@ -46,8 +47,6 @@ export class MediaStationRepository{
             for (let [key, controllerIp] of loadedMetaData) {
                 id = this.addMediaStation(key, false);
                 mediaStation = this.findMediaStation(id);
-
-                this._cachedMedia.set(id, await this._mediaFileService.getAllCachedMedia(id));
 
                 console.log("CHECK: ", id, key, controllerIp)
 
