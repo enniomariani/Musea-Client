@@ -10,6 +10,7 @@ export class MockMediaFileService extends MediaFileService{
     deleteFile: jest.Mock;
     fileExists: jest.Mock;
     loadFile: jest.Mock;
+    getAllCachedMedia: jest.Mock;
 
     constructor() {
         super(new MockBackendFileService());
@@ -18,5 +19,6 @@ export class MockMediaFileService extends MediaFileService{
         this.deleteFile = jest.fn();
         this.fileExists = jest.fn();
         this.loadFile = jest.fn();
+        this.getAllCachedMedia = jest.fn();
     }
 }

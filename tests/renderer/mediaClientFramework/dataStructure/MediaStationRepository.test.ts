@@ -1,20 +1,18 @@
 import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
 import {
-    MediaStationRepository
-} from "../../../../src/js/mcf/renderer/dataStructure/MediaStationRepository";
-import {MediaStation} from "../../../../src/js/mcf/renderer/dataStructure/MediaStation";
-import {
     MockMediaStationLocalMetaData
 } from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockMediaStationLocalMetaData";
 import {MockMediaFileService} from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockMediaFileService";
 import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
-import {MediaApp} from "../../../../src/js/mcf/renderer/dataStructure/MediaApp";
 import {
     MockContentFileService
 } from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockContentFileService";
+import {MediaApp} from "../../../../src/js/mcf/renderer/dataStructure/MediaApp";
+import {MediaStation} from "../../../../src/js/mcf/renderer/dataStructure/MediaStation";
 import {
-    MockMediaStationRepository
-} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
+    ICachedMedia,
+    MediaStationRepository
+} from "../../../../src/js/mcf/renderer/dataStructure/MediaStationRepository";
 
 let mediaStationRepo:MediaStationRepository;
 let mockMediaFileService:MockMediaFileService;
@@ -72,6 +70,45 @@ describe("loadMediaStations() ", ()=>{
         expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(1, key1, false);
         expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(2, key2, false);
         expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(3, key3, false);
+    });
+
+    it("should load the cached media for each of the loaded media-station-names", async () =>{
+        //setup
+        const expectedCachedMedia0:ICachedMedia[] = [
+            {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"},
+            {contentId: 3, mediaAppId: 6, fileExtension: "mp4"},
+            {contentId: 0, mediaAppId: 0, fileExtension: "jpeg"}
+        ];
+        const expectedCachedMedia1:ICachedMedia[] = [
+            {contentId: 1, mediaAppId: 2, fileExtension: "png"},
+            {contentId: 39, mediaAppId: 6, fileExtension: "png"},
+            {contentId: 250, mediaAppId: 0, fileExtension: "jpeg"}
+        ];
+        let allExpectedCachedMedia:Map<number, ICachedMedia[]> = new Map();
+        allExpectedCachedMedia.set(0, expectedCachedMedia0);
+        allExpectedCachedMedia.set(1, expectedCachedMedia1);
+        allExpectedCachedMedia.set(2, []);
+
+        jest.spyOn(mediaStationRepo, "addMediaStation");
+
+        mockMediaStationLocalMetaData.load.mockImplementation(()=>{
+            return returnedMetaData;
+        });
+
+        mockMediaFileService.getAllCachedMedia.mockImplementation(async (stationId:number) => {
+            if(stationId === 0)
+                return expectedCachedMedia0;
+            else if(stationId === 1)
+                return expectedCachedMedia1;
+            else if(stationId === 2)
+                return [];
+        });
+
+        //method to test
+        await mediaStationRepo.loadMediaStations();
+
+        //tests
+        expect(mediaStationRepo.getAllCachedMedia()).toEqual(allExpectedCachedMedia);
     });
 
     it("should call addMediaApp() for each mediastation which has a controller-app saved", async () =>{
