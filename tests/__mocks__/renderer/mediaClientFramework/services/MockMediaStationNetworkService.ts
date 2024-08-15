@@ -2,7 +2,7 @@ import {MockNetworkService} from "./MockNetworkService";
 import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository";
 import {
     MediaStationNetworkService
-} from "../../../../../src/js/renderer/mediaClientFramework/services/MediaStationNetworkService";
+} from "../../../../../src/js/mcf/renderer/services/MediaStationNetworkService";
 import {MockContentFileService} from "../fileHandling/MockContentFileService";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();

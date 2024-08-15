@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {ContentFileService} from "../../../../src/js/renderer/mediaClientFramework/fileHandling/ContentFileService";
+import {ContentFileService} from "../../../../src/js/mcf/renderer/fileHandling/ContentFileService";
 import {MockBackendFileService} from "../../../__mocks__/main/MockBackendFileService";
 
 let contentFileService: ContentFileService;

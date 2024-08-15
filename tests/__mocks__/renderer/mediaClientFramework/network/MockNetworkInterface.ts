@@ -1,4 +1,4 @@
-import {NetworkInterface} from "../../../../../src/js/renderer/mediaClientFramework/network/NetworkInterface";
+import {NetworkInterface} from "../../../../../src/js/mcf/renderer/network/NetworkInterface";
 
 export class MockNetworkInterface extends NetworkInterface{
     connectToServer: jest.Mock;

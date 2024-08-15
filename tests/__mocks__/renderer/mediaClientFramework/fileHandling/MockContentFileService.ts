@@ -1,4 +1,4 @@
-import {ContentFileService} from "../../../../../src/js/renderer/mediaClientFramework/fileHandling/ContentFileService";
+import {ContentFileService} from "../../../../../src/js/mcf/renderer/fileHandling/ContentFileService";
 import {MockBackendFileService} from "../../../main/MockBackendFileService";
 
 

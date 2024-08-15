@@ -1,4 +1,4 @@
-import {Folder} from "../../../../../src/js/renderer/mediaClientFramework/dataStructure/Folder";
+import {Folder} from "../../../../../src/js/mcf/renderer/dataStructure/Folder";
 
 
 export class MockFolder extends Folder{

@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MainFileService} from "../../../src/js/main/mediaClientFramework/MainFileService";
+import {MainFileService} from "../../../src/js/mcf/main/MainFileService";
 import * as fs from 'fs';
 import * as path from "node:path";
 

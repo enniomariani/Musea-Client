@@ -1,6 +1,6 @@
 import {
     MediaStationRepository
-} from "../../../../../src/js/renderer/mediaClientFramework/dataStructure/MediaStationRepository";
+} from "../../../../../src/js/mcf/renderer/dataStructure/MediaStationRepository";
 import {MockMediaStationLocalMetaData} from "../fileHandling/MockMediaStationLocalMetaData";
 import {MockMediaFileService} from "../fileHandling/MockMediaFileService";
 import {MockContentFileService} from "../fileHandling/MockContentFileService";

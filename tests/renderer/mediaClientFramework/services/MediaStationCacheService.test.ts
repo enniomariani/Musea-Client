@@ -2,7 +2,7 @@ import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
 
 import {
     MediaStationCacheService
-} from "../../../../src/js/renderer/mediaClientFramework/services/MediaStationCacheService";
+} from "../../../../src/js/mcf/renderer/services/MediaStationCacheService";
 import {
     MockContentFileService
 } from "../../../__mocks__/renderer/mediaClientFramework/fileHandling/MockContentFileService";

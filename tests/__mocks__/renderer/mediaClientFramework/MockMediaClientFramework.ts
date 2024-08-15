@@ -1,6 +1,6 @@
 import {
     IMediaClientFramework
-} from "../../../../src/js/renderer/mediaClientFramework/MediaClientFramework";
+} from "../../../../src/js/mcf/renderer/MediaClientFramework";
 import {MockMediaStationDataService} from "./services/MockMediaStationDataService";
 import {MockMediaStationNetworkService} from "./services/MockMediaStationNetworkService";
 import {MockMediaAppService} from "./services/MockMediaAppService";

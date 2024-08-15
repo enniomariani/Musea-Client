@@ -5,7 +5,7 @@ import { dirname, join} from 'path';
 
 import {CreateWindow} from "./CreateWindow";
 import {GlobalSettingsFactory} from "./globalSettings/GlobalSettingsFactory";
-import {MainMediaClientFramework} from "./mediaClientFramework/MainMediaClientFramework";
+import {MainMediaClientFramework} from "../mcf/main/MainMediaClientFramework";
 import {InitSettings} from "./globalSettings/InitSettings";
 
 /**

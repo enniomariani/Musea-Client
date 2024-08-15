@@ -1,8 +1,8 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MediaFileService} from "../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaFileService";
+import {MediaFileService} from "../../../../src/js/mcf/renderer/fileHandling/MediaFileService";
 import {
     MediaStationLocalMetaData
-} from "../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaStationLocalMetaData";
+} from "../../../../src/js/mcf/renderer/fileHandling/MediaStationLocalMetaData";
 import {file} from "@babel/types";
 import {MockBackendFileService} from "../../../__mocks__/main/MockBackendFileService";
 

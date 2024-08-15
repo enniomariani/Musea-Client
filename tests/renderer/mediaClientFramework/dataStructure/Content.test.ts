@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
-import {Content} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/Content";
-import {Image, Video} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/Media";
+import {Content} from "../../../../src/js/mcf/renderer/dataStructure/Content";
+import {Image, Video} from "../../../../src/js/mcf/renderer/dataStructure/Media";
 
 let content:Content;
 
