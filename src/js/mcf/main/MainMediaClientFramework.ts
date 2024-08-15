@@ -27,6 +27,10 @@ export class MainMediaClientFramework {
             return this.mainFileService.fileExists(path);
         });
 
+        ipcMain.handle('mediaClientFramework:getAllFileNamesInFolder', (event:Electron.IpcMainEvent, path: string) => {
+            return this.mainFileService.getAllFileNamesInFolder(path);
+        });
+
         ipcMain.handle('mediaClientFramework:loadFile', (event:Electron.IpcMainEvent, path: string) => {
             let loadedFileData:Buffer|null = this.mainFileService.loadFile(path);
             let fileDataAsUint8Array:Uint8Array;

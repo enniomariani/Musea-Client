@@ -49,7 +49,7 @@ export class MediaFileService {
     }
 
     async getAllCachedMedia(mediaStationId:number):Promise<ICachedMedia[]>{
-        const fileNames:string[] = await this._backendFileService.getAllFileNamesInFolder(this._pathToFolder + mediaStationId.toString() + "\\");
+        const fileNames:string[] = await this._backendFileService.getAllFileNamesInFolder(this._pathToFolder + mediaStationId.toString() + "\\cachedMedia\\");
         let fileName:string;
         let splittedName:string[];
         let allCachedMedia:ICachedMedia[] = [];
@@ -62,9 +62,9 @@ export class MediaFileService {
                 throw new Error("Not-valid file found in the cache-folder: " + fileName);
 
             allCachedMedia.push({
-               contentId: Number(splittedName[0]),
-               mediaAppId: Number(splittedName[1]),
-               fileExtension: splittedName[2]
+                contentId: Number(splittedName[0]),
+                mediaAppId: Number(splittedName[1]),
+                fileExtension: splittedName[2]
             });
         }
 
@@ -72,6 +72,6 @@ export class MediaFileService {
     }
 
     private _createFilePath(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):string{
-        return mediaStationId.toString() + "\\" + contentId.toString()+ "." + mediaAppId.toString() + "." + fileExtension;
+        return mediaStationId.toString() + "\\cachedMedia\\" + contentId.toString()+ "." + mediaAppId.toString() + "." + fileExtension;
     }
 }
