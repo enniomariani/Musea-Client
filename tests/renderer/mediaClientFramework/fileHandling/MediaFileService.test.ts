@@ -1,5 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MediaFileService} from "../../../../src/js/renderer/mediaClientFramework/fileHandling/MediaFileService";
+import {ICachedMedia} from "../../../../src/js/renderer/mediaClientFramework/dataStructure/MediaStationRepository";
 
 let mediaFileService:MediaFileService;
 
@@ -7,7 +8,8 @@ const mockBackendFileService: jest.Mocked<IBackendFileService> = {
     saveFile: jest.fn(),
     loadFile: jest.fn(),
     deleteFile: jest.fn(),
-    fileExists: jest.fn()
+    fileExists: jest.fn(),
+    getAllFileNamesInFolder: jest.fn()
 }
 
 const pathToFolder:string = "path-to-folder";
@@ -192,5 +194,93 @@ describe("init () and fileExists() ", () => {
 
         //tests
         expect(answer).toBe(false);
+    });
+});
+
+describe("init () and getAllCachedMedia() ", () => {
+    it("should return the data in form of an ICachedMedia-array of the loaded-file-names from the backend", async () => {
+        //setup
+        let answer:ICachedMedia[];
+        const expectedAnswer:ICachedMedia[]= [
+            {contentId: 1, mediaAppId: 2, fileExtension: "png"},
+            {contentId: 2, mediaAppId: 3, fileExtension: "jpeg"},
+            {contentId: 5, mediaAppId: 0, fileExtension: "mp4"},
+            {contentId: 0, mediaAppId: 0, fileExtension: "jpeg"},
+            {contentId: 0, mediaAppId: 1, fileExtension: "jpeg"}
+        ]
+        let fileNames:string[] = ["1.2.png", "2.3.jpeg", "5.0.mp4", "0.0.jpeg", "0.1.jpeg"]
+
+        mockBackendFileService.getAllFileNamesInFolder.mockImplementationOnce((path:string):Promise<string[]> =>{
+            console.log("MOCK PATH: ", path, pathToFolder)
+
+            return new Promise((resolve) =>{
+                if(path === pathToFolder + "0\\")
+                    resolve(fileNames);
+                else
+                    resolve([]);
+            })
+        });
+
+        //method to test
+        mediaFileService.init(pathToFolder);
+        answer = await mediaFileService.getAllCachedMedia(0);
+
+        //tests
+        expect(answer).toEqual(expectedAnswer);
+    });
+
+    it("should return an empty array if there were no files in the folder", async () => {
+        //setup
+        let answer:ICachedMedia[];
+        mockBackendFileService.getAllFileNamesInFolder.mockImplementationOnce((path:string):Promise<string[]> =>{
+            return new Promise((resolve) =>{
+                    resolve([]);
+            })
+        });
+
+        //method to test
+        mediaFileService.init(pathToFolder);
+        answer = await mediaFileService.getAllCachedMedia(0);
+
+        //tests
+        expect(answer).toEqual([]);
+    });
+
+    it("should throw an error if a file does have less than two points in it", async () => {
+        //setup
+        let fileNames:string[] = ["1.2.png", "23.jpeg", "5.0.mp4", "0.0.jpeg", "0.1.jpeg"]
+
+        mockBackendFileService.getAllFileNamesInFolder.mockImplementationOnce((path:string):Promise<string[]> =>{
+
+            return new Promise((resolve) =>{
+                if(path === pathToFolder + "0\\")
+                    resolve(fileNames);
+                else
+                    resolve([]);
+            })
+        });
+
+        //method to test / expect
+        mediaFileService.init(pathToFolder);
+        expect(mediaFileService.getAllCachedMedia(0)).rejects.toThrow(Error("Not-valid file found in the cache-folder: 23.jpeg"));
+    });
+
+    it("should throw an error if a file does have more than two points in it", async () => {
+        //setup
+        let fileNames:string[] = ["1.2.png", "2.2.3.jpeg", "5.0.mp4", "0.0.jpeg", "0.1.jpeg"]
+
+        mockBackendFileService.getAllFileNamesInFolder.mockImplementationOnce((path:string):Promise<string[]> =>{
+
+            return new Promise((resolve) =>{
+                if(path === pathToFolder + "0\\")
+                    resolve(fileNames);
+                else
+                    resolve([]);
+            })
+        });
+
+        //method to test / expect
+        mediaFileService.init(pathToFolder);
+        expect(mediaFileService.getAllCachedMedia(0)).rejects.toThrow(Error("Not-valid file found in the cache-folder: 2.2.3.jpeg"));
     });
 });

@@ -23,6 +23,7 @@ declare global {
         deleteFile(path:string):string;
         loadFile(path:string):Prowmise<Uint8Array|null>;
         fileExists(path:string):Promise<boolean>;
+        getAllFileNamesInFolder(path:string):Promise<string[]>;
     }
 
     interface IBackenNetworkService{

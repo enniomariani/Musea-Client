@@ -6,7 +6,8 @@ const mockBackendFileService: jest.Mocked<IBackendFileService> = {
     saveFile: jest.fn(),
     loadFile: jest.fn(),
     deleteFile: jest.fn(),
-    fileExists: jest.fn()
+    fileExists: jest.fn(),
+    getAllFileNamesInFolder: jest.fn()
 }
 
 export class MockMediaFileService extends MediaFileService{

@@ -1,3 +1,4 @@
+import {ICachedMedia} from "../dataStructure/MediaStationRepository";
 
 export class MediaFileService {
 
@@ -45,6 +46,29 @@ export class MediaFileService {
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
         console.log("Load Media-File: ",  this._pathToFolder + pathToFile);
         return this._backendFileService.loadFile(this._pathToFolder + pathToFile);
+    }
+
+    async getAllCachedMedia(mediaStationId:number):Promise<ICachedMedia[]>{
+        const fileNames:string[] = await this._backendFileService.getAllFileNamesInFolder(this._pathToFolder + mediaStationId.toString() + "\\");
+        let fileName:string;
+        let splittedName:string[];
+        let allCachedMedia:ICachedMedia[] = [];
+
+        for(fileName of fileNames){
+            console.log("FILENAME: ", fileName)
+            splittedName = fileName.split(".");
+
+            if(splittedName.length !== 3)
+                throw new Error("Not-valid file found in the cache-folder: " + fileName);
+
+            allCachedMedia.push({
+               contentId: Number(splittedName[0]),
+               mediaAppId: Number(splittedName[1]),
+               fileExtension: splittedName[2]
+            });
+        }
+
+        return allCachedMedia;
     }
 
     private _createFilePath(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):string{

@@ -223,4 +223,84 @@ describe("fileExists () ", () => {
         //method to test / expect
         expect(returnValue).toBe(false);
     });
+})
+
+describe("getAllFileNamesInFolder() ", () => {
+    //setup
+    const folderPath: string = "/path/to/existent/directory/";
+
+    it("should return an array of all file-names without the folder-names in the passed folder-directory", () => {
+        //setup
+        let returnValue: string[];
+        let fileNames:string[] = ["file1.txt", "file2.jpeg", "file3.png", "file4.mp4"];
+        const allFilesAndFolderNames: string[] = [fileNames[0], "folderName1", fileNames[1], fileNames[2], fileNames[3], "folderName2"];
+
+        mockedFs.readdirSync.mockImplementation((path: string): any => {
+            if(path === folderPath)
+                return allFilesAndFolderNames;
+        });
+
+        mockedFs.statSync.mockImplementation((path: string): any =>{
+            const splittedPath:string[] = path.split("\\");
+            const fileOrFolderName:string = splittedPath.pop();
+
+            return {isFile: ()=>{
+                if(fileNames.indexOf(fileOrFolderName) >= 0)
+                    return true;
+                else
+                    return false;
+            }}
+        });
+
+        //method to test
+        returnValue = fileService.getAllFileNamesInFolder(folderPath);
+
+        //tests
+        expect(returnValue).toEqual(fileNames);
+    });
+
+    it("should return an empty array if no file-names are found, only folders", () => {
+        //setup
+        let returnValue: string[];
+        const allFilesAndFolderNames: string[] = ["folderName1", "folderName2"];
+
+        mockedFs.readdirSync.mockImplementation((path: string): any => {
+            if(path === folderPath)
+                return allFilesAndFolderNames;
+        });
+
+        mockedFs.statSync.mockImplementation((path: string): any =>{
+            return {isFile: ()=>{
+                        return false;
+                }}
+        });
+
+        //method to test
+        returnValue = fileService.getAllFileNamesInFolder(folderPath);
+
+        //tests
+        expect(returnValue).toEqual([]);
+    });
+
+    it("should return an empty array if no files and folders are found", () => {
+        //setup
+        let returnValue: string[];
+
+        mockedFs.readdirSync.mockImplementation((path: string): any => {
+            if(path === folderPath)
+                return [];
+        });
+
+        mockedFs.statSync.mockImplementation((path: string): any =>{
+            return {isFile: ()=>{
+                    return false;
+                }}
+        });
+
+        //method to test
+        returnValue = fileService.getAllFileNamesInFolder(folderPath);
+
+        //tests
+        expect(returnValue).toEqual([]);
+    });
 });

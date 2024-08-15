@@ -16,7 +16,8 @@ contextBridge.exposeInMainWorld("backendFileService", {
     saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('mediaClientFramework:saveFile', path, data),
     deleteFile: (path: string) => ipcRenderer.invoke('mediaClientFramework:deleteFile', path),
     loadFile: (path: string) => ipcRenderer.invoke('mediaClientFramework:loadFile', path),
-    fileExists: (path: string) => ipcRenderer.invoke('mediaClientFramework:fileExists', path)
+    fileExists: (path: string) => ipcRenderer.invoke('mediaClientFramework:fileExists', path),
+    getAllFileNamesInFolder: (path: string) => ipcRenderer.invoke('mediaClientFramework:getAllFileNamesInFolder', path)
 });
 
 contextBridge.exposeInMainWorld("backendNetworkService", {

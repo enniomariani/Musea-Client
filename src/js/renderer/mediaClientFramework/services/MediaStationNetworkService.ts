@@ -4,8 +4,6 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp} from "../dataStructure/MediaApp";
 import {Content} from "../dataStructure/Content";
 import {IMedia} from "../dataStructure/Media";
-import {ContentFileService} from "../fileHandling/ContentFileService";
-import {ContentService} from "./ContentService";
 
 export interface IOnSyncStep {
     (message: string): void
