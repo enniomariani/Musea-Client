@@ -88,11 +88,11 @@ export class MediaManager{
     }
 
     deleteMedia(mediaStation:MediaStation, contentId:number, mediaAppId:number):void{
-        // let folder:Folder = mediaStation.rootFolder.findFolder(folderId);
-        //
-        // if(!folder)
-        //     throw new Error("Folder with ID does not exist: "+ folderId);
-        //
-        // folder.removeContent(id);
+        let content:Content = mediaStation.rootFolder.findContent(contentId);
+
+        if(!content)
+            throw new Error("Content with ID could not be found: "+ contentId);
+
+        content.media.delete(mediaAppId);
     }
 }

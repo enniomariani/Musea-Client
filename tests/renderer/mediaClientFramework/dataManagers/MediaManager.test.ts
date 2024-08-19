@@ -172,3 +172,29 @@ describe("getMediaType() ", ()=>{
         expect(()=>mediaManager.getMediaType(mockMediaStation, 0, 0)).toThrow(new Error("Content with ID could not be found: 0"))
     });
 });
+
+describe("deleteMedia() ", ()=>{
+    it("should remove a media from the mediaApp of the passed content", ()=>{
+        //setup
+        let image:Image = new Image();
+        image.idOnMediaApp = 2;
+        image.mediaAppId = 0;
+
+        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockContent.media.set(0, image);
+
+        //method to test
+        mediaManager.deleteMedia(mockMediaStation, 0, 0);
+
+        //tests
+        expect(mockContent.media.get(0)).toBe(undefined);
+    });
+
+    it("should throw an error if the content could not be found", ()=>{
+        //setup
+        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(null);
+
+        //method to test
+        expect(()=>mediaManager.deleteMedia(mockMediaStation, 0, 0)).toThrow(new Error("Content with ID could not be found: 0"))
+    });
+});
