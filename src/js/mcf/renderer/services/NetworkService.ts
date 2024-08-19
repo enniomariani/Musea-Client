@@ -132,6 +132,10 @@ export class NetworkService {
         this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("contents", "put", contentFileJSON));
     }
 
+    public deleteMediaFileOn(ip:string, id:number):void{
+        this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("media", "delete", id.toString()));
+    }
+
     public sendMediaControlTo(ip:string, command:string):void{
         this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("media", "control", command));
     }

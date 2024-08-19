@@ -566,6 +566,19 @@ describe("sendContentFileTo() ",  ()=>{
     });
 });
 
+describe("deleteMediaFileOn() ",  ()=>{
+    it("should call mockNetworkConnectionHandler.sendData with the correct command", async()=>{
+        //setup
+        let mediaFileId:number = 13;
+        //method to test
+        networkService.deleteMediaFileOn(ip1, mediaFileId);
+
+        //tests
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("media", "delete", mediaFileId.toString()));
+    });
+});
+
 describe("sendMediaControlTo() ",  ()=>{
     it("should call mockNetworkConnectionHandler.sendData with the correct command", async()=>{
         //setup
