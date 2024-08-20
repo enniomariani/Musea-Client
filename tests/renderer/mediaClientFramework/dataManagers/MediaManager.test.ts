@@ -173,6 +173,47 @@ describe("getMediaType() ", ()=>{
     });
 });
 
+describe("getIdOnMediaApp() ", ()=>{
+    it("should return the number idOnMediaApp of the requested media", ()=>{
+        //setup
+        let idOnMediaApp:number;
+        let image:Image = new Image();
+        image.idOnMediaApp = 33;
+        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockContent.media.set(0, image);
+
+        //method to test
+        idOnMediaApp = mediaManager.getIdOnMediaApp(mockMediaStation, 0, 0);
+
+        //tests
+        expect(idOnMediaApp).toBe(33);
+    });
+
+    it("should return -1 if there is no media set for the mediaAppId", ()=>{
+        //setup
+        let idOnMediaApp:number;
+        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        let image:Image = new Image();
+        image.idOnMediaApp = -1;
+        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockContent.media.set(0, image);
+
+        //method to test
+        idOnMediaApp = mediaManager.getIdOnMediaApp(mockMediaStation, 0, 0);
+
+        //tests
+        expect(idOnMediaApp).toBe(-1);
+    });
+
+    it("should throw an error if the content could not be found", ()=>{
+        //setup
+        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(null);
+
+        //method to test
+        expect(()=>mediaManager.getIdOnMediaApp(mockMediaStation, 0, 0)).toThrow(new Error("Content with ID could not be found: 0"))
+    });
+});
+
 describe("deleteMedia() ", ()=>{
     it("should remove a media from the mediaApp of the passed content", ()=>{
         //setup

@@ -1,5 +1,5 @@
 import {MediaStation} from "../dataStructure/MediaStation";
-import {Image, Video} from "../dataStructure/Media";
+import {Image, IMedia, Video} from "../dataStructure/Media";
 import {Content} from "../dataStructure/Content";
 
 export class MediaManager{
@@ -85,6 +85,18 @@ export class MediaManager{
             return MediaManager.MEDIA_TYPE_VIDEO;
         else
             return null;
+    }
+
+    getIdOnMediaApp(mediaStation:MediaStation, contentId:number, mediaAppId:number):number{
+        let content:Content = mediaStation.rootFolder.findContent(contentId);
+        let media:IMedia;
+
+        if(!content)
+            throw new Error("Content with ID could not be found: "+ contentId);
+
+        media = content.media.get(mediaAppId);
+
+        return media.idOnMediaApp;
     }
 
     deleteMedia(mediaStation:MediaStation, contentId:number, mediaAppId:number):void{

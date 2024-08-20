@@ -83,6 +83,29 @@ export class MediaService {
         return this._mediaManager.getMediaType(mediaStation, contentId, mediaAppId);
     }
 
+    /**
+     * deletes the media from the data-structure
+     *
+     * If the media is cached it deletes the cached media, if it is not cached (means it was already sent to a media-app),
+     * save the ID for the sync-process to send the delete-command to the media-App
+     *
+     * @param {number} mediaStationId
+     * @param {number} contentId
+     * @param {number} mediaAppId
+     * @returns {Promise<void>}
+     */
+    async deleteMedia(mediaStationId:number, contentId:number, mediaAppId:number):Promise<void>{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        let idOnMediaApp:number = this._mediaManager.getIdOnMediaApp(mediaStation, contentId, mediaAppId);
+
+        if(await this._mediaStationRepository.isMediaCached(mediaStationId, contentId, mediaAppId))
+            this._mediaStationRepository.deleteCachedMedia(mediaStationId, contentId, mediaAppId);
+        else
+            await this._mediaStationRepository.markMediaIDtoDelete(mediaStationId, idOnMediaApp);
+
+        this._mediaManager.deleteMedia(mediaStation, contentId, mediaAppId);
+    }
+
     private _findMediaStation(id: number): MediaStation {
         let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(id);
 

@@ -6,6 +6,7 @@ export class MockMediaManager extends MediaManager{
     createImage: jest.Mock;
     getMediaType: jest.Mock;
     deleteMedia: jest.Mock;
+    getIdOnMediaApp: jest.Mock;
 
 
     constructor() {
@@ -14,5 +15,6 @@ export class MockMediaManager extends MediaManager{
         this.createImage = jest.fn();
         this.getMediaType = jest.fn();
         this.deleteMedia = jest.fn();
+        this.getIdOnMediaApp = jest.fn();
     }
 }

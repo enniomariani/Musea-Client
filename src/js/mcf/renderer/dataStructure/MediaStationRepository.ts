@@ -166,8 +166,13 @@ export class MediaStationRepository{
         cachedMediaArr.push( {contentId: contentId, mediaAppId:mediaAppId, fileExtension:fileExtension});
     }
 
-    async isMediaCached(mediaStationId: number, contentId:number, mediaAppId:number, fileExtension:string): Promise<boolean>{
-        return await this._mediaFileService.fileExists(mediaStationId, contentId, mediaAppId, fileExtension);
+    async isMediaCached(mediaStationId: number, contentId:number, mediaAppId:number): Promise<boolean>{
+        let cachedArr:ICachedMedia[] = this._cachedMedia.get(mediaStationId);
+        let cachedMediaIndex:number = cachedArr.findIndex((cachedMedia:ICachedMedia  )=>{
+            return cachedMedia.contentId === contentId && cachedMedia.mediaAppId === mediaAppId;
+        });
+
+        return await this._mediaFileService.fileExists(mediaStationId, contentId, mediaAppId, cachedArr[cachedMediaIndex].fileExtension);
     }
 
     deleteCachedMedia(mediaStationId: number, contentId:number, mediaAppId:number):void{

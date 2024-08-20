@@ -546,8 +546,11 @@ describe("cacheMedia() ", ()=>{
 
 describe("isMediaCached() ", ()=>{
     it("should call mediaFileService.fileExists with the passed parameters", ()=>{
+        //setup
+        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
+
         //method to test
-        mediaStationRepo.isMediaCached(0,1,2, "jpeg");
+        mediaStationRepo.isMediaCached(0,1,2);
 
         //tests
         expect(mockMediaFileService.fileExists).toHaveBeenCalledTimes(1);
@@ -556,11 +559,12 @@ describe("isMediaCached() ", ()=>{
 
     it("should return what mediaFileService.fileExists returns", async ()=>{
         //setup
+        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
         let answer:boolean;
         mockMediaFileService.fileExists.mockReturnValueOnce(true);
 
         //method to test
-        answer = await mediaStationRepo.isMediaCached(0,1,2, "jpeg");
+        answer = await mediaStationRepo.isMediaCached(0,1,2);
 
         //tests
         expect(answer).toBe(true);

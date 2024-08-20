@@ -29,6 +29,10 @@ export class MockMediaStationRepository extends MediaStationRepository{
     removeCachedMediaStation: jest.Mock;
     isMediaStationCached: jest.Mock;
 
+    markMediaIDtoDelete: jest.Mock;
+    deleteStoredMediaID: jest.Mock;
+    getAllMediaIDsToDelete: jest.Mock;
+
     constructor() {
         super(mockMediaStationLocalMetaData, "fakePathToMediaFolder", mockMediaFileService,mockMediaFilesMarkedToDeleteService, mockContentFileService);
         this.loadMediaStations = jest.fn();
@@ -46,5 +50,9 @@ export class MockMediaStationRepository extends MediaStationRepository{
         this.cacheMediaStation = jest.fn();
         this.removeCachedMediaStation = jest.fn();
         this.isMediaStationCached = jest.fn();
+
+        this.markMediaIDtoDelete = jest.fn();
+        this.deleteStoredMediaID = jest.fn();
+        this.getAllMediaIDsToDelete = jest.fn();
     }
 }
