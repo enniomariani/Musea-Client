@@ -351,6 +351,12 @@ describe("syncMediaStation() ", () => {
             return map;
         });
 
+        mockMediaStationRepo.getAllMediaIDsToDelete.mockImplementation(() => {
+            mocksCalled.push("mockMediaStationRepo.getAllMediaIDsToDelete");
+            let map: Map<number, number[]> = new Map();
+            return map;
+        });
+
         mockMediaStationRepo.getCachedMediaFile.mockImplementation((mediaStationId: number, contentId: number, mediaAppId: number, fileExtension: string): Uint8Array => {
             mocksCalled.push("mockMediaStationRepo.getCachedMediaFile");
             if (mediaStationId === mockMediaStation.id) {
@@ -503,6 +509,58 @@ describe("syncMediaStation() ", () => {
         //tests
         expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledWith( 0,0, 0);
+    })
+
+    it("call networkService.sendDeleteMediaTo for every id that is marked to delete in the mediastation repo", async () => {
+        //setup
+        mockNetworkService.openConnection = jest.fn();
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+
+        mockMediaStationRepo.getAllMediaIDsToDelete = jest.fn();
+        mockMediaStationRepo.getAllMediaIDsToDelete.mockImplementation(() => {
+            mocksCalled.push("mockMediaStationRepo.getAllMediaIDsToDelete");
+            let map: Map<number, number[]> = new Map();
+            map.set(0, [3,0]);
+            map.set(1, [6]);
+            return map;
+        });
+
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenCalledTimes(3);
+        expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(1,mediaApp1.ip, 3);
+        expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(2,mediaApp1.ip, 0);
+        expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(3,mediaApp2.ip, 6);
+    })
+
+    it("call mediaStationRepo.deleteStoredMediaID for every id that is marked to delete in the mediastation repo", async () => {
+        //setup
+        mockNetworkService.openConnection = jest.fn();
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+
+        mockMediaStationRepo.getAllMediaIDsToDelete = jest.fn();
+        mockMediaStationRepo.getAllMediaIDsToDelete.mockImplementation(() => {
+            mocksCalled.push("mockMediaStationRepo.getAllMediaIDsToDelete");
+            let map: Map<number, number[]> = new Map();
+            map.set(0, [3,0]);
+            map.set(1, [6]);
+            return map;
+        });
+
+        //method to test
+        await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+
+        //tests
+        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenCalledTimes(3);
+        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(1,0,mediaApp1.id, 3);
+        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(2,0,mediaApp1.id, 0);
+        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(3,0,mediaApp2.id, 6);
     })
 
     it("should call the callback mockOnSyncStep with the text, that it is trying to send data to the controller, if all mediaApps have been synced", async () => {

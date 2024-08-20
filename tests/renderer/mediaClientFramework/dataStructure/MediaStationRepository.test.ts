@@ -729,11 +729,11 @@ describe("markMediaIDtoDelete() ", ()=>{
         spyFindMediaStation.mockReturnValue(new MockMediaStation(0));
 
         //method to test
-        await mediaStationRepo.markMediaIDtoDelete(0, 4);
+        await mediaStationRepo.markMediaIDtoDelete(0,1, 4);
 
         //tests
         expect(mockMediaFilesMarkedToDeleteService.addID).toHaveBeenCalledTimes(1);
-        expect(mockMediaFilesMarkedToDeleteService.addID).toHaveBeenCalledWith(0, 4);
+        expect(mockMediaFilesMarkedToDeleteService.addID).toHaveBeenCalledWith(0,1, 4);
     })
 
     it("throw an error if mediastation id does not exist", async ()=>{
@@ -743,7 +743,7 @@ describe("markMediaIDtoDelete() ", ()=>{
         spyFindMediaStation.mockReturnValue(null);
 
         //method to test
-        await expect(mediaStationRepo.markMediaIDtoDelete(0, 5)).rejects.toThrow(Error("Adding media-id to ids which should be deleted not possible, because the mediaStation does not exist: 0"));
+        await expect(mediaStationRepo.markMediaIDtoDelete(0, 1,5)).rejects.toThrow(Error("Adding media-id to ids which should be deleted not possible, because the mediaStation does not exist: 0"));
     })
 });
 
@@ -755,11 +755,11 @@ describe("deleteStoredMediaID() ", ()=>{
         spyFindMediaStation.mockReturnValue(new MockMediaStation(0));
 
         //method to test
-        await mediaStationRepo.deleteStoredMediaID(0, 4);
+        await mediaStationRepo.deleteStoredMediaID(0, 1,4);
 
         //tests
         expect(mockMediaFilesMarkedToDeleteService.removeID).toHaveBeenCalledTimes(1);
-        expect(mockMediaFilesMarkedToDeleteService.removeID).toHaveBeenCalledWith(0, 4);
+        expect(mockMediaFilesMarkedToDeleteService.removeID).toHaveBeenCalledWith(0,1, 4);
     })
 
     it("throw an error if mediastation id does not exist", async ()=>{
@@ -769,7 +769,7 @@ describe("deleteStoredMediaID() ", ()=>{
         spyFindMediaStation.mockReturnValue(null);
 
         //method to test
-        await expect(mediaStationRepo.deleteStoredMediaID(0, 5)).rejects.toThrow(Error("Deleting a media-id is not possible, because the mediaStation does not exist: 0"));
+        await expect(mediaStationRepo.deleteStoredMediaID(0, 0,5)).rejects.toThrow(Error("Deleting a media-id is not possible, because the mediaStation does not exist: 0"));
     })
 });
 
@@ -778,7 +778,7 @@ describe("getAllMediaIDsToDelete() ", ()=>{
         //setup
         const spyFindMediaStation = jest.spyOn(mediaStationRepo, "findMediaStation");
         const mediaIdsToDelete:number[] = [10,4,5];
-        let result:number[];
+        let result:Map<number, number[]>;
 
         spyFindMediaStation.mockReturnValue(new MockMediaStation(0));
         mockMediaFilesMarkedToDeleteService.getAllIDS.mockImplementation((mediaStationId:number) => {
@@ -797,7 +797,7 @@ describe("getAllMediaIDsToDelete() ", ()=>{
         //setup
         const spyFindMediaStation = jest.spyOn(mediaStationRepo, "findMediaStation");
         const mediaIdsToDelete:number[] = [];
-        let result:number[];
+        let result:Map<number, number[]>;
 
         spyFindMediaStation.mockReturnValue(new MockMediaStation(0));
         mockMediaFilesMarkedToDeleteService.getAllIDS.mockImplementation((mediaStationId:number) => {

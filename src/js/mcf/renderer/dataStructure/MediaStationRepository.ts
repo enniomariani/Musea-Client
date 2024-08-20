@@ -197,22 +197,22 @@ export class MediaStationRepository{
         return this._cachedMedia;
     }
 
-    async markMediaIDtoDelete(mediaStationId:number, id:number):Promise<void>{
+    async markMediaIDtoDelete(mediaStationId:number,mediaAppId:number, id:number):Promise<void>{
 
         if(!this.findMediaStation(mediaStationId))
             throw new Error("Adding media-id to ids which should be deleted not possible, because the mediaStation does not exist: " + mediaStationId);
 
-        await this._mediaFilesMarkedToDeleteService.addID(mediaStationId, id);
+        await this._mediaFilesMarkedToDeleteService.addID(mediaStationId,mediaAppId, id);
     }
 
-    async deleteStoredMediaID(mediaStationId:number, id:number):Promise<void>{
+    async deleteStoredMediaID(mediaStationId:number, mediaAppId:number, id:number):Promise<void>{
         if(!this.findMediaStation(mediaStationId))
             throw new Error("Deleting a media-id is not possible, because the mediaStation does not exist: "+ mediaStationId);
 
-        await this._mediaFilesMarkedToDeleteService.removeID(mediaStationId, id);
+        await this._mediaFilesMarkedToDeleteService.removeID(mediaStationId, mediaAppId, id);
     }
 
-    async getAllMediaIDsToDelete(mediaStationId:number):Promise<number[]>{
+    async getAllMediaIDsToDelete(mediaStationId:number):Promise<Map<number, number[]>>{
         if(!this.findMediaStation(mediaStationId))
             throw new Error("Getting the media-IDs marked for deletion for mediastation does not work, because the mediastation does not exist: "+ mediaStationId);
 

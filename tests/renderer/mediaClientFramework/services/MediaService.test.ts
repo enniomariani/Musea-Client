@@ -247,7 +247,7 @@ describe("deleteMedia() ", ()=> {
 
         //tests
         expect(mockMediaStationRepo.markMediaIDtoDelete).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.markMediaIDtoDelete).toHaveBeenCalledWith(mediaStationId, idOnMediaApp);
+        expect(mockMediaStationRepo.markMediaIDtoDelete).toHaveBeenCalledWith(mediaStationId,0, idOnMediaApp);
     });
 
     it("should throw an error if the mediaStationId could not be found", async ()=>{

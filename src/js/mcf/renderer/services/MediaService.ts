@@ -101,7 +101,7 @@ export class MediaService {
         if(await this._mediaStationRepository.isMediaCached(mediaStationId, contentId, mediaAppId))
             this._mediaStationRepository.deleteCachedMedia(mediaStationId, contentId, mediaAppId);
         else
-            await this._mediaStationRepository.markMediaIDtoDelete(mediaStationId, idOnMediaApp);
+            await this._mediaStationRepository.markMediaIDtoDelete(mediaStationId,mediaAppId,  idOnMediaApp);
 
         this._mediaManager.deleteMedia(mediaStation, contentId, mediaAppId);
     }
