@@ -3,6 +3,7 @@ import {MediaStationLocalMetaData} from "../fileHandling/MediaStationLocalMetaDa
 import {MediaFileService} from "../fileHandling/MediaFileService";
 import {MediaApp} from "./MediaApp";
 import {ContentFileService} from "../fileHandling/ContentFileService";
+import {MediaFilesMarkedToDeleteService} from "../fileHandling/MediaFilesMarkedToDeleteService";
 
 export interface ICachedMedia{
     contentId:number
@@ -18,20 +19,23 @@ export class MediaStationRepository{
     private _mediaStationMetaData:MediaStationLocalMetaData;
     private _mediaFileService:MediaFileService;
     private _contentFileService:ContentFileService;
+    private _mediaFilesMarkedToDeleteService:MediaFilesMarkedToDeleteService;
     private _mediaStationFactory: (id: number) => MediaStation;
 
     private _pathToMainFolder:string;
     private _cachedMedia:Map<number, ICachedMedia[]> = new Map();
 
-    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaFileService:MediaFileService = new MediaFileService(),contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id)) {
+    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaFileService:MediaFileService = new MediaFileService(), mediaFilesMarkedToDeleteService = new MediaFilesMarkedToDeleteService(), contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id)) {
         this._mediaStationMetaData = mediaStationMetaData;
         this._pathToMainFolder = pathToMainFolder;
         this._mediaFileService = mediaFileService;
         this._contentFileService = contentFileService;
+        this._mediaFilesMarkedToDeleteService = mediaFilesMarkedToDeleteService;
         this._mediaStationFactory = mediaStationFactory;
 
         this._mediaFileService.init(this._pathToMainFolder)
         this._contentFileService.init(this._pathToMainFolder)
+        this._mediaFilesMarkedToDeleteService.init(this._pathToMainFolder)
         this._mediaStationMetaData.init(this._pathToMainFolder + "savedMediaStations.json")
     }
 
@@ -186,6 +190,28 @@ export class MediaStationRepository{
 
     getAllCachedMedia():Map<number, ICachedMedia[]>{
         return this._cachedMedia;
+    }
+
+    async markMediaIDtoDelete(mediaStationId:number, id:number):Promise<void>{
+
+        if(!this.findMediaStation(mediaStationId))
+            throw new Error("Adding media-id to ids which should be deleted not possible, because the mediaStation does not exist: " + mediaStationId);
+
+        await this._mediaFilesMarkedToDeleteService.addID(mediaStationId, id);
+    }
+
+    async deleteStoredMediaID(mediaStationId:number, id:number):Promise<void>{
+        if(!this.findMediaStation(mediaStationId))
+            throw new Error("Deleting a media-id is not possible, because the mediaStation does not exist: "+ mediaStationId);
+
+        await this._mediaFilesMarkedToDeleteService.removeID(mediaStationId, id);
+    }
+
+    async getAllMediaIDsToDelete(mediaStationId:number):Promise<number[]>{
+        if(!this.findMediaStation(mediaStationId))
+            throw new Error("Getting the media-IDs marked for deletion for mediastation does not work, because the mediastation does not exist: "+ mediaStationId);
+
+        return await this._mediaFilesMarkedToDeleteService.getAllIDS(mediaStationId);
     }
 
     private getNameControllerMap():Map<string, string> {
