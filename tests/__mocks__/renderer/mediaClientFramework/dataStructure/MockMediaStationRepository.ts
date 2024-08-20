@@ -4,10 +4,12 @@ import {
 import {MockMediaStationLocalMetaData} from "../fileHandling/MockMediaStationLocalMetaData";
 import {MockMediaFileService} from "../fileHandling/MockMediaFileService";
 import {MockContentFileService} from "../fileHandling/MockContentFileService";
+import {MockMediaFilesMarkedToDeleteService} from "../fileHandling/MockMediaFilesMarkedToDeleteService";
 
 const mockMediaStationLocalMetaData:MockMediaStationLocalMetaData = new MockMediaStationLocalMetaData();
 const mockMediaFileService:MockMediaFileService = new MockMediaFileService();
 const mockContentFileService:MockContentFileService = new MockContentFileService();
+const mockMediaFilesMarkedToDeleteService:MockMediaFilesMarkedToDeleteService = new MockMediaFilesMarkedToDeleteService();
 
 export class MockMediaStationRepository extends MediaStationRepository{
 
@@ -28,7 +30,7 @@ export class MockMediaStationRepository extends MediaStationRepository{
     isMediaStationCached: jest.Mock;
 
     constructor() {
-        super(mockMediaStationLocalMetaData, "fakePathToMediaFolder", mockMediaFileService, mockContentFileService);
+        super(mockMediaStationLocalMetaData, "fakePathToMediaFolder", mockMediaFileService,mockMediaFilesMarkedToDeleteService, mockContentFileService);
         this.loadMediaStations = jest.fn();
         this.addMediaStation = jest.fn();
         this.findMediaStation = jest.fn();
