@@ -1,19 +1,19 @@
 import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
-import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramework/services/MockNetworkService";
+import {MockNetworkService} from "../../../__mocks__/mcf/renderer/services/MockNetworkService";
 import {
     IOnSyncStep,
     MediaStationNetworkService
 } from "../../../../src/js/mcf/renderer/services/MediaStationNetworkService";
 import {
     MockMediaStationRepository
-} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
-import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
+} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
+import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {
     ICachedMedia
 } from "../../../../src/js/mcf/renderer/dataStructure/MediaStationRepository";
 import {MediaApp} from "../../../../src/js/mcf/renderer/dataStructure/MediaApp";
-import {MockFolder} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockFolder";
-import {MockContent} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockContent";
+import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
+import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
 import {Image} from "../../../../src/js/mcf/renderer/dataStructure/Media";
 
 

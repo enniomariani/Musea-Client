@@ -1,5 +1,5 @@
 import {ContentFileService} from "../../../../../src/js/mcf/renderer/fileHandling/ContentFileService";
-import {MockBackendFileService} from "../../../main/MockBackendFileService";
+import {MockBackendFileService} from "../../main/MockBackendFileService";
 
 
 export class MockContentFileService extends ContentFileService{

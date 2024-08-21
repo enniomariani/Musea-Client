@@ -4,7 +4,7 @@ import {
     MediaStationLocalMetaData
 } from "../../../../src/js/mcf/renderer/fileHandling/MediaStationLocalMetaData";
 import {file} from "@babel/types";
-import {MockBackendFileService} from "../../../__mocks__/main/MockBackendFileService";
+import {MockBackendFileService} from "../../../__mocks__/mcf/main/MockBackendFileService";
 
 let mediaStationLocalMetaData: MediaStationLocalMetaData;
 

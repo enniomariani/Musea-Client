@@ -2,7 +2,7 @@ import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/glo
 import {NetworkService} from "../../../../src/js/mcf/renderer/services/NetworkService";
 import {
     MockNetworkConnectionHandler
-} from "../../../__mocks__/renderer/mediaClientFramework/network/MockNetworkConnectionHandler";
+} from "../../../__mocks__/mcf/renderer/network/MockNetworkConnectionHandler";
 import {ConvertNetworkData} from "../../../../src/js/mcf/renderer/network/ConvertNetworkData";
 
 let mockNetworkConnectionHandler:MockNetworkConnectionHandler;

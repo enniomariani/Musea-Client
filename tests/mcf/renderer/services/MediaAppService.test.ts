@@ -5,10 +5,10 @@ import {
 } from "../../../../src/js/mcf/renderer/services/MediaAppService";
 import {
     MockMediaStationRepository
-} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStationRepository";
+} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {MediaApp} from "../../../../src/js/mcf/renderer/dataStructure/MediaApp";
-import {MockMediaStation} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockMediaStation";
-import {MockNetworkService} from "../../../__mocks__/renderer/mediaClientFramework/services/MockNetworkService";
+import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
+import {MockNetworkService} from "../../../__mocks__/mcf/renderer/services/MockNetworkService";
 
 let mediaAppService:MediaAppService;
 let mockMediaStationRepo:MockMediaStationRepository;

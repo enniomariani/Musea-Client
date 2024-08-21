@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
 import {MediaStation} from "../../../../src/js/mcf/renderer/dataStructure/MediaStation";
-import {MockFolder} from "../../../__mocks__/renderer/mediaClientFramework/dataStructure/MockFolder";
+import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {MediaApp} from "../../../../src/js/mcf/renderer/dataStructure/MediaApp";
 
 let mediaStation: MediaStation;

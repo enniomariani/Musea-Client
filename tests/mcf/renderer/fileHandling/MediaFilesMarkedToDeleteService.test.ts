@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MockBackendFileService} from "../../../__mocks__/main/MockBackendFileService";
+import {MockBackendFileService} from "../../../__mocks__/mcf/main/MockBackendFileService";
 import {
     MediaFilesMarkedToDeleteService
 } from "../../../../src/js/mcf/renderer/fileHandling/MediaFilesMarkedToDeleteService";

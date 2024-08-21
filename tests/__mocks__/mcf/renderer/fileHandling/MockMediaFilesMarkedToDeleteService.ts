@@ -1,4 +1,4 @@
-import {MockBackendFileService} from "../../../main/MockBackendFileService";
+import {MockBackendFileService} from "../../main/MockBackendFileService";
 import {
     MediaFilesMarkedToDeleteService
 } from "../../../../../src/js/mcf/renderer/fileHandling/MediaFilesMarkedToDeleteService";
