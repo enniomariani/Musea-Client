@@ -235,6 +235,13 @@ describe("getAllFileNamesInFolder() ", () => {
         let fileNames:string[] = ["file1.txt", "file2.jpeg", "file3.png", "file4.mp4"];
         const allFilesAndFolderNames: string[] = [fileNames[0], "folderName1", fileNames[1], fileNames[2], fileNames[3], "folderName2"];
 
+        mockedFs.existsSync.mockImplementation((path: string): any => {
+            if(path === folderPath)
+                return true;
+            else
+                return false;
+        });
+
         mockedFs.readdirSync.mockImplementation((path: string): any => {
             if(path === folderPath)
                 return allFilesAndFolderNames;
@@ -264,6 +271,13 @@ describe("getAllFileNamesInFolder() ", () => {
         let returnValue: string[];
         const allFilesAndFolderNames: string[] = ["folderName1", "folderName2"];
 
+        mockedFs.existsSync.mockImplementation((path: string): any => {
+            if(path === folderPath)
+                return true;
+            else
+                return false;
+        });
+
         mockedFs.readdirSync.mockImplementation((path: string): any => {
             if(path === folderPath)
                 return allFilesAndFolderNames;
@@ -286,6 +300,13 @@ describe("getAllFileNamesInFolder() ", () => {
         //setup
         let returnValue: string[];
 
+        mockedFs.existsSync.mockImplementation((path: string): any => {
+            if(path === folderPath)
+                return true;
+            else
+                return false;
+        });
+
         mockedFs.readdirSync.mockImplementation((path: string): any => {
             if(path === folderPath)
                 return [];
@@ -295,6 +316,25 @@ describe("getAllFileNamesInFolder() ", () => {
             return {isFile: ()=>{
                     return false;
                 }}
+        });
+
+        //method to test
+        returnValue = fileService.getAllFileNamesInFolder(folderPath);
+
+        //tests
+        expect(returnValue).toEqual([]);
+    });
+
+    it("should return an empty array if the folder does not exist", () => {
+        //setup
+        let returnValue: string[];
+
+        mockedFs.existsSync.mockImplementation((path: string): any => {
+                return false;
+        });
+
+        mockedFs.readdirSync.mockImplementation((path: string): any => {
+            throw new Error("ERROR, FOLDER DOES NOT EXIST!")
         });
 
         //method to test

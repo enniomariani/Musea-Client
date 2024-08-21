@@ -83,15 +83,18 @@ export class MainFileService {
     }
 
     getAllFileNamesInFolder(pathToFolder:string):string[]{
-        const filesAndFolders:string[] = fs.readdirSync(pathToFolder);
+        if(fs.existsSync(pathToFolder)){
+            const filesAndFolders:string[] = fs.readdirSync(pathToFolder);
 
-        const files:string[] = filesAndFolders.filter((item) => {
-            const itemPath:string = path.join(pathToFolder, item);
-            const stats:fs.Stats = fs.statSync(itemPath);
-            return stats.isFile();
-        });
+            const files:string[] = filesAndFolders.filter((item) => {
+                const itemPath:string = path.join(pathToFolder, item);
+                const stats:fs.Stats = fs.statSync(itemPath);
+                return stats.isFile();
+            });
 
-        console.log("Files found in folder: ", files)
-        return files;
+            console.log("Files found in folder: ", files)
+            return files;
+        } else
+            return [];
     }
 }
