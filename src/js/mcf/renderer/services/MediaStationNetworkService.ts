@@ -132,6 +132,7 @@ export class MediaStationNetworkService {
         let connectionIsOpen: boolean;
         let mediaApp: MediaApp;
         let allMediaAppsWereSynced: boolean = true;
+        let areAllMediaSentSuccesfully:boolean = true;
 
         let ip: string;
         let cachedMediaOfAllMediaStations: Map<number, ICachedMedia[]>;
@@ -189,7 +190,8 @@ export class MediaStationNetworkService {
             //if the connection could be established to a media-app, send it all media that are cached
             if (registration) {
                 onSyncStep("Verbindung mit Medien-App hergestellt.");
-                await this._sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, onSyncStep);
+                if(await this._sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, onSyncStep) === false)
+                    areAllMediaSentSuccesfully = false;
 
                 if(allMediaIdsToDelete.has(mediaApp.id))
                     await this._sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id,allMediaIdsToDelete.get(mediaApp.id), mediaApp.ip, onSyncStep);
@@ -201,7 +203,9 @@ export class MediaStationNetworkService {
             }
         }
 
-        if (allMediaAppsWereSynced) {
+        console.log("CHECK IF CONTENTS.JSON WILL BE SENT: ", allMediaAppsWereSynced, areAllMediaSentSuccesfully)
+
+        if (allMediaAppsWereSynced && areAllMediaSentSuccesfully) {
             // send content-file (last step in synchronisation)
             ip = mediaStation.getControllerIp();
 
@@ -239,11 +243,12 @@ export class MediaStationNetworkService {
         return false;
     }
 
-    private async _sendMediaFilesToMediaApp(mediaStation: MediaStation, allCachedMedia: ICachedMedia[], ipMediaApp: string, onSyncStep: IOnSyncStep): Promise<void> {
+    private async _sendMediaFilesToMediaApp(mediaStation: MediaStation, allCachedMedia: ICachedMedia[], ipMediaApp: string, onSyncStep: IOnSyncStep): Promise<boolean> {
         let fileData: Uint8Array;
         let idOnMediaApp: number;
         let content: Content;
         let media: IMedia;
+        let areAllMediaSentSuccesfully:boolean = true;
 
         for (const cachedMedia of allCachedMedia) {
             onSyncStep("Medium wird gesendet: " + cachedMedia.fileExtension);
@@ -256,18 +261,22 @@ export class MediaStationNetworkService {
 
             if (idOnMediaApp !== null && idOnMediaApp !== undefined && idOnMediaApp >= 0) {
                 onSyncStep("Medium erfolgreich gesendet.");
+
                 content = mediaStation.rootFolder.findContent(cachedMedia.contentId);
                 media = content.media.get(cachedMedia.mediaAppId);
+
                 media.idOnMediaApp = idOnMediaApp;
 
                 console.log("SET NEW ID FOR MEDIA: ", content.id, media.idOnMediaApp, idOnMediaApp)
 
                 this._mediaStationRepo.deleteCachedMedia(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId);
             } else {
+                areAllMediaSentSuccesfully = false;
                 console.log("MEDIUM KONNTE NICHT GESENDET ODER EMPFANGEN WERDEN!")
                 onSyncStep("Medium konnte nicht gesendet oder empfangen werden!");
             }
         }
+        return areAllMediaSentSuccesfully;
     }
 
     private async _sendCommandDeleteMediaToMediaApps(mediaStationId:number, mediaAppId:number, allMediaIdsToDelete: number[], ipMediaApp: string, onSyncStep: IOnSyncStep): Promise<void> {
