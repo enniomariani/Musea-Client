@@ -250,6 +250,9 @@ export class MediaStationNetworkService {
         let media: IMedia;
         let areAllMediaSentSuccesfully:boolean = true;
 
+        if(!allCachedMedia)
+            return true;
+
         for (const cachedMedia of allCachedMedia) {
             onSyncStep("Medium wird gesendet: " + cachedMedia.fileExtension);
             console.log("SEND MEDIA: ", cachedMedia);

@@ -545,6 +545,19 @@ describe("cacheMedia() ", ()=>{
 });
 
 describe("isMediaCached() ", ()=>{
+    it("should return true if the media is cached", async ()=>{
+        //setup
+        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
+        let answer:boolean;
+        mockMediaFileService.fileExists.mockReturnValueOnce(true);
+
+        //method to test
+        answer = mediaStationRepo.isMediaCached(0,1,2);
+
+        //tests
+        expect(answer).toBe(true);
+    });
+
     it("should return false if the media is not cached", ()=>{
         //setup
         let answer:boolean;
@@ -557,17 +570,17 @@ describe("isMediaCached() ", ()=>{
         expect(answer).toBe(false);
     });
 
-    it("should return true if the media is cached", async ()=>{
+    it("should return false if there is no media cached for the mediastation", async ()=>{
         //setup
         mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
         let answer:boolean;
         mockMediaFileService.fileExists.mockReturnValueOnce(true);
 
         //method to test
-        answer = mediaStationRepo.isMediaCached(0,1,2);
+        answer = mediaStationRepo.isMediaCached(1,1,2);
 
         //tests
-        expect(answer).toBe(true);
+        expect(answer).toBe(false);
     });
 });
 
@@ -621,6 +634,22 @@ describe("deleteCachedMedia() ", ()=>{
 
         //tests
         expect(mediaStationRepo.getAllCachedMedia().get(0)).toBeUndefined();
+    });
+
+    it("should throw an error if there are no media cached for the passed mediastation", ()=>{
+        //setup
+        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
+
+        //tests
+        expect(()=> mediaStationRepo.deleteCachedMedia(1,1,2)).toThrow("No media cached for mediastation with ID: 1")
+    });
+
+    it("should throw an error if there is no cached media for the passed contentId and mediaAppID", ()=>{
+        //setup
+        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
+
+        //tests
+        expect(()=> mediaStationRepo.deleteCachedMedia(0,2,2)).toThrow("No media cached for media-App-ID 2 in content-ID 2 of mediastation with ID: 0")
     });
 
 });

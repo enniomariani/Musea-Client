@@ -75,8 +75,6 @@ export class MediaStationRepository{
 
         this._mediaStationIdCounter++;
 
-        this._cachedMedia.set(newMediaStation.id, []);
-
         if(save)
             this._mediaStationMetaData.save(this.getNameControllerMap());
 
@@ -166,20 +164,49 @@ export class MediaStationRepository{
         cachedMediaArr.push( {contentId: contentId, mediaAppId:mediaAppId, fileExtension:fileExtension});
     }
 
+    /**
+     * returns false if the mediastation-ID does not exist or if there is no cached media for the passed contentId and
+     * mediaApp-ID.
+     *
+     * @param {number} mediaStationId
+     * @param {number} contentId
+     * @param {number} mediaAppId
+     * @returns {boolean}
+     */
     isMediaCached(mediaStationId: number, contentId:number, mediaAppId:number): boolean{
         let cachedArr:ICachedMedia[] = this._cachedMedia.get(mediaStationId);
+
+        if(!cachedArr)
+            return false;
+
         let cachedMediaIndex:number = cachedArr.findIndex((cachedMedia:ICachedMedia  )=>{
             return cachedMedia.contentId === contentId && cachedMedia.mediaAppId === mediaAppId;
         });
 
-        return cachedMediaIndex !== -1
+        return cachedMediaIndex !== -1;
     }
 
+    /**
+     * throws an error if the mediastation-ID does not exist or if there is no cached media for the passed contentId and
+     * mediaApp-ID.
+     *
+     * @param {number} mediaStationId
+     * @param {number} contentId
+     * @param {number} mediaAppId
+     * @returns {boolean}
+     */
     deleteCachedMedia(mediaStationId: number, contentId:number, mediaAppId:number):void{
         let cachedArr:ICachedMedia[] = this._cachedMedia.get(mediaStationId);
+
+        if(!cachedArr)
+            throw new Error("No media cached for mediastation with ID: " + mediaStationId);
+
         let indexToDelete:number = cachedArr.findIndex((cachedMedia:ICachedMedia  )=>{
             return cachedMedia.contentId === contentId && cachedMedia.mediaAppId === mediaAppId;
         });
+
+        if(indexToDelete === -1)
+            throw new Error("No media cached for media-App-ID " + mediaAppId + " in content-ID "+ contentId + " of mediastation with ID: " + mediaStationId);
 
         this._mediaFileService.deleteFile(mediaStationId, contentId, mediaAppId, cachedArr[indexToDelete].fileExtension);
 
