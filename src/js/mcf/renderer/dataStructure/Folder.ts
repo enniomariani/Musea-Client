@@ -111,6 +111,16 @@ export class Folder{
         this._subFolders.push(subFolder);
     }
 
+    removeSubFolder(folderId: number): boolean {
+        const folderIndex = this._subFolders.findIndex(folder => folder.id === folderId);
+
+        if (folderIndex !== -1) {
+            this._subFolders.splice(folderIndex, 1);
+            return true;
+        }
+        return false;
+    }
+
     containsSubFolder(subFolder: Folder): boolean {
         return this._subFolders.includes(subFolder);
     }

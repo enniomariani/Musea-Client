@@ -117,7 +117,7 @@ describe("changeName() ", ()=>{
         });
     }
 
-    it("should create return the content if it exists", ()=>{
+    it("should change the name of the passed content to the passed new name", ()=>{
         setup();
 
         //method to test

@@ -196,6 +196,33 @@ describe("addSubFolder() and containsSubFolder() ", ()=>{
     });
 });
 
+describe("addSubFolder(), removeSubFolder() and containsSubFolder() ", ()=>{
+    it("removing a subfolder which was added before should return true and containsSubFolder() return false", ()=>{
+        //setup
+        let subFolder:MockFolder = new MockFolder(0);
+        let answer:boolean;
+
+        //method to test
+        folder.addSubFolder(subFolder);
+        answer = folder.removeSubFolder(0);
+
+        //tests
+        expect(folder.containsSubFolder(subFolder)).toBe(false);
+        expect(answer).toBe(true);
+    });
+
+    it("removing a subfolder which was NOT added before should return false", ()=>{
+        //setup
+        let answer:boolean;
+
+        //method to test
+        answer = folder.removeSubFolder(0);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+});
+
 describe("findFolder() ", ()=>{
     it("should find the folder if it is in one of the subfolders of the folder", ()=>{
         //method to test
