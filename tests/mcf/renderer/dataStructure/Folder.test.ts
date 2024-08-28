@@ -81,8 +81,10 @@ describe("importFromJSON() ", () => {
         expect(folder.subFolders.length).toBe(2);
         expect(folder.subFolders[0].id).toBe(1);
         expect(folder.subFolders[0].name).toBe("subF1");
+        expect(folder.subFolders[0].parentFolder).toBe(folder);
         expect(folder.subFolders[1].id).toBe(2);
         expect(folder.subFolders[1].name).toBe("subF2");
+        expect(folder.subFolders[1].parentFolder).toBe(folder);
 
         expect(folder.contents.length).toBe(1);
         expect(folder.contents[0].id).toBe(content4.id);

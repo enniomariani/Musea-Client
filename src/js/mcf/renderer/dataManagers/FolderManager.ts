@@ -25,6 +25,7 @@ export class FolderManager{
             throw new Error("Folder with ID could not be found: "+ parentFolderId);
 
         parentFolder.addSubFolder(newFolder);
+        newFolder.parentFolder = parentFolder;
 
         return newFolder;
     }

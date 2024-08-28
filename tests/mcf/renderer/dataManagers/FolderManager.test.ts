@@ -45,6 +45,7 @@ describe("createFolder() ", ()=>{
         //tests
         expect(newFolder.name).toEqual(name);
         expect(newFolder.id).toEqual(uniqueID);
+        expect(newFolder.parentFolder).toEqual(mockFolder);
     });
 
     it("should add the created folder to the parent-folder with the passed ID", ()=>{

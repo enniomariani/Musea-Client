@@ -34,6 +34,7 @@ export class Folder{
                     subFolder = new Folder(json.subFolders[i].id);
 
                 this.addSubFolder(subFolder);
+                subFolder.parentFolder = this;
 
                 subFolder.importFromJSON(json.subFolders[i]);
             }
