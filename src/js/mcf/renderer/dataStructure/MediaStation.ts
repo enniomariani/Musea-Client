@@ -7,7 +7,7 @@ export class MediaStation{
     private _id:number;
     private _name:string;
     private _mediaApps:Map<number, MediaApp> = new Map();
-    private _rootFolder:Folder = new Folder(0);
+    private _rootFolder:Folder = new Folder(this.getNextFolderId());
 
     private _folderIdCounter:number = 0;
     private _contentIdCounter:number = 0;
