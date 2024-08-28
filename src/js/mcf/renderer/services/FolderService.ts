@@ -34,6 +34,19 @@ export class FolderService {
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
+    getIdOfParentFolder(mediaStationId:number, folderId:number):number{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        let folder:Folder = this._folderManager.getFolder(mediaStation, folderId);
+
+        if(!folder)
+            throw new Error("Folder with this ID does not exist: " + folderId);
+
+        if(!folder.parentFolder)
+            throw new Error("Folder with this ID does not have a parent-folder: " + folderId);
+
+        return folder.parentFolder.id;
+    }
+
     /**
      * returns the direct subfolders of the passed folder-id
      *

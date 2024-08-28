@@ -81,6 +81,62 @@ describe("createFolder() ", ()=> {
     });
 });
 
+describe("getIdOfParentFolder() ", ()=> {
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+
+    it("should return the id of the parentfolder", () => {
+        //setup
+        const mockParentFolder:MockFolder = new MockFolder(77);
+        const mockFolder:MockFolder = new MockFolder(folderId);
+        mockFolder.parentFolder = mockParentFolder;
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockFolderManager.getFolder.mockImplementation((mediaStationLocal, id)=>{
+            console.log("get folder: ", mediaStationLocal.id, id)
+            if(mediaStationLocal.id === mockMediaStation.id && id === folderId)
+                return mockFolder;
+        })
+
+        //method to test
+        let answer:number = folderService.getIdOfParentFolder(mediaStationId,folderId);
+
+        //tests
+        expect(answer).toBe(77);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        expect(()=> folderService.getIdOfParentFolder(mediaStationId,folderId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+
+    it("should throw an error if the the folderId could not be found", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockFolderManager.getFolder = jest.fn();
+        mockFolderManager.getFolder.mockReturnValue(null);
+
+        //tests
+        expect(()=> folderService.getIdOfParentFolder(mediaStationId,folderId)).toThrow(new Error("Folder with this ID does not exist: " + folderId));
+    });
+
+    it("should throw an error if the the folder could be found, but has no parentFolder", ()=>{
+        //setup
+        const mockFolder:MockFolder = new MockFolder(folderId);
+        mockFolder.parentFolder = null;
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockFolderManager.getFolder.mockImplementation((mediaStationLocal, id)=>{
+            if(mediaStationLocal.id === mockMediaStation.id && id === folderId)
+                return mockFolder;
+        })
+
+        //tests
+        expect(()=> folderService.getIdOfParentFolder(mediaStationId,folderId)).toThrow(new Error("Folder with this ID does not have a parent-folder: " + folderId));
+    });
+});
+
 describe("changeName() ", ()=> {
 
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
