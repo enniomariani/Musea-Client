@@ -11,11 +11,13 @@ import {
     MockContentNetworkService
 } from "../../../__mocks__/mcf/renderer/services/MockContentNetworkService";
 import {Image} from "../../../../src/js/mcf/renderer/dataStructure/Media";
+import {MockMediaService} from "../../../__mocks__/mcf/renderer/services/MockMediaService";
 
 let contentService:ContentService;
 let mockMediaStationRepo:MockMediaStationRepository;
 let mockContentManager:MockContentManager;
 let mockContentNetworkService:MockContentNetworkService;
+let mockMediaService:MockMediaService;
 
 const mediaStationId:number = 0;
 const folderId:number = 10;
@@ -27,7 +29,8 @@ beforeEach(() => {
     mockMediaStationRepo = new MockMediaStationRepository();
     mockContentManager = new MockContentManager();
     mockContentNetworkService = new MockContentNetworkService();
-    contentService = new ContentService(mockMediaStationRepo, mockContentNetworkService, mockContentManager);
+    mockMediaService = new MockMediaService();
+    contentService = new ContentService(mockMediaStationRepo, mockContentNetworkService, mockMediaService, mockContentManager);
 });
 
 afterEach(() => {
@@ -122,6 +125,63 @@ describe("changeName() ", ()=> {
 
         //tests
         expect(()=> contentService.changeName(mediaStationId,folderId,newName)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
+describe("deleteContent() ", ()=> {
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+    const allMediaApps:Map<number, MediaApp> = new Map();
+    allMediaApps.set(0, new MediaApp(0));
+    allMediaApps.set(1, new MediaApp(1));
+    mockMediaStation.getAllMediaApps.mockReturnValue(allMediaApps);
+
+    it("should call contentManager.deleteContent with the correct arguments", async () => {
+        //setup
+        mockContent.name = "firstName";
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        await contentService.deleteContent(mediaStationId,folderId, contentId);
+
+        //tests
+        expect(mockContentManager.deleteContent).toHaveBeenCalledTimes(1);
+        expect(mockContentManager.deleteContent).toHaveBeenCalledWith(mockMediaStation, folderId, contentId);
+    });
+
+    it("should call mediaService.deleteMedia for each mediaApp defined with the correct arguments", async () => {
+        //setup
+        mockContent.name = "firstName";
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        await contentService.deleteContent(mediaStationId,folderId, contentId);
+
+        //tests
+        expect(mockMediaService.deleteMedia).toHaveBeenCalledTimes(2);
+        expect(mockMediaService.deleteMedia).toHaveBeenNthCalledWith(1, mediaStationId, contentId, 0);
+        expect(mockMediaService.deleteMedia).toHaveBeenNthCalledWith(2, mediaStationId, contentId, 1);
+    });
+
+    it("should call mediaStationRepository.updateMediaStation", async ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockContentManager.createContent.mockReturnValueOnce(mockContent);
+
+        //method to test
+        await contentService.deleteContent(mediaStationId,folderId, contentId);
+
+        //tests
+        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        await expect(contentService.deleteContent(mediaStationId,folderId, contentId)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 

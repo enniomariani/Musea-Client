@@ -136,11 +136,9 @@ describe("changeName() ", ()=>{
 });
 
 describe("deleteContent() ", ()=>{
-    let name:string = "contentName";
-    let content:Content;
     let contentId:number = 10;
     let folderId:number = 5;
-    let mockFolder:MockFolder = new MockFolder(0);
+    let mockFolder:MockFolder;
 
     function setup():void{
         mockMediaStation.rootFolder.findFolder = jest.fn();
@@ -150,6 +148,10 @@ describe("deleteContent() ", ()=>{
             else
                 return null;
         });
+        mockFolder = new MockFolder(0);
+        mockFolder.removeContent.mockImplementation((id) =>{
+            return id === contentId;
+        });
     }
 
     it("should remove the content from the folder it was attached to", ()=>{
@@ -158,7 +160,7 @@ describe("deleteContent() ", ()=>{
         mockMediaStation.getNextContentId.mockReturnValueOnce(contentId);
 
         //method to test
-        contentManager.deleteContent(mockMediaStation, contentId, folderId);
+        contentManager.deleteContent(mockMediaStation, folderId, contentId);
 
         //tests
         expect(mockFolder.removeContent).toHaveBeenCalledTimes(1);
@@ -169,6 +171,16 @@ describe("deleteContent() ", ()=>{
         setup();
 
         //tests
-        expect(()=> contentManager.deleteContent(mockMediaStation, contentId, folderId + 1)).toThrow(Error);
+        expect(()=> contentManager.deleteContent(mockMediaStation, folderId + 1, contentId)).toThrow(Error);
+    });
+
+    it("should throw an error if the contentid is not inside the passed folder", ()=>{
+        setup();
+
+        mockFolder.removeContent = jest.fn();
+        mockFolder.removeContent.mockReturnValue(false)
+
+        //tests
+        expect(()=> contentManager.deleteContent(mockMediaStation, folderId, contentId)).toThrow(Error("Content with ID: " + contentId + " is not inside folder: "+ folderId));
     });
 });

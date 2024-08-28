@@ -122,6 +122,11 @@ export class MediaStationRepository{
         this._allMediaStations.set(mediaStation.id, mediaStation);
     }
 
+    /**
+     * updates the mediastation and saves the name of it and the ip of the controller in a json-file
+     *
+     * @param {MediaStation} mediaStation
+     */
     updateAndSaveMediaStation(mediaStation:MediaStation):void {
         this.updateMediaStation(mediaStation);
 

@@ -4,17 +4,21 @@ import {Content} from "../dataStructure/Content";
 import {ContentManager} from "../dataManagers/ContentManager";
 import {ContentNetworkService} from "./ContentNetworkService";
 import {IMedia} from "../dataStructure/Media";
+import {MediaService} from "./MediaService";
+import {MediaApp} from "../dataStructure/MediaApp";
 
 
 export class ContentService {
     private _mediaStationRepository: MediaStationRepository;
     private _contentManager: ContentManager;
     private _contentNetworkService: ContentNetworkService;
+    private _mediaService: MediaService;
 
-    constructor(mediaStationRepository: MediaStationRepository, contentNetworkService: ContentNetworkService, contentManager: ContentManager = new ContentManager()) {
+    constructor(mediaStationRepository: MediaStationRepository, contentNetworkService: ContentNetworkService, mediaService:MediaService, contentManager: ContentManager = new ContentManager()) {
         this._mediaStationRepository = mediaStationRepository;
         this._contentManager = contentManager;
         this._contentNetworkService = contentNetworkService;
+        this._mediaService = mediaService;
     }
 
     createContent(mediaStationId: number, folderId: number, name: string): number {
@@ -32,6 +36,26 @@ export class ContentService {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
         this._contentManager.changeName(mediaStation, contentId, name);
+
+        this._mediaStationRepository.updateMediaStation(mediaStation);
+    }
+
+    /**
+     * deletes the content and all media in it
+     *
+     * @param {number} mediaStationId
+     * @param {number} folderId
+     * @param {number} contentId
+     * @returns {Promise<void>}
+     */
+    async deleteContent(mediaStationId:number, folderId:number, contentId:number):Promise<void>{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        let allMediaApps: Map<number, MediaApp> = mediaStation.getAllMediaApps();
+
+        for(const [key, mediaApp] of allMediaApps)
+            await this._mediaService.deleteMedia(mediaStationId, contentId, mediaApp.id);
+
+        this._contentManager.deleteContent(mediaStation, folderId, contentId);
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }

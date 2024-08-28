@@ -43,12 +43,13 @@ export class ContentManager{
         content.name = name;
     }
 
-    deleteContent(mediaStation:MediaStation,id:number, folderId:number):void{
+    deleteContent(mediaStation:MediaStation,folderId:number, id:number):void{
         let folder:Folder = mediaStation.rootFolder.findFolder(folderId);
 
         if(!folder)
             throw new Error("Folder with ID does not exist: "+ folderId);
 
-        folder.removeContent(id);
+        if(!folder.removeContent(id))
+            throw new Error("Content with ID: " + id + " is not inside folder: "+ folderId);
     }
 }
