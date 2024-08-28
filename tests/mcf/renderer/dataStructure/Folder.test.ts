@@ -223,6 +223,37 @@ describe("addSubFolder(), removeSubFolder() and containsSubFolder() ", ()=>{
     });
 });
 
+describe("addSubFolder(), getAllSubFolders()", ()=>{
+    it("adding two subFolders should give 2 subFolders back", ()=>{
+        //setup
+        let subFolder1:MockFolder = new MockFolder(0);
+        let subFolder2:MockFolder = new MockFolder(1);
+        let allSubFolders:Map<number, Folder>;
+
+        //method to test
+        folder.addSubFolder(subFolder1);
+        folder.addSubFolder(subFolder2);
+        allSubFolders = folder.getAllSubFolders();
+
+        //tests
+        expect(allSubFolders.get(0)).toBe(subFolder1);
+        expect(allSubFolders.get(1)).toBe(subFolder2);
+    });
+
+    it("adding no subfolders should give an empty Map back", ()=>{
+        //setup
+        folder = new Folder(0);
+        let allSubFolders:Map<number, Folder>;
+
+        //method to test
+        allSubFolders = folder.getAllSubFolders();
+
+        //tests
+        expect(allSubFolders.size).toBe(0);
+    });
+});
+
+
 describe("findFolder() ", ()=>{
     it("should find the folder if it is in one of the subfolders of the folder", ()=>{
         //method to test

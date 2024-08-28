@@ -2,14 +2,56 @@ import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
 import {Folder} from "../dataStructure/Folder";
 import {Content} from "../dataStructure/Content";
+import {FolderManager} from "../dataManagers/FolderManager";
 
 
 export class FolderService {
 
     private _mediaStationRepository:MediaStationRepository;
+    private _folderManager:FolderManager;
 
-    constructor(mediaStationRepository: MediaStationRepository) {
+    constructor(mediaStationRepository: MediaStationRepository, folderManager: FolderManager = new FolderManager()) {
         this._mediaStationRepository = mediaStationRepository;
+        this._folderManager = folderManager;
+    }
+
+    createFolder(mediaStationId: number, parentFolderId: number, name: string): number {
+        let folder: Folder;
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        folder = this._folderManager.createFolder(mediaStation, name, parentFolderId);
+
+        this._mediaStationRepository.updateMediaStation(mediaStation);
+
+        return folder.id;
+    }
+
+    changeName(mediaStationId: number, folderId: number, name: string): void {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        this._folderManager.changeName(mediaStation, folderId, name);
+
+        this._mediaStationRepository.updateMediaStation(mediaStation);
+    }
+
+    /**
+     * returns the direct subfolders of the passed folder-id
+     *
+     * @param {number} mediaStationId
+     * @param {number} folderId
+     * @returns {Map<number, string>}
+     */
+    getAllSubFoldersInFolder(mediaStationId:number, folderId:number):Map<number, string> {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        let folder:Folder = this._findFolder(mediaStation.rootFolder, folderId);
+        let allSubFolders:Map<number, Folder> = folder.getAllSubFolders();
+        let returnMap:Map<number, string> = new Map();
+
+        allSubFolders.forEach((content, key) =>{
+            returnMap.set(key, content.name );
+        });
+
+        return returnMap;
     }
 
     getAllContentsInFolder(mediaStationId:number, folderId:number):Map<number, string> {

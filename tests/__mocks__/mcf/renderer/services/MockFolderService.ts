@@ -5,10 +5,14 @@ const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepo
 
 
 export class MockFolderService extends FolderService {
+    createFolder: jest.Mock;
+
     getAllContentsInFolder: jest.Mock;
 
     constructor() {
         super(mockMediaStationRepo);
+        this.createFolder = jest.fn();
+
         this.getAllContentsInFolder = jest.fn();
     }
 }

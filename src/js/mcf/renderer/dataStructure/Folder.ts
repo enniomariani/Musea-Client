@@ -121,6 +121,15 @@ export class Folder{
         return false;
     }
 
+    getAllSubFolders():Map<number, Folder>{
+        let map: Map<number, Folder> = new Map();
+
+        for(let i:number = 0; i < this._subFolders.length; i++)
+            map.set(this._subFolders[i].id, this._subFolders[i]);
+
+        return map;
+    }
+
     containsSubFolder(subFolder: Folder): boolean {
         return this._subFolders.includes(subFolder);
     }

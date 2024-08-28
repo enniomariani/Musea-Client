@@ -10,9 +10,10 @@ export class MockFolder extends Folder{
     getAllContents: jest.Mock;
 
     addSubFolder: jest.Mock;
+    removeSubFolder: jest.Mock;
     containsSubFolder: jest.Mock;
     findFolder: jest.Mock;
-    removeSubFolder: jest.Mock;
+    getAllSubFolders: jest.Mock;
 
     importFromJSON: jest.Mock;
     exportToJSON: jest.Mock;
@@ -22,13 +23,15 @@ export class MockFolder extends Folder{
         this.addContent = jest.fn();
         this.removeContent = jest.fn();
         this.containsContent = jest.fn();
+        this.findContent = jest.fn();
+        this.getAllContents = jest.fn();
+
         this.addSubFolder = jest.fn();
         this.removeSubFolder = jest.fn();
         this.containsSubFolder = jest.fn();
-
+        this.getAllSubFolders = jest.fn();
         this.findFolder = jest.fn();
-        this.findContent = jest.fn();
-        this.getAllContents = jest.fn();
+
         this.importFromJSON = jest.fn();
         this.exportToJSON = jest.fn();
     }
