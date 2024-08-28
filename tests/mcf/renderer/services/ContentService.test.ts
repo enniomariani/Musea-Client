@@ -138,7 +138,7 @@ describe("deleteContent() ", ()=> {
 
     it("should call contentManager.deleteContent with the correct arguments", async () => {
         //setup
-        mockContent.name = "firstName";
+        mockMediaService.getMediaType.mockReturnValue("image");
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
@@ -151,7 +151,7 @@ describe("deleteContent() ", ()=> {
 
     it("should call mediaService.deleteMedia for each mediaApp defined with the correct arguments", async () => {
         //setup
-        mockContent.name = "firstName";
+        mockMediaService.getMediaType.mockReturnValue("image");
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
@@ -163,8 +163,21 @@ describe("deleteContent() ", ()=> {
         expect(mockMediaService.deleteMedia).toHaveBeenNthCalledWith(2, mediaStationId, contentId, 1);
     });
 
+    it("should NOT call mediaService.deleteMedia if mediaService.getMediaType returns null for all media-Apps", async ()=>{
+        //setup
+        mockMediaService.getMediaType.mockReturnValue(null);
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        await contentService.deleteContent(mediaStationId,folderId, contentId);
+
+        //tests
+        expect(mockMediaService.deleteMedia).toHaveBeenCalledTimes(0);
+    });
+
     it("should call mediaStationRepository.updateMediaStation", async ()=>{
         //setup
+        mockMediaService.getMediaType.mockReturnValue("image");
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.createContent.mockReturnValueOnce(mockContent);
 
@@ -178,6 +191,7 @@ describe("deleteContent() ", ()=> {
 
     it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
+        mockMediaService.getMediaType.mockReturnValue("image");
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests

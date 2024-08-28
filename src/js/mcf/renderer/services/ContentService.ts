@@ -53,7 +53,8 @@ export class ContentService {
         let allMediaApps: Map<number, MediaApp> = mediaStation.getAllMediaApps();
 
         for(const [key, mediaApp] of allMediaApps)
-            await this._mediaService.deleteMedia(mediaStationId, contentId, mediaApp.id);
+            if(this._mediaService.getMediaType(mediaStationId, contentId, mediaApp.id) !== null)
+                await this._mediaService.deleteMedia(mediaStationId, contentId, mediaApp.id);
 
         this._contentManager.deleteContent(mediaStation, folderId, contentId);
 
