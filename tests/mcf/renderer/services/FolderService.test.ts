@@ -137,6 +137,44 @@ describe("getIdOfParentFolder() ", ()=> {
     });
 });
 
+describe("getName() ", ()=> {
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+
+    it("should return the name of the folder", () => {
+        //setup
+        mockFolder.name = "firstName";
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockFolderManager.getFolder.mockImplementation(( mediaStation, id)=>{
+            if(mediaStation === mockMediaStation && id === folderId)
+                return mockFolder;
+        });
+
+        //method to test
+        let answer:string = folderService.getName(mediaStationId,folderId);
+
+        //tests
+        expect(answer).toEqual(mockFolder.name);
+    });
+
+    it("should throw an error if the folderId could not be found", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockFolderManager.getFolder.mockReturnValue(null);
+
+        //tests
+        expect(()=> folderService.getName(mediaStationId,folderId)).toThrow(new Error("Folder with this ID does not exist: " + folderId));
+    });
+
+    it("should throw an error if the mediaStationId could not be found", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        expect(()=> folderService.getName(mediaStationId,folderId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
 describe("changeName() ", ()=> {
 
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);

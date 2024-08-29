@@ -26,6 +26,17 @@ export class FolderService {
         return folder.id;
     }
 
+    getName(mediaStationId:number, id:number):string{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        let folder:Folder = this._folderManager.getFolder(mediaStation, id);
+
+        if(!folder)
+            throw new Error("Folder with this ID does not exist: " + id);
+
+
+        return folder.name;
+    }
+
     changeName(mediaStationId: number, folderId: number, name: string): void {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
