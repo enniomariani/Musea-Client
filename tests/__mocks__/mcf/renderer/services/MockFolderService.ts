@@ -6,6 +6,7 @@ const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepo
 
 export class MockFolderService extends FolderService {
     createFolder: jest.Mock;
+    getName: jest.Mock;
     changeName: jest.Mock;
     getIdOfParentFolder: jest.Mock;
 
@@ -16,6 +17,8 @@ export class MockFolderService extends FolderService {
         super(mockMediaStationRepo);
         this.createFolder = jest.fn();
         this.changeName = jest.fn();
+        this.getName = jest.fn();
+
         this.getIdOfParentFolder = jest.fn();
 
         this.getAllContentsInFolder = jest.fn();
