@@ -23,11 +23,11 @@ export class MediaFileService {
      * @param {string} fileExtension
      * @param {Uint8Array} payload
      */
-    saveFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string, payload:Uint8Array):void{
+    async saveFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string, payload:Uint8Array):Promise<void>{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
 
-        console.log("Save Media-File: ", this._pathToFolder + pathToFile, payload);
-        this._backendFileService.saveFile(this._pathToFolder + pathToFile, payload);
+        console.log("Save Media-File: ", this._pathToFolder + pathToFile);
+        await this._backendFileService.saveFile(this._pathToFolder + pathToFile, payload);
     }
 
     deleteFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):void{

@@ -157,9 +157,9 @@ export class MediaStationRepository{
         return await this._contentFileService.fileExists(id);
     }
 
-    cacheMedia(mediaStationId: number, contentId:number, mediaAppId:number,fileExtension:string, payload:Uint8Array):void{
+    async cacheMedia(mediaStationId: number, contentId:number, mediaAppId:number,fileExtension:string, payload:Uint8Array):Promise<void>{
         let cachedMediaArr:ICachedMedia[];
-        this._mediaFileService.saveFile(mediaStationId, contentId, mediaAppId, fileExtension, payload);
+        await this._mediaFileService.saveFile(mediaStationId, contentId, mediaAppId, fileExtension, payload);
 
         if(!this._cachedMedia.has(mediaStationId))
             this._cachedMedia.set(mediaStationId, []);

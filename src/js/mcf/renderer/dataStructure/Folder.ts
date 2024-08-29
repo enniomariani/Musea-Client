@@ -73,12 +73,14 @@ export class Folder{
             contents.push(content.exportToJSON());
         });
 
-        return {
+        let json:any = {
             id: this._id,
             name: this._name,
             contents: contents,
             subFolders: subFolders
         };
+
+        return json;
     }
 
     addContent(content:Content){

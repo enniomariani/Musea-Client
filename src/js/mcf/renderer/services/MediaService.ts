@@ -29,7 +29,7 @@ export class MediaService {
      * @param {string} fileExtension    must be one of the static FILE_EXTENSION_IMAGE variables of MediaService
      * @param {Uint8Array} payload
      */
-    addImageAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, fileExtension:string, payload:Uint8Array): void {
+    async addImageAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, fileExtension:string, payload:Uint8Array): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
         if(!(fileExtension === MediaService.FILE_EXTENSION_IMAGE_PNG || fileExtension === MediaService.FILE_EXTENSION_IMAGE_JPEG))
@@ -39,7 +39,7 @@ export class MediaService {
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
 
-        this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, payload);
+        await this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, payload);
     }
 
     /**
@@ -56,7 +56,7 @@ export class MediaService {
      * @param {string} fileExtension    must be one of the static FILE_EXTENSION_VIDEO variables of MediaService
      * @param {Uint8Array} payload
      */
-    addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, duration:number, fileExtension:string, payload:Uint8Array): void {
+    async addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, duration:number, fileExtension:string, payload:Uint8Array): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
         if(fileExtension !== MediaService.FILE_EXTENSION_VIDEO_MP4)
@@ -66,7 +66,7 @@ export class MediaService {
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
 
-        this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, payload);
+        await this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, payload);
     }
 
     /**
