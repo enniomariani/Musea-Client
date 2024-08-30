@@ -22,7 +22,7 @@ export class MainFileService {
      */
     saveFile(filePath:string, fileData:Buffer, overrideExistingFile:boolean = true, createDirectory:boolean = true):string{
 
-        console.log("MainFileService: save File to: ", filePath, fileData)
+        console.log("MainFileService: save File to: ", filePath)
 
         //this conversion is necessary because ArrayBufferView is a class from the web-context
         const directory:string = path.dirname(filePath);
@@ -38,7 +38,7 @@ export class MainFileService {
             return MainFileService.ERROR_FILE_EXISTS;
 
         try{
-            fs.writeFileSync(filePath, fileData);
+            fs.writeFileSync(filePath, fileData);//, {},()=>{});
         }
         catch(err){
             return("MainFileService: unhandled error: " + err.message);
@@ -77,7 +77,7 @@ export class MainFileService {
             return null;
         }
 
-        console.log("MainFileService: file loaded: ", loadedFile);
+        console.log("MainFileService: file loaded! ");
 
         return loadedFile;
     }

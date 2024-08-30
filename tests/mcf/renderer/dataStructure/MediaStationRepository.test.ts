@@ -499,24 +499,24 @@ describe("updateAndSaveMediaStation() ", ()=>{
 });
 
 describe("cacheMedia() ", ()=>{
-    it("should call mediaFileService.saveFile with the passed parameters", ()=>{
+    it("should call mediaFileService.saveFile with the passed parameters", async ()=>{
         //setup
         let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
 
         //method to test
-        mediaStationRepo.cacheMedia(0,1,2,"jpeg", data);
+        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", data);
 
         //tests
         expect(mockMediaFileService.saveFile).toHaveBeenCalledTimes(1);
         expect(mockMediaFileService.saveFile).toHaveBeenCalledWith(0, 1,2, "jpeg", data);
     });
 
-    it("should add the cached media to cachedMedia and create a mediaStationId if it does not exist", ()=>{
+    it("should add the cached media to cachedMedia and create a mediaStationId if it does not exist", async ()=>{
         //setup
         let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
 
         //method to test
-        mediaStationRepo.cacheMedia(0,1,2,"jpeg", data);
+        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", data);
 
         //tests
         expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeNull();
@@ -526,13 +526,13 @@ describe("cacheMedia() ", ()=>{
         expect(mediaStationRepo.getAllCachedMedia().get(0)[0].fileExtension).toBe("jpeg");
     });
 
-    it("should add the cached media to cachedMedia if the mediastation already exists and has already a cached file set", ()=>{
+    it("should add the cached media to cachedMedia if the mediastation already exists and has already a cached file set", async ()=>{
         //setup
         let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
 
         //method to test
-        mediaStationRepo.cacheMedia(0,1,2,"jpeg", data);
-        mediaStationRepo.cacheMedia(0,2,2,"mp4", data);
+        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", data);
+        await mediaStationRepo.cacheMedia(0,2,2,"mp4", data);
 
         //tests
         expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeNull();

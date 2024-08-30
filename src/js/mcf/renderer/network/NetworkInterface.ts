@@ -1,15 +1,15 @@
-export interface IOnReceivedData{
-    (data:Uint8Array):void
+export interface IOnReceivedData {
+    (data: Uint8Array): void
 }
 
-export class NetworkInterface extends EventTarget{
+export class NetworkInterface extends EventTarget {
 
-    static CONNECTED:string = "connectedToServer";
-    static ERROR:string = "connectionError";
-    static CLOSED:string = "connectionClosed";
+    static CONNECTED: string = "connectedToServer";
+    static ERROR: string = "connectionError";
+    static CLOSED: string = "connectionClosed";
 
-    private _connected:boolean = false;
-    private _connection:WebSocket = null;
+    private _connected: boolean = false;
+    private _connection: WebSocket = null;
 
     private _onError = null;
     private _onOpen = null;
@@ -41,7 +41,7 @@ export class NetworkInterface extends EventTarget{
      * @param {IOnReceivedData} onDataReceived
      * @returns {}
      */
-    connectToServer(url:string, onOpen:Function = null, onError:Function = null, onClosed:Function = null, onDataReceived:IOnReceivedData = null):void {
+    connectToServer(url: string, onOpen: Function = null, onError: Function = null, onClosed: Function = null, onDataReceived: IOnReceivedData = null): void {
 
         //return false if the Websocket exists and is connecting (state 0), opening (state 1) or closing (state 2)
         if (this._connection !== null && this._connection.readyState !== 3) {
@@ -54,11 +54,11 @@ export class NetworkInterface extends EventTarget{
         this._onClosed = onClosed;
         this._onDataReceivedCallBack = onDataReceived;
 
-        try{
+        try {
             this._connection = new WebSocket(url);
-        }catch(error){
+        } catch (error) {
             console.error("NetworkInterface Error: ", error);
-            if(onError)
+            if (onError)
                 onError();
             return;
         }
@@ -71,17 +71,17 @@ export class NetworkInterface extends EventTarget{
         this._connection.addEventListener("message", this._onDataReceivedFunc);
     }
 
-    private _onConnectionOpen():void {
+    private _onConnectionOpen(): void {
         console.log("WebSocketConnection: WebSocket open to: ", this._connection.url);
         this._connected = true;
 
-        if(this._onOpen)
+        if (this._onOpen)
             this._onOpen();
 
         this.dispatchEvent(new Event(NetworkInterface.CONNECTED));
     }
 
-    private _onConnectionClosed():void {
+    private _onConnectionClosed(): void {
         console.log("WebSocketConnection: WebSocket CLOSED");
         this._connected = false;
 
@@ -89,37 +89,37 @@ export class NetworkInterface extends EventTarget{
         this._connection.removeEventListener("open", this._onConnectionOpenFunc);
         this._connection.removeEventListener("close", this._onConnectionClosedFunc);
 
-        if(this._onClosed)
+        if (this._onClosed)
             this._onClosed();
 
         this.dispatchEvent(new Event(NetworkInterface.CLOSED));
     }
 
-    private _onConnectionError():void {
+    private _onConnectionError(): void {
         console.log("WebSocketConnection: WebSocket error");
         this._connected = false;
 
-        if(this._onError)
+        if (this._onError)
             this._onError();
 
         this.dispatchEvent(new Event(NetworkInterface.ERROR));
     }
 
-    private _onDataReceived(e):void {
+    private _onDataReceived(e): void {
         console.log("WebSocketConnection: Data received: ", e.data);
 
-        let dataAsArray:Uint8Array;
+        let dataAsArray: Uint8Array;
 
         //if the received data is a string, convert it to a Uint8Array (I always send data as Uint8Array, however in the test-
         //cases the data is sent as string (because the server.send-function used in the tests sends always strings)
-        if(typeof e.data === "string")
+        if (typeof e.data === "string")
             dataAsArray = this._stringToUint8Array(e.data);
         else if (e.data instanceof ArrayBuffer)
             dataAsArray = new Uint8Array(e.data);
         else
             throw new Error("Websocket received data which is neither a string nor a Uint8Array!")
 
-        if(this._onDataReceivedCallBack)
+        if (this._onDataReceivedCallBack)
             this._onDataReceivedCallBack(dataAsArray);
     }
 
@@ -127,26 +127,59 @@ export class NetworkInterface extends EventTarget{
      * returns true if the connection exists and was ready and false if not
      *
      * @param {Uint8Array} buffer
+     * @param {number} chunkSizeInBytes    // default 32MB chunks (was the fastest in tests compared with 16MB, 8 MB and 64MB))
      * @returns {boolean}
      */
-    sendDataToServer(buffer:Uint8Array):boolean {
+    async sendDataToServer(buffer: Uint8Array, chunkSizeInBytes: number = 32768 * 1024):Promise<boolean>{
+        let dataViewChunks: DataView = new DataView(new ArrayBuffer(2));
+        let chunksInfo:Uint8Array = new Uint8Array(2);
+        let arrayToSend: Uint8Array;
+        let offset:number = 0;
+        let counter:number = 0;
+
         if (this._connection === null || this._connection.readyState !== 1) {
             console.error("WebSocketConnection: sending of string not possible, because connection not ready");
             return false;
         } else {
-            this._connection.send(buffer);
+            console.log("network interface: send data: ", buffer.length)
+            console.log("network interface: amount of chunks: ", Math.ceil((buffer.length + 2) / chunkSizeInBytes))
+
+            //buffer.length + 2 because the 2 bytes with the information about the amount of chunks are added after the calculation
+            //on how many chunks are sent
+            dataViewChunks.setUint16(0, Math.ceil((buffer.length + 2) / chunkSizeInBytes), true);
+            chunksInfo.set(new Uint8Array(dataViewChunks.buffer));
+
+            arrayToSend = new Uint8Array(dataViewChunks.buffer.byteLength + buffer.length);
+            arrayToSend.set(chunksInfo);
+            arrayToSend.set(buffer, chunksInfo.length);
+
+            while (offset < arrayToSend.length) {
+                counter++;
+                const chunk:Uint8Array = arrayToSend.slice(offset, offset + chunkSizeInBytes);
+
+                await this._sendChunk(chunk)
+                offset += chunkSizeInBytes;
+            }
+
             return true;
         }
     }
 
-    closeConnection():void{
+    private async _sendChunk(chunk:Uint8Array):Promise<void> {
+        return new Promise((resolve) => {
+            this._connection.send(chunk)
+            setTimeout(resolve, 0); // Set the timeout to 0 ms (or adjust as needed)
+        });
+    }
+
+    closeConnection(): void {
         this._connection.close();
     }
 
-    private _stringToUint8Array(inputString:string):Uint8Array {
-        const numberStrings:string[] = inputString.split(',');
-        const numbers:number[] = numberStrings.map(str => parseInt(str, 10));
-        const uint8Array:Uint8Array = new Uint8Array(numbers);
+    private _stringToUint8Array(inputString: string): Uint8Array {
+        const numberStrings: string[] = inputString.split(',');
+        const numbers: number[] = numberStrings.map(str => parseInt(str, 10));
+        const uint8Array: Uint8Array = new Uint8Array(numbers);
         return uint8Array;
     }
 

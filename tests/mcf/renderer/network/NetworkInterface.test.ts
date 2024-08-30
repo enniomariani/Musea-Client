@@ -164,7 +164,42 @@ describe("connectToServer(): ", () => {
 });
 
 describe("sendDataToServer() ", ()=>{
-    test("should send passed data to server", async () =>{
+    it ("should send passed data to server in one chunk", async () =>{
+
+        let testData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11])
+        let testDataWithChunkInfo:Uint8Array = new Uint8Array([0x01, 0x00, 0x00, 0xFF, 0x11])
+        let response;
+
+        networkInterface.connectToServer(serverPath);
+        await server.connected; //wait until client connected to server, otherwise the events would not have been fired
+
+        response = await networkInterface.sendDataToServer(testData);
+
+        let serverReceivedMessage = await server.nextMessage;
+
+        expect(response).toBe(true);
+        expect(serverReceivedMessage).toEqual(testDataWithChunkInfo);
+    });
+
+    it ("should send passed data to server in two chunks, if it is big enough (for test-purpose big enough = bigger than 2 bytes)", async () =>{
+
+        let testData:Uint8Array = new Uint8Array([0x00, 0xFF])
+        let response;
+
+        networkInterface.connectToServer(serverPath);
+        await server.connected; //wait until client connected to server, otherwise the events would not have been fired
+
+        response = await networkInterface.sendDataToServer(testData, 2);
+
+        let serverReceivedMessage1 = await server.nextMessage;
+        let serverReceivedMessage2 = await server.nextMessage;
+
+        expect(response).toBe(true);
+        expect(serverReceivedMessage1).toEqual(new Uint8Array([0x02, 0x00]));
+        expect(serverReceivedMessage2).toEqual(new Uint8Array([0x00, 0xFF]));
+    });
+
+    it ("should send passed data to server in three chunks, if it is big enough (for test-purpose big enough = bigger than 2 bytes)", async () =>{
 
         let testData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11])
         let response;
@@ -172,12 +207,36 @@ describe("sendDataToServer() ", ()=>{
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
-        response = networkInterface.sendDataToServer(testData);
+        response = await networkInterface.sendDataToServer(testData, 2);
 
-        let serverReceivedMessage = await server.nextMessage;
+        let serverReceivedMessage1 = await server.nextMessage;
+        let serverReceivedMessage2 = await server.nextMessage;
+        let serverReceivedMessage3 = await server.nextMessage;
 
         expect(response).toBe(true);
-        expect(serverReceivedMessage).toEqual(testData);
+        expect(serverReceivedMessage1).toEqual(new Uint8Array([0x03, 0x00]));
+        expect(serverReceivedMessage2).toEqual(new Uint8Array([0x00, 0xff]));
+        expect(serverReceivedMessage3).toEqual(new Uint8Array([0x11]));
+    });
+
+    it ("should send passed data to server in three bigger chunks (separated into 4 bytes)", async () =>{
+
+        let testData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66])
+        let response;
+
+        networkInterface.connectToServer(serverPath);
+        await server.connected; //wait until client connected to server, otherwise the events would not have been fired
+
+        response = await networkInterface.sendDataToServer(testData, 4);
+
+        let serverReceivedMessage1 = await server.nextMessage;
+        let serverReceivedMessage2 = await server.nextMessage;
+        let serverReceivedMessage3 = await server.nextMessage;
+
+        expect(response).toBe(true);
+        expect(serverReceivedMessage1).toEqual(new Uint8Array([0x03, 0x00, 0x00, 0xFF]));
+        expect(serverReceivedMessage2).toEqual(new Uint8Array([0x11, 0x22, 0x33, 0x44]));
+        expect(serverReceivedMessage3).toEqual(new Uint8Array([0x55, 0x66]));
     });
 
     test("should return false if there is no connection", async () =>{
@@ -185,7 +244,7 @@ describe("sendDataToServer() ", ()=>{
         let testData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11])
         let response:boolean;
 
-        response = networkInterface.sendDataToServer(testData);
+        response = await networkInterface.sendDataToServer(testData);
 
         expect(response).toBe(false);
     });

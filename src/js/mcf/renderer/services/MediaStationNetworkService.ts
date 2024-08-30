@@ -227,7 +227,7 @@ export class MediaStationNetworkService {
 
                     console.log("SEND CONTENTS-FILE: ", json);
 
-                    this._networkService.sendContentFileTo(ip, json);
+                    await this._networkService.sendContentFileTo(ip, json);
 
                     this._mediaStationRepo.removeCachedMediaStation(mediaStationId);
 
@@ -287,8 +287,8 @@ export class MediaStationNetworkService {
             onSyncStep("Lösche ID: " + id + " in der Medien-App: " + mediaAppId.toString());
             console.log("DELETE MEDIA: ", id);
 
-            this._networkService.sendDeleteMediaTo(ipMediaApp, id);
-            this._mediaStationRepo.deleteStoredMediaID(mediaStationId, mediaAppId, id);
+            await this._networkService.sendDeleteMediaTo(ipMediaApp, id);
+            await this._mediaStationRepo.deleteStoredMediaID(mediaStationId, mediaAppId, id);
         }
     }
 

@@ -528,7 +528,7 @@ describe("sendMediaFileToIp() ",  ()=>{
         expect(answer).toBe(null);
     });
 
-    it("should return null if it received nothing after 3 seconds", async()=>{
+    it("should return null if it received nothing after 90 seconds", async()=>{
         //setup
         let answer:number;
         let answerPromise:Promise<number>;
@@ -541,7 +541,7 @@ describe("sendMediaFileToIp() ",  ()=>{
         answerPromise = networkService.sendMediaFileToIp(ip1, mediaType, mediaFile);
 
         // Fast-forward until all timers have been executed
-        jest.advanceTimersByTime(3000);
+        jest.advanceTimersByTime(90000);
 
         answer = await answerPromise;
 
@@ -566,12 +566,12 @@ describe("sendContentFileTo() ",  ()=>{
     });
 });
 
-describe("deleteMediaFileOn() ",  ()=>{
+describe("sendDeleteMediaTo() ",  ()=>{
     it("should call mockNetworkConnectionHandler.sendData with the correct command", async()=>{
         //setup
         let mediaFileId:number = 13;
         //method to test
-        networkService.deleteMediaFileOn(ip1, mediaFileId);
+        await networkService.sendDeleteMediaTo(ip1, mediaFileId);
 
         //tests
         expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);

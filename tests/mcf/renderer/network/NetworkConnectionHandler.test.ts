@@ -170,7 +170,7 @@ describe("sendData() ", () => {
         expect(mockNetworkInterface.sendDataToServer).toHaveBeenCalledWith(data);
     });
 
-    it("should return false if the data could not have been sent", () => {
+    it("should return false if the data could not have been sent", async () => {
         //setup
         const data: Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
         let success: boolean;
@@ -179,20 +179,20 @@ describe("sendData() ", () => {
         connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived, mockNetworkInterface);
 
         //method to test
-        success = connectionHandler.sendData(firstIP, data);
+        success = await connectionHandler.sendData(firstIP, data);
 
         //tests
         expect(success).toBe(false);
     });
 
-    it("should return false and print an error if the connection does not exist", () => {
+    it("should return false and print an error if the connection does not exist", async () => {
         //setup
         const data: Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
         let success: boolean;
         let logSpy = jest.spyOn(console, "error");
 
         //method to test
-        success = connectionHandler.sendData(firstIP, data);
+        success = await connectionHandler.sendData(firstIP, data);
 
         //tests
         expect(success).toBe(false);

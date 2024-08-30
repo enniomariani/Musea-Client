@@ -15,7 +15,7 @@ mediaApp2.role = MediaApp.ROLE_DEFAULT;
 
 const jsonMock: any = {
     name: "myName",
-    folderIdCounter: 1,
+    folderIdCounter: 2,
     contentIdCounter: 1,
     mediaAppIdCounter: 1,
     tagIdCounter: 1,
@@ -241,7 +241,7 @@ describe("getNextContentId() ", () => {
 
 describe("getNextFolderId() ", () => {
     it("should return an increased ID everytime it's called", () => {
-        let idPerCall: number[] = [0, 1, 2, 3, 4, 5, 6];
+        let idPerCall: number[] = [1, 2, 3, 4, 5, 6];   //starts at 1 because 0 is the root folder which already set when creating the mediastation
         let answerPerCall: number[] = [];
 
         //method to test

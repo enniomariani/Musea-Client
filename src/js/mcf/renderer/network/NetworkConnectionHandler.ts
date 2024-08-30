@@ -68,7 +68,7 @@ export  class NetworkConnectionHandler{
      * @param {Uint8Array} data - The data to send.
      * @returns {boolean} - Returns true if the data is successfully sent, otherwise false.
      */
-    sendData(ip: string, data: Uint8Array): boolean {
+    async sendData(ip: string, data: Uint8Array): Promise<boolean> {
         const connection:NetworkInterface = this._connections.get(ip);
 
         if (!connection) {
@@ -76,7 +76,7 @@ export  class NetworkConnectionHandler{
             return false;
         }
 
-        return connection.sendDataToServer(data);
+        return await connection.sendDataToServer(data);
     }
 
     /**
