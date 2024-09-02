@@ -17,9 +17,10 @@ export class MediaManager{
      * @param {MediaStation} mediaStation
      * @param {number} contentId
      * @param {number} mediaAppId
+     * @param {string} fileName
      * @returns {Image}
      */
-    createImage(mediaStation:MediaStation, contentId:number, mediaAppId:number):Image{
+    createImage(mediaStation:MediaStation, contentId:number, mediaAppId:number, fileName:string):Image{
         let content:Content = mediaStation.rootFolder.findContent(contentId);
 
         if(!content)
@@ -29,6 +30,7 @@ export class MediaManager{
 
         newImage.idOnMediaApp = -1;
         newImage.mediaAppId = mediaAppId;
+        newImage.fileName = fileName;
 
         content.media.set(mediaAppId, newImage);
 
@@ -44,9 +46,10 @@ export class MediaManager{
      * @param {number} contentId
      * @param {number} mediaAppId
      * @param {number} duration
+     * @param {string} fileName
      * @returns {Video}
      */
-    createVideo(mediaStation:MediaStation, contentId:number, mediaAppId:number, duration:number):Video{
+    createVideo(mediaStation:MediaStation, contentId:number, mediaAppId:number, duration:number, fileName:string):Video{
         let content:Content = mediaStation.rootFolder.findContent(contentId);
 
         if(!content)
@@ -57,6 +60,7 @@ export class MediaManager{
         newVideo.idOnMediaApp = -1;
         newVideo.mediaAppId = mediaAppId;
         newVideo.duration = duration;
+        newVideo.fileName = fileName;
 
         content.media.set(mediaAppId, newVideo);
 
@@ -83,6 +87,18 @@ export class MediaManager{
             return MediaManager.MEDIA_TYPE_IMAGE;
         else if(content.media.get(mediaAppId) instanceof Video)
             return MediaManager.MEDIA_TYPE_VIDEO;
+        else
+            return null;
+    }
+
+    getFileName(mediaStation:MediaStation, contentId:number, mediaAppId:number):string|null{
+        let content:Content = mediaStation.rootFolder.findContent(contentId);
+
+        if(!content)
+            throw new Error("Content with ID could not be found: "+ contentId);
+
+        if(content.media.get(mediaAppId) !== null && content.media.get(mediaAppId) !== undefined)
+            return content.media.get(mediaAppId).fileName;
         else
             return null;
     }
