@@ -8,6 +8,7 @@ export class MockMediaService extends MediaService{
     addImageAndCacheIt: jest.Mock;
     addVideoAndCacheIt: jest.Mock;
     getMediaType: jest.Mock;
+    getFileName: jest.Mock;
     deleteMedia: jest.Mock;
 
     constructor() {
@@ -16,5 +17,6 @@ export class MockMediaService extends MediaService{
         this.addVideoAndCacheIt = jest.fn();
         this.getMediaType = jest.fn();
         this.deleteMedia = jest.fn();
+        this.getFileName = jest.fn();
     }
 }
