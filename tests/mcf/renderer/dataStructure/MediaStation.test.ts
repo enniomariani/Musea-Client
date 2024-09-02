@@ -106,6 +106,7 @@ describe("importFromJSON() ", () => {
     it("should set all properties according to the passed json", () => {
         //setup
         mediaStation = new MediaStation(0);
+        mediaStation.name = "testName";
         let mockFolder: MockFolder = new MockFolder(0);
         let mediaApp1:MediaApp;
         let mediaApp2:MediaApp;
@@ -115,7 +116,7 @@ describe("importFromJSON() ", () => {
         mediaStation.importFromJSON(jsonMock, new MockFolder(0));
 
         //tests
-        expect(mediaStation.name).toBe(jsonMock.name);
+        expect(mediaStation.name).toBe("testName");
         expect(mediaStation.getNextFolderId()).toBe(jsonMock.folderIdCounter);
         expect(mediaStation.getNextContentId()).toBe(jsonMock.contentIdCounter);
         expect(mediaStation.getNextMediaAppId()).toBe(jsonMock.mediaAppIdCounter);

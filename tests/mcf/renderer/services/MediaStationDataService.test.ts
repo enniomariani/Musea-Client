@@ -66,7 +66,7 @@ describe("createMediaStation() ", ()=>{
 
 describe("renameMediaStation() ", ()=>{
 
-    it("should call findMediaStation and updateMediaStation from the repo", ()=>{
+    it("should call findMediaStation and updateAndSaveMediaStation from the repo", ()=>{
         let newName:string = "mediaStationNameNeu";
 
         let createdMediaStation:MediaStation = new MediaStation(createdID);
@@ -82,8 +82,8 @@ describe("renameMediaStation() ", ()=>{
         //tests
         expect(mockMediaStationRepository.findMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepository.findMediaStation).toHaveBeenCalledWith(createdID);
-        expect(mockMediaStationRepository.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepository.updateMediaStation).toHaveBeenCalledWith(createdMediaStation);
+        expect(mockMediaStationRepository.updateAndSaveMediaStation).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepository.updateAndSaveMediaStation).toHaveBeenCalledWith(createdMediaStation);
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{

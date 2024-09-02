@@ -28,7 +28,7 @@ export class MediaStationDataService{
 
         mediaStation.name = newName;
 
-        this._mediaStationRepository.updateMediaStation(mediaStation);
+        this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
     }
 
     getControllerIp(id:number):string|null{
