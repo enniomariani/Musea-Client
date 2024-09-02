@@ -28,15 +28,14 @@ export class MediaService {
      * @param {number} mediaAppId
      * @param {string} fileExtension    must be one of the static FILE_EXTENSION_IMAGE variables of MediaService
      * @param {Uint8Array} payload
-     * @param {string} fileName
      */
-    async addImageAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, fileExtension:string, payload:Uint8Array, fileName:string): Promise<void> {
+    async addImageAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, fileExtension:string, payload:Uint8Array): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
         if(!(fileExtension === MediaService.FILE_EXTENSION_IMAGE_PNG || fileExtension === MediaService.FILE_EXTENSION_IMAGE_JPEG))
             throw new Error("Non-valid file-extension passed: " +  fileExtension);
 
-        this._mediaManager.createImage(mediaStation, contentId, mediaAppId, fileName);
+        this._mediaManager.createImage(mediaStation, contentId, mediaAppId);
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
 
@@ -56,33 +55,18 @@ export class MediaService {
      * @param {number} duration
      * @param {string} fileExtension    must be one of the static FILE_EXTENSION_VIDEO variables of MediaService
      * @param {Uint8Array} payload
-     * @param {string} fileName
      */
-    async addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, duration:number, fileExtension:string, payload:Uint8Array, fileName:string): Promise<void> {
+    async addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, duration:number, fileExtension:string, payload:Uint8Array): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
         if(fileExtension !== MediaService.FILE_EXTENSION_VIDEO_MP4)
             throw new Error("Non-valid file-extension passed: " +  fileExtension);
 
-        this._mediaManager.createVideo(mediaStation, contentId, mediaAppId, duration, fileName);
+        this._mediaManager.createVideo(mediaStation, contentId, mediaAppId, duration);
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
 
         await this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, payload);
-    }
-
-    /**
-     * returns the fileName of the media or null if there was no media set
-     *
-     * @param {number} mediaStationId
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @returns {string}
-     */
-    getFileName(mediaStationId:number, contentId:number, mediaAppId:number): string{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-
-        return this._mediaManager.getFileName(mediaStation, contentId, mediaAppId);
     }
 
     /**

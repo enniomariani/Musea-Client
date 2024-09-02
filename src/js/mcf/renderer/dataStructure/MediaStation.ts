@@ -69,9 +69,7 @@ export class MediaStation{
      *
      * imports the whole data-structure from the JSON
      *
-     * before it imports the data, it deletes the root-folder and all mediaApps
-     *
-     * but the name is not overwritten by the import!
+     * before it imports the data, it delets the root-folder and all mediaApps
      *
      * @param json
      * @param {Folder} newRootFolder
@@ -79,6 +77,8 @@ export class MediaStation{
     importFromJSON(json:any, newRootFolder:Folder = new Folder(0)):void{
         console.log("IMPORT MEDIA-STATION FROM JSON: ", json)
 
+        // if(this._jsonPropertyExists(json, "name"))
+        //     this._name = json.name;
         if(this._jsonPropertyExists(json, "folderIdCounter"))
             this._folderIdCounter = json.folderIdCounter;
         if(this._jsonPropertyExists(json, "contentIdCounter"))
