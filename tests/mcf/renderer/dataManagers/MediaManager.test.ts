@@ -19,19 +19,22 @@ afterEach(() => {
 });
 
 describe("createImage() ", ()=>{
+    const fileName:string = "fileName";
     it("should return a new image with the correct parameters set", ()=>{
         //setup
         let answerImage:Image;
+
         mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
 
         //method to test
-        answerImage = mediaManager.createImage(mockMediaStation, 0, 0);
+        answerImage = mediaManager.createImage(mockMediaStation, 0, 0, fileName);
 
         //tests
         expect(answerImage).not.toBeNull();
         expect(answerImage).not.toBeUndefined();
         expect(answerImage.mediaAppId).toBe(0);
         expect(answerImage.idOnMediaApp).toBe(-1);
+        expect(answerImage.fileName).toBe(fileName);
     });
 
     it("should add the newly created image to the content", ()=>{
@@ -40,7 +43,7 @@ describe("createImage() ", ()=>{
         mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
 
         //method to test
-        answerImage = mediaManager.createImage(mockMediaStation, 0, 0);
+        answerImage = mediaManager.createImage(mockMediaStation, 0, 0, fileName);
 
         //tests
         expect(mockContent.media.get(0)).toEqual(answerImage);
@@ -52,11 +55,12 @@ describe("createImage() ", ()=>{
         let existingImage:Image = new Image();
         existingImage.mediaAppId = 0;
         existingImage.idOnMediaApp = 200;
+        existingImage.fileName = "existingName"
         mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, existingImage);
 
         //method to test
-        answerImage = mediaManager.createImage(mockMediaStation, 0, 0);
+        answerImage = mediaManager.createImage(mockMediaStation, 0, 0, fileName);
 
         //tests
         expect(mockContent.media.get(0)).toEqual(answerImage);
@@ -67,18 +71,20 @@ describe("createImage() ", ()=>{
         mockMediaStation.rootFolder.findContent.mockReturnValueOnce(null);
 
         //method to test
-        expect(()=>mediaManager.createImage(mockMediaStation, 0, 0)).toThrow(new Error("Content with ID could not be found: 0"))
+        expect(()=>mediaManager.createImage(mockMediaStation, 0, 0, fileName)).toThrow(new Error("Content with ID could not be found: 0"))
     });
 });
 
 describe("createVideo() ", ()=>{
+    const fileName:string = "fileName";
+
     it("should return a new video with the correct parameters set", ()=>{
         //setup
         let answerVideo:Video;
         mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
 
         //method to test
-        answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200);
+        answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200, fileName);
 
         //tests
         expect(answerVideo).not.toBeNull();
@@ -86,6 +92,7 @@ describe("createVideo() ", ()=>{
         expect(answerVideo.mediaAppId).toBe(0);
         expect(answerVideo.idOnMediaApp).toBe(-1);
         expect(answerVideo.duration).toBe(200);
+        expect(answerVideo.fileName).toBe(fileName);
     });
 
     it("should add the newly created video to the content", ()=>{
@@ -94,7 +101,7 @@ describe("createVideo() ", ()=>{
         mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
 
         //method to test
-        answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200);
+        answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200, fileName);
 
         //tests
         expect(mockContent.media.get(0)).toEqual(answerVideo);
@@ -106,11 +113,12 @@ describe("createVideo() ", ()=>{
         let existingImage:Image = new Image();
         existingImage.mediaAppId = 0;
         existingImage.idOnMediaApp = 200;
+        existingImage.fileName = "oldName";
         mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, existingImage);
 
         //method to test
-        answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200);
+        answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200, fileName);
 
         //tests
         expect(mockContent.media.get(0)).toEqual(answerVideo);
@@ -121,7 +129,45 @@ describe("createVideo() ", ()=>{
         mockMediaStation.rootFolder.findContent.mockReturnValueOnce(null);
 
         //method to test
-        expect(()=>mediaManager.createVideo(mockMediaStation, 0, 0, 200)).toThrow(new Error("Content with ID could not be found: 0"))
+        expect(()=>mediaManager.createVideo(mockMediaStation, 0, 0, 200, fileName)).toThrow(new Error("Content with ID could not be found: 0"))
+    });
+});
+
+describe("getFileName() ", ()=>{
+    it("should return a string with the fileName", ()=>{
+        //setup
+        let fileName:string;
+        let image:Image = new Image();
+        image.fileName = "testName"
+        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockContent.media.set(0, image);
+
+        //method to test
+        fileName = mediaManager.getFileName(mockMediaStation, 0, 0);
+
+        //tests
+        expect(fileName).toBe("testName");
+    });
+
+
+    it("should return null if there is no media set for the mediaAppId", ()=>{
+        //setup
+        let fileName:string;
+        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+
+        //method to test
+        fileName = mediaManager.getFileName(mockMediaStation, 0, 0);
+
+        //tests
+        expect(fileName).toBe(null);
+    });
+
+    it("should throw an error if the content could not be found", ()=>{
+        //setup
+        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(null);
+
+        //method to test
+        expect(()=>mediaManager.getFileName(mockMediaStation, 0, 0)).toThrow(new Error("Content with ID could not be found: 0"))
     });
 });
 

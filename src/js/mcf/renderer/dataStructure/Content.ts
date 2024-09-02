@@ -47,6 +47,9 @@ export class Content {
                 if (this._jsonPropertyExists(json.media[i], "mediaAppId") && media)
                     media.mediaAppId = json.media[i].mediaAppId;
 
+                if (this._jsonPropertyExists(json.media[i], "fileName") && media)
+                    media.fileName = json.media[i].fileName;
+
                 if (media)
                     this._media.set(media.mediaAppId, media);
             }
@@ -68,14 +71,16 @@ export class Content {
         this._media.forEach((media: IMedia) => {
             if (media instanceof Image) {
                 image = media;
-                allMedia.push({mediaAppId: image.mediaAppId, type: "image", idOnMediaApp: image.idOnMediaApp});
+                allMedia.push({mediaAppId: image.mediaAppId, type: "image",
+                    idOnMediaApp: image.idOnMediaApp, fileName: image.fileName});
             } else if (media instanceof Video) {
                 video = media;
                 allMedia.push({
                     mediaAppId: video.mediaAppId,
                     type: "video",
                     idOnMediaApp: video.idOnMediaApp,
-                    duration: video.duration
+                    duration: video.duration,
+                    fileName: video.fileName
                 });
             }
         });

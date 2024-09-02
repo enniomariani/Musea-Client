@@ -30,6 +30,7 @@ describe("addImageAndCacheIt() ", () => {
     let image: Image = new Image();
     let fileExtension: string = MediaService.FILE_EXTENSION_IMAGE_JPEG;
     let payload: Uint8Array = new Uint8Array([0x00, 0xFF, 0x12, 0xEF]);
+    const fileName:string = "testFileName.xy";
 
     it("should call contentManager.createImage with the correct arguments", async () => {
         //setup
@@ -37,11 +38,11 @@ describe("addImageAndCacheIt() ", () => {
         mockMediaManager.createImage.mockReturnValueOnce(image);
 
         //method to test
-        await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, payload);
+        await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, payload, fileName);
 
         //tests
         expect(mockMediaManager.createImage).toHaveBeenCalledTimes(1);
-        expect(mockMediaManager.createImage).toHaveBeenCalledWith(mockMediaStation, contentId, 0);
+        expect(mockMediaManager.createImage).toHaveBeenCalledWith(mockMediaStation, contentId, 0, fileName);
     });
 
     it("should call mediaStationRepository.updateMediaStation", async () => {
@@ -50,7 +51,7 @@ describe("addImageAndCacheIt() ", () => {
         mockMediaManager.createImage.mockReturnValueOnce(image);
 
         //method to test
-        await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, payload);
+        await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, payload, fileName);
 
         //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
@@ -63,7 +64,7 @@ describe("addImageAndCacheIt() ", () => {
         mockMediaManager.createImage.mockReturnValueOnce(image);
 
         //method to test
-        await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, payload);
+        await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, payload, fileName);
 
         //tests
         expect(mockMediaStationRepo.cacheMedia).toHaveBeenCalledTimes(1);
@@ -75,7 +76,7 @@ describe("addImageAndCacheIt() ", () => {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        await expect(mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, payload)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+        await expect(mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, payload, fileName)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 
     it("should throw an error if the passed fileExtension is not one of the MediaService.FILE_EXTENSION_IMAGE vars", async () => {
@@ -84,7 +85,7 @@ describe("addImageAndCacheIt() ", () => {
         mockMediaManager.createImage.mockReturnValueOnce(image);
 
         //tests
-        await expect(mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, "otherFileExtension", payload)).rejects.toThrow(new Error("Non-valid file-extension passed: otherFileExtension"));
+        await expect(mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, "otherFileExtension", payload, fileName)).rejects.toThrow(new Error("Non-valid file-extension passed: otherFileExtension"));
     });
 });
 
@@ -93,6 +94,7 @@ describe("addVideoAndCacheIt() ", () => {
     let video: Video = new Video();
     let fileExtension: string = MediaService.FILE_EXTENSION_VIDEO_MP4;
     let payload: Uint8Array = new Uint8Array([0x00, 0xFF, 0x12, 0xEF]);
+    const fileName:string = "testFileName.xy";
 
     it("should call contentManager.createVideo with the correct arguments", async () => {
         //setup
@@ -100,11 +102,11 @@ describe("addVideoAndCacheIt() ", () => {
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
         //method to test
-        await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, payload);
+        await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, payload, fileName);
 
         //tests
         expect(mockMediaManager.createVideo).toHaveBeenCalledTimes(1);
-        expect(mockMediaManager.createVideo).toHaveBeenCalledWith(mockMediaStation, contentId, 0, 199);
+        expect(mockMediaManager.createVideo).toHaveBeenCalledWith(mockMediaStation, contentId, 0, 199, fileName);
     });
 
     it("should call mediaStationRepository.updateMediaStation", async () => {
@@ -113,7 +115,7 @@ describe("addVideoAndCacheIt() ", () => {
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
         //method to test
-        await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, payload);
+        await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, payload, fileName);
 
         //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
@@ -126,7 +128,7 @@ describe("addVideoAndCacheIt() ", () => {
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
         //method to test
-        await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, payload);
+        await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, payload, fileName);
 
         //tests
         expect(mockMediaStationRepo.cacheMedia).toHaveBeenCalledTimes(1);
@@ -138,7 +140,7 @@ describe("addVideoAndCacheIt() ", () => {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        await expect(mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, payload)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+        await expect(mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, payload,fileName)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 
     it("should throw an error if the passed fileExtension is not one of the MediaService.FILE_EXTENSION_VIDEO vars", async() => {
@@ -147,7 +149,31 @@ describe("addVideoAndCacheIt() ", () => {
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
         //tests
-        await expect(mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 150, "otherFileExtension", payload)).rejects.toThrow(new Error("Non-valid file-extension passed: otherFileExtension"));
+        await expect(mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 150, "otherFileExtension", payload, fileName)).rejects.toThrow(new Error("Non-valid file-extension passed: otherFileExtension"));
+    });
+});
+
+describe("getFileName() ", () => {
+    let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
+    it("should call contentManager.getFileName with the correct arguments", () => {
+        //setup
+        let answer: string;
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaManager.getFileName.mockReturnValueOnce("fileNameX");
+
+        //method to test
+        answer = mediaService.getFileName(mediaStationId, contentId, 0);
+
+        //tests
+        expect(answer).toBe("fileNameX");
+    });
+
+    it("should throw an error if the mediaStationId could not be found", () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        expect(() => mediaService.getFileName(mediaStationId, contentId, 0)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 

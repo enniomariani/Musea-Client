@@ -2,12 +2,14 @@ export interface IMedia{
     idOnMediaApp:number
     mediaAppId:number
     exportToJSON:any
+    fileName:any
 }
 
 export class BaseMedia implements IMedia{
 
     protected _idOnMediaApp:number;
     protected _mediaAppId:number;
+    private _fileName:string;
 
     constructor() {}
 
@@ -32,6 +34,14 @@ export class BaseMedia implements IMedia{
 
     set mediaAppId(value: number) {
         this._mediaAppId = value;
+    }
+
+    get fileName(): string {
+        return this._fileName;
+    }
+
+    set fileName(value: string) {
+        this._fileName = value;
     }
 }
 

@@ -17,7 +17,7 @@ const expectedJSON:any = {
     id: 0,
     name: "myName",
     tagIds: tagIds,
-    media: [{mediaAppId: 0, type: "video", idOnMediaApp: 20, duration: 300}, {mediaAppId: 1, type: "image", idOnMediaApp: 10}]
+    media: [{mediaAppId: 0, type: "video", idOnMediaApp: 20, duration: 300, fileName: "video1.mp4"}, {mediaAppId: 1, type: "image", idOnMediaApp: 10, fileName: "image22.jpeg"}]
 };
 
 
@@ -50,9 +50,11 @@ describe("importFromJSON() ", () => {
         expect(video.mediaAppId).toBe(expectedJSON.media[0].mediaAppId);
         expect(video.duration).toBe(expectedJSON.media[0].duration);
         expect(video.idOnMediaApp).toBe(expectedJSON.media[0].idOnMediaApp);
+        expect(video.fileName).toBe(expectedJSON.media[0].fileName);
 
         expect(content.media.get(1).mediaAppId).toBe(expectedJSON.media[1].mediaAppId);
         expect(content.media.get(1).idOnMediaApp).toBe(expectedJSON.media[1].idOnMediaApp);
+        expect(content.media.get(1).fileName).toBe(expectedJSON.media[1].fileName);
     });
 });
 
@@ -67,10 +69,12 @@ describe("exportToJSON() ", ()=>{
         video.idOnMediaApp = 20;
         video.mediaAppId = 0;
         video.duration = 300;
+        video.fileName = "video1.mp4"
 
         let image:Image = new Image();
         image.idOnMediaApp = 10;
         image.mediaAppId = 1;
+        image.fileName = "image22.jpeg";
 
         content.media.set(video.mediaAppId, video)
         content.media.set(image.mediaAppId, image)
