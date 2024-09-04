@@ -157,7 +157,7 @@ describe("deleteFolder() ", ()=>{
         setup();
 
         //method to test
-        folderManager.deleteFolder(mockMediaStation, parentFodlerId, folderId);
+        folderManager.deleteFolder(mockMediaStation, folderId, parentFodlerId);
 
         //tests
         expect(mockFolder.removeSubFolder).toHaveBeenCalledTimes(1);
@@ -178,6 +178,6 @@ describe("deleteFolder() ", ()=>{
         mockFolder.removeSubFolder.mockReturnValue(false)
 
         //tests
-        expect(()=> folderManager.deleteFolder(mockMediaStation, parentFodlerId, folderId)).toThrow(Error("Folder with ID: " + folderId + " is not inside folder: "+ parentFodlerId));
+        expect(()=> folderManager.deleteFolder(mockMediaStation, folderId, parentFodlerId)).toThrow(Error("Folder with ID: " + folderId + " is not inside folder: "+ parentFodlerId));
     });
 });

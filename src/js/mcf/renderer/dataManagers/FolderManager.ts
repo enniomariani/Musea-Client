@@ -43,7 +43,7 @@ export class FolderManager{
         folder.name = name;
     }
 
-    deleteFolder(mediaStation:MediaStation,parentFolderId:number, id:number):void{
+    deleteFolder(mediaStation:MediaStation, id:number, parentFolderId:number):void{
         let parentFolder:Folder = mediaStation.rootFolder.findFolder(parentFolderId);
 
         if(!parentFolder)
