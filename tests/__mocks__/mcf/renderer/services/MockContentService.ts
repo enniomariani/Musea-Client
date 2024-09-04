@@ -18,6 +18,8 @@ export class MockContentService extends ContentService {
     sendCommandPause: jest.Mock;
     sendCommandSeek: jest.Mock;
 
+    changeLightIntensity: jest.Mock;
+
     constructor() {
         super(mockMediaStationRepo, mockContentNetworkService, mockMediaService);
         this.createContent = jest.fn();
@@ -28,5 +30,7 @@ export class MockContentService extends ContentService {
         this.sendCommandStop = jest.fn();
         this.sendCommandPause = jest.fn();
         this.sendCommandSeek = jest.fn();
+
+        this.changeLightIntensity = jest.fn();
     }
 }

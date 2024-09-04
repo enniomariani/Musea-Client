@@ -16,10 +16,11 @@ const tagIds:number[] = [10,20, 30,11];
 const expectedJSON:any = {
     id: 0,
     name: "myName",
+    lightIntensity: 2,
     tagIds: tagIds,
-    media: [{mediaAppId: 0, type: "video", idOnMediaApp: 20, duration: 300, fileName: "video1.mp4"}, {mediaAppId: 1, type: "image", idOnMediaApp: 10, fileName: "image22.jpeg"}]
+    media: [{mediaAppId: 0, type: "video", idOnMediaApp: 20, duration: 300, fileName: "video1.mp4"},
+        {mediaAppId: 1, type: "image", idOnMediaApp: 10, fileName: "image22.jpeg"}]
 };
-
 
 describe("importFromJSON() ", () => {
     it("should set all properties for itself", () => {
@@ -32,6 +33,7 @@ describe("importFromJSON() ", () => {
         //tests
         expect(content.id).toBe(expectedJSON.id);
         expect(content.name).toBe(expectedJSON.name);
+        expect(content.lightIntensity).toBe(expectedJSON.lightIntensity);
     });
 
     it("should set all media correctly", () => {
@@ -65,6 +67,7 @@ describe("exportToJSON() ", ()=>{
         let receivedJSON:any;
         content.name = "myName";
         content.tagIds = tagIds;
+        content.lightIntensity = 2;
         let video:Video = new Video();
         video.idOnMediaApp = 20;
         video.mediaAppId = 0;
@@ -78,7 +81,6 @@ describe("exportToJSON() ", ()=>{
 
         content.media.set(video.mediaAppId, video)
         content.media.set(image.mediaAppId, image)
-
 
         //method to test
         receivedJSON = content.exportToJSON();

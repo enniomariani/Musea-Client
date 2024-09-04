@@ -40,6 +40,24 @@ export class ContentService {
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
+    getLightIntensity(mediaStationId:number, id:number):number{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        let content:Content = this._contentManager.getContent(mediaStation,id);
+
+        if (!content)
+            throw new Error("Content with this ID does not exist: " + id)
+
+        return content.lightIntensity;
+    }
+
+    changeLightIntensity(mediaStationId:number, id:number, intensity:number):void{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        this._contentManager.changeLightIntensity(mediaStation, id, intensity);
+
+        this._mediaStationRepository.updateMediaStation(mediaStation);
+    }
+
     /**
      * deletes the content and all media in it
      *

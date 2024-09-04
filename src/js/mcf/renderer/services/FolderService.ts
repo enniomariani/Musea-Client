@@ -36,7 +36,6 @@ export class FolderService {
         if(!folder)
             throw new Error("Folder with this ID does not exist: " + id);
 
-
         return folder.name;
     }
 

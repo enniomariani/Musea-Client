@@ -128,6 +128,84 @@ describe("changeName() ", ()=> {
     });
 });
 
+describe("getLightIntensity() ", ()=> {
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+
+    it("should return the lightIntensity of the content", () => {
+        //setup
+        mockContent.lightIntensity = 33;
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockContentManager.getContent.mockImplementation(( mediaStation, id)=>{
+            if(mediaStation === mockMediaStation && id === contentId)
+                return mockContent;
+        });
+
+        //method to test
+        let answer:number = contentService.getLightIntensity(mediaStationId,contentId);
+
+        //tests
+        expect(answer).toEqual(mockContent.lightIntensity);
+    });
+
+    it("should throw an error if the contentId could not be found", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockContentManager.getContent.mockReturnValue(null);
+
+        //tests
+        expect(()=> contentService.getLightIntensity(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
+    });
+
+    it("should throw an error if the mediaStationId could not be found", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        expect(()=> contentService.getLightIntensity(mediaStationId,contentId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
+describe("changeLightIntensity() ", ()=> {
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+    let newIntensity:number = 33;
+
+    it("should call contentManager.changeLightIntensity with the correct arguments", () => {
+        //setup
+        mockContent.lightIntensity = 0;
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        contentService.changeLightIntensity(mediaStationId,contentId,newIntensity);
+
+        //tests
+        expect(mockContentManager.changeLightIntensity).toHaveBeenCalledTimes(1);
+        expect(mockContentManager.changeLightIntensity).toHaveBeenCalledWith(mockMediaStation, contentId, newIntensity);
+    });
+
+    it("should call mediaStationRepository.updateMediaStation", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockContentManager.createContent.mockReturnValueOnce(mockContent);
+
+        //method to test
+        contentService.changeLightIntensity(mediaStationId,contentId,newIntensity);
+
+        //tests
+        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        expect(()=> contentService.changeLightIntensity(mediaStationId,contentId,newIntensity)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
 describe("deleteContent() ", ()=> {
 
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);

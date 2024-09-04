@@ -1,12 +1,14 @@
 import {Image, IMedia, Video} from "./Media";
+import * as console from "node:console";
+import {Error} from "memfs/lib/internal/errors";
 
 
 export class Content {
-
     private _id: number;
     private _name: string;
     private _media: Map<number, IMedia> = new Map();
     private _tagIds: number[] = [];
+    private _lightIntensity: number;
 
     constructor(id: number) {
         this._id = id;
@@ -20,6 +22,9 @@ export class Content {
 
         if (this._jsonPropertyExists(json, "name"))
             this._name = json.name;
+
+        if (this._jsonPropertyExists(json, "lightIntensity"))
+            this._lightIntensity = json.lightIntensity;
 
         if (this._jsonPropertyExists(json, "media")) {
             for (let i: number = 0; i < json.media.length; i++) {
@@ -88,6 +93,7 @@ export class Content {
         return {
             id: this._id,
             name: this._name,
+            lightIntensity: this._lightIntensity,
             tagIds: this._tagIds,
             media: allMedia
         };
@@ -131,5 +137,13 @@ export class Content {
 
     set tagIds(value: number[]) {
         this._tagIds = value;
+    }
+
+    get lightIntensity(): number {
+        return this._lightIntensity;
+    }
+
+    set lightIntensity(value: number) {
+        this._lightIntensity = value;
     }
 }

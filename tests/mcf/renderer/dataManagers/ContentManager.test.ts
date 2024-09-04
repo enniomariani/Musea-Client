@@ -45,6 +45,7 @@ describe("createContent() ", ()=>{
         //tests
         expect(content.name).toEqual(name);
         expect(content.id).toEqual(uniqueID);
+        expect(content.lightIntensity).toEqual(0);
     });
 
     it("should add the created content to the folder with the passed ID", ()=>{
@@ -132,6 +133,40 @@ describe("changeName() ", ()=>{
 
         //tests
         expect(()=> contentManager.changeName(mockMediaStation, contentID + 1, newName)).toThrow(Error);
+    });
+});
+
+describe("changeLightIntensity() ", ()=>{
+    let contentID:number = 10;
+    let content:Content = new Content(contentID);
+    let newIntensity:number = 12;
+    content.lightIntensity = 0;
+
+    function setup():void{
+        mockMediaStation.rootFolder.findContent = jest.fn();
+        mockMediaStation.rootFolder.findContent.mockImplementationOnce((id:number)=>{
+            if(id === contentID)
+                return content;
+            else
+                return null;
+        });
+    }
+
+    it("should change the lightIntensity of the passed content to the passed new intensity", ()=>{
+        setup();
+
+        //method to test
+        contentManager.changeLightIntensity(mockMediaStation, contentID, newIntensity);
+
+        //tests
+        expect(content.lightIntensity).toEqual(newIntensity);
+    });
+
+    it("should throw an error if the content could not be found", ()=>{
+        setup();
+
+        //tests
+        expect(()=> contentManager.changeLightIntensity(mockMediaStation, contentID + 1, newIntensity)).toThrow(Error);
     });
 });
 

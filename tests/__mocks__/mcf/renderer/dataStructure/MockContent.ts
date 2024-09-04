@@ -9,6 +9,7 @@ export class MockContent extends Content{
 
     constructor(id) {
         super(id);
+
         this.getMaxDuration = jest.fn();
         this.importFromJSON = jest.fn();
         this.exportToJSON = jest.fn();

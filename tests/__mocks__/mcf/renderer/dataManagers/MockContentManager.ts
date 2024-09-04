@@ -6,7 +6,10 @@ export class MockContentManager extends ContentManager{
     getContent: jest.Mock;
     changeName: jest.Mock;
     deleteContent: jest.Mock;
+
     getDuration: jest.Mock;
+
+    changeLightIntensity: jest.Mock;
 
 
     constructor() {
@@ -16,5 +19,7 @@ export class MockContentManager extends ContentManager{
         this.changeName = jest.fn();
         this.deleteContent = jest.fn();
         this.getDuration = jest.fn();
+
+        this.changeLightIntensity = jest.fn();
     }
 }
