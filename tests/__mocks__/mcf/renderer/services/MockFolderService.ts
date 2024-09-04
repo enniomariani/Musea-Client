@@ -1,7 +1,9 @@
 import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository";
 import {FolderService} from "../../../../../src/js/mcf/renderer/services/FolderService";
+import {MockContentService} from "./MockContentService";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
+const mockContentService:MockContentService = new MockContentService();
 
 
 export class MockFolderService extends FolderService {
@@ -15,7 +17,7 @@ export class MockFolderService extends FolderService {
     getAllSubFoldersInFolder: jest.Mock;
 
     constructor() {
-        super(mockMediaStationRepo);
+        super(mockMediaStationRepo, mockContentService);
         this.createFolder = jest.fn();
         this.changeName = jest.fn();
         this.getName = jest.fn();
