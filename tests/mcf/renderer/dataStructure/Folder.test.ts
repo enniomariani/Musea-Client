@@ -255,6 +255,35 @@ describe("addSubFolder(), getAllSubFolders()", ()=>{
     });
 });
 
+describe("getAllContentIDsInFolderAndSubFolders() ", ()=>{
+    it("should return all content-IDs the folder holds itself", ()=>{
+        //setup
+        let content1:Content = new Content(0);
+        let content2:Content = new Content(1);
+        let content3:Content = new Content(2);
+
+        folder = new Folder(1);
+        folder.contents.push(content1, content2, content3);
+
+        //method to test
+        let result:Map<number, number[]> = folder.getAllContentIDsInFolderAndSubFolders();
+
+        //tests
+        expect(result.get(folder.id)).toEqual([0,1,2]);
+    });
+
+    it("should return all content-IDs the folder holds itself AND the contents of all subfolders (see top of this test-file for setup of contents)", ()=>{
+        //setup
+        //method to test
+        let result:Map<number, number[]> = folder.getAllContentIDsInFolderAndSubFolders();
+
+        //tests
+        expect(result.get(0)).toEqual([3]);
+        expect(result.get(1)).toEqual([0,1]);
+        expect(result.get(3)).toEqual([2]);
+    });
+});
+
 
 describe("findFolder() ", ()=>{
     it("should find the folder if it is in one of the subfolders of the folder", ()=>{

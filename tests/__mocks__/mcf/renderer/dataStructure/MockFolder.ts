@@ -8,6 +8,7 @@ export class MockFolder extends Folder{
     containsContent: jest.Mock;
     findContent: jest.Mock;
     getAllContents: jest.Mock;
+    getAllContentIDsInFolderAndSubFolders: jest.Mock;
 
     addSubFolder: jest.Mock;
     removeSubFolder: jest.Mock;
@@ -25,6 +26,7 @@ export class MockFolder extends Folder{
         this.containsContent = jest.fn();
         this.findContent = jest.fn();
         this.getAllContents = jest.fn();
+        this.getAllContentIDsInFolderAndSubFolders = jest.fn();
 
         this.addSubFolder = jest.fn();
         this.removeSubFolder = jest.fn();

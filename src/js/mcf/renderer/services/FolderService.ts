@@ -3,15 +3,18 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {Folder} from "../dataStructure/Folder";
 import {Content} from "../dataStructure/Content";
 import {FolderManager} from "../dataManagers/FolderManager";
+import {ContentService} from "./ContentService";
 
 
 export class FolderService {
 
     private _mediaStationRepository:MediaStationRepository;
     private _folderManager:FolderManager;
+    private _contentService:ContentService;
 
-    constructor(mediaStationRepository: MediaStationRepository, folderManager: FolderManager = new FolderManager()) {
+    constructor(mediaStationRepository: MediaStationRepository, contentService:ContentService, folderManager: FolderManager = new FolderManager()) {
         this._mediaStationRepository = mediaStationRepository;
+        this._contentService = contentService;
         this._folderManager = folderManager;
     }
 
@@ -89,6 +92,31 @@ export class FolderService {
         });
 
         return returnMap;
+    }
+
+    /**
+     * deletes the folder, all sub-folders, all contents and all media in it
+     *
+     * @param {number} mediaStationId
+     * @param {number} folderId
+     * @returns {Promise<void>}
+     */
+    async deleteFolder(mediaStationId:number, folderId:number):Promise<void>{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        let folder:Folder = this._folderManager.getFolder(mediaStation, folderId);
+
+        if (!folder)
+            throw new Error("Folder with this ID does not exist: " + folderId);
+
+        let allContentIds:Map<number, number[]> = folder.getAllContentIDsInFolderAndSubFolders();
+
+        for (const [folderId, contentIds] of allContentIds)
+            for (const contentId of contentIds)
+                await this._contentService.deleteContent(mediaStationId, folderId, contentId)
+
+        this._folderManager.deleteFolder(mediaStation, folderId, folder.parentFolder.id);
+
+        this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
     private _findFolder(rootFolder:Folder, id: number): Folder {

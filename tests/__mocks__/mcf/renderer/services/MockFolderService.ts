@@ -9,6 +9,7 @@ export class MockFolderService extends FolderService {
     getName: jest.Mock;
     changeName: jest.Mock;
     getIdOfParentFolder: jest.Mock;
+    deleteFolder: jest.Mock;
 
     getAllContentsInFolder: jest.Mock;
     getAllSubFoldersInFolder: jest.Mock;
@@ -18,6 +19,7 @@ export class MockFolderService extends FolderService {
         this.createFolder = jest.fn();
         this.changeName = jest.fn();
         this.getName = jest.fn();
+        this.deleteFolder = jest.fn();
 
         this.getIdOfParentFolder = jest.fn();
 

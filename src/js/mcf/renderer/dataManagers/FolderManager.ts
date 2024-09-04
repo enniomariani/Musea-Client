@@ -44,12 +44,12 @@ export class FolderManager{
     }
 
     deleteFolder(mediaStation:MediaStation,parentFolderId:number, id:number):void{
-        let folder:Folder = mediaStation.rootFolder.findFolder(parentFolderId);
+        let parentFolder:Folder = mediaStation.rootFolder.findFolder(parentFolderId);
 
-        if(!folder)
+        if(!parentFolder)
             throw new Error("Parent-Folder with ID does not exist: "+ parentFolderId);
 
-        if(!folder.removeSubFolder(id))
+        if(!parentFolder.removeSubFolder(id))
             throw new Error("Folder with ID: " + id + " is not inside folder: "+ parentFolderId);
     }
 }

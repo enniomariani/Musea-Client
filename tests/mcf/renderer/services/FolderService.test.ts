@@ -8,10 +8,12 @@ import {
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
 import {MockFolderManager} from "../../../__mocks__/mcf/renderer/dataManagers/MockFolderManager";
+import {MockContentService} from "../../../__mocks__/mcf/renderer/services/MockContentService";
 
 let folderService:FolderService;
 let mockMediaStationRepo:MockMediaStationRepository;
 let mockFolderManager:MockFolderManager;
+let mockContentService:MockContentService;
 
 const mediaStationId:number = 0;
 const folderId:number = 14;
@@ -23,7 +25,8 @@ beforeEach(() => {
 
     mockMediaStationRepo = new MockMediaStationRepository();
     mockFolderManager = new MockFolderManager();
-    folderService = new FolderService(mockMediaStationRepo, mockFolderManager);
+    mockContentService = new MockContentService();
+    folderService = new FolderService(mockMediaStationRepo, mockContentService, mockFolderManager);
 });
 
 afterEach(() => {
@@ -305,5 +308,80 @@ describe("getAllContentsInFolder() ", ()=> {
 
         //tests
         expect(()=> folderService.getAllContentsInFolder(mediaStationId,folderId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
+describe("deleteFolder() ", ()=> {
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+    let mockFolder:MockFolder = new MockFolder(0);
+    mockFolder.parentFolder = new MockFolder(20);
+
+    it("should call contentService.deleteContent for each content it got from getAllContentIDsInFolderAndSubFolders", async ()=>{
+        //setup
+        const returnedContentIds:Map<number, number[]> = new Map();
+        returnedContentIds.set(1, [2,6,11]);
+        returnedContentIds.set(0, [3,5,8]);
+        returnedContentIds.set(5, [2]);
+
+        mockFolder.getAllContentIDsInFolderAndSubFolders.mockReturnValue(returnedContentIds);
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockFolderManager.getFolder.mockReturnValueOnce(mockFolder);
+
+        //method to test
+        await folderService.deleteFolder(mediaStationId,folderId);
+
+        //tests
+        expect(mockContentService.deleteContent).toHaveBeenCalledTimes(7);
+        expect(mockContentService.deleteContent).toHaveBeenNthCalledWith(1, mediaStationId, 1, 2)
+        expect(mockContentService.deleteContent).toHaveBeenNthCalledWith(2, mediaStationId, 1, 6)
+        expect(mockContentService.deleteContent).toHaveBeenNthCalledWith(3, mediaStationId, 1, 11)
+        expect(mockContentService.deleteContent).toHaveBeenNthCalledWith(4, mediaStationId, 0, 3)
+        expect(mockContentService.deleteContent).toHaveBeenNthCalledWith(5, mediaStationId, 0, 5)
+        expect(mockContentService.deleteContent).toHaveBeenNthCalledWith(6, mediaStationId, 0, 8)
+        expect(mockContentService.deleteContent).toHaveBeenNthCalledWith(7, mediaStationId, 5, 2)
+    });
+
+    it("should call folderManager.deleteFolder with the correct arguments", async ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockFolderManager.getFolder.mockReturnValueOnce(mockFolder);
+
+        //method to test
+        await folderService.deleteFolder(mediaStationId,folderId);
+
+        //tests
+        expect(mockFolderManager.deleteFolder).toHaveBeenCalledTimes(1);
+        expect(mockFolderManager.deleteFolder).toHaveBeenCalledWith(mockMediaStation, folderId, mockFolder.parentFolder.id);
+    });
+
+    it("should call mediaStationRepository.updateMediaStation", async ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockFolderManager.getFolder.mockReturnValueOnce(mockFolder);
+
+        //method to test
+        await folderService.deleteFolder(mediaStationId,folderId);
+
+        //tests
+        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
+    });
+
+    it("should throw an error if the folderId could not be found", async ()=>{
+        //setup
+        mockMediaStation.rootFolder = mockFolder;
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockFolderManager.getFolder.mockReturnValueOnce(null);
+
+        //tests
+        await expect(folderService.deleteFolder(mediaStationId,folderId)).rejects.toThrow(new Error("Folder with this ID does not exist: " + folderId));
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        await expect(folderService.deleteFolder(mediaStationId,folderId)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });

@@ -1,36 +1,36 @@
-import { Content } from "./Content";
+import {Content} from "./Content";
 
 
-export class Folder{
-    
-    private _id:number;
-    private _name:string;
-    private _parentFolder:Folder;
-    private _subFolders:Folder[] = [];
-    private _contents:Content[] = [];
+export class Folder {
 
-    constructor(id:number, private _createContent: (id: number) => Content = (id) => new Content(id)) {
+    private _id: number;
+    private _name: string;
+    private _parentFolder: Folder;
+    private _subFolders: Folder[] = [];
+    private _contents: Content[] = [];
+
+    constructor(id: number, private _createContent: (id: number) => Content = (id) => new Content(id)) {
         this._id = id;
     }
 
-    importFromJSON(json:any, parentFolder:Folder|null = null):void{
-        let subFolder:Folder;
-        let content:Content;
+    importFromJSON(json: any, parentFolder: Folder | null = null): void {
+        let subFolder: Folder;
+        let content: Content;
 
-        if(parentFolder)
+        if (parentFolder)
             this._parentFolder = parentFolder;
 
-        if(this._jsonPropertyExists(json, "id"))
+        if (this._jsonPropertyExists(json, "id"))
             this._id = json.id;
 
-        if(this._jsonPropertyExists(json, "name"))
+        if (this._jsonPropertyExists(json, "name"))
             this._name = json.name;
 
-        if(this._jsonPropertyExists(json, "subFolders")){
-            for(let i:number = 0; i < json.subFolders.length; i++){
+        if (this._jsonPropertyExists(json, "subFolders")) {
+            for (let i: number = 0; i < json.subFolders.length; i++) {
                 console.log("FOUND SUB-FOLDER: ", json.subFolders[i]);
 
-                if(this._jsonPropertyExists(json.subFolders[i], "id"))
+                if (this._jsonPropertyExists(json.subFolders[i], "id"))
                     subFolder = new Folder(json.subFolders[i].id);
 
                 this.addSubFolder(subFolder);
@@ -40,11 +40,11 @@ export class Folder{
             }
         }
 
-        if(this._jsonPropertyExists(json, "contents")){
-            for(let i:number = 0; i < json.contents.length; i++){
+        if (this._jsonPropertyExists(json, "contents")) {
+            for (let i: number = 0; i < json.contents.length; i++) {
                 console.log("FOUND CONTENTS: ", json.contents[i]);
 
-                if(this._jsonPropertyExists(json.contents[i], "id"))
+                if (this._jsonPropertyExists(json.contents[i], "id"))
                     content = this._createContent(json.contents[i].id);
 
                 content.importFromJSON(json.contents[i]);
@@ -54,26 +54,26 @@ export class Folder{
         }
     }
 
-    private _jsonPropertyExists(json:any, propName:string): boolean {
-        if(json.hasOwnProperty(propName))
+    private _jsonPropertyExists(json: any, propName: string): boolean {
+        if (json.hasOwnProperty(propName))
             return true;
         else
             throw new Error("Folder: missing property in JSON: " + propName);
     }
 
-    exportToJSON():any{
-        let subFolders:any[] = [];
-        let contents:any[] = [];
+    exportToJSON(): any {
+        let subFolders: any[] = [];
+        let contents: any[] = [];
 
-        this._subFolders.forEach((folder:Folder)=>{
+        this._subFolders.forEach((folder: Folder) => {
             subFolders.push(folder.exportToJSON());
         });
 
-        this._contents.forEach((content:Content)=>{
+        this._contents.forEach((content: Content) => {
             contents.push(content.exportToJSON());
         });
 
-        let json:any = {
+        let json: any = {
             id: this._id,
             name: this._name,
             contents: contents,
@@ -83,7 +83,7 @@ export class Folder{
         return json;
     }
 
-    addContent(content:Content){
+    addContent(content: Content) {
         this._contents.push(content);
     }
 
@@ -97,10 +97,10 @@ export class Folder{
         return false;
     }
 
-    getAllContents():Map<number, Content>{
+    getAllContents(): Map<number, Content> {
         let map: Map<number, Content> = new Map();
 
-        for(let i:number = 0; i < this._contents.length; i++)
+        for (let i: number = 0; i < this._contents.length; i++)
             map.set(this._contents[i].id, this._contents[i]);
 
         return map;
@@ -124,10 +124,10 @@ export class Folder{
         return false;
     }
 
-    getAllSubFolders():Map<number, Folder>{
+    getAllSubFolders(): Map<number, Folder> {
         let map: Map<number, Folder> = new Map();
 
-        for(let i:number = 0; i < this._subFolders.length; i++)
+        for (let i: number = 0; i < this._subFolders.length; i++)
             map.set(this._subFolders[i].id, this._subFolders[i]);
 
         return map;
@@ -143,12 +143,12 @@ export class Folder{
      * @param {number} id
      * @returns {Folder | null}
      */
-    findFolder(id:number):Folder| null{
+    findFolder(id: number): Folder | null {
         if (this._id === id)
             return this;
 
         for (const subFolder of this._subFolders) {
-            const foundFolder:Folder = subFolder.findFolder(id);
+            const foundFolder: Folder = subFolder.findFolder(id);
             if (foundFolder)
                 return foundFolder;
         }
@@ -178,7 +178,27 @@ export class Folder{
         return null;
     }
 
-    findContentByNameParts(name:string):Content[]|null{
+    getAllContentIDsInFolderAndSubFolders(): Map<number, number[]> {
+        let allContents: Map<number, number[]> = new Map();
+        let contentsOfThisFolder: number[] = [];
+        let content: Content;
+        let folder: Folder;
+
+        console.log("GET ALL CONTENTS OF FOLDER (and its subfolders): ", this._id)
+
+        for (folder of this._subFolders)
+            allContents = new Map([...allContents, ...folder.getAllContentIDsInFolderAndSubFolders()])
+
+        //add the contents of this folder
+        for (content of this._contents)
+            contentsOfThisFolder.push(content.id);
+
+        allContents.set(this._id, contentsOfThisFolder);
+
+        return allContents;
+    }
+
+    findContentByNameParts(name: string): Content[] | null {
         return null;
     }
 
