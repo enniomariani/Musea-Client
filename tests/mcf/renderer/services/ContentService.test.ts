@@ -308,35 +308,35 @@ describe("sendCommandPlay() ", ()=> {
 
     const contentId:number = 22;
 
-    it("should call contentNetworkService.sendCommandPlay for all media with an id not -1", () => {
+    it("should call contentNetworkService.sendCommandPlay for all media with an id not -1", async () => {
         //setup
         mockContentManager.getContent = jest.fn();
         mockContentManager.getContent.mockReturnValue(mockContent);
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
-        contentService.sendCommandPlay(mediaStationId,contentId);
+        await await contentService.sendCommandPlay(mediaStationId,contentId);
 
         //tests
         expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledTimes(1);
         expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledWith(mediaApp2, image2.idOnMediaApp);
     });
 
-    it("should call contentNetworkService.sendCommandStop for all media with an id EQUAL -1", () => {
+    it("should call contentNetworkService.sendCommandStop for all media with an id EQUAL -1", async () => {
         //setup
         mockContentManager.getContent = jest.fn();
         mockContentManager.getContent.mockReturnValue(mockContent);
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
-        contentService.sendCommandPlay(mediaStationId,contentId);
+        await contentService.sendCommandPlay(mediaStationId,contentId);
 
         //tests
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledTimes(1);
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledWith(mediaApp1);
     });
 
-    it("should call contentNetworkService.sendCommandStop for all mediaApps where no media was defined", () => {
+    it("should call contentNetworkService.sendCommandStop for all mediaApps where no media was defined", async () => {
         //setup
         mockContentManager.getContent = jest.fn();
         mockContentManager.getContent.mockReturnValue(mockContent);
@@ -344,19 +344,19 @@ describe("sendCommandPlay() ", ()=> {
         mockContent.media.set(1, null)
 
         //method to test
-        contentService.sendCommandPlay(mediaStationId,contentId);
+        await contentService.sendCommandPlay(mediaStationId,contentId);
 
         //tests
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledTimes(2);
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledWith(mediaApp1);
     });
 
-    it("should throw an error if the mediaStationId could not be found", ()=>{
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(()=> contentService.sendCommandPlay(mediaStationId,contentId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+        await expect(contentService.sendCommandPlay(mediaStationId,contentId)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -370,12 +370,12 @@ describe("sendCommandStop() ", ()=> {
     answerMap.set(1, mediaApp2);
     mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
 
-    it("should call contentNetworkService.sendCommandStop for every mediaApp defined in the mocked mediastation", () => {
+    it("should call contentNetworkService.sendCommandStop for every mediaApp defined in the mocked mediastation", async () => {
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
-        contentService.sendCommandStop(mediaStationId);
+        await contentService.sendCommandStop(mediaStationId);
 
         //tests
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledTimes(2);
@@ -383,12 +383,12 @@ describe("sendCommandStop() ", ()=> {
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenNthCalledWith(2, mediaApp2);
     });
 
-    it("should throw an error if the mediaStationId could not be found", ()=>{
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(()=> contentService.sendCommandStop(mediaStationId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+        await expect(contentService.sendCommandStop(mediaStationId)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -400,24 +400,24 @@ describe("sendCommandPause() ", ()=> {
     answerMap.set(1, new MediaApp(1));
     mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
 
-    it("should call contentNetworkService.sendCommandPause with the correct arguments", () => {
+    it("should call contentNetworkService.sendCommandPause with the correct arguments", async () => {
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
-        contentService.sendCommandPause(mediaStationId);
+        await contentService.sendCommandPause(mediaStationId);
 
         //tests
         expect(mockContentNetworkService.sendCommandPause).toHaveBeenCalledTimes(1);
         expect(mockContentNetworkService.sendCommandPause).toHaveBeenCalledWith(answerMap);
     });
 
-    it("should throw an error if the mediaStationId could not be found", ()=>{
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(()=> contentService.sendCommandPause(mediaStationId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+        await expect(contentService.sendCommandPause(mediaStationId)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -430,23 +430,23 @@ describe("sendCommandSeek() ", ()=> {
     mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
     const seekPos:number = 200;
 
-    it("should call contentNetworkService.sendCommandSeek with the correct arguments", () => {
+    it("should call contentNetworkService.sendCommandSeek with the correct arguments", async () => {
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
-        contentService.sendCommandSeek(mediaStationId, seekPos);
+        await contentService.sendCommandSeek(mediaStationId, seekPos);
 
         //tests
         expect(mockContentNetworkService.sendCommandSeek).toHaveBeenCalledTimes(1);
         expect(mockContentNetworkService.sendCommandSeek).toHaveBeenCalledWith(answerMap,seekPos);
     });
 
-    it("should throw an error if the mediaStationId could not be found", ()=>{
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(()=> contentService.sendCommandSeek(mediaStationId, seekPos)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+        await expect(contentService.sendCommandSeek(mediaStationId, seekPos)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });

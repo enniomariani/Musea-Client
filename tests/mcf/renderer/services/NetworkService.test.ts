@@ -582,13 +582,13 @@ describe("sendDeleteMediaTo() ",  ()=>{
 describe("sendMediaControlTo() ",  ()=>{
     it("should call mockNetworkConnectionHandler.sendData with the correct command", async()=>{
         //setup
-        let mediaControlCommand:string = "play_01"
+        let mediaControlCommand:string[] = ["play", "1"];
         //method to test
-        networkService.sendMediaControlTo(ip1, mediaControlCommand);
+        await networkService.sendMediaControlTo(ip1, mediaControlCommand);
 
         //tests
         expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
-        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("media", "control", mediaControlCommand));
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("media", "control", ...mediaControlCommand));
     });
 });
 
@@ -597,7 +597,7 @@ describe("sendDeleteMediaTo() ",  ()=>{
         //setup
         let mediaID:number = 10;
         //method to test
-        networkService.sendDeleteMediaTo(ip1, mediaID);
+        await networkService.sendDeleteMediaTo(ip1, mediaID);
 
         //tests
         expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);

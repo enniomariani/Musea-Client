@@ -79,7 +79,7 @@ export class ContentService {
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
-    sendCommandPlay(mediaStationId: number, contentId: number): void {
+    async sendCommandPlay(mediaStationId: number, contentId: number): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let media:IMedia;
 
@@ -88,26 +88,26 @@ export class ContentService {
         for (const [key, item] of mediaStation.getAllMediaApps()){
             media = content.media.get(item.id);
             if(media && media.idOnMediaApp !== -1)
-                this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.id), media.idOnMediaApp);
+                await this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.id), media.idOnMediaApp);
             else
-                this._contentNetworkService.sendCommandStop(mediaStation.getMediaApp(item.id));
+                await this._contentNetworkService.sendCommandStop(mediaStation.getMediaApp(item.id));
         }
     }
 
-    sendCommandStop(mediaStationId: number): void {
+    async sendCommandStop(mediaStationId: number): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         for (const [key, item] of mediaStation.getAllMediaApps())
-            this._contentNetworkService.sendCommandStop(item);
+            await this._contentNetworkService.sendCommandStop(item);
     }
 
-    sendCommandPause(mediaStationId: number): void {
+    async sendCommandPause(mediaStationId: number): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        this._contentNetworkService.sendCommandPause(mediaStation.getAllMediaApps());
+        await this._contentNetworkService.sendCommandPause(mediaStation.getAllMediaApps());
     }
 
-    sendCommandSeek(mediaStationId: number, pos: number): void {
+    async sendCommandSeek(mediaStationId: number, pos: number): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        this._contentNetworkService.sendCommandSeek(mediaStation.getAllMediaApps(), pos);
+        await this._contentNetworkService.sendCommandSeek(mediaStation.getAllMediaApps(), pos);
     }
 
     private _findMediaStation(id: number): MediaStation {

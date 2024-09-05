@@ -132,8 +132,8 @@ export class NetworkService {
         await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("contents", "put", contentFileJSON));
     }
 
-    public async sendMediaControlTo(ip:string, command:string):Promise<void>{
-        await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("media", "control", command));
+    public async sendMediaControlTo(ip:string, commands:string[]):Promise<void>{
+        await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("media", "control", ...commands));
     }
 
     public async sendDeleteMediaTo(ip:string, id:number):Promise<void>{

@@ -16,13 +16,13 @@ export class ContentNetworkService{
     }
 
     async sendCommandPlay(mediaApp:MediaApp, mediaId:number|null):Promise<void>{
-        let command:string =  ContentNetworkService.COMMAND_PLAY;
+        let command:string[] =  [ContentNetworkService.COMMAND_PLAY];
 
         if(mediaApp.ip === "")
             console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
         else{
             if(mediaId !== null)
-                command += "_" + mediaId.toString();
+                command.push( mediaId.toString());
 
             await this._networkService.sendMediaControlTo(mediaApp.ip, command);
         }
@@ -32,15 +32,15 @@ export class ContentNetworkService{
         if(mediaApp.ip === "")
             console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
         else
-            await this._networkService.sendMediaControlTo(mediaApp.ip, ContentNetworkService.COMMAND_STOP);
+            await this._networkService.sendMediaControlTo(mediaApp.ip, [ContentNetworkService.COMMAND_STOP]);
     }
 
     async sendCommandPause(mediaApps:Map<number, MediaApp>):Promise<void>{
-        await this._sendCommandToAllMediaApps(mediaApps, ContentNetworkService.COMMAND_PAUSE);
+        await this._sendCommandToAllMediaApps(mediaApps, [ContentNetworkService.COMMAND_PAUSE]);
     }
 
     async sendCommandSeek(mediaApps:Map<number, MediaApp>, pos:number):Promise<void>{
-        let command:string =  ContentNetworkService.COMMAND_SEEK;
+        let commands:string[] =  [ContentNetworkService.COMMAND_SEEK];
 
         if(pos < 0){
             console.error("Seek position is below 0, command is not sent: ", pos);
@@ -48,12 +48,12 @@ export class ContentNetworkService{
         }
 
         if(pos)
-            command += "_" + pos.toString();
+            commands.push(pos.toString());
 
-        await this._sendCommandToAllMediaApps(mediaApps, command);
+        await this._sendCommandToAllMediaApps(mediaApps, commands);
     }
 
-    private async _sendCommandToAllMediaApps(mediaApps:Map<number, MediaApp>, command:string):Promise<void>{
+    private async _sendCommandToAllMediaApps(mediaApps:Map<number, MediaApp>, command:string[]):Promise<void>{
         mediaApps.forEach(async (mediaApp:MediaApp)=>{
             if(mediaApp.ip && mediaApp.ip !== "")
                 await this._networkService.sendMediaControlTo(mediaApp.ip, command);
