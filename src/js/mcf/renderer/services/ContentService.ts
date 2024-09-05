@@ -79,16 +79,21 @@ export class ContentService {
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
-    async sendCommandPlay(mediaStationId: number, contentId: number): Promise<void> {
+    async sendCommandPlay(mediaStationId: number, contentId: number | null): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let media:IMedia;
 
         let content:Content = this._contentManager.getContent(mediaStation, contentId);
 
         for (const [key, item] of mediaStation.getAllMediaApps()){
-            media = content.media.get(item.id);
+
+            if(content)
+                media = content.media.get(item.id);
+
             if(media && media.idOnMediaApp !== -1)
                 await this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.id), media.idOnMediaApp);
+            else if(!content)
+                await this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.id), null);
             else
                 await this._contentNetworkService.sendCommandStop(mediaStation.getMediaApp(item.id));
         }

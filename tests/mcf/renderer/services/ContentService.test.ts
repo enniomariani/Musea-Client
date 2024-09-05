@@ -315,11 +315,26 @@ describe("sendCommandPlay() ", ()=> {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
-        await await contentService.sendCommandPlay(mediaStationId,contentId);
+        await contentService.sendCommandPlay(mediaStationId,contentId);
 
         //tests
         expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledTimes(1);
         expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledWith(mediaApp2, image2.idOnMediaApp);
+    });
+
+    it("should call contentNetworkService.sendCommandPlay with null if no contentId was passed", async () => {
+        //setup
+        mockContentManager.getContent = jest.fn();
+        mockContentManager.getContent.mockReturnValue(null);
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        await contentService.sendCommandPlay(mediaStationId,contentId);
+
+        //tests
+        expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledTimes(2);
+        expect(mockContentNetworkService.sendCommandPlay).toHaveBeenNthCalledWith(1, mediaApp1, null);
+        expect(mockContentNetworkService.sendCommandPlay).toHaveBeenNthCalledWith(2, mediaApp2, null);
     });
 
     it("should call contentNetworkService.sendCommandStop for all media with an id EQUAL -1", async () => {
