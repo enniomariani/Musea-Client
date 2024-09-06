@@ -17,6 +17,7 @@ export class MockNetworkService extends NetworkService{
     sendMediaFileToIp: jest.Mock;
     sendContentFileTo: jest.Mock;
     sendMediaControlTo: jest.Mock;
+    sendSystemCommandTo: jest.Mock;
     sendDeleteMediaTo: jest.Mock;
 
     constructor() {
@@ -32,6 +33,7 @@ export class MockNetworkService extends NetworkService{
         this.sendMediaFileToIp = jest.fn();
         this.sendContentFileTo = jest.fn();
         this.sendMediaControlTo = jest.fn();
+        this.sendSystemCommandTo = jest.fn();
         this.sendDeleteMediaTo = jest.fn();
     }
 }

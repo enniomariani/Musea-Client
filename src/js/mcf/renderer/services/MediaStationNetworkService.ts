@@ -24,6 +24,28 @@ export class MediaStationNetworkService {
         this._mediaStationRepo = mediaStationRepo;
     }
 
+    async sendCommandMute(mediaStationId: number): Promise<void> {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        for (const [key, item] of mediaStation.getAllMediaApps()){
+            if(item.ip && item.ip !== "")
+                await this._networkService.sendSystemCommandTo(item.ip, ["volume", "mute"]);
+            else
+                console.error("Sending mute-command to media-app failed, because there is no ip set: ", item.name, item.ip)
+        }
+    }
+
+    async sendCommandUnmute(mediaStationId: number): Promise<void> {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        for (const [key, item] of mediaStation.getAllMediaApps()){
+            if(item.ip && item.ip !== "")
+                await this._networkService.sendSystemCommandTo(item.ip, ["volume", "unmute"]);
+            else
+                console.error("Sending unmute-command to media-app failed, because there is no ip set: ", item.name, item.ip)
+        }
+    }
+
     /**
      * gets the controller-ip of the passed mediaStation, sends the command to download the content-file of this controller-app
      * and saves the contents-json to the mediaStation.

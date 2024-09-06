@@ -592,6 +592,19 @@ describe("sendMediaControlTo() ",  ()=>{
     });
 });
 
+describe("sendSystemCommandTo() ",  ()=>{
+    it("should call mockNetworkConnectionHandler.sendData with the correct command", async()=>{
+        //setup
+        let mediaControlCommand:string[] = ["volume", "mute"];
+        //method to test
+        await networkService.sendSystemCommandTo(ip1, mediaControlCommand);
+
+        //tests
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("system", ...mediaControlCommand));
+    });
+});
+
 describe("sendDeleteMediaTo() ",  ()=>{
     it("should call mockNetworkConnectionHandler.sendData with the correct command", async()=>{
         //setup
