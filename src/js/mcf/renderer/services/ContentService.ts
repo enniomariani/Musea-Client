@@ -58,7 +58,7 @@ export class ContentService {
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
-    getDuration(mediaStationId:number, contentId:number):number{
+    getMaxDuration(mediaStationId:number, contentId:number):number{
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let content:Content = this._contentManager.getContent(mediaStation,contentId);
 

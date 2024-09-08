@@ -180,7 +180,7 @@ describe("getDuration() ", ()=> {
         });
 
         //method to test
-        let answer:number = contentService.getDuration(mediaStationId,contentId);
+        let answer:number = contentService.getMaxDuration(mediaStationId,contentId);
 
         //tests
         expect(answer).toEqual(221);
@@ -192,7 +192,7 @@ describe("getDuration() ", ()=> {
         mockContentManager.getContent.mockReturnValue(null);
 
         //tests
-        expect(()=> contentService.getDuration(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
+        expect(()=> contentService.getMaxDuration(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
@@ -200,7 +200,7 @@ describe("getDuration() ", ()=> {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(()=> contentService.getDuration(mediaStationId,contentId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+        expect(()=> contentService.getMaxDuration(mediaStationId,contentId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 

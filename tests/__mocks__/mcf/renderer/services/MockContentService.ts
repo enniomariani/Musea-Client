@@ -21,6 +21,8 @@ export class MockContentService extends ContentService {
     getLightIntensity: jest.Mock;
     changeLightIntensity: jest.Mock;
 
+    getMaxDuration: jest.Mock;
+
     constructor() {
         super(mockMediaStationRepo, mockContentNetworkService, mockMediaService);
         this.createContent = jest.fn();
@@ -34,5 +36,7 @@ export class MockContentService extends ContentService {
 
         this.getLightIntensity = jest.fn();
         this.changeLightIntensity = jest.fn();
+
+        this.getMaxDuration = jest.fn();
     }
 }

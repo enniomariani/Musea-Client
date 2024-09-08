@@ -96,6 +96,11 @@ export class Content {
         };
     }
 
+    /**
+     * returns the duration of the longest video in the content (0 if there are no videos)
+     *
+     * @returns {number}
+     */
     getMaxDuration(): number {
         let highestDuration: number = 0;
         let video: Video;
