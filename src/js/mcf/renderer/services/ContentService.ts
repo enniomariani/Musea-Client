@@ -58,6 +58,16 @@ export class ContentService {
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
+    getDuration(mediaStationId:number, contentId:number):number{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        let content:Content = this._contentManager.getContent(mediaStation,contentId);
+
+        if (!content)
+            throw new Error("Content with this ID does not exist: " + contentId)
+
+        return content.getMaxDuration();
+    }
+
     /**
      * deletes the content and all media in it
      *
