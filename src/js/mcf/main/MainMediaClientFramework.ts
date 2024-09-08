@@ -35,7 +35,7 @@ export class MainMediaClientFramework {
             let loadedFileData:Buffer|null = this.mainFileService.loadFile(path);
             let fileDataAsUint8Array:Uint8Array;
 
-            console.log("MainMediaClientFramework: file-data loaded", loadedFileData);
+            console.log("MainMediaClientFramework: file-data loaded");
 
             if(loadedFileData === null)
                 return null;
