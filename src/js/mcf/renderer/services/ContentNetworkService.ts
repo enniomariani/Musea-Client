@@ -39,16 +39,16 @@ export class ContentNetworkService{
         await this._sendCommandToAllMediaApps(mediaApps, [ContentNetworkService.COMMAND_PAUSE]);
     }
 
-    async sendCommandSeek(mediaApps:Map<number, MediaApp>, pos:number):Promise<void>{
+    async sendCommandSeek(mediaApps:Map<number, MediaApp>, posInSec:number):Promise<void>{
         let commands:string[] =  [ContentNetworkService.COMMAND_SEEK];
 
-        if(pos < 0){
-            console.error("Seek position is below 0, command is not sent: ", pos);
+        if(posInSec < 0){
+            console.error("Seek position is below 0, command is not sent: ", posInSec);
             return;
         }
 
-        if(pos)
-            commands.push(pos.toString());
+        if(posInSec)
+            commands.push(posInSec.toString());
 
         await this._sendCommandToAllMediaApps(mediaApps, commands);
     }
