@@ -46,6 +46,17 @@ export class MediaStationNetworkService {
         }
     }
 
+    async sendCommandSetVolume(mediaStationId: number, volume:number): Promise<void> {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        for (const [key, item] of mediaStation.getAllMediaApps()){
+            if(item.ip && item.ip !== "")
+                await this._networkService.sendSystemCommandTo(item.ip, ["volume", "set", volume.toString()]);
+            else
+                console.error("Sending set volume-command to media-app failed, because there is no ip set: ", item.name, item.ip)
+        }
+    }
+
     /**
      * gets the controller-ip of the passed mediaStation, sends the command to download the content-file of this controller-app
      * and saves the contents-json to the mediaStation.

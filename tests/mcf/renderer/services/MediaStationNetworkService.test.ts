@@ -32,6 +32,55 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
+describe("sendCommandSetVolume() ", ()=> {
+    let mediaApp1:MediaApp = new MediaApp(0);
+    mediaApp1.ip = "127.0.0.1"
+    let mediaApp2:MediaApp = new MediaApp(1);
+    mediaApp2.ip = "127.0.0.2"
+    let mediaAppMap:Map<number, MediaApp> = new Map();
+    mediaAppMap.set(0, mediaApp1);
+    mediaAppMap.set(1, mediaApp2);
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(0);
+    mockMediaStation.getAllMediaApps.mockReturnValue(mediaAppMap);
+
+    it("should call networkService.sendMediaControlTo for the mediaApp with the correct mute-command", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+
+        //method to test
+        await mediaStationNetworkService.sendCommandSetVolume(0, 0.3);
+
+        //tests
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(2);
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, ["volume", "set", "0.3"]);
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(2, mediaApp2.ip, ["volume", "set", "0.3"]);
+    });
+
+    it("should print an error if the media-App has no IP set", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+        mediaApp2.ip = "";
+        let logSpy:any = jest.spyOn(global.console, 'error');
+
+        //method to test
+        await mediaStationNetworkService.sendCommandSetVolume(0, 0.3);
+
+        //tests
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async() => {
+        //setup
+        mockMediaStationRepo.findMediaStation = jest.fn();
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        await expect(mediaStationNetworkService.sendCommandSetVolume(0, 0.3)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
+    });
+});
+
 describe("sendCommandMute() ", ()=> {
     let mediaApp1:MediaApp = new MediaApp(0);
     mediaApp1.ip = "127.0.0.1"
