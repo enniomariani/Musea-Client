@@ -9,7 +9,7 @@ export class ContentNetworkService{
     static COMMAND_PAUSE:string = "pause";
     static COMMAND_SEEK:string = "seek";
 
-    static COMMAND_LIGHT:string[] = ["light", "preset"];
+    static COMMAND_LIGHT:string= "preset";
 
     private _networkService:NetworkService;
 
@@ -38,7 +38,7 @@ export class ContentNetworkService{
     }
 
     async sendCommandPause(mediaApps:Map<number, MediaApp>):Promise<void>{
-        await this._sendCommandToAllMediaApps(mediaApps, [ContentNetworkService.COMMAND_PAUSE]);
+        await this._sendMediaCommandToAllMediaApps(mediaApps, [ContentNetworkService.COMMAND_PAUSE]);
     }
 
     async sendCommandSeek(mediaApps:Map<number, MediaApp>, posInSec:number):Promise<void>{
@@ -52,20 +52,35 @@ export class ContentNetworkService{
         if(posInSec)
             commands.push(posInSec.toString());
 
-        await this._sendCommandToAllMediaApps(mediaApps, commands);
+        await this._sendMediaCommandToAllMediaApps(mediaApps, commands);
     }
 
     async sendCommandLight(mediaApps:Map<number, MediaApp>, presetId:number):Promise<void>{
-        let command:string[] = ContentNetworkService.COMMAND_LIGHT;
+        let command:string[] = [ContentNetworkService.COMMAND_LIGHT, presetId.toString()];
 
-        command.push(presetId.toString());
-        await this._sendCommandToAllMediaApps(mediaApps, command);
+        console.log("SEND COMMAND LIGHT: ",command,  presetId);
+        await this._sendLightCommandToAllMediaApps(mediaApps, command);
     }
 
-    private async _sendCommandToAllMediaApps(mediaApps:Map<number, MediaApp>, command:string[]):Promise<void>{
+    private async _sendMediaCommandToAllMediaApps(mediaApps:Map<number, MediaApp>, command:string[]):Promise<void>{
+
+        console.log("SEND COMMAND TO ALL MEDIA-APPS: ", command)
+
         mediaApps.forEach(async (mediaApp:MediaApp)=>{
             if(mediaApp.ip && mediaApp.ip !== "")
                 await this._networkService.sendMediaControlTo(mediaApp.ip, command);
+            else
+                console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
+        })
+    }
+
+    private async _sendLightCommandToAllMediaApps(mediaApps:Map<number, MediaApp>, command:string[]):Promise<void>{
+
+        console.log("SEND COMMAND TO ALL MEDIA-APPS: ", command)
+
+        mediaApps.forEach(async (mediaApp:MediaApp)=>{
+            if(mediaApp.ip && mediaApp.ip !== "")
+                await this._networkService.sendLightCommandTo(mediaApp.ip, command);
             else
                 console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
         })

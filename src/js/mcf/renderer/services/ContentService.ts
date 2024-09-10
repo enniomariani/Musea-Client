@@ -95,6 +95,8 @@ export class ContentService {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let media:IMedia;
 
+        console.log("SEND COMMAND PLAY: ", contentId)
+
         let content:Content = this._contentManager.getContent(mediaStation, contentId);
 
         for (const [key, item] of mediaStation.getAllMediaApps()){

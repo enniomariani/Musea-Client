@@ -194,25 +194,25 @@ describe("sendCommandSeek() ", ()=> {
 });
 
 describe("sendCommandLight() ", ()=> {
-    it("should call networkService.sendMediaControlTo for every mediaApp defined in the mediaStation with the correct LIGHT-command", async () => {
+    it("should call networkService.sendLightCommandTo for every mediaApp defined in the mediaStation with the correct LIGHT-command", async () => {
         //setup
-        const command:string[] = ContentNetworkService.COMMAND_LIGHT;
+        const command:string[] = [ContentNetworkService.COMMAND_LIGHT];
         command.push("2")
 
         //method to test
         await contentNetworkService.sendCommandLight(mediaApps, 2);
 
         //tests
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenCalledTimes(3);
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, command);
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenNthCalledWith(2, mediaApp2.ip, command);
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenNthCalledWith(3, mediaApp3.ip, command);
+        expect(mockNetworkService.sendLightCommandTo).toHaveBeenCalledTimes(3);
+        expect(mockNetworkService.sendLightCommandTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, command);
+        expect(mockNetworkService.sendLightCommandTo).toHaveBeenNthCalledWith(2, mediaApp2.ip, command);
+        expect(mockNetworkService.sendLightCommandTo).toHaveBeenNthCalledWith(3, mediaApp3.ip, command);
     });
 
     it("should print an error if one of the media-Apps has no IP set, but still send the command to the others", async () => {
         //setup
-        const command:string[] = ContentNetworkService.COMMAND_LIGHT;
-        command.push("2");
+        const command:string[] = [ContentNetworkService.COMMAND_LIGHT];
+        command.push("1");
         mediaApp2.ip = "";
         let logSpy:any = jest.spyOn(global.console, 'error');
 
@@ -220,9 +220,9 @@ describe("sendCommandLight() ", ()=> {
         await contentNetworkService.sendCommandLight(mediaApps, 1);
 
         //tests
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenCalledTimes(2);
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, command);
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenNthCalledWith(2, mediaApp3.ip, command);
+        expect(mockNetworkService.sendLightCommandTo).toHaveBeenCalledTimes(2);
+        expect(mockNetworkService.sendLightCommandTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, command);
+        expect(mockNetworkService.sendLightCommandTo).toHaveBeenNthCalledWith(2, mediaApp3.ip, command);
         expect(logSpy).toHaveBeenCalledTimes(1);
     });
 });

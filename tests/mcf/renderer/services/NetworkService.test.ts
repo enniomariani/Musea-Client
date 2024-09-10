@@ -605,6 +605,19 @@ describe("sendSystemCommandTo() ",  ()=>{
     });
 });
 
+describe("sendLightCommandTo() ",  ()=>{
+    it("should call mockNetworkConnectionHandler.sendData with the correct command", async()=>{
+        //setup
+        let mediaControlCommand:string[] = ["preset", "1"];
+        //method to test
+        await networkService.sendLightCommandTo(ip1, mediaControlCommand);
+
+        //tests
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("light", ...mediaControlCommand));
+    });
+});
+
 describe("sendDeleteMediaTo() ",  ()=>{
     it("should call mockNetworkConnectionHandler.sendData with the correct command", async()=>{
         //setup

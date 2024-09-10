@@ -136,6 +136,10 @@ export class NetworkService {
         await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("media", "control", ...commands));
     }
 
+    public async sendLightCommandTo(ip:string, commands:string[]):Promise<void>{
+        await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("light", ...commands));
+    }
+
     public async sendSystemCommandTo(ip:string, commands:string[]):Promise<void>{
         await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("system", ...commands));
     }

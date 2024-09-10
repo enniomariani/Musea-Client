@@ -20,6 +20,8 @@ export class MockNetworkService extends NetworkService{
     sendSystemCommandTo: jest.Mock;
     sendDeleteMediaTo: jest.Mock;
 
+    sendLightCommandTo: jest.Mock;
+
     constructor() {
         super(mockNetworkConnectionHandler);
         this.openConnection = jest.fn();
@@ -35,5 +37,8 @@ export class MockNetworkService extends NetworkService{
         this.sendMediaControlTo = jest.fn();
         this.sendSystemCommandTo = jest.fn();
         this.sendDeleteMediaTo = jest.fn();
+
+        this.sendLightCommandTo = jest.fn();
+
     }
 }
