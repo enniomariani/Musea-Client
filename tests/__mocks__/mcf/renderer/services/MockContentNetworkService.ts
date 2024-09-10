@@ -12,11 +12,15 @@ export class MockContentNetworkService extends ContentNetworkService{
     sendCommandPause: jest.Mock;
     sendCommandSeek: jest.Mock;
 
+    sendCommandLight: jest.Mock;
+
     constructor() {
         super(mockNetworkService);
         this.sendCommandPlay = jest.fn();
         this.sendCommandStop = jest.fn();
         this.sendCommandPause = jest.fn();
         this.sendCommandSeek = jest.fn();
+
+        this.sendCommandLight = jest.fn();
     }
 }

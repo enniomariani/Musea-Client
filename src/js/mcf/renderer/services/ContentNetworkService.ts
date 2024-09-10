@@ -9,6 +9,8 @@ export class ContentNetworkService{
     static COMMAND_PAUSE:string = "pause";
     static COMMAND_SEEK:string = "seek";
 
+    static COMMAND_LIGHT:string[] = ["light", "preset"];
+
     private _networkService:NetworkService;
 
     constructor(networkService:NetworkService) {
@@ -51,6 +53,13 @@ export class ContentNetworkService{
             commands.push(posInSec.toString());
 
         await this._sendCommandToAllMediaApps(mediaApps, commands);
+    }
+
+    async sendCommandLight(mediaApps:Map<number, MediaApp>, presetId:number):Promise<void>{
+        let command:string[] = ContentNetworkService.COMMAND_LIGHT;
+
+        command.push(presetId.toString());
+        await this._sendCommandToAllMediaApps(mediaApps, command);
     }
 
     private async _sendCommandToAllMediaApps(mediaApps:Map<number, MediaApp>, command:string[]):Promise<void>{

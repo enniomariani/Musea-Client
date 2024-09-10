@@ -330,8 +330,9 @@ describe("sendCommandPlay() ", ()=> {
     image2.mediaAppId = 1;
 
     let mockContent:MockContent = new MockContent(0);
-    mockContent.media.set(0,image1)
-    mockContent.media.set(1, image2)
+    mockContent.media.set(0,image1);
+    mockContent.media.set(1, image2);
+    mockContent.lightIntensity = 2;
 
     answerMap.set(0, mediaApp1);
     answerMap.set(1, mediaApp2);
@@ -367,7 +368,7 @@ describe("sendCommandPlay() ", ()=> {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
-        await contentService.sendCommandPlay(mediaStationId,contentId);
+        await contentService.sendCommandPlay(mediaStationId,null);
 
         //tests
         expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledTimes(2);
@@ -404,6 +405,20 @@ describe("sendCommandPlay() ", ()=> {
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledWith(mediaApp1);
     });
 
+    it("should call contentNetworkService.sendCommandLight with correct arguments", async () => {
+        //setup
+        mockContentManager.getContent = jest.fn();
+        mockContentManager.getContent.mockReturnValue(mockContent);
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        await contentService.sendCommandPlay(mediaStationId,contentId);
+
+        //tests
+        expect(mockContentNetworkService.sendCommandLight).toHaveBeenCalledTimes(1);
+        expect(mockContentNetworkService.sendCommandLight).toHaveBeenCalledWith(answerMap, 2);
+    });
+
     it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
@@ -434,6 +449,18 @@ describe("sendCommandStop() ", ()=> {
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledTimes(2);
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenNthCalledWith(1, mediaApp1);
         expect(mockContentNetworkService.sendCommandStop).toHaveBeenNthCalledWith(2, mediaApp2);
+    });
+
+    it("should call contentNetworkService.sendCommandLight with correct arguments", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        await contentService.sendCommandStop(mediaStationId);
+
+        //tests
+        expect(mockContentNetworkService.sendCommandLight).toHaveBeenCalledTimes(1);
+        expect(mockContentNetworkService.sendCommandLight).toHaveBeenCalledWith(answerMap, 2);
     });
 
     it("should throw an error if the mediaStationId could not be found", async ()=>{

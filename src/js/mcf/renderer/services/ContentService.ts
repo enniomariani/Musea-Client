@@ -9,6 +9,8 @@ import {MediaApp} from "../dataStructure/MediaApp";
 
 
 export class ContentService {
+    static DEFAULT_DMX_PRESET:number = 2;
+
     private _mediaStationRepository: MediaStationRepository;
     private _contentManager: ContentManager;
     private _contentNetworkService: ContentNetworkService;
@@ -107,12 +109,17 @@ export class ContentService {
             else
                 await this._contentNetworkService.sendCommandStop(mediaStation.getMediaApp(item.id));
         }
+
+        if(contentId !== null)
+            await this._contentNetworkService.sendCommandLight(mediaStation.getAllMediaApps(), content.lightIntensity);
     }
 
     async sendCommandStop(mediaStationId: number): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         for (const [key, item] of mediaStation.getAllMediaApps())
             await this._contentNetworkService.sendCommandStop(item);
+
+        await this._contentNetworkService.sendCommandLight(mediaStation.getAllMediaApps(), ContentService.DEFAULT_DMX_PRESET);
     }
 
     async sendCommandPause(mediaStationId: number): Promise<void> {
