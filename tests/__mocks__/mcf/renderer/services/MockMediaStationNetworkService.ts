@@ -9,7 +9,7 @@ const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepo
 
 export class MockMediaStationNetworkService extends MediaStationNetworkService{
     downloadContentsOfMediaStation: jest.Mock;
-    downloadOnlyMediaAppDataFromMediaStation: jest.Mock;
+    checkOnlineStatusOfAllMediaApps: jest.Mock;
     syncMediaStation: jest.Mock;
 
     sendCommandMute: jest.Mock;
@@ -19,7 +19,7 @@ export class MockMediaStationNetworkService extends MediaStationNetworkService{
     constructor() {
         super(mockNetworkService, mockMediaStationRepo);
         this.downloadContentsOfMediaStation = jest.fn();
-        this.downloadOnlyMediaAppDataFromMediaStation = jest.fn();
+        this.checkOnlineStatusOfAllMediaApps = jest.fn();
         this.syncMediaStation = jest.fn();
 
         this.sendCommandMute = jest.fn();
