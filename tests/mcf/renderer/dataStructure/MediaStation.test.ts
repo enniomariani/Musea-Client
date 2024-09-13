@@ -61,47 +61,6 @@ describe("exportToJSON() ", () => {
     });
 });
 
-describe("importMediaAppsFromJSON() ", () => {
-    it("should set all properties of the media-apps according to the JSON", () => {
-        //setup
-        mediaStation = new MediaStation(0);
-        let mediaApp1:MediaApp;
-        let mediaApp2:MediaApp;
-
-        //method to test
-        mediaStation.importMediaAppsFromJSON(jsonMock);
-
-        //tests
-        mediaApp1 = mediaStation.getMediaApp(0);
-        mediaApp2 = mediaStation.getMediaApp(1);
-
-        expect(mediaStation.getNextMediaAppId()).toBe(jsonMock.mediaAppIdCounter);
-
-        expect(mediaApp1.id).toBe(0);
-        expect(mediaApp1.name).toBe(mediaApp1.name);
-        expect(mediaApp1.ip).toBe(mediaApp1.ip);
-        expect(mediaApp1.role).toBe(mediaApp1.role);
-        expect(mediaApp2.id).toBe(1);
-        expect(mediaApp2.name).toBe(mediaApp2.name);
-        expect(mediaApp2.ip).toBe(mediaApp2.ip);
-        expect(mediaApp2.role).toBe(mediaApp2.role);
-    });
-
-    it("should remove the already added mediaApps from the array", () => {
-        //setup
-        mediaStation = new MediaStation(0);
-
-        mediaStation.addMediaApp(0,"test1", "127.0.0.1", MediaApp.ROLE_CONTROLLER)
-        mediaStation.addMediaApp(1,"test1", "127.0.0.1", MediaApp.ROLE_DEFAULT)
-
-        //method to test
-        mediaStation.importMediaAppsFromJSON({mediaAppIdCounter: 2});
-
-        //tests
-        expect(mediaStation.getAllMediaApps().size).toBe(0);
-    });
-});
-
 describe("importFromJSON() ", () => {
     it("should set all properties according to the passed json", () => {
         //setup
@@ -164,13 +123,17 @@ describe("importFromJSON() ", () => {
 
     it("should remove the already added mediaApps from the array", () => {
         //setup
+        const jsonWithoutMediaApps:any = jsonMock;
+        jsonWithoutMediaApps.mediaApps = [];
         mediaStation = new MediaStation(0);
+        const mockRootFolder:MockFolder = new MockFolder(2);
+        mockRootFolder.name = "testName"
 
         mediaStation.addMediaApp(0,"test1", "127.0.0.1", MediaApp.ROLE_CONTROLLER)
         mediaStation.addMediaApp(1,"test1", "127.0.0.1", MediaApp.ROLE_DEFAULT)
 
         //method to test
-        mediaStation.importMediaAppsFromJSON({mediaAppIdCounter: 2});
+        mediaStation.importFromJSON(jsonWithoutMediaApps, mockRootFolder);
 
         //tests
         expect(mediaStation.getAllMediaApps().size).toBe(0);
