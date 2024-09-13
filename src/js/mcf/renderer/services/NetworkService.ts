@@ -5,7 +5,7 @@ import {ConvertNetworkData} from "../network/ConvertNetworkData";
 export class NetworkService {
 
     private _networkConnectionHandler: NetworkConnectionHandler;
-    private _dataReceivedPromises: Map<string, { resolve: (value:any) => void, reject: (error: any) => void }>;
+    private _dataReceivedPromises: Map<string, { resolve: (value: any) => void, reject: (error: any) => void }>;
     private _onConnectionClosedPromises: Map<string, { resolve: () => void, reject: () => void }>;
 
     constructor(networkConnectionHandler: NetworkConnectionHandler = new NetworkConnectionHandler()) {
@@ -27,11 +27,10 @@ export class NetworkService {
     async openConnection(ip: string): Promise<boolean> {
 
         return new Promise((resolve, reject) => {
-            if(this._networkConnectionHandler.hasConnection(ip)){
+            if (this._networkConnectionHandler.hasConnection(ip)) {
                 console.info("Connection is already open: ", ip);
                 resolve(true);
-            }
-            else{
+            } else {
                 this._networkConnectionHandler.createConnection(
                     ip,
                     () => {
@@ -48,7 +47,7 @@ export class NetworkService {
         });
     }
 
-    public closeConnection(ip:string):void{
+    public closeConnection(ip: string): void {
         console.log("Networkservice: close connection: ", ip)
         this._networkConnectionHandler.closeConnection(ip);
     }
@@ -88,15 +87,19 @@ export class NetworkService {
      * @param {number} timeout  in MS
      * @returns {Promise<boolean>}
      */
-    async isMediaAppOnline(ip:string, timeout:number = 3000):Promise<boolean>{
+    async isMediaAppOnline(ip: string, timeout: number = 3000): Promise<boolean> {
         return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "ping"), timeout, false);
     }
 
-    async sendRegistration(ip:string, timeout:number = 3000):Promise<boolean>{
+    async sendRegistration(ip: string, timeout: number = 3000): Promise<boolean> {
         return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "admin"), timeout, false);
     }
 
-    async unregisterAndCloseConnection(ip:string, timeout:number = 3000):Promise<void>{
+    async sendCheckRegistration(ip: string, timeout: number = 3000): Promise<boolean> {
+        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "isRegistrationPossible"), timeout, false);
+    }
+
+    async unregisterAndCloseConnection(ip: string, timeout: number = 3000): Promise<void> {
         return await this._createConnectionClosedPromise(ip, ConvertNetworkData.encodeCommand("network", "disconnect"), timeout);
     }
 
@@ -110,7 +113,7 @@ export class NetworkService {
      * @param {number} timeout  in MS
      * @returns {Promise<string|null>}
      */
-    async getContentFileFrom(ip:string, timeout:number = 3000):Promise<string|null>{
+    async getContentFileFrom(ip: string, timeout: number = 3000): Promise<string | null> {
         return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("contents", "get"), timeout, null);
     }
 
@@ -124,31 +127,31 @@ export class NetworkService {
      * @param {number} timeout
      * @returns {Promise<string>}
      */
-    async sendMediaFileToIp(ip:string,mediaType:string, mediaFile:Uint8Array, timeout:number = 90000):Promise<number>{
+    async sendMediaFileToIp(ip: string, mediaType: string, mediaFile: Uint8Array, timeout: number = 90000): Promise<number> {
         return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("media", "put", mediaType, mediaFile), timeout, null);
     }
 
-    public async sendContentFileTo(ip:string, contentFileJSON:string):Promise<void>{
+    public async sendContentFileTo(ip: string, contentFileJSON: string): Promise<void> {
         await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("contents", "put", contentFileJSON));
     }
 
-    public async sendMediaControlTo(ip:string, commands:string[]):Promise<void>{
+    public async sendMediaControlTo(ip: string, commands: string[]): Promise<void> {
         await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("media", "control", ...commands));
     }
 
-    public async sendLightCommandTo(ip:string, commands:string[]):Promise<void>{
+    public async sendLightCommandTo(ip: string, commands: string[]): Promise<void> {
         await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("light", ...commands));
     }
 
-    public async sendSystemCommandTo(ip:string, commands:string[]):Promise<void>{
+    public async sendSystemCommandTo(ip: string, commands: string[]): Promise<void> {
         await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("system", ...commands));
     }
 
-    public async sendDeleteMediaTo(ip:string, id:number):Promise<void>{
+    public async sendDeleteMediaTo(ip: string, id: number): Promise<void> {
         await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("media", "delete", id.toString()));
     }
 
-    private _onConnectionClosed(ip:string): void {
+    private _onConnectionClosed(ip: string): void {
         console.info('Connection closed: ', ip, this._onConnectionClosedPromises);
         const promise = this._onConnectionClosedPromises.get(ip);
 
@@ -159,7 +162,7 @@ export class NetworkService {
         }
     }
 
-    private async _createConnectionClosedPromise(ip:string, command:Uint8Array, timeout:number):Promise<void>{
+    private async _createConnectionClosedPromise(ip: string, command: Uint8Array, timeout: number): Promise<void> {
         return new Promise(async (resolve, reject) => {
             const timer = setTimeout(() => {
                 console.log("Networkservice: close connection after timeout")
@@ -184,7 +187,7 @@ export class NetworkService {
         });
     }
 
-    private async _createNetworkPromise(ip:string, command:Uint8Array, timeout:number, rejectValue:any):Promise<any>{
+    private async _createNetworkPromise(ip: string, command: Uint8Array, timeout: number, rejectValue: any): Promise<any> {
         return new Promise(async (resolve, reject) => {
             const timer = setTimeout(() => {
                 this._dataReceivedPromises.delete(ip);
@@ -206,37 +209,47 @@ export class NetworkService {
         });
     }
 
-    private async _onDataReceived(ip:string, data:Uint8Array): Promise<void> {
-        let convertedData:(string|Uint8Array)[] = ConvertNetworkData.decodeCommand(data);
+    private async _onDataReceived(ip: string, data: Uint8Array): Promise<void> {
+        let convertedData: (string | Uint8Array)[] = ConvertNetworkData.decodeCommand(data);
         const promise = this._dataReceivedPromises.get(ip);
         console.info('network service: Data received:', ip, data, convertedData);
 
-        if(convertedData[0] !== ConvertNetworkData.INTERPRETATION_ERROR){
-            if(convertedData.length < 2)
+        if (convertedData[0] !== ConvertNetworkData.INTERPRETATION_ERROR) {
+            if (convertedData.length < 2)
                 return;
-            if(convertedData[0] === "network" && convertedData[1] === "ping")
+            if (convertedData[0] === "network" && convertedData[1] === "ping")
                 await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("network", "pong"));
-            else if(convertedData[0] === "network" && convertedData[1] === "pong"){
+            else if (convertedData[0] === "network" && convertedData[1] === "pong") {
                 if (promise) {
                     promise.resolve(true);
                     this._dataReceivedPromises.delete(ip);
                 }
-            }else if(convertedData[0] === "network" && convertedData[1] === "registration"){
+            } else if (convertedData[0] === "network" && convertedData[1] === "registration") {
                 if (promise) {
                     promise.resolve(convertedData[2] === "accepted");
                     this._dataReceivedPromises.delete(ip);
                 }
-            } else if(convertedData[0] === "contents" && convertedData[1] === "put" && convertedData[2] !== null){
+            } else if (convertedData[0] === "network" && convertedData[1] === "isRegistrationPossible" && convertedData[2] === "yes") {
+                if (promise) {
+                    promise.resolve(true);
+                    this._dataReceivedPromises.delete(ip);
+                }
+            } else if (convertedData[0] === "network" && convertedData[1] === "isRegistrationPossible" && convertedData[2] === "no") {
+                if (promise) {
+                    promise.resolve(false);
+                    this._dataReceivedPromises.delete(ip);
+                }
+            } else if (convertedData[0] === "contents" && convertedData[1] === "put" && convertedData[2] !== null) {
                 if (promise) {
                     promise.resolve(convertedData[2]);
                     this._dataReceivedPromises.delete(ip);
                 }
-            }else if(convertedData[0] === "media" && convertedData[1] === "put" && convertedData[2] !== null && typeof convertedData[2] === "string"){
+            } else if (convertedData[0] === "media" && convertedData[1] === "put" && convertedData[2] !== null && typeof convertedData[2] === "string") {
                 if (promise) {
                     promise.resolve(parseInt(convertedData[2]));
                     this._dataReceivedPromises.delete(ip);
                 }
-            }else
+            } else
                 console.error("Non-valid network-command received: ", convertedData);
         }
 

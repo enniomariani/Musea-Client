@@ -262,6 +262,88 @@ describe("isMediaAppOnline() ",  ()=>{
     });
 });
 
+describe("sendCheckRegistration() ",  ()=>{
+    it("should call networkConnectionHandler.sendData with a check-registration-command", async()=>{
+        //setup
+        let registrationAcceptedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "isRegistrationPossible", "yes");
+        mockOpenConnectionAndReceiveDataLater(ip1, registrationAcceptedCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        await networkService.sendCheckRegistration(ip1);
+
+        //tests
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("network", "isRegistrationPossible"));
+    });
+
+    it("should return true if it received a registration-possible-command", async()=>{
+        //setup
+        let registrationAcceptedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "isRegistrationPossible", "yes");
+        let answer:boolean;
+        mockOpenConnectionAndReceiveDataLater(ip1, registrationAcceptedCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.sendCheckRegistration(ip1);
+
+        //tests
+        expect(answer).toBe(true);
+    });
+
+    it("should return false if it received a registration-not-possible-command", async()=>{
+        //setup
+        let registrationRejectedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "isRegistrationPossible", "no");
+        let answer:boolean;
+        mockOpenConnectionAndReceiveDataLater(ip1, registrationRejectedCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.sendCheckRegistration(ip1);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("should return null if it received a wrong command", async()=>{
+        //setup
+        let pongCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "acceppted");
+        let answer:boolean;
+        mockOpenConnectionAndReceiveDataLater(ip1, pongCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.sendCheckRegistration(ip1);
+
+        //tests
+        expect(answer).toBe(null);
+    });
+
+    it("should return false if it received nothing after 3 seconds", async()=>{
+        //setup
+        let answer:boolean;
+        let answerPromise:Promise<boolean>;
+        jest.useFakeTimers();
+
+        mockOpenConnection();
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answerPromise = networkService.sendCheckRegistration(ip1);
+
+        // Fast-forward until all timers have been executed
+        jest.advanceTimersByTime(3000);
+
+        answer = await answerPromise;
+
+        //tests
+        expect(answer).toBe(false);
+
+        //tidy up
+        jest.useRealTimers();
+    });
+});
+
 describe("sendRegistration() ",  ()=>{
     it("should call networkConnectionHandler.sendData with a registration-command", async()=>{
         //setup
@@ -285,7 +367,7 @@ describe("sendRegistration() ",  ()=>{
 
         //method to test
         await networkService.openConnection(ip1);
-        answer = await networkService.isMediaAppOnline(ip1);
+        answer = await networkService.sendRegistration(ip1);
 
         //tests
         expect(answer).toBe(true);
@@ -299,7 +381,7 @@ describe("sendRegistration() ",  ()=>{
 
         //method to test
         await networkService.openConnection(ip1);
-        answer = await networkService.isMediaAppOnline(ip1);
+        answer = await networkService.sendRegistration(ip1);
 
         //tests
         expect(answer).toBe(false);
@@ -313,7 +395,7 @@ describe("sendRegistration() ",  ()=>{
 
         //method to test
         await networkService.openConnection(ip1);
-        answer = await networkService.isMediaAppOnline(ip1);
+        answer = await networkService.sendRegistration(ip1);
 
         //tests
         expect(answer).toBe(null);
@@ -329,7 +411,7 @@ describe("sendRegistration() ",  ()=>{
 
         //method to test
         await networkService.openConnection(ip1);
-        answerPromise = networkService.isMediaAppOnline(ip1);
+        answerPromise = networkService.sendRegistration(ip1);
 
         // Fast-forward until all timers have been executed
         jest.advanceTimersByTime(3000);

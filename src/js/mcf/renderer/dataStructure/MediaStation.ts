@@ -39,31 +39,6 @@ export class MediaStation{
         return JSON.stringify(json);
     }
 
-    importMediaAppsFromJSON(json:any):void{
-        let mediaApp:MediaApp;
-
-        if(this._jsonPropertyExists(json, "mediaAppIdCounter"))
-            this._mediaAppIdCounter = json.mediaAppIdCounter;
-
-        this._mediaApps = new Map();
-
-        if(json.mediaApps){
-            for(let i:number = 0; i < json.mediaApps.length; i++){
-                console.    log("FOUND MEDIA-APP IN JSON: ", json.mediaApps[i], json.mediaApps[i].id, json.mediaApps[i].name)
-                if(this._jsonPropertyExists(json.mediaApps[i], "id"))
-                    mediaApp = new MediaApp(json.mediaApps[i].id);
-                if(this._jsonPropertyExists(json.mediaApps[i], "name"))
-                    mediaApp.name = json.mediaApps[i].name;
-                if(this._jsonPropertyExists(json.mediaApps[i], "ip"))
-                    mediaApp.ip = json.mediaApps[i].ip;
-                if(this._jsonPropertyExists(json.mediaApps[i], "role"))
-                    mediaApp.role = json.mediaApps[i].role;
-
-                this._mediaApps.set(mediaApp.id, mediaApp);
-            }
-        }
-    }
-
     /**
      * TO DO: when tags are added, also reset the tags-array before adding!
      *
@@ -86,11 +61,36 @@ export class MediaStation{
         if(this._jsonPropertyExists(json, "tagIdCounter"))
             this._tagIdCounter = json.tagIdCounter;
 
-        this.importMediaAppsFromJSON(json);
+        this._importMediaAppsFromJSON(json);
 
         if(this._jsonPropertyExists(json, "rootFolder")){
             this._rootFolder = newRootFolder;
             this._rootFolder.importFromJSON(json.rootFolder);
+        }
+    }
+
+    private _importMediaAppsFromJSON(json:any):void{
+        let mediaApp:MediaApp;
+
+        if(this._jsonPropertyExists(json, "mediaAppIdCounter"))
+            this._mediaAppIdCounter = json.mediaAppIdCounter;
+
+        this._mediaApps = new Map();
+
+        if(json.mediaApps){
+            for(let i:number = 0; i < json.mediaApps.length; i++){
+                console.    log("FOUND MEDIA-APP IN JSON: ", json.mediaApps[i], json.mediaApps[i].id, json.mediaApps[i].name)
+                if(this._jsonPropertyExists(json.mediaApps[i], "id"))
+                    mediaApp = new MediaApp(json.mediaApps[i].id);
+                if(this._jsonPropertyExists(json.mediaApps[i], "name"))
+                    mediaApp.name = json.mediaApps[i].name;
+                if(this._jsonPropertyExists(json.mediaApps[i], "ip"))
+                    mediaApp.ip = json.mediaApps[i].ip;
+                if(this._jsonPropertyExists(json.mediaApps[i], "role"))
+                    mediaApp.role = json.mediaApps[i].role;
+
+                this._mediaApps.set(mediaApp.id, mediaApp);
+            }
         }
     }
 

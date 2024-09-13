@@ -83,6 +83,12 @@ export class MediaAppService{
             this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
+    async pcRespondsToPing(mediaStationId:number, mediaAppId:number):Promise<boolean>{
+        let ip:string = this._getMediaApp(mediaStationId, mediaAppId).ip;
+        console.log("MEDIA APP SERVICE: PING: ", mediaStationId, mediaAppId, this._getMediaApp(mediaStationId, mediaAppId))
+        return await this._networkService.pcRespondsToPing(ip);
+    }
+
     async isOnline(mediaStationId:number, mediaAppId:number):Promise<boolean>{
         let ip:string = this._getMediaApp(mediaStationId, mediaAppId).ip;
         let connection: boolean = await this._networkService.openConnection(ip);
@@ -91,12 +97,6 @@ export class MediaAppService{
             return new Promise((resolve) =>{resolve(false)});
 
         return await this._networkService.isMediaAppOnline(ip);
-    }
-
-    async pcRespondsToPing(mediaStationId:number, mediaAppId:number):Promise<boolean>{
-        let ip:string = this._getMediaApp(mediaStationId, mediaAppId).ip;
-        console.log("MEDIA APP SERVICE: PING: ", mediaStationId, mediaAppId, this._getMediaApp(mediaStationId, mediaAppId))
-        return await this._networkService.pcRespondsToPing(ip);
     }
 
     async connectAndRegisterToMediaApp(mediaStationId:number, mediaAppId:number):Promise<boolean>{

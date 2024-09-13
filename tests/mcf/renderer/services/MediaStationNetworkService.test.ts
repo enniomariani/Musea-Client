@@ -32,16 +32,16 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-describe("sendCommandSetVolume() ", ()=> {
-    let mediaApp1:MediaApp = new MediaApp(0);
+describe("sendCommandSetVolume() ", () => {
+    let mediaApp1: MediaApp = new MediaApp(0);
     mediaApp1.ip = "127.0.0.1"
-    let mediaApp2:MediaApp = new MediaApp(1);
+    let mediaApp2: MediaApp = new MediaApp(1);
     mediaApp2.ip = "127.0.0.2"
-    let mediaAppMap:Map<number, MediaApp> = new Map();
+    let mediaAppMap: Map<number, MediaApp> = new Map();
     mediaAppMap.set(0, mediaApp1);
     mediaAppMap.set(1, mediaApp2);
 
-    let mockMediaStation:MockMediaStation = new MockMediaStation(0);
+    let mockMediaStation: MockMediaStation = new MockMediaStation(0);
     mockMediaStation.getAllMediaApps.mockReturnValue(mediaAppMap);
 
     it("should call networkService.sendMediaControlTo for the mediaApp with the correct mute-command", async () => {
@@ -61,7 +61,7 @@ describe("sendCommandSetVolume() ", ()=> {
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
         mediaApp2.ip = "";
-        let logSpy:any = jest.spyOn(global.console, 'error');
+        let logSpy: any = jest.spyOn(global.console, 'error');
 
         //method to test
         await mediaStationNetworkService.sendCommandSetVolume(0, 0.3);
@@ -71,7 +71,7 @@ describe("sendCommandSetVolume() ", ()=> {
         expect(logSpy).toHaveBeenCalledTimes(1);
     });
 
-    it("should throw an error if the mediaStationId could not be found", async() => {
+    it("should throw an error if the mediaStationId could not be found", async () => {
         //setup
         mockMediaStationRepo.findMediaStation = jest.fn();
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
@@ -81,16 +81,16 @@ describe("sendCommandSetVolume() ", ()=> {
     });
 });
 
-describe("sendCommandMute() ", ()=> {
-    let mediaApp1:MediaApp = new MediaApp(0);
+describe("sendCommandMute() ", () => {
+    let mediaApp1: MediaApp = new MediaApp(0);
     mediaApp1.ip = "127.0.0.1"
-    let mediaApp2:MediaApp = new MediaApp(1);
+    let mediaApp2: MediaApp = new MediaApp(1);
     mediaApp2.ip = "127.0.0.2"
-    let mediaAppMap:Map<number, MediaApp> = new Map();
+    let mediaAppMap: Map<number, MediaApp> = new Map();
     mediaAppMap.set(0, mediaApp1);
     mediaAppMap.set(1, mediaApp2);
 
-    let mockMediaStation:MockMediaStation = new MockMediaStation(0);
+    let mockMediaStation: MockMediaStation = new MockMediaStation(0);
     mockMediaStation.getAllMediaApps.mockReturnValue(mediaAppMap);
 
     it("should call networkService.sendMediaControlTo for the mediaApp with the correct mute-command", async () => {
@@ -110,7 +110,7 @@ describe("sendCommandMute() ", ()=> {
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
         mediaApp2.ip = "";
-        let logSpy:any = jest.spyOn(global.console, 'error');
+        let logSpy: any = jest.spyOn(global.console, 'error');
 
         //method to test
         await mediaStationNetworkService.sendCommandMute(0);
@@ -120,7 +120,7 @@ describe("sendCommandMute() ", ()=> {
         expect(logSpy).toHaveBeenCalledTimes(1);
     });
 
-    it("should throw an error if the mediaStationId could not be found", async() => {
+    it("should throw an error if the mediaStationId could not be found", async () => {
         //setup
         mockMediaStationRepo.findMediaStation = jest.fn();
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
@@ -130,16 +130,16 @@ describe("sendCommandMute() ", ()=> {
     });
 });
 
-describe("sendCommandUnmute() ", ()=> {
-    let mediaApp1:MediaApp = new MediaApp(0);
+describe("sendCommandUnmute() ", () => {
+    let mediaApp1: MediaApp = new MediaApp(0);
     mediaApp1.ip = "127.0.0.1"
-    let mediaApp2:MediaApp = new MediaApp(1);
+    let mediaApp2: MediaApp = new MediaApp(1);
     mediaApp2.ip = "127.0.0.2"
-    let mediaAppMap:Map<number, MediaApp> = new Map();
+    let mediaAppMap: Map<number, MediaApp> = new Map();
     mediaAppMap.set(0, mediaApp1);
     mediaAppMap.set(1, mediaApp2);
 
-    let mockMediaStation:MockMediaStation = new MockMediaStation(0);
+    let mockMediaStation: MockMediaStation = new MockMediaStation(0);
     mockMediaStation.getAllMediaApps.mockReturnValue(mediaAppMap);
 
     it("should call networkService.sendMediaControlTo for the mediaApp with the correct unmute-command", async () => {
@@ -159,7 +159,7 @@ describe("sendCommandUnmute() ", ()=> {
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
         mediaApp2.ip = "";
-        let logSpy:any = jest.spyOn(global.console, 'error');
+        let logSpy: any = jest.spyOn(global.console, 'error');
 
         //method to test
         await mediaStationNetworkService.sendCommandUnmute(0);
@@ -169,7 +169,7 @@ describe("sendCommandUnmute() ", ()=> {
         expect(logSpy).toHaveBeenCalledTimes(1);
     });
 
-    it("should throw an error if the mediaStationId could not be found", async() => {
+    it("should throw an error if the mediaStationId could not be found", async () => {
         //setup
         mockMediaStationRepo.findMediaStation = jest.fn();
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
@@ -179,149 +179,314 @@ describe("sendCommandUnmute() ", ()=> {
     });
 });
 
-describe("downloadOnlyMediaAppDataFromMediaStation() ", () => {
-    let mockMediaStation: MockMediaStation ;
-    let answer: string;
+describe("checkOnlineStatusOfAllMediaApps() ", () => {
+    let mockMediaStation: MockMediaStation;
+    let answer: boolean;
     const controllerIp: string = "127.0.0.1";
     const correctJSON: any = {name: "mediaStationX"};
+    const correctJSONwithTwoMediaApps = {
+        name: "mediaStationX",
+        mediaApps: [
+            {
+                id: 0,
+                ip: "127.0.0.1",
+                role: MediaApp.ROLE_CONTROLLER
+            },
+            {
+                id: 1,
+                ip: "127.0.0.1",
+                role: MediaApp.ROLE_DEFAULT
+            }
+        ]
+    };
+
+    const correctJSONwithThreeMediaApps = {
+        name: "mediaStationX",
+        mediaApps: [
+            {
+                id: 0,
+                ip: "127.0.0.1",
+                role: MediaApp.ROLE_CONTROLLER
+            },
+            {
+                id: 1,
+                ip: "127.0.0.2",
+                role: MediaApp.ROLE_DEFAULT
+            },
+            {
+                id: 2,
+                ip: "127.0.0.3",
+                role: MediaApp.ROLE_DEFAULT
+            }
+        ]
+    };
 
     beforeEach(() => {
         answer = null;
         mockMediaStation = new MockMediaStation(0);
 
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
-        mockNetworkService.openConnection.mockReturnValueOnce(true);
-        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
-        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
-        mockNetworkService.sendRegistration.mockReturnValueOnce(true);
-        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSON));
+        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+        mockMediaStation.getControllerIp.mockReturnValue(controllerIp);
+        mockNetworkService.openConnection.mockReturnValue(true);
+        mockNetworkService.pcRespondsToPing.mockReturnValue(true);
+        mockNetworkService.isMediaAppOnline.mockReturnValue(true);
+        mockNetworkService.sendCheckRegistration.mockReturnValue(true);
+        mockNetworkService.getContentFileFrom.mockReturnValue(JSON.stringify(correctJSON));
     });
 
-    it("should call mediaStation.importFromJSON with the JSON passed from networkService.getContentFileFrom", async () => {
-        //method to test
-        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
-
-        //tests
-        expect(mockMediaStation.importMediaAppsFromJSON).toHaveBeenCalledTimes(1);
-        expect(mockMediaStation.importMediaAppsFromJSON).toHaveBeenCalledWith(correctJSON);
-        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_SUCCESS + "0");
-    });
-
-    it("should disconnect from the controller and close the connection after it received the data", async () => {
-        //method to test
-        await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
-
-        //tests
-        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
-        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(controllerIp);
-    });
-
-    it("should return an error if the controller is not reachable with ping", async () => {
+    it("should return false if the controller is not reachable with ping", async () => {
         //setup
         mockNetworkService.pcRespondsToPing = jest.fn();
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
 
         //tests
-        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
+        expect(answer).toBe(false);
     });
 
-    it("should return an error if the connection to the controller could not be opened", async () => {
+    it("should return false if the connection to the controller could not be opened", async () => {
         //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(false);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
 
         //tests
-        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
+        expect(answer).toBe(false);
     });
 
-    it("should return an error if the controller-app is not responding", async () => {
+    it("should false if the controller-app is not responding", async () => {
         //setup
         mockNetworkService.isMediaAppOnline = jest.fn();
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
 
         //tests
-        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
+        expect(answer).toBe(false);
     });
 
-    it("should return an error if the app could not register itself in the controller", async () => {
-        //setup
-        mockNetworkService.sendRegistration = jest.fn();
-        mockNetworkService.sendRegistration.mockReturnValueOnce(false);
-
-        //method to test
-        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
-
-        //tests
-        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
-    });
-
-    it("should return an error if the controller-app is not reachable within the timeout set in NetworkService", async () => {
+    it("should return false if the controller-app is not reachable within the timeout set in NetworkService", async () => {
         //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(null);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
 
         //tests
-        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
+        expect(answer).toBe(false);
     });
 
-    it("should return an error if the controller-app returned an empty JSON (which means there wasn't saved any before)", async () => {
+    it("should return false if the controller-app has already another app registered to it", async () => {
+        //setup
+        mockNetworkService.sendCheckRegistration = jest.fn();
+        mockNetworkService.sendCheckRegistration.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("with two media-apps (controller + 1 media-app): should return true if everything is reachable", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(true);
+    });
+
+    it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc is not reachable with ping", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
+        mockNetworkService.pcRespondsToPing = jest.fn();
+        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
+        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("with two media-apps (controller + 1 media-app): should return false if the connection to the second mediaApp-pc is not possible", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
+
+        mockNetworkService.openConnection = jest.fn();
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
+        mockNetworkService.openConnection.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc is not responding", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
+
+        mockNetworkService.isMediaAppOnline = jest.fn();
+        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
+        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc has already an admin-app registered", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
+        mockNetworkService.sendCheckRegistration = jest.fn();
+        mockNetworkService.sendCheckRegistration.mockReturnValueOnce(true);
+        mockNetworkService.sendCheckRegistration.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("with three media-apps (controller + 2 media-apps): should return true if everything is reachable", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(true);
+    });
+
+    it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc is not reachable with ping", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
+        mockNetworkService.pcRespondsToPing = jest.fn();
+        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
+        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
+        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("with three media-apps (controller + 2 media-apps): should return false if the connection to the third mediaApp-pc is not possible", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
+
+        mockNetworkService.openConnection = jest.fn();
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
+        mockNetworkService.openConnection.mockReturnValueOnce(true);
+        mockNetworkService.openConnection.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc is not responding", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
+
+        mockNetworkService.isMediaAppOnline = jest.fn();
+        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
+        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc has already another admin-app registered", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
+
+        mockNetworkService.sendCheckRegistration = jest.fn();
+        mockNetworkService.sendCheckRegistration.mockReturnValueOnce(true);
+        mockNetworkService.sendCheckRegistration.mockReturnValueOnce(false);
+
+        //method to test
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("should return true if the controller-app returned an empty JSON (which means there wasn't saved anything before, so no other media-apps)", async () => {
         //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce("{}");
 
         //method to test
-        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
 
         //tests
-        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIp);
+        expect(answer).toBe(true);
     });
 
-    it("should call unregisterAndCloseConnection() at the end", async () => {
+    it("should disconnect from the controller and close the connection after it received the data", async () => {
         //method to test
-        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
+        await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
 
         //tests
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(controllerIp);
     });
 
-    it("should return an error if there is no controller-ip specified", async () => {
-        //setup
-        mockMediaStation.getControllerIp = jest.fn();
-        mockMediaStation.getControllerIp.mockReturnValueOnce(null);
-
+    it("should call unregisterAndCloseConnection() at the end", async () => {
         //method to test
-        answer = await mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0);
+        answer = await mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0);
 
         //tests
-        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP);
+        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
+        expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(controllerIp);
     });
 
-    it("should throw an error if the mediaStationId could not be found", () => {
+    it("should throw an error if the mediaStationId could not be found", async () => {
         //setup
         mockMediaStationRepo.findMediaStation = jest.fn();
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(() => mediaStationNetworkService.downloadOnlyMediaAppDataFromMediaStation(0)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
+        await expect(mediaStationNetworkService.checkOnlineStatusOfAllMediaApps(0)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });
 
 describe("downloadContentsOfMediaStation() ", () => {
-    let mockMediaStation: MockMediaStation ;
+    let mockMediaStation: MockMediaStation;
     let answer: string;
     const controllerIp: string = "127.0.0.1";
     const correctJSON: any = {name: "mediaStationX"};
@@ -466,7 +631,7 @@ describe("syncMediaStation() ", () => {
     let mockContent3: MockContent;
     let image1: Image;
     let image2: Image;
-    let mocksCalled:string[];
+    let mocksCalled: string[];
 
     let mediaApp1: MediaApp = new MediaApp(0);
     mediaApp1.name = "controller";
@@ -531,13 +696,13 @@ describe("syncMediaStation() ", () => {
             else
                 return new Promise((resolve) => resolve(null));
         });
-        let counter:number = 0;
+        let counter: number = 0;
         mockNetworkService.sendMediaFileToIp.mockImplementation(() => {
             mocksCalled.push("mockNetworkService.sendMediaFileToIp");
-            if(counter === 0){
+            if (counter === 0) {
                 counter++;
                 return 99;
-            }else
+            } else
                 return null;
         });
 
@@ -568,12 +733,12 @@ describe("syncMediaStation() ", () => {
             else return null;
         });
 
-        mockMediaStation.exportToJSON.mockImplementation(()=>{
+        mockMediaStation.exportToJSON.mockImplementation(() => {
             mocksCalled.push("mockMediaStation.exportToJSON");
             return mockJSON
         });
 
-        mockMediaStationRepo.removeCachedMediaStation.mockImplementation(()=>{
+        mockMediaStationRepo.removeCachedMediaStation.mockImplementation(() => {
             mocksCalled.push("mockContentFileService.deleteFile");
         });
 
@@ -591,7 +756,7 @@ describe("syncMediaStation() ", () => {
 
     it("should call the callback mockOnSyncStep with the text, that the connection is opening and if it succeeded or not", async () => {
         //method to test
-        let answer:boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+        let answer: boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
         expect(answer).toBe(false)
@@ -633,7 +798,7 @@ describe("syncMediaStation() ", () => {
 
     it("should call the callback mockOnSyncStep with the text, that it is trying to send a media and if it succeeded or not", async () => {
         //method to test
-        let answer:boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+        let answer: boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
         expect(answer).toBe(false);
@@ -656,7 +821,7 @@ describe("syncMediaStation() ", () => {
 
 
         //method to test
-        let answer:boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+        let answer: boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
         expect(answer).toBe(false);
@@ -669,7 +834,7 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledWith( 0,0, 0);
+        expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledWith(0, 0, 0);
     })
 
     it("call networkService.sendDeleteMediaTo for every id that is marked to delete in the mediastation repo", async () => {
@@ -683,7 +848,7 @@ describe("syncMediaStation() ", () => {
         mockMediaStationRepo.getAllMediaIDsToDelete.mockImplementation(() => {
             mocksCalled.push("mockMediaStationRepo.getAllMediaIDsToDelete");
             let map: Map<number, number[]> = new Map();
-            map.set(0, [3,0]);
+            map.set(0, [3, 0]);
             map.set(1, [6]);
             return map;
         });
@@ -693,9 +858,9 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenCalledTimes(3);
-        expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(1,mediaApp1.ip, 3);
-        expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(2,mediaApp1.ip, 0);
-        expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(3,mediaApp2.ip, 6);
+        expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, 3);
+        expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(2, mediaApp1.ip, 0);
+        expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(3, mediaApp2.ip, 6);
     })
 
     it("call mediaStationRepo.deleteStoredMediaID for every id that is marked to delete in the mediastation repo", async () => {
@@ -709,7 +874,7 @@ describe("syncMediaStation() ", () => {
         mockMediaStationRepo.getAllMediaIDsToDelete.mockImplementation(() => {
             mocksCalled.push("mockMediaStationRepo.getAllMediaIDsToDelete");
             let map: Map<number, number[]> = new Map();
-            map.set(0, [3,0]);
+            map.set(0, [3, 0]);
             map.set(1, [6]);
             return map;
         });
@@ -719,9 +884,9 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenCalledTimes(3);
-        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(1,0,mediaApp1.id, 3);
-        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(2,0,mediaApp1.id, 0);
-        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(3,0,mediaApp2.id, 6);
+        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(1, 0, mediaApp1.id, 3);
+        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(2, 0, mediaApp1.id, 0);
+        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(3, 0, mediaApp2.id, 6);
     })
 
     it("should call the callback mockOnSyncStep with the text, that it is trying to send data to the controller, if all mediaApps have been synced", async () => {
@@ -752,7 +917,7 @@ describe("syncMediaStation() ", () => {
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
         //method to test
-        let answer:boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+        let answer: boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
         expect(answer).toBe(false);
@@ -770,7 +935,7 @@ describe("syncMediaStation() ", () => {
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
         //method to test
-        let answer:boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+        let answer: boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
         expect(answer).toBe(true)
@@ -793,7 +958,7 @@ describe("syncMediaStation() ", () => {
 
 
         //method to test
-        let answer:boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+        let answer: boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
         expect(answer).toBe(false)
@@ -850,7 +1015,7 @@ describe("syncMediaStation() ", () => {
         await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
-        console.log("mock calls: ",mocksCalled)
+        console.log("mock calls: ", mocksCalled)
         expect(mockMediaStationRepo.removeCachedMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.removeCachedMediaStation).toHaveBeenCalledWith(0);
         expect(mocksCalled.indexOf("mockContentFileService.deleteFile")).toBe(mocksCalled.length - 1);
@@ -863,10 +1028,10 @@ describe("syncMediaStation() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
 
-        let answer:boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
+        let answer: boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
-        console.log("mock calls: ",mocksCalled)
+        console.log("mock calls: ", mocksCalled)
         expect(answer).toBe(false);
         expect(mockMediaStationRepo.removeCachedMediaStation).toHaveBeenCalledTimes(0);
     });

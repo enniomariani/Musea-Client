@@ -27,8 +27,8 @@ export class MediaStationNetworkService {
     async sendCommandMute(mediaStationId: number): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
-        for (const [key, item] of mediaStation.getAllMediaApps()){
-            if(item.ip && item.ip !== "")
+        for (const [key, item] of mediaStation.getAllMediaApps()) {
+            if (item.ip && item.ip !== "")
                 await this._networkService.sendSystemCommandTo(item.ip, ["volume", "mute"]);
             else
                 console.error("Sending mute-command to media-app failed, because there is no ip set: ", item.name, item.ip)
@@ -38,19 +38,19 @@ export class MediaStationNetworkService {
     async sendCommandUnmute(mediaStationId: number): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
-        for (const [key, item] of mediaStation.getAllMediaApps()){
-            if(item.ip && item.ip !== "")
+        for (const [key, item] of mediaStation.getAllMediaApps()) {
+            if (item.ip && item.ip !== "")
                 await this._networkService.sendSystemCommandTo(item.ip, ["volume", "unmute"]);
             else
                 console.error("Sending unmute-command to media-app failed, because there is no ip set: ", item.name, item.ip)
         }
     }
 
-    async sendCommandSetVolume(mediaStationId: number, volume:number): Promise<void> {
+    async sendCommandSetVolume(mediaStationId: number, volume: number): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
-        for (const [key, item] of mediaStation.getAllMediaApps()){
-            if(item.ip && item.ip !== "")
+        for (const [key, item] of mediaStation.getAllMediaApps()) {
+            if (item.ip && item.ip !== "")
                 await this._networkService.sendSystemCommandTo(item.ip, ["volume", "set", volume.toString()]);
             else
                 console.error("Sending set volume-command to media-app failed, because there is no ip set: ", item.name, item.ip)
@@ -70,81 +70,119 @@ export class MediaStationNetworkService {
      */
     async downloadContentsOfMediaStation(id: number): Promise<string> {
         let mediaStation: MediaStation = this._findMediaStation(id);
-        return this._downloadContentsFromMediaStationAndSendToMediaStation(mediaStation, mediaStation.importFromJSON.bind(mediaStation));
-    }
-
-    /**
-     * gets the controller-ip of the passed mediaStation, sends the command to download the content-file of this controller-app
-     * and saves the media-app information to the mediaStation.
-     *
-     * Disconnects and closes the connection after it received the data
-     *
-     * Always resolves the promise with different strings (see statics in this class), only throws an error if the passed mediaStationId does not exist
-     *
-     * @param {number} id
-     * @returns {Promise<string>}
-     */
-    async downloadOnlyMediaAppDataFromMediaStation(id: number): Promise<string> {
-        let mediaStation: MediaStation = this._findMediaStation(id);
-        return this._downloadContentsFromMediaStationAndSendToMediaStation(mediaStation, mediaStation.importMediaAppsFromJSON.bind(mediaStation), true);
-    }
-
-    private _downloadContentsFromMediaStationAndSendToMediaStation(mediaStation: MediaStation, functionToCallAtMediStation: Function, closeConnection: boolean = false): Promise<string> {
         const controllerIP: string = mediaStation.getControllerIp();
         let contentsJSON: string;
 
-        return new Promise(async (resolve, reject) => {
+        if (!controllerIP)
+            return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP;
 
-            if (!controllerIP) {
-                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP);
-                return;
+        let pingResult: boolean = await this._networkService.pcRespondsToPing(controllerIP);
+
+        if (!pingResult)
+            return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+
+        let connection: boolean = await this._networkService.openConnection(controllerIP);
+
+        if (!connection) {
+            console.log("NO CONNECTION")
+            return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+        }
+
+        let appIsOnline: boolean = await this._networkService.isMediaAppOnline(controllerIP);
+
+        if (!appIsOnline)
+            return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+
+        let registration: boolean = await this._networkService.sendRegistration(controllerIP);
+
+        if (!registration) {
+            console.log("NO registration")
+            return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+        }
+
+        contentsJSON = await this._networkService.getContentFileFrom(controllerIP);
+
+        if (contentsJSON === null) {
+            return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+        } else if (contentsJSON === "{}") {
+            return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIP;
+        } else {
+            mediaStation.importFromJSON(JSON.parse(contentsJSON));
+
+            return MediaStationNetworkService.CONTENT_DOWNLOAD_SUCCESS + mediaStation.id;
+        }
+    }
+
+    /**
+     * checks if all media-apps (including the controller) are online, reachable and registration is possible
+     *
+     * returns true if this is true for all of them
+     *
+     * returns false if one of the media-apps is not reachable
+     *
+     * @param {number} id
+     * @returns {Promise<boolean>}
+     */
+    async checkOnlineStatusOfAllMediaApps(id: number): Promise<boolean> {
+        let mediaStation: MediaStation = this._findMediaStation(id);
+        const controllerIP: string = mediaStation.getControllerIp();
+        let contentsJSONstr: string;
+        let contentsJSON: any;
+
+        if (!controllerIP)
+            return false;
+
+        if (!await this._networkService.pcRespondsToPing(controllerIP))
+            return false;
+
+        if (!await this._networkService.openConnection(controllerIP))
+            return false;
+
+        if (!await this._networkService.isMediaAppOnline(controllerIP))
+            return false;
+
+        if (!await this._networkService.sendCheckRegistration(controllerIP))
+            return false;
+
+        contentsJSONstr = await this._networkService.getContentFileFrom(controllerIP);
+
+        if (contentsJSONstr === null)
+            return false;
+        else if (contentsJSONstr === "{}")
+            return true;
+        else {
+            contentsJSON = JSON.parse(contentsJSONstr);
+
+            if (contentsJSON.mediaApps) {
+                for (let i: number = 0; i < contentsJSON.mediaApps.length; i++) {
+                    console.log("FOUND MEDIA-APP IN JSON: ", contentsJSON.mediaApps[i], contentsJSON.mediaApps[i].id, contentsJSON.mediaApps[i].name)
+
+                    if (contentsJSON.mediaApps[i].role !== MediaApp.ROLE_CONTROLLER)
+                        if (!await this._checkMediaAppAvailability(contentsJSON.mediaApps[i].ip))
+                            return false;
+                }
             }
 
-            let pingResult: boolean = await this._networkService.pcRespondsToPing(controllerIP);
+            await this._networkService.unregisterAndCloseConnection(controllerIP);
+        }
+        return true;
+    }
 
-            if (!pingResult) {
-                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
-                return;
-            }
+    private async _checkMediaAppAvailability(mediaApp: MediaApp): Promise<boolean> {
 
-            let connection: boolean = await this._networkService.openConnection(controllerIP);
+        if (!await this._networkService.pcRespondsToPing(mediaApp.ip))
+            return false;
 
-            if (!connection) {
-                console.log("NO CONNECTION")
-                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
-                return;
-            }
+        if (!await this._networkService.openConnection(mediaApp.ip))
+            return false;
 
-            let appIsOnline: boolean = await this._networkService.isMediaAppOnline(controllerIP);
+        if (!await this._networkService.isMediaAppOnline(mediaApp.ip))
+            return false;
 
-            if (!appIsOnline) {
-                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
-                return;
-            }
+        if (!await this._networkService.sendCheckRegistration(mediaApp.ip))
+            return false;
 
-            let registration: boolean = await this._networkService.sendRegistration(controllerIP);
-
-            if (!registration) {
-                console.log("NO registration")
-                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
-                return;
-            }
-
-            contentsJSON = await this._networkService.getContentFileFrom(controllerIP);
-
-            if (contentsJSON === null) {
-                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP);
-            } else if (contentsJSON === "{}") {
-                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIP);
-            } else {
-                functionToCallAtMediStation(JSON.parse(contentsJSON));
-
-                if (closeConnection)
-                    await this._networkService.unregisterAndCloseConnection(controllerIP);
-
-                resolve(MediaStationNetworkService.CONTENT_DOWNLOAD_SUCCESS + mediaStation.id);
-            }
-        });
+        return true;
     }
 
     /**
@@ -165,7 +203,7 @@ export class MediaStationNetworkService {
         let connectionIsOpen: boolean;
         let mediaApp: MediaApp;
         let allMediaAppsWereSynced: boolean = true;
-        let areAllMediaSentSuccesfully:boolean = true;
+        let areAllMediaSentSuccesfully: boolean = true;
 
         let ip: string;
         let cachedMediaOfAllMediaStations: Map<number, ICachedMedia[]>;
@@ -223,11 +261,11 @@ export class MediaStationNetworkService {
             //if the connection could be established to a media-app, send it all media that are cached
             if (registration) {
                 onSyncStep("Verbindung mit Medien-App hergestellt.");
-                if(await this._sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, onSyncStep) === false)
+                if (await this._sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, onSyncStep) === false)
                     areAllMediaSentSuccesfully = false;
 
-                if(allMediaIdsToDelete.has(mediaApp.id))
-                    await this._sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id,allMediaIdsToDelete.get(mediaApp.id), mediaApp.ip, onSyncStep);
+                if (allMediaIdsToDelete.has(mediaApp.id))
+                    await this._sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id, allMediaIdsToDelete.get(mediaApp.id), mediaApp.ip, onSyncStep);
 
                 this._mediaStationRepo.cacheMediaStation(mediaStationId);
             } else {
@@ -281,9 +319,9 @@ export class MediaStationNetworkService {
         let idOnMediaApp: number;
         let content: Content;
         let media: IMedia;
-        let areAllMediaSentSuccesfully:boolean = true;
+        let areAllMediaSentSuccesfully: boolean = true;
 
-        if(!allCachedMedia)
+        if (!allCachedMedia)
             return true;
 
         for (const cachedMedia of allCachedMedia) {
@@ -315,7 +353,7 @@ export class MediaStationNetworkService {
         return areAllMediaSentSuccesfully;
     }
 
-    private async _sendCommandDeleteMediaToMediaApps(mediaStationId:number, mediaAppId:number, allMediaIdsToDelete: number[], ipMediaApp: string, onSyncStep: IOnSyncStep): Promise<void> {
+    private async _sendCommandDeleteMediaToMediaApps(mediaStationId: number, mediaAppId: number, allMediaIdsToDelete: number[], ipMediaApp: string, onSyncStep: IOnSyncStep): Promise<void> {
         for (const id of allMediaIdsToDelete) {
             onSyncStep("Lösche ID: " + id + " in der Medien-App: " + mediaAppId.toString());
             console.log("DELETE MEDIA: ", id);
