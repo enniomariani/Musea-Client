@@ -18,6 +18,10 @@ export class MockMediaStation extends MediaStation{
     getMediaApp: jest.Mock;
     getAllMediaApps: jest.Mock;
 
+    addTag: jest.Mock;
+    getTag: jest.Mock;
+    getAllTags: jest.Mock;
+
     private _rootFolderMock: MockFolder = new MockFolder(0);
 
     constructor(id) {
@@ -34,6 +38,10 @@ export class MockMediaStation extends MediaStation{
         this.addMediaApp = jest.fn();
         this.getMediaApp = jest.fn();
         this.getAllMediaApps = jest.fn();
+
+        this.addTag = jest.fn();
+        this.getTag = jest.fn();
+        this.getAllTags = jest.fn();
 
         this.getControllerIp.mockReturnValue("mock-controller-ip")
     }

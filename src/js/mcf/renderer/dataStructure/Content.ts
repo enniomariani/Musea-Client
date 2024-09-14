@@ -23,6 +23,9 @@ export class Content {
         if (this._jsonPropertyExists(json, "lightIntensity"))
             this._lightIntensity = json.lightIntensity;
 
+        if(this._jsonPropertyExists(json, "tagIds"))
+            this._tagIds = json.tagIds;
+
         if (this._jsonPropertyExists(json, "media")) {
             for (let i: number = 0; i < json.media.length; i++) {
                 console.log("MEDIA found: ", json.media[i]);

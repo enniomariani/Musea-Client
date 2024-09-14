@@ -2,6 +2,7 @@ import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/glo
 import {MediaStation} from "../../../../src/js/mcf/renderer/dataStructure/MediaStation";
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {MediaApp} from "../../../../src/js/mcf/renderer/dataStructure/MediaApp";
+import {Tag} from "../../../../src/js/mcf/renderer/dataStructure/Tag";
 
 let mediaStation: MediaStation;
 let mediaApp1: MediaApp = new MediaApp(0);
@@ -22,7 +23,8 @@ const jsonMock: any = {
     rootFolder: {id: 0, name: "Test", subfolders: []},
     mediaApps: [{id: mediaApp1.id, name: mediaApp1.name, ip: mediaApp1.ip, role: mediaApp1.role},
         {id: mediaApp2.id, name: mediaApp2.name, ip: mediaApp2.ip, role: mediaApp2.role}],
-    tags: []
+    tags: [{id: 0, name: "tag1"},
+        {id: 1, name: "tag2"}]
 }
 
 beforeEach(() => {
@@ -47,8 +49,11 @@ describe("exportToJSON() ", () => {
         mediaStation.getNextContentId();
         mediaStation.name = "myName";
         mediaStation.rootFolder = mockFolder;
-        mediaStation.addMediaApp(mediaApp1.id, mediaApp1.name, mediaApp1.ip, mediaApp1.role)
-        mediaStation.addMediaApp(mediaApp2.id, mediaApp2.name, mediaApp2.ip, mediaApp2.role)
+        mediaStation.addMediaApp(mediaApp1.id, mediaApp1.name, mediaApp1.ip, mediaApp1.role);
+        mediaStation.addMediaApp(mediaApp2.id, mediaApp2.name, mediaApp2.ip, mediaApp2.role);
+
+        mediaStation.addTag(0, "tag1");
+        mediaStation.addTag(1, "tag2");
 
         //method to test
         receivedJSONstr = mediaStation.exportToJSON();
@@ -67,8 +72,9 @@ describe("importFromJSON() ", () => {
         mediaStation = new MediaStation(0);
         mediaStation.name = "testName";
         let mockFolder: MockFolder = new MockFolder(0);
-        let mediaApp1:MediaApp;
-        let mediaApp2:MediaApp;
+        let mediaApp1: MediaApp;
+        let mediaApp2: MediaApp;
+        let allTags:Tag[];
         mediaStation.rootFolder = mockFolder;
 
         //method to test
@@ -92,6 +98,13 @@ describe("importFromJSON() ", () => {
         expect(mediaApp2.name).toBe(mediaApp2.name);
         expect(mediaApp2.ip).toBe(mediaApp2.ip);
         expect(mediaApp2.role).toBe(mediaApp2.role);
+
+        allTags = mediaStation.getAllTags();
+
+        expect(allTags[0].id).toBe(0);
+        expect(allTags[0].name).toBe("tag1");
+        expect(allTags[1].id).toBe(1);
+        expect(allTags[1].name).toBe("tag2");
     });
 
     it("should pass the properties got for all folders to the root-folder", () => {
@@ -110,7 +123,7 @@ describe("importFromJSON() ", () => {
     it("should reset the root folder", () => {
         //setup
         mediaStation = new MediaStation(0);
-        const mockRootFolder:MockFolder = new MockFolder(2);
+        const mockRootFolder: MockFolder = new MockFolder(2);
         mockRootFolder.name = "testName"
 
         //method to test
@@ -123,14 +136,14 @@ describe("importFromJSON() ", () => {
 
     it("should remove the already added mediaApps from the array", () => {
         //setup
-        const jsonWithoutMediaApps:any = jsonMock;
+        const jsonWithoutMediaApps: any = jsonMock;
         jsonWithoutMediaApps.mediaApps = [];
         mediaStation = new MediaStation(0);
-        const mockRootFolder:MockFolder = new MockFolder(2);
+        const mockRootFolder: MockFolder = new MockFolder(2);
         mockRootFolder.name = "testName"
 
-        mediaStation.addMediaApp(0,"test1", "127.0.0.1", MediaApp.ROLE_CONTROLLER)
-        mediaStation.addMediaApp(1,"test1", "127.0.0.1", MediaApp.ROLE_DEFAULT)
+        mediaStation.addMediaApp(0, "test1", "127.0.0.1", MediaApp.ROLE_CONTROLLER)
+        mediaStation.addMediaApp(1, "test1", "127.0.0.1", MediaApp.ROLE_DEFAULT)
 
         //method to test
         mediaStation.importFromJSON(jsonWithoutMediaApps, mockRootFolder);
@@ -240,8 +253,8 @@ describe("getNextTagId() ", () => {
 describe("addMediaApp() and getMediaApp()", () => {
     it("getMediApp should return the mediaApp that was created with addMediaApp()", () => {
         //setup
-        let receivedMediaApp:MediaApp;
-        let mediaApp:MediaApp = new MediaApp(0);
+        let receivedMediaApp: MediaApp;
+        let mediaApp: MediaApp = new MediaApp(0);
         mediaApp.ip = "localhost"
         mediaApp.name = "firstMediaApp"
         mediaApp.role = MediaApp.ROLE_CONTROLLER;
@@ -256,6 +269,28 @@ describe("addMediaApp() and getMediaApp()", () => {
 
     it("getMediaApp() should throw an error if it does not exist", () => {
         //tests
-        expect(()=>mediaStation.getMediaApp(20)).toThrow(new Error("Media App with the following ID does not exist: 20"))
+        expect(() => mediaStation.getMediaApp(20)).toThrow(new Error("Media App with the following ID does not exist: 20"))
+    });
+});
+
+describe("addTag() and getTag()", () => {
+    it("getTag should return the tag that was created with addTag()", () => {
+        //setup
+        let receivedTag: Tag;
+        let tag:Tag = new Tag();
+        tag.id = 200;
+        tag.name = "testName";
+
+        //method to test
+        mediaStation.addTag(tag.id, tag.name);
+        receivedTag = mediaStation.getTag(200);
+
+        //tests
+        expect(receivedTag).toStrictEqual(tag);
+    });
+
+    it("getMediaApp() should throw an error if it does not exist", () => {
+        //tests
+        expect(() => mediaStation.getTag(20)).toThrow(new Error("Tag with the following ID does not exist: 20"))
     });
 });

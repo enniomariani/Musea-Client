@@ -14,7 +14,7 @@ export class MediaStation{
     private _mediaAppIdCounter:number = 0;
     private _tagIdCounter:number = 0;
 
-    private _tags:Tag[];
+    private _tags:Tag[] = [];
 
     constructor(id:number) {
         this._id = id;
@@ -31,6 +31,9 @@ export class MediaStation{
             tags: [],
             rootFolder : this._rootFolder.exportToJSON(),
         };
+
+        for(let i:number = 0; i < this._tags.length; i++)
+            json.tags.push({id: this._tags[i].id, name: this._tags[i].name});
 
         this._mediaApps.forEach((mediaApp:MediaApp)=>{
             json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
@@ -62,6 +65,13 @@ export class MediaStation{
             this._tagIdCounter = json.tagIdCounter;
 
         this._importMediaAppsFromJSON(json);
+
+        if(this._jsonPropertyExists(json, "tags")){
+            this._tags = [];
+
+            for(let i:number = 0; i < json.tags.length; i++)
+                this.addTag(json.tags[i].id, json.tags[i].name);
+        }
 
         if(this._jsonPropertyExists(json, "rootFolder")){
             this._rootFolder = newRootFolder;
@@ -163,6 +173,30 @@ export class MediaStation{
 
     getAllMediaApps():Map<number, MediaApp>{
         return this._mediaApps;
+    }
+
+    addTag(id:number, name:string):void{
+        let tag:Tag = new Tag();
+        tag.id = id;
+        tag.name = name;
+
+        this._tags.push(tag);
+    }
+
+    getTag(id:number):Tag{
+        let tag:Tag = this._tags.find((tag) =>{
+            if(tag.id === id)
+                return true;
+        });
+
+        if(tag)
+            return tag;
+        else
+            throw new Error("Tag with the following ID does not exist: "+ id);
+    }
+
+    getAllTags():Tag[] {
+        return this._tags;
     }
 
     get id(): number {

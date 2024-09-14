@@ -33,6 +33,7 @@ describe("importFromJSON() ", () => {
         //tests
         expect(content.id).toBe(expectedJSON.id);
         expect(content.name).toBe(expectedJSON.name);
+        expect(content.tagIds).toEqual(tagIds)
         expect(content.lightIntensity).toBe(expectedJSON.lightIntensity);
     });
 
