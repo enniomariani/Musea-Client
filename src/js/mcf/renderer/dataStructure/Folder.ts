@@ -198,8 +198,34 @@ export class Folder {
         return allContents;
     }
 
-    findContentByNameParts(name: string): Content[] | null {
-        return null;
+    /**
+     * looks for contents in this folder and all subfolders which contain the passed string in their name
+     *
+     * @param {string} namePart
+     * @returns {Content[]}
+     */
+    findContentsByNamePart(namePart: string): Content[] {
+        let allContentIds:Map<number, number[]> = this.getAllContentIDsInFolderAndSubFolders();
+        let results:Content[] = [];
+        let content:Content;
+
+        for (const [folderId, contentIds] of allContentIds){
+            for (const contentId of contentIds){
+                content = this.findContent(contentId);
+
+                console.log("found content: ", content)
+
+                if(!content)
+                    throw new Error("Content with this ID could not be found: " + contentId);
+
+                console.log("search content for name-part: ", content.name, namePart,content.name.includes(namePart) );
+
+                if(content.name.includes(namePart))
+                    results.push(content);
+            }
+        }
+
+        return results;
     }
 
     get id(): number {

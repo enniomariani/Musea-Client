@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {Folder} from "../../../../src/js/mcf/renderer/dataStructure/Folder";
 import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
@@ -326,5 +326,77 @@ describe("findContent() ", ()=>{
 
         //tests
         expect(result).toBe(null);
+    });
+});
+
+describe("findContentsByNamePart() ", ()=>{
+    it("should return the correct array of contents that match the namePart", ()=>{
+        //setup
+        const allContentIds:Map<number, number[]> = new Map();
+
+        allContentIds.set(0, [0,1,2]);
+        allContentIds.set(1, [3,4]);
+        allContentIds.set(2, [5]);
+
+        let content1:MockContent = new MockContent(0);
+        content1.name = "test";
+        let content2:MockContent = new MockContent(1);
+        content2.name = "tes";
+        let content3:MockContent = new MockContent(2);
+        content3.name = "test3";
+        let content4:MockContent = new MockContent(3);
+        content4.name = "teest";
+        let content5:MockContent = new MockContent(4);
+        content5.name = " test5xxy";
+        let content6:MockContent = new MockContent(5);
+        content6.name = "Xtest ";
+
+        const allContents:Content[] = [content1, content2, content3, content4, content5, content6]
+
+        jest.spyOn(folder, 'findContent').mockImplementation((id:number) => {return allContents[id]});
+        jest.spyOn(folder, 'getAllContentIDsInFolderAndSubFolders').mockReturnValue(allContentIds);
+
+        //method to test
+        let result:Content[] = folder.findContentsByNamePart("test");
+
+        //tests
+        expect(result.length).toEqual(4);
+        expect(result[0].name).toEqual(content1.name);
+        expect(result[1].name).toEqual(content3.name);
+        expect(result[2].name).toEqual(content5.name);
+        expect(result[3].name).toEqual(content6.name);
+    });
+
+    it("should return an empty array if the part could not be found", ()=>{
+        //setup
+        const allContentIds:Map<number, number[]> = new Map();
+
+        allContentIds.set(0, [0,1,2]);
+        allContentIds.set(1, [3,4]);
+        allContentIds.set(2, [5]);
+
+        let content1:MockContent = new MockContent(0);
+        content1.name = "test";
+        let content2:MockContent = new MockContent(1);
+        content2.name = "tes";
+        let content3:MockContent = new MockContent(2);
+        content3.name = "test3";
+        let content4:MockContent = new MockContent(3);
+        content4.name = "teest";
+        let content5:MockContent = new MockContent(4);
+        content5.name = " test5xxy";
+        let content6:MockContent = new MockContent(5);
+        content6.name = "Xtest ";
+
+        const allContents:Content[] = [content1, content2, content3, content4, content5, content6]
+
+        jest.spyOn(folder, 'findContent').mockImplementation((id:number) => {return allContents[id]});
+        jest.spyOn(folder, 'getAllContentIDsInFolderAndSubFolders').mockReturnValue(allContentIds);
+
+        //method to test
+        let result:Content[] = folder.findContentsByNamePart("tessst");
+
+        //tests
+        expect(result.length).toEqual(0);
     });
 });

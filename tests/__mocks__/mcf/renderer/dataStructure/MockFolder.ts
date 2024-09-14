@@ -19,6 +19,8 @@ export class MockFolder extends Folder{
     importFromJSON: jest.Mock;
     exportToJSON: jest.Mock;
 
+    findContentsByNamePart: jest.Mock;
+
     constructor(id) {
         super(id);
         this.addContent = jest.fn();
@@ -36,5 +38,7 @@ export class MockFolder extends Folder{
 
         this.importFromJSON = jest.fn();
         this.exportToJSON = jest.fn();
+
+        this.findContentsByNamePart = jest.fn();
     }
 }
