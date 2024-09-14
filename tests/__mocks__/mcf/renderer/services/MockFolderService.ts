@@ -16,6 +16,8 @@ export class MockFolderService extends FolderService {
     getAllContentsInFolder: jest.Mock;
     getAllSubFoldersInFolder: jest.Mock;
 
+    findContentsByNamePart: jest.Mock;
+
     constructor() {
         super(mockMediaStationRepo, mockContentService);
         this.createFolder = jest.fn();
@@ -27,5 +29,7 @@ export class MockFolderService extends FolderService {
 
         this.getAllContentsInFolder = jest.fn();
         this.getAllSubFoldersInFolder = jest.fn();
+
+        this.findContentsByNamePart = jest.fn();
     }
 }
