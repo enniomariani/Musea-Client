@@ -269,9 +269,9 @@ describe("getAllContentsInFolder() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     let mockFolder: MockFolder = new MockFolder(0);
     let mapWithAllContents: Map<number, MockContent> = new Map();
-    let mockContent1: MockContent = new MockContent(0);
+    let mockContent1: MockContent = new MockContent(0, 0);
     mockContent1.name = "name1";
-    let mockContent2: MockContent = new MockContent(1);
+    let mockContent2: MockContent = new MockContent(1, 0);
     mockContent2.name = "name2";
     mapWithAllContents.set(0, mockContent1);
     mapWithAllContents.set(1, mockContent2);
@@ -390,9 +390,9 @@ describe("findContentsByNamePart() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     let mockFolder: MockFolder = new MockFolder(0);
     let allFoundContents: MockContent[] = [];
-    let mockContent1: MockContent = new MockContent(0);
+    let mockContent1: MockContent = new MockContent(0, 0);
     mockContent1.name = "name1";
-    let mockContent2: MockContent = new MockContent(1);
+    let mockContent2: MockContent = new MockContent(1, 0);
     mockContent2.name = "name2";
     allFoundContents.push(mockContent1);
     allFoundContents.push(mockContent2);

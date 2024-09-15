@@ -1,14 +1,18 @@
 import {Image, IMedia, Video} from "./Media";
 
 export class Content {
+
     private _id: number;
     private _name: string;
     private _media: Map<number, IMedia> = new Map();
     private _tagIds: number[] = [];
     private _lightIntensity: number;
 
-    constructor(id: number) {
+    private _folderId:number;
+
+    constructor(id: number, idFolder:number) {
         this._id = id;
+        this._folderId = idFolder;
     }
 
     importFromJSON(json: any): void {
@@ -150,5 +154,9 @@ export class Content {
 
     set lightIntensity(value: number) {
         this._lightIntensity = value;
+    }
+
+    get folderId(): number {
+        return this._folderId;
     }
 }

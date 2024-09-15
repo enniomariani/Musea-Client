@@ -7,8 +7,8 @@ export class MockContent extends Content{
     importFromJSON: jest.Mock;
     exportToJSON: jest.Mock;
 
-    constructor(id) {
-        super(id);
+    constructor(id, folderId) {
+        super(id, folderId);
 
         this.getMaxDuration = jest.fn();
         this.importFromJSON = jest.fn();

@@ -52,6 +52,16 @@ export class ContentService {
         return content.lightIntensity;
     }
 
+    getFolderId(mediaStationId:number, id:number):number{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        let content:Content = this._contentManager.getContent(mediaStation,id);
+
+        if (!content)
+            throw new Error("Content with this ID does not exist: " + id)
+
+        return content.folderId;
+    }
+
     changeLightIntensity(mediaStationId:number, id:number, intensity:number):void{
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 

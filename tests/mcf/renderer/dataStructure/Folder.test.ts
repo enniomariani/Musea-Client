@@ -11,10 +11,10 @@ let subFolder2:Folder = new Folder(2);
 subFolder2.name = "subF2";
 let subFolder3:Folder = new Folder(3);
 subFolder3.name = "subF2";
-let content1:MockContent = new MockContent(0);
-let content2:MockContent = new MockContent(1);
-let content3:MockContent = new MockContent(2);
-let content4:MockContent = new MockContent(3);
+let content1:MockContent = new MockContent(0, 1);
+let content2:MockContent = new MockContent(1, 1);
+let content3:MockContent = new MockContent(2, 3);
+let content4:MockContent = new MockContent(3, 0);
 content4.name = "mockContent4";
 
 subFolder2.addSubFolder(subFolder3);
@@ -118,7 +118,7 @@ describe("importFromJSON() ", () => {
 describe("addContent() and containsContent() ", ()=>{
     it("should add the content and return it again", ()=>{
         //setup
-        let content:MockContent = new MockContent(0);
+        let content:MockContent = new MockContent(0, 0);
 
         //method to test
         folder.addContent(content);
@@ -131,7 +131,7 @@ describe("addContent() and containsContent() ", ()=>{
 describe("addContent(), removeContent() and containsContent() ", ()=>{
     it("removing a content which was added before should return true and containsContent() return false", ()=>{
         //setup
-        let content:MockContent = new MockContent(0);
+        let content:MockContent = new MockContent(0, 0);
         let answer:boolean;
 
         //method to test
@@ -158,8 +158,8 @@ describe("addContent(), removeContent() and containsContent() ", ()=>{
 describe("addContent(), getAllContents()", ()=>{
     it("adding two contents should give 2 contents back", ()=>{
         //setup
-        let content1:MockContent = new MockContent(0);
-        let content2:MockContent = new MockContent(1);
+        let content1:MockContent = new MockContent(0, 0);
+        let content2:MockContent = new MockContent(1, 0);
         let allContents:Map<number, Content>;
 
         //method to test
@@ -258,9 +258,9 @@ describe("addSubFolder(), getAllSubFolders()", ()=>{
 describe("getAllContentIDsInFolderAndSubFolders() ", ()=>{
     it("should return all content-IDs the folder holds itself", ()=>{
         //setup
-        let content1:Content = new Content(0);
-        let content2:Content = new Content(1);
-        let content3:Content = new Content(2);
+        let content1:Content = new Content(0, 0);
+        let content2:Content = new Content(1, 0);
+        let content3:Content = new Content(2, 0);
 
         folder = new Folder(1);
         folder.contents.push(content1, content2, content3);
@@ -338,17 +338,17 @@ describe("findContentsByNamePart() ", ()=>{
         allContentIds.set(1, [3,4]);
         allContentIds.set(2, [5]);
 
-        let content1:MockContent = new MockContent(0);
+        let content1:MockContent = new MockContent(0, 0);
         content1.name = "test";
-        let content2:MockContent = new MockContent(1);
+        let content2:MockContent = new MockContent(1, 0);
         content2.name = "tes";
-        let content3:MockContent = new MockContent(2);
+        let content3:MockContent = new MockContent(2, 0);
         content3.name = "test3";
-        let content4:MockContent = new MockContent(3);
+        let content4:MockContent = new MockContent(3, 0);
         content4.name = "teest";
-        let content5:MockContent = new MockContent(4);
+        let content5:MockContent = new MockContent(4, 0);
         content5.name = " test5xxy";
-        let content6:MockContent = new MockContent(5);
+        let content6:MockContent = new MockContent(5, 0);
         content6.name = "Xtest ";
 
         const allContents:Content[] = [content1, content2, content3, content4, content5, content6]
@@ -375,17 +375,17 @@ describe("findContentsByNamePart() ", ()=>{
         allContentIds.set(1, [3,4]);
         allContentIds.set(2, [5]);
 
-        let content1:MockContent = new MockContent(0);
+        let content1:MockContent = new MockContent(0, 0);
         content1.name = "test";
-        let content2:MockContent = new MockContent(1);
+        let content2:MockContent = new MockContent(1, 0);
         content2.name = "tes";
-        let content3:MockContent = new MockContent(2);
+        let content3:MockContent = new MockContent(2, 0);
         content3.name = "test3";
-        let content4:MockContent = new MockContent(3);
+        let content4:MockContent = new MockContent(3, 0);
         content4.name = "teest";
-        let content5:MockContent = new MockContent(4);
+        let content5:MockContent = new MockContent(4, 0);
         content5.name = " test5xxy";
-        let content6:MockContent = new MockContent(5);
+        let content6:MockContent = new MockContent(5, 0);
         content6.name = "Xtest ";
 
         const allContents:Content[] = [content1, content2, content3, content4, content5, content6]

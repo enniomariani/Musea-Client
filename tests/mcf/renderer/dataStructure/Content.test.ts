@@ -5,7 +5,7 @@ import {Image, Video} from "../../../../src/js/mcf/renderer/dataStructure/Media"
 let content:Content;
 
 beforeEach(() => {
-    content = new Content(0);
+    content = new Content(0, 3);
 });
 
 afterEach(() => {
@@ -25,7 +25,7 @@ const expectedJSON:any = {
 describe("importFromJSON() ", () => {
     it("should set all properties for itself", () => {
         //setup
-        content = new Content(0);
+        content = new Content(0, 3);
 
         //method to test
         content.importFromJSON(expectedJSON);
@@ -35,12 +35,13 @@ describe("importFromJSON() ", () => {
         expect(content.name).toBe(expectedJSON.name);
         expect(content.tagIds).toEqual(tagIds)
         expect(content.lightIntensity).toBe(expectedJSON.lightIntensity);
+        expect(content.folderId).toBe(3);
     });
 
     it("should set all media correctly", () => {
         //setup
         let video:Video;
-        content = new Content(0);
+        content = new Content(0, 4);
 
         //method to test
         content.importFromJSON(expectedJSON);

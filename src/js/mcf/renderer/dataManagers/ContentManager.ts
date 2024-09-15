@@ -17,7 +17,7 @@ export class ContentManager{
      */
     createContent(mediaStation:MediaStation, name:string, folderId:number):Content{
         let folder:Folder;
-        let newContent:Content = new Content(mediaStation.getNextContentId());
+        let newContent:Content = new Content(mediaStation.getNextContentId(), folderId);
         newContent.name = name;
         newContent.lightIntensity = 0;
 

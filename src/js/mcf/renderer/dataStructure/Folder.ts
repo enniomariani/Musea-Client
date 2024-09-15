@@ -9,7 +9,7 @@ export class Folder {
     private _subFolders: Folder[] = [];
     private _contents: Content[] = [];
 
-    constructor(id: number, private _createContent: (id: number) => Content = (id) => new Content(id)) {
+    constructor(id: number, private _createContent: (id: number, folderId:number) => Content = (id, folderId) => new Content(id, folderId)) {
         this._id = id;
     }
 
@@ -45,7 +45,7 @@ export class Folder {
                 console.log("FOUND CONTENTS: ", json.contents[i]);
 
                 if (this._jsonPropertyExists(json.contents[i], "id"))
-                    content = this._createContent(json.contents[i].id);
+                    content = this._createContent(json.contents[i].id, this._id);
 
                 content.importFromJSON(json.contents[i]);
 

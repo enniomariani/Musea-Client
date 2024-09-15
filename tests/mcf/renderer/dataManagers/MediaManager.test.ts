@@ -10,7 +10,7 @@ let mockContent:MockContent;
 
 beforeEach(() => {
     mockMediaStation = new MockMediaStation(0);
-    mockContent = new MockContent(0);
+    mockContent = new MockContent(0, 0);
     mediaManager = new MediaManager();
 });
 

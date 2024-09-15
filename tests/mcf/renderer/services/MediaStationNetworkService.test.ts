@@ -711,9 +711,9 @@ describe("syncMediaStation() ", () => {
         image2 = new Image();
         image2.idOnMediaApp = -1;
 
-        mockContent0 = new MockContent(0);
-        mockContent2 = new MockContent(2);
-        mockContent3 = new MockContent(3);
+        mockContent0 = new MockContent(0, 0);
+        mockContent2 = new MockContent(2, 1);
+        mockContent3 = new MockContent(3, 1);
         mockContent0.media.set(0, image1)
         mockContent0.media.set(1, image1);
 

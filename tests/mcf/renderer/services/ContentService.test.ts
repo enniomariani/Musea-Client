@@ -25,7 +25,7 @@ const contentId:number = 12;
 let mockContent:MockContent;
 
 beforeEach(() => {
-    mockContent = new MockContent(contentId);
+    mockContent = new MockContent(contentId, folderId);
     mockMediaStationRepo = new MockMediaStationRepository();
     mockContentManager = new MockContentManager();
     mockContentNetworkService = new MockContentNetworkService();
@@ -163,6 +163,43 @@ describe("getLightIntensity() ", ()=> {
 
         //tests
         expect(()=> contentService.getLightIntensity(mediaStationId,contentId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
+describe("getFolderId() ", ()=> {
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+
+    it("should return the folderId of the content", () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockContentManager.getContent.mockImplementation(( mediaStation, id)=>{
+            if(mediaStation === mockMediaStation && id === contentId)
+                return mockContent;
+        });
+
+        //method to test
+        let answer:number = contentService.getFolderId(mediaStationId,contentId);
+
+        //tests
+        expect(answer).toEqual(folderId);
+    });
+
+    it("should throw an error if the contentId could not be found", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockContentManager.getContent.mockReturnValue(null);
+
+        //tests
+        expect(()=> contentService.getFolderId(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
+    });
+
+    it("should throw an error if the mediaStationId could not be found", ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        expect(()=> contentService.getFolderId(mediaStationId,contentId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -329,7 +366,7 @@ describe("sendCommandPlay() ", ()=> {
     image2.idOnMediaApp = 20;
     image2.mediaAppId = 1;
 
-    let mockContent:MockContent = new MockContent(0);
+    let mockContent:MockContent = new MockContent(0, folderId);
     mockContent.media.set(0,image1);
     mockContent.media.set(1, image2);
     mockContent.lightIntensity = 2;

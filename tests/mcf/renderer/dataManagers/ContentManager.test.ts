@@ -20,7 +20,7 @@ describe("createContent() ", ()=>{
     let name:string = "contentName";
     let content:Content;
     let uniqueID:number = 10;
-    let folderId:number = 4;
+    let folderId:number = 2;
     let mockFolder:MockFolder = new MockFolder(2);
 
     function setup():void{
@@ -46,6 +46,7 @@ describe("createContent() ", ()=>{
         expect(content.name).toEqual(name);
         expect(content.id).toEqual(uniqueID);
         expect(content.lightIntensity).toEqual(0);
+        expect(content.folderId).toEqual(2);
     });
 
     it("should add the created content to the folder with the passed ID", ()=>{
@@ -69,7 +70,7 @@ describe("createContent() ", ()=>{
 
 describe("getContent() ", ()=>{
     let contentID:number = 10;
-    let content:Content = new Content(contentID);
+    let content:Content = new Content(contentID, 2);
 
     function setup():void{
         mockMediaStation.rootFolder.findContent = jest.fn();
@@ -104,7 +105,7 @@ describe("getContent() ", ()=>{
 
 describe("changeName() ", ()=>{
     let contentID:number = 10;
-    let content:Content = new Content(contentID);
+    let content:Content = new Content(contentID, 3);
     let newName:string = "newname";
     content.name = "initialName";
 
@@ -138,7 +139,7 @@ describe("changeName() ", ()=>{
 
 describe("changeLightIntensity() ", ()=>{
     let contentID:number = 10;
-    let content:Content = new Content(contentID);
+    let content:Content = new Content(contentID, 2);
     let newIntensity:number = 12;
     content.lightIntensity = 0;
 
