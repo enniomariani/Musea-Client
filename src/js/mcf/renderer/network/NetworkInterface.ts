@@ -16,6 +16,8 @@ export class NetworkInterface extends EventTarget {
     private _onClosed = null;
     private _onDataReceivedCallBack = null;
 
+    private _connectionTimeoutTimer:number;
+
     _onConnectionOpenFunc = this._onConnectionOpen.bind(this);
     _onConnectionErrorFunc = this._onConnectionError.bind(this);
     _onConnectionClosedFunc = this._onConnectionClosed.bind(this);
@@ -56,6 +58,13 @@ export class NetworkInterface extends EventTarget {
 
         try {
             this._connection = new WebSocket(url);
+
+            // @ts-ignore
+            this._connectionTimeoutTimer = setTimeout(() => {
+                console.log("timeout reached!")
+                this._connection.close(); // Close WebSocket connection if timeout happens
+            }, 3000);
+
         } catch (error) {
             console.error("NetworkInterface Error: ", error);
             if (onError)
@@ -74,6 +83,8 @@ export class NetworkInterface extends EventTarget {
     private _onConnectionOpen(): void {
         console.log("WebSocketConnection: WebSocket open to: ", this._connection.url);
         this._connected = true;
+
+        clearTimeout(this._connectionTimeoutTimer);
 
         if (this._onOpen)
             this._onOpen();
