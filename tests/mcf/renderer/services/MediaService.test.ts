@@ -276,6 +276,18 @@ describe("deleteMedia() ", () => {
         expect(mockMediaStationRepo.markMediaIDtoDelete).toHaveBeenCalledWith(mediaStationId, 0, idOnMediaApp);
     });
 
+    it("should call mediaStationRepository.updateMediaStation", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        await mediaService.deleteMedia(mediaStationId, contentId, 0);
+
+        //tests
+        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
+    });
+
     it("should throw an error if the mediaStationId could not be found", async () => {
         //setup
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);

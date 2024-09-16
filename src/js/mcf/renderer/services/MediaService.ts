@@ -114,12 +114,13 @@ export class MediaService {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let idOnMediaApp:number = this._mediaManager.getIdOnMediaApp(mediaStation, contentId, mediaAppId);
 
-        if(await this._mediaStationRepository.isMediaCached(mediaStationId, contentId, mediaAppId))
+        if(this._mediaStationRepository.isMediaCached(mediaStationId, contentId, mediaAppId))
             this._mediaStationRepository.deleteCachedMedia(mediaStationId, contentId, mediaAppId);
         else
             await this._mediaStationRepository.markMediaIDtoDelete(mediaStationId,mediaAppId,  idOnMediaApp);
 
         this._mediaManager.deleteMedia(mediaStation, contentId, mediaAppId);
+        this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
     private _findMediaStation(id: number): MediaStation {
