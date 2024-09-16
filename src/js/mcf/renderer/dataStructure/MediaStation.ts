@@ -3,39 +3,53 @@ import {Folder} from "./Folder";
 import {Tag} from "./Tag";
 
 
-export class MediaStation{
-    private _id:number;
-    private _name:string;
-    private _mediaApps:Map<number, MediaApp> = new Map();
-    private _rootFolder:Folder = new Folder(0);
+export class MediaStation {
+    private _id: number;
+    private _name: string;
+    private _mediaApps: Map<number, MediaApp>;
+    private _rootFolder: Folder;
 
-    private _folderIdCounter:number = 1;    //must be 1 because the root-folder has the id 0
-    private _contentIdCounter:number = 0;
-    private _mediaAppIdCounter:number = 0;
-    private _tagIdCounter:number = 0;
+    private _folderIdCounter: number;
+    private _contentIdCounter: number;
+    private _mediaAppIdCounter: number;
+    private _tagIdCounter: number;
 
-    private _tags:Tag[] = [];
+    private _tags: Tag[];
 
-    constructor(id:number) {
+    constructor(id: number) {
         this._id = id;
+        this.reset();
     }
 
-    exportToJSON():string{
-        let json:any = {
+    reset(): void {
+        this._mediaApps = new Map();
+        this._rootFolder = new Folder(0);
+        this._rootFolder.name = "root";
+
+        this._folderIdCounter = 1;    //must be 1 because the root-folder has the id 0
+        this._contentIdCounter = 0;
+        this._mediaAppIdCounter = 0;
+        this._tagIdCounter = 0;
+
+        this._tags = [];
+    }
+
+    exportToJSON(): string {
+        let json: any = {
             name: this._name,
-            folderIdCounter : this._folderIdCounter,
-            contentIdCounter : this._contentIdCounter,
-            mediaAppIdCounter : this._mediaAppIdCounter,
-            tagIdCounter : this._tagIdCounter,
+            folderIdCounter: this._folderIdCounter,
+            contentIdCounter: this._contentIdCounter,
+            mediaAppIdCounter: this._mediaAppIdCounter,
+            tagIdCounter: this._tagIdCounter,
             mediaApps: [],
             tags: [],
-            rootFolder : this._rootFolder.exportToJSON(),
+            rootFolder: this._rootFolder.exportToJSON(),
         };
 
-        for(let i:number = 0; i < this._tags.length; i++)
+        for (let i: number = 0; i < this._tags.length; i++)
             json.tags.push({id: this._tags[i].id, name: this._tags[i].name});
 
-        this._mediaApps.forEach((mediaApp:MediaApp)=>{
+        this._mediaApps.forEach((mediaApp: MediaApp) => {
             json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
         });
 
@@ -54,49 +68,49 @@ export class MediaStation{
      * @param json
      * @param {Folder} newRootFolder
      */
-    importFromJSON(json:any, newRootFolder:Folder = new Folder(0)):void{
+    importFromJSON(json: any, newRootFolder: Folder = new Folder(0)): void {
         console.log("IMPORT MEDIA-STATION FROM JSON: ", json)
 
-        if(this._jsonPropertyExists(json, "folderIdCounter"))
+        if (this._jsonPropertyExists(json, "folderIdCounter"))
             this._folderIdCounter = json.folderIdCounter;
-        if(this._jsonPropertyExists(json, "contentIdCounter"))
-            this._contentIdCounter= json.contentIdCounter;
-        if(this._jsonPropertyExists(json, "tagIdCounter"))
+        if (this._jsonPropertyExists(json, "contentIdCounter"))
+            this._contentIdCounter = json.contentIdCounter;
+        if (this._jsonPropertyExists(json, "tagIdCounter"))
             this._tagIdCounter = json.tagIdCounter;
 
         this._importMediaAppsFromJSON(json);
 
-        if(this._jsonPropertyExists(json, "tags")){
+        if (this._jsonPropertyExists(json, "tags")) {
             this._tags = [];
 
-            for(let i:number = 0; i < json.tags.length; i++)
+            for (let i: number = 0; i < json.tags.length; i++)
                 this.addTag(json.tags[i].id, json.tags[i].name);
         }
 
-        if(this._jsonPropertyExists(json, "rootFolder")){
+        if (this._jsonPropertyExists(json, "rootFolder")) {
             this._rootFolder = newRootFolder;
             this._rootFolder.importFromJSON(json.rootFolder);
         }
     }
 
-    private _importMediaAppsFromJSON(json:any):void{
-        let mediaApp:MediaApp;
+    private _importMediaAppsFromJSON(json: any): void {
+        let mediaApp: MediaApp;
 
-        if(this._jsonPropertyExists(json, "mediaAppIdCounter"))
+        if (this._jsonPropertyExists(json, "mediaAppIdCounter"))
             this._mediaAppIdCounter = json.mediaAppIdCounter;
 
         this._mediaApps = new Map();
 
-        if(json.mediaApps){
-            for(let i:number = 0; i < json.mediaApps.length; i++){
-                console.    log("FOUND MEDIA-APP IN JSON: ", json.mediaApps[i], json.mediaApps[i].id, json.mediaApps[i].name)
-                if(this._jsonPropertyExists(json.mediaApps[i], "id"))
+        if (json.mediaApps) {
+            for (let i: number = 0; i < json.mediaApps.length; i++) {
+                console.log("FOUND MEDIA-APP IN JSON: ", json.mediaApps[i], json.mediaApps[i].id, json.mediaApps[i].name)
+                if (this._jsonPropertyExists(json.mediaApps[i], "id"))
                     mediaApp = new MediaApp(json.mediaApps[i].id);
-                if(this._jsonPropertyExists(json.mediaApps[i], "name"))
+                if (this._jsonPropertyExists(json.mediaApps[i], "name"))
                     mediaApp.name = json.mediaApps[i].name;
-                if(this._jsonPropertyExists(json.mediaApps[i], "ip"))
+                if (this._jsonPropertyExists(json.mediaApps[i], "ip"))
                     mediaApp.ip = json.mediaApps[i].ip;
-                if(this._jsonPropertyExists(json.mediaApps[i], "role"))
+                if (this._jsonPropertyExists(json.mediaApps[i], "role"))
                     mediaApp.role = json.mediaApps[i].role;
 
                 this._mediaApps.set(mediaApp.id, mediaApp);
@@ -104,8 +118,8 @@ export class MediaStation{
         }
     }
 
-    private _jsonPropertyExists(json:any, propName:string): boolean {
-        if(json.hasOwnProperty(propName))
+    private _jsonPropertyExists(json: any, propName: string): boolean {
+        if (json.hasOwnProperty(propName))
             return true;
         else
             throw new Error("MediaStation: missing property in JSON: " + propName);
@@ -116,47 +130,47 @@ export class MediaStation{
      *
      * @returns {string | null}
      */
-    getControllerIp():string | null{
-        let result:string;
+    getControllerIp(): string | null {
+        let result: string;
 
-        this._mediaApps.forEach((mediaApp:MediaApp) =>{
-            if(mediaApp.role === MediaApp.ROLE_CONTROLLER)
-                result =  mediaApp.ip;
+        this._mediaApps.forEach((mediaApp: MediaApp) => {
+            if (mediaApp.role === MediaApp.ROLE_CONTROLLER)
+                result = mediaApp.ip;
         });
 
-        if(result)
+        if (result)
             return result;
 
         console.error("No controller-app is set for mediaStation: ", this._id, this._name)
         return null;
     }
 
-    getNextMediaAppId():number{
-        let actualID:number = this._mediaAppIdCounter;
+    getNextMediaAppId(): number {
+        let actualID: number = this._mediaAppIdCounter;
         this._mediaAppIdCounter++;
         return actualID;
     }
 
-    getNextFolderId():number{
-        let actualID:number = this._folderIdCounter;
+    getNextFolderId(): number {
+        let actualID: number = this._folderIdCounter;
         this._folderIdCounter++;
         return actualID;
     }
 
-    getNextTagId():number{
-        let actualID:number = this._tagIdCounter;
+    getNextTagId(): number {
+        let actualID: number = this._tagIdCounter;
         this._tagIdCounter++;
         return actualID;
     }
 
-    getNextContentId():number{
-        let actualID:number = this._contentIdCounter;
+    getNextContentId(): number {
+        let actualID: number = this._contentIdCounter;
         this._contentIdCounter++;
         return actualID;
     }
 
-    addMediaApp(id:number, name:string, ip:string, role:string):void{
-        let mediaApp:MediaApp = new MediaApp(id);
+    addMediaApp(id: number, name: string, ip: string, role: string): void {
+        let mediaApp: MediaApp = new MediaApp(id);
         mediaApp.ip = ip;
         mediaApp.name = name;
         mediaApp.role = role;
@@ -164,38 +178,38 @@ export class MediaStation{
         this._mediaApps.set(id, mediaApp);
     }
 
-    getMediaApp(id:number):MediaApp{
-        if(this._mediaApps.has(id))
+    getMediaApp(id: number): MediaApp {
+        if (this._mediaApps.has(id))
             return this._mediaApps.get(id);
         else
-            throw new Error("Media App with the following ID does not exist: "+ id);
+            throw new Error("Media App with the following ID does not exist: " + id);
     }
 
-    getAllMediaApps():Map<number, MediaApp>{
+    getAllMediaApps(): Map<number, MediaApp> {
         return this._mediaApps;
     }
 
-    addTag(id:number, name:string):void{
-        let tag:Tag = new Tag();
+    addTag(id: number, name: string): void {
+        let tag: Tag = new Tag();
         tag.id = id;
         tag.name = name;
 
         this._tags.push(tag);
     }
 
-    getTag(id:number):Tag{
-        let tag:Tag = this._tags.find((tag) =>{
-            if(tag.id === id)
+    getTag(id: number): Tag {
+        let tag: Tag = this._tags.find((tag) => {
+            if (tag.id === id)
                 return true;
         });
 
-        if(tag)
+        if (tag)
             return tag;
         else
-            throw new Error("Tag with the following ID does not exist: "+ id);
+            throw new Error("Tag with the following ID does not exist: " + id);
     }
 
-    getAllTags():Tag[] {
+    getAllTags(): Tag[] {
         return this._tags;
     }
 

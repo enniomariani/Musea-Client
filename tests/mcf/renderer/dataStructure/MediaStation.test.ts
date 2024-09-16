@@ -35,6 +35,38 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
+describe("reset() ", () => {
+    it("should set all value to the standard-values (except keeping the id and name)", () => {
+        const name:string = "mediastationNAme";
+        mediaStation.name = name;
+        mediaStation.rootFolder.name = "root";
+
+        //increase the tag-ids to test if the ids have been reset after the calling of the function
+        mediaStation.getNextMediaAppId();
+        mediaStation.getNextMediaAppId();
+        mediaStation.getNextFolderId();
+        mediaStation.getNextFolderId();
+        mediaStation.getNextContentId();
+        mediaStation.getNextContentId();
+        mediaStation.getNextTagId();
+        mediaStation.getNextTagId();
+
+        mediaStation.addMediaApp(0, "testName", "localhost", MediaApp.ROLE_CONTROLLER)
+
+        //method to test
+        mediaStation.reset();
+
+        //tests
+        expect(mediaStation.name).toEqual(name);
+        expect(mediaStation.rootFolder.name).toEqual("root");
+        expect(mediaStation.getNextMediaAppId()).toEqual(0);
+        expect(mediaStation.getNextContentId()).toEqual(0);
+        expect(mediaStation.getNextTagId()).toEqual(0);
+        expect(mediaStation.getNextFolderId()).toEqual(1);
+        expect(mediaStation.getAllMediaApps()).toEqual(new Map());
+    });
+});
+
 describe("exportToJSON() ", () => {
     it("should receive a valid JSON that contains all set properties of the mediaStation", () => {
         let receivedJSONstr: string;

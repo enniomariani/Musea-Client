@@ -105,6 +105,7 @@ export class MediaStationNetworkService {
         if (contentsJSON === null) {
             return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
         } else if (contentsJSON === "{}") {
+            mediaStation.reset();
             return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIP;
         } else {
             mediaStation.importFromJSON(JSON.parse(contentsJSON));

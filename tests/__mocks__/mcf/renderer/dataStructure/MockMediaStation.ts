@@ -3,6 +3,7 @@ import {MockFolder} from "./MockFolder";
 
 export class MockMediaStation extends MediaStation{
 
+    reset: jest.Mock;
 
     getNextMediaAppId: jest.Mock;
     getNextContentId: jest.Mock;
@@ -26,6 +27,8 @@ export class MockMediaStation extends MediaStation{
 
     constructor(id) {
         super(id);
+        this.reset = jest.fn();
+
         this.getNextMediaAppId = jest.fn();
         this.getNextContentId = jest.fn();
         this.getNextFolderId = jest.fn();

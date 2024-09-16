@@ -69,7 +69,6 @@ export class MediaStationRepository{
         let newMediaStation:MediaStation = this._mediaStationFactory(this._mediaStationIdCounter);
 
         newMediaStation.name = name;
-        newMediaStation.rootFolder.name = "root";
 
         this._allMediaStations.set(this._mediaStationIdCounter, newMediaStation);
 

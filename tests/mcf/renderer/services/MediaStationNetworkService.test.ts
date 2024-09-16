@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MockNetworkService} from "../../../__mocks__/mcf/renderer/services/MockNetworkService";
 import {
     IOnSyncStep,
@@ -15,7 +15,6 @@ import {MediaApp} from "../../../../src/js/mcf/renderer/dataStructure/MediaApp";
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
 import {Image} from "../../../../src/js/mcf/renderer/dataStructure/Media";
-import {ContentNetworkService} from "../../../../src/js/mcf/renderer/services/ContentNetworkService";
 
 
 let mediaStationNetworkService: MediaStationNetworkService;
@@ -584,6 +583,18 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         //tests
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIp);
+    });
+
+    it("should return call mediaStation.reset if the controller-app returned an empty JSON", async () => {
+        //setup
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce("{}");
+
+        //method to test
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+
+        //tests
+        expect(mockMediaStation.reset).toHaveBeenCalledTimes(1);
     });
 
     it("should return an error if there is no controller-ip specified", async () => {
