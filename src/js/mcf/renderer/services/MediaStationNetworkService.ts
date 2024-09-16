@@ -169,18 +169,18 @@ export class MediaStationNetworkService {
         return true;
     }
 
-    private async _checkMediaAppAvailability(mediaApp: MediaApp): Promise<boolean> {
+    private async _checkMediaAppAvailability(ip: string): Promise<boolean> {
 
-        if (!await this._networkService.pcRespondsToPing(mediaApp.ip))
+        if (!await this._networkService.pcRespondsToPing(ip))
             return false;
 
-        if (!await this._networkService.openConnection(mediaApp.ip))
+        if (!await this._networkService.openConnection(ip))
             return false;
 
-        if (!await this._networkService.isMediaAppOnline(mediaApp.ip))
+        if (!await this._networkService.isMediaAppOnline(ip))
             return false;
 
-        if (!await this._networkService.sendCheckRegistration(mediaApp.ip))
+        if (!await this._networkService.sendCheckRegistration(ip))
             return false;
 
         return true;

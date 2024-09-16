@@ -226,10 +226,22 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
 
         mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
         mockMediaStation.getControllerIp.mockReturnValue(controllerIp);
-        mockNetworkService.openConnection.mockReturnValue(true);
-        mockNetworkService.pcRespondsToPing.mockReturnValue(true);
-        mockNetworkService.isMediaAppOnline.mockReturnValue(true);
-        mockNetworkService.sendCheckRegistration.mockReturnValue(true);
+        mockNetworkService.openConnection.mockImplementation((ip:string) =>{
+            if(ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
+                return true;
+        });
+        mockNetworkService.pcRespondsToPing.mockImplementation((ip:string) =>{
+            if(ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
+                return true;
+        });
+        mockNetworkService.isMediaAppOnline.mockImplementation((ip:string) =>{
+            if(ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
+                return true;
+        });
+        mockNetworkService.sendCheckRegistration.mockImplementation((ip:string) =>{
+            if(ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
+                return true;
+        });
         mockNetworkService.getContentFileFrom.mockReturnValue(JSON.stringify(correctJSON));
     });
 
