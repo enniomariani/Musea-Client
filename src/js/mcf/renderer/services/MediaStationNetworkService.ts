@@ -93,7 +93,7 @@ export class MediaStationNetworkService {
         if (!appIsOnline)
             return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
 
-        let registration: boolean = await this._networkService.sendRegistration(controllerIP);
+        let registration: boolean = await this._networkService.sendRegistrationAdminApp(controllerIP);
 
         if (!registration) {
             console.log("NO registration")
@@ -257,7 +257,7 @@ export class MediaStationNetworkService {
                 continue;
             }
 
-            registration = await this._networkService.sendRegistration(mediaApp.ip);
+            registration = await this._networkService.sendRegistrationAdminApp(mediaApp.ip);
 
             //if the connection could be established to a media-app, send it all media that are cached
             if (registration) {
@@ -289,7 +289,7 @@ export class MediaStationNetworkService {
             if (connectionIsOpen) {
                 onSyncStep("Verbindung mit Controller-App hergestellt. Sende Registrierungs-Anfrage...");
 
-                registration = await this._networkService.sendRegistration(ip);
+                registration = await this._networkService.sendRegistrationAdminApp(ip);
 
                 console.log("beim controller registriert? ", registration)
 

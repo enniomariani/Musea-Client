@@ -9,9 +9,11 @@ export class MockNetworkService extends NetworkService{
     closeConnection: jest.Mock;
     pcRespondsToPing: jest.Mock;
     isMediaAppOnline: jest.Mock;
-    sendRegistration: jest.Mock;
+
     sendRegistrationAdminApp: jest.Mock;
     sendRegistrationUserApp: jest.Mock;
+
+    sendCheckRegistration: jest.Mock;
     unregisterAndCloseConnection: jest.Mock;
 
 
@@ -30,8 +32,10 @@ export class MockNetworkService extends NetworkService{
         this.closeConnection = jest.fn();
         this.pcRespondsToPing = jest.fn();
         this.isMediaAppOnline = jest.fn();
+
         this.sendRegistrationAdminApp = jest.fn();
         this.sendRegistrationUserApp = jest.fn();
+        
         this.sendCheckRegistration = jest.fn();
         this.unregisterAndCloseConnection = jest.fn();
 
