@@ -91,8 +91,12 @@ export class NetworkService {
         return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "ping"), timeout, false);
     }
 
-    async sendRegistration(ip: string, timeout: number = 3000): Promise<boolean> {
+    async sendRegistrationAdminApp(ip: string, timeout: number = 3000): Promise<boolean> {
         return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "admin"), timeout, false);
+    }
+
+    async sendRegistrationUserApp(ip: string, timeout: number = 3000): Promise<boolean> {
+        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "user"), timeout, false);
     }
 
     async sendCheckRegistration(ip: string, timeout: number = 3000): Promise<boolean> {

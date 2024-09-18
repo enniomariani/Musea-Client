@@ -344,7 +344,7 @@ describe("sendCheckRegistration() ",  ()=>{
     });
 });
 
-describe("sendRegistration() ",  ()=>{
+describe("sendRegistrationAdminApp() ",  ()=>{
     it("should call networkConnectionHandler.sendData with a registration-command", async()=>{
         //setup
         let registrationAcceptedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "accepted");
@@ -352,7 +352,7 @@ describe("sendRegistration() ",  ()=>{
 
         //method to test
         await networkService.openConnection(ip1);
-        await networkService.sendRegistration(ip1);
+        await networkService.sendRegistrationAdminApp(ip1);
 
         //tests
         expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
@@ -367,7 +367,7 @@ describe("sendRegistration() ",  ()=>{
 
         //method to test
         await networkService.openConnection(ip1);
-        answer = await networkService.sendRegistration(ip1);
+        answer = await networkService.sendRegistrationAdminApp(ip1);
 
         //tests
         expect(answer).toBe(true);
@@ -381,7 +381,7 @@ describe("sendRegistration() ",  ()=>{
 
         //method to test
         await networkService.openConnection(ip1);
-        answer = await networkService.sendRegistration(ip1);
+        answer = await networkService.sendRegistrationAdminApp(ip1);
 
         //tests
         expect(answer).toBe(false);
@@ -395,7 +395,7 @@ describe("sendRegistration() ",  ()=>{
 
         //method to test
         await networkService.openConnection(ip1);
-        answer = await networkService.sendRegistration(ip1);
+        answer = await networkService.sendRegistrationAdminApp(ip1);
 
         //tests
         expect(answer).toBe(null);
@@ -411,7 +411,89 @@ describe("sendRegistration() ",  ()=>{
 
         //method to test
         await networkService.openConnection(ip1);
-        answerPromise = networkService.sendRegistration(ip1);
+        answerPromise = networkService.sendRegistrationAdminApp(ip1);
+
+        // Fast-forward until all timers have been executed
+        jest.advanceTimersByTime(3000);
+
+        answer = await answerPromise;
+
+        //tests
+        expect(answer).toBe(false);
+
+        //tidy up
+        jest.useRealTimers();
+    });
+});
+
+describe("sendRegistrationUserApp() ",  ()=>{
+    it("should call networkConnectionHandler.sendData with a registration-command", async()=>{
+        //setup
+        let registrationAcceptedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "accepted");
+        mockOpenConnectionAndReceiveDataLater(ip1, registrationAcceptedCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        await networkService.sendRegistrationUserApp(ip1);
+
+        //tests
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
+        expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("network", "register", "user"));
+    });
+
+    it("should return true if it received a registration-accepted-command", async()=>{
+        //setup
+        let registrationAcceptedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "accepted");
+        let answer:boolean;
+        mockOpenConnectionAndReceiveDataLater(ip1, registrationAcceptedCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.sendRegistrationUserApp(ip1);
+
+        //tests
+        expect(answer).toBe(true);
+    });
+
+    it("should return false if it received a registration-rejected-command", async()=>{
+        //setup
+        let registrationRejectedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "rejected");
+        let answer:boolean;
+        mockOpenConnectionAndReceiveDataLater(ip1, registrationRejectedCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.sendRegistrationUserApp(ip1);
+
+        //tests
+        expect(answer).toBe(false);
+    });
+
+    it("should return null if it received a wrong command", async()=>{
+        //setup
+        let pongCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "acceppted");
+        let answer:boolean;
+        mockOpenConnectionAndReceiveDataLater(ip1, pongCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.sendRegistrationUserApp(ip1);
+
+        //tests
+        expect(answer).toBe(null);
+    });
+
+    it("should return false if it received nothing after 3 seconds", async()=>{
+        //setup
+        let answer:boolean;
+        let answerPromise:Promise<boolean>;
+        jest.useFakeTimers();
+
+        mockOpenConnection();
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answerPromise = networkService.sendRegistrationUserApp(ip1);
 
         // Fast-forward until all timers have been executed
         jest.advanceTimersByTime(3000);
