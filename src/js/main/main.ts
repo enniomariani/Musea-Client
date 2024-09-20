@@ -35,30 +35,30 @@ let mainMediaServerFramework:MainMediaClientFramework;
 if (environment === 'development') {
 
 //if it is not made like this, the import throws an error in the exported exe (I do not know why)
-    import("electron-reloader").then(electronReloader=>{
-
-        //temporary fix because in ESM6 context the "module" object does not exist anymore, but electron-reloader needs it
-        const module:NodeModule =  {
-            children: [],
-            exports: null,
-            filename: fileURLToPath(import.meta.url),
-            id: "",
-            parent: null,
-            isPreloading: true,
-            loaded: false,
-            path: "",
-            paths: [],
-            require: null
-        }
-        // activate auto-reload on saved files (npm-package "electron-reloader")
-        try {
-            electronReloader.default(module, {
-                debug: true, watchRenderer: true
-            });
-        } catch (error) {
-            console.log('Error: ', error);
-        }
-    });
+//     import("electron-reloader").then(electronReloader=>{
+//
+//         //temporary fix because in ESM6 context the "module" object does not exist anymore, but electron-reloader needs it
+//         const module:NodeModule =  {
+//             children: [],
+//             exports: null,
+//             filename: fileURLToPath(import.meta.url),
+//             id: "",
+//             parent: null,
+//             isPreloading: true,
+//             loaded: false,
+//             path: "",
+//             paths: [],
+//             require: null
+//         }
+//         // activate auto-reload on saved files (npm-package "electron-reloader")
+//         try {
+//             electronReloader.default(module, {
+//                 debug: true, watchRenderer: true
+//             });
+//         } catch (error) {
+//             console.log('Error: ', error);
+//         }
+//     });
 }
 
 app.whenReady().then(async () => {

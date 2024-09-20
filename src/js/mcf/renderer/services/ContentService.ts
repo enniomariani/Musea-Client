@@ -139,6 +139,21 @@ export class ContentService {
         await this._contentNetworkService.sendCommandPause(mediaStation.getAllMediaApps());
     }
 
+    async sendCommandFwd(mediaStationId: number): Promise<void> {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        await this._contentNetworkService.sendCommandFwd(mediaStation.getAllMediaApps());
+    }
+
+    async sendCommandRew(mediaStationId: number): Promise<void> {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        await this._contentNetworkService.sendCommandRew(mediaStation.getAllMediaApps());
+    }
+
+    async sendCommandSync(mediaStationId: number, pos: number): Promise<void> {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        await this._contentNetworkService.sendCommandSync(mediaStation.getAllMediaApps(), pos);
+    }
+
     async sendCommandSeek(mediaStationId: number, pos: number): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         await this._contentNetworkService.sendCommandSeek(mediaStation.getAllMediaApps(), pos);

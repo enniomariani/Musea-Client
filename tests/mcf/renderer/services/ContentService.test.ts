@@ -538,6 +538,94 @@ describe("sendCommandPause() ", ()=> {
     });
 });
 
+describe("sendCommandFwd() ", ()=> {
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+    let answerMap:Map<number, MediaApp> = new Map();
+    answerMap.set(0, new MediaApp(0));
+    answerMap.set(1, new MediaApp(1));
+    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+
+    it("should call contentNetworkService.sendCommandFwd with the correct arguments", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        await contentService.sendCommandFwd(mediaStationId);
+
+        //tests
+        expect(mockContentNetworkService.sendCommandFwd).toHaveBeenCalledTimes(1);
+        expect(mockContentNetworkService.sendCommandFwd).toHaveBeenCalledWith(answerMap);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        await expect(contentService.sendCommandFwd(mediaStationId)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
+describe("sendCommandRew() ", ()=> {
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+    let answerMap:Map<number, MediaApp> = new Map();
+    answerMap.set(0, new MediaApp(0));
+    answerMap.set(1, new MediaApp(1));
+    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+
+    it("should call contentNetworkService.sendCommandRew with the correct arguments", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        await contentService.sendCommandRew(mediaStationId);
+
+        //tests
+        expect(mockContentNetworkService.sendCommandRew).toHaveBeenCalledTimes(1);
+        expect(mockContentNetworkService.sendCommandRew).toHaveBeenCalledWith(answerMap);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        await expect(contentService.sendCommandRew(mediaStationId)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
+describe("sendCommandSync() ", ()=> {
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+    let answerMap:Map<number, MediaApp> = new Map();
+    answerMap.set(0, new MediaApp(0));
+    answerMap.set(1, new MediaApp(1));
+    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    const seekPos:number = 200;
+
+    it("should call contentNetworkService.sendCommandSync with the correct arguments", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        await contentService.sendCommandSync(mediaStationId, seekPos);
+
+        //tests
+        expect(mockContentNetworkService.sendCommandSync).toHaveBeenCalledTimes(1);
+        expect(mockContentNetworkService.sendCommandSync).toHaveBeenCalledWith(answerMap,seekPos);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        await expect(contentService.sendCommandSync(mediaStationId, seekPos)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
 describe("sendCommandSeek() ", ()=> {
 
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);

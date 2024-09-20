@@ -16,7 +16,11 @@ export class MockContentService extends ContentService {
     sendCommandPlay: jest.Mock;
     sendCommandStop: jest.Mock;
     sendCommandPause: jest.Mock;
+    sendCommandFwd: jest.Mock;
+    sendCommandRew: jest.Mock;
+
     sendCommandSeek: jest.Mock;
+    sendCommandSync: jest.Mock;
 
     getLightIntensity: jest.Mock;
     changeLightIntensity: jest.Mock;
@@ -34,7 +38,11 @@ export class MockContentService extends ContentService {
         this.sendCommandPlay = jest.fn();
         this.sendCommandStop = jest.fn();
         this.sendCommandPause = jest.fn();
+        this.sendCommandFwd = jest.fn();
+        this.sendCommandRew = jest.fn();
+
         this.sendCommandSeek = jest.fn();
+        this.sendCommandSync = jest.fn();
 
         this.getLightIntensity = jest.fn();
         this.changeLightIntensity = jest.fn();
