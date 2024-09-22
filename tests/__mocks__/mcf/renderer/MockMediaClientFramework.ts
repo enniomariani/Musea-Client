@@ -1,6 +1,3 @@
-import {
-    IMediaClientFramework
-} from "../../../../src/js/mcf/renderer/MediaClientFramework";
 import {MockMediaStationDataService} from "./services/MockMediaStationDataService";
 import {MockMediaStationNetworkService} from "./services/MockMediaStationNetworkService";
 import {MockMediaAppService} from "./services/MockMediaAppService";
@@ -8,6 +5,7 @@ import {MockFolderService} from "./services/MockFolderService";
 import {MockContentService} from "./services/MockContentService";
 import {MockMediaService} from "./services/MockMediaService";
 import {MockMediaStationCacheService} from "./services/MockMediaStationCacheService";
+import {IMediaClientFramework} from "../../../../src/js/mcf/renderer/MediaClientFramework";
 
 export class MockMediaClientFramework implements  IMediaClientFramework{
     private _mockMediaStationDataService: MockMediaStationDataService = new MockMediaStationDataService();

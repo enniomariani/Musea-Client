@@ -10,7 +10,6 @@ import {MediaStationNetworkService} from "./services/MediaStationNetworkService"
 import {FolderService} from "./services/FolderService";
 import {MediaService} from "./services/MediaService";
 import {MediaStationCacheService} from "./services/MediaStationCacheService";
-import {ContentFileService} from "./fileHandling/ContentFileService";
 
 export interface IMediaClientFramework {
     get mediaStationDataService(): MediaStationDataService
