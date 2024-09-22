@@ -74,9 +74,10 @@ export class MediaStationNetworkService {
      * Always resolves the promise with different strings (see statics in this class), only throws an error if the passed mediaStationId does not exist
      *
      * @param {number} id
+     * @param {string} role either "admin" or "user": determines if the app registers as admin- or user-app on the media-apps
      * @returns {Promise<string>}
      */
-    async downloadContentsOfMediaStation(id: number): Promise<string> {
+    async downloadContentsOfMediaStation(id: number, role:string = "admin"): Promise<string> {
         let mediaStation: MediaStation = this._findMediaStation(id);
         const controllerIP: string = mediaStation.getControllerIp();
         let contentsJSON: string;
@@ -101,7 +102,14 @@ export class MediaStationNetworkService {
         if (!appIsOnline)
             return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
 
-        let registration: boolean = await this._networkService.sendRegistrationAdminApp(controllerIP);
+        let registration: boolean
+
+        if(role === "admin")
+            registration = await this._networkService.sendRegistrationAdminApp(controllerIP);
+        else if(role === "user")
+            registration = await this._networkService.sendRegistrationUserApp(controllerIP);
+        else
+            throw new Error("Role not valid: " + role);
 
         if (!registration) {
             console.log("NO registration")
@@ -123,7 +131,7 @@ export class MediaStationNetworkService {
     }
 
     /**
-     * checks if all media-apps (including the controller) are online, reachable and registration is possible
+     * checks if all media-apps (including the controller) are online, reachable and registration is possible (as admin-app)
      *
      * returns true if this is true for all of them
      *
@@ -203,9 +211,10 @@ export class MediaStationNetworkService {
      *
      * @param {number} mediaStationId
      * @param {IOnSyncStep} onSyncStep  Is called after every new network-operation and receives a string with info about what is going on
+     * @param {string} role either "admin" or "user": determines if the app registers as admin- or user-app on the media-apps
      * @returns {Promise<void>}
      */
-    async syncMediaStation(mediaStationId: number, onSyncStep: IOnSyncStep): Promise<boolean> {
+    async syncMediaStation(mediaStationId: number, onSyncStep: IOnSyncStep, role:string = "admin"): Promise<boolean> {
         console.log("SYNC MEDIA STATION: ", mediaStationId)
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let json: string;
@@ -265,7 +274,12 @@ export class MediaStationNetworkService {
                 continue;
             }
 
-            registration = await this._networkService.sendRegistrationAdminApp(mediaApp.ip);
+            if(role === "admin")
+                registration = await this._networkService.sendRegistrationAdminApp(mediaApp.ip);
+            else if(role === "user")
+                registration = await this._networkService.sendRegistrationUserApp(mediaApp.ip);
+            else
+                throw new Error("Role not valid: " + role);
 
             //if the connection could be established to a media-app, send it all media that are cached
             if (registration) {
@@ -297,7 +311,12 @@ export class MediaStationNetworkService {
             if (connectionIsOpen) {
                 onSyncStep("Verbindung mit Controller-App hergestellt. Sende Registrierungs-Anfrage...");
 
-                registration = await this._networkService.sendRegistrationAdminApp(ip);
+                if(role === "admin")
+                    registration = await this._networkService.sendRegistrationAdminApp(ip);
+                else if(role === "user")
+                    registration = await this._networkService.sendRegistrationUserApp(ip);
+                else
+                    throw new Error("Role not valid: " + role);
 
                 console.log("beim controller registriert? ", registration)
 
