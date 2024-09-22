@@ -16,6 +16,9 @@ export class MockMediaStationNetworkService extends MediaStationNetworkService{
     sendCommandUnmute: jest.Mock;
     sendCommandSetVolume: jest.Mock;
 
+    onBlockReceived: jest.Mock;
+    onUnBlockReceived: jest.Mock;
+
     constructor() {
         super(mockNetworkService, mockMediaStationRepo);
         this.downloadContentsOfMediaStation = jest.fn();
@@ -25,5 +28,8 @@ export class MockMediaStationNetworkService extends MediaStationNetworkService{
         this.sendCommandMute = jest.fn();
         this.sendCommandUnmute = jest.fn();
         this.sendCommandSetVolume = jest.fn();
+
+        this.onBlockReceived = jest.fn();
+        this.onUnBlockReceived = jest.fn();
     }
 }

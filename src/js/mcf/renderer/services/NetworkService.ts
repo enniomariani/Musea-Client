@@ -8,6 +8,9 @@ export class NetworkService {
     private _dataReceivedPromises: Map<string, { resolve: (value: any) => void, reject: (error: any) => void }>;
     private _onConnectionClosedPromises: Map<string, { resolve: () => void, reject: () => void }>;
 
+    private _onBlockReceivedCallback:Function;
+    private _onUnBlockReceivedCallback:Function;
+
     constructor(networkConnectionHandler: NetworkConnectionHandler = new NetworkConnectionHandler()) {
         this._networkConnectionHandler = networkConnectionHandler;
         this._dataReceivedPromises = new Map();
@@ -77,6 +80,14 @@ export class NetworkService {
                     reject(error);
                 });
         });
+    }
+
+    onBlockReceived(callback:Function):void{
+        this._onBlockReceivedCallback = callback;
+    }
+
+    onUnBlockReceived(callback:Function):void{
+        this._onUnBlockReceivedCallback = callback;
     }
 
     /**
@@ -253,7 +264,14 @@ export class NetworkService {
                     promise.resolve(parseInt(convertedData[2]));
                     this._dataReceivedPromises.delete(ip);
                 }
-            } else
+            } else if (convertedData[0] === "system" && convertedData[1] === "block") {
+                if(this._onBlockReceivedCallback)
+                    this._onBlockReceivedCallback();
+            }else if (convertedData[0] === "system" && convertedData[1] === "unblock") {
+                if(this._onUnBlockReceivedCallback)
+                    this._onUnBlockReceivedCallback();
+            }
+            else
                 console.error("Non-valid network-command received: ", convertedData);
         }
 

@@ -57,6 +57,14 @@ export class MediaStationNetworkService {
         }
     }
 
+    onBlockReceived(callback:Function):void{
+        this._networkService.onBlockReceived(callback);
+    }
+
+    onUnBlockReceived(callback:Function):void{
+        this._networkService.onUnBlockReceived(callback);
+    }
+
     /**
      * gets the controller-ip of the passed mediaStation, sends the command to download the content-file of this controller-app
      * and saves the contents-json to the mediaStation.

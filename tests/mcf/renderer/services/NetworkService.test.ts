@@ -151,6 +151,40 @@ describe("closeConnection() ",  ()=> {
     });
 });
 
+describe("onBlockReceived() ",  ()=> {
+    it("should call the callback if it received a system/block command", async () => {
+        //setup
+        let blockCommand:Uint8Array = ConvertNetworkData.encodeCommand("system", "block");
+        let blockReceivedCallback:Function = jest.fn();
+
+        mockOpenConnection(blockCommand);
+
+        // Method to test
+        networkService.onBlockReceived(blockReceivedCallback);
+        await networkService.openConnection(ip1);
+
+        //tests
+        expect(blockReceivedCallback).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("onUnBlockReceived() ",  ()=> {
+    it("should call the callback if it received a system/unblock command", async () => {
+        //setup
+        let blockCommand:Uint8Array = ConvertNetworkData.encodeCommand("system", "unblock");
+        let unBlockCallback:Function = jest.fn();
+
+        mockOpenConnection(blockCommand);
+
+        // Method to test
+        networkService.onUnBlockReceived(unBlockCallback);
+        await networkService.openConnection(ip1);
+
+        //tests
+        expect(unBlockCallback).toHaveBeenCalledTimes(1);
+    });
+});
+
 describe("pcRespondsToPing() ",  ()=>{
     it("should call mockNetworkConnectionHandler.ping and return its answer", async()=>{
         //setup
