@@ -6,6 +6,7 @@ import {MockContentService} from "./services/MockContentService";
 import {MockMediaService} from "./services/MockMediaService";
 import {MockMediaStationCacheService} from "./services/MockMediaStationCacheService";
 import {IMediaClientFramework} from "../../../../src/js/mcf/renderer/MediaClientFramework";
+import {MockTagService} from "./services/MockTagService";
 
 export class MockMediaClientFramework implements  IMediaClientFramework{
     private _mockMediaStationDataService: MockMediaStationDataService = new MockMediaStationDataService();
@@ -15,6 +16,7 @@ export class MockMediaClientFramework implements  IMediaClientFramework{
     private _mockContentService: MockContentService = new MockContentService();
     private _mockMediaService: MockMediaService = new MockMediaService();
     private _mockMediaStationCacheService: MockMediaStationCacheService = new MockMediaStationCacheService();
+    private _mockTagService: MockTagService = new MockTagService();
 
     constructor() {}
 
@@ -44,5 +46,9 @@ export class MockMediaClientFramework implements  IMediaClientFramework{
 
     get mediaStationCacheService(): MockMediaStationCacheService {
         return this._mockMediaStationCacheService;
+    }
+
+    get tagService(): MockTagService {
+        return this._mockTagService;
     }
 }

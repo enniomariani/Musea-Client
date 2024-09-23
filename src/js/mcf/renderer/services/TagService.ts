@@ -10,7 +10,7 @@ export class TagService {
     private _mediaStationRepository: MediaStationRepository;
     private _contentManager: ContentManager;
 
-    constructor(mediaStationRepo: MediaStationRepository, contentManager:ContentManager) {
+    constructor(mediaStationRepo: MediaStationRepository, contentManager:ContentManager = new ContentManager()) {
         this._mediaStationRepository = mediaStationRepo;
         this._contentManager = contentManager;
     }
