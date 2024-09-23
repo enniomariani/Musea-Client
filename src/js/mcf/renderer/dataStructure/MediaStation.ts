@@ -14,7 +14,7 @@ export class MediaStation {
     private _mediaAppIdCounter: number;
     private _tagIdCounter: number;
 
-    private _tags: Tag[];
+    private _tags: Map<number, Tag>;
 
     constructor(id: number) {
         this._id = id;
@@ -31,10 +31,11 @@ export class MediaStation {
         this._mediaAppIdCounter = 0;
         this._tagIdCounter = 0;
 
-        this._tags = [];
+        this._tags = new Map();
     }
 
     exportToJSON(): string {
+        let tag:Tag;
         let json: any = {
             name: this._name,
             folderIdCounter: this._folderIdCounter,
@@ -46,8 +47,11 @@ export class MediaStation {
             rootFolder: this._rootFolder.exportToJSON(),
         };
 
-        for (let i: number = 0; i < this._tags.length; i++)
-            json.tags.push({id: this._tags[i].id, name: this._tags[i].name});
+        for (let i: number = 0; i < this._tags.size; i++){
+            tag = this._tags.get(i);
+            json.tags.push({id: tag.id, name: tag.name});
+        }
+
 
         this._mediaApps.forEach((mediaApp: MediaApp) => {
             json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
@@ -81,7 +85,7 @@ export class MediaStation {
         this._importMediaAppsFromJSON(json);
 
         if (this._jsonPropertyExists(json, "tags")) {
-            this._tags = [];
+            this._tags = new Map();
 
             for (let i: number = 0; i < json.tags.length; i++)
                 this.addTag(json.tags[i].id, json.tags[i].name);
@@ -189,19 +193,29 @@ export class MediaStation {
         return this._mediaApps;
     }
 
+    /**
+     * adds a tag, if a tag with the same ID alread exists, it is replaced
+     *
+     * @param {number} id
+     * @param {string} name
+     */
     addTag(id: number, name: string): void {
         let tag: Tag = new Tag();
         tag.id = id;
         tag.name = name;
 
-        this._tags.push(tag);
+        this._tags.set(id, tag);
+    }
+
+    removeTag(id: number): void {
+        if (this._tags.has(id))
+            this._tags.delete(id);
+        else
+            throw new Error("Tag with the following ID does not exist: " + id);
     }
 
     getTag(id: number): Tag {
-        let tag: Tag = this._tags.find((tag) => {
-            if (tag.id === id)
-                return true;
-        });
+        let tag: Tag = this._tags.get(id);
 
         if (tag)
             return tag;
@@ -209,7 +223,7 @@ export class MediaStation {
             throw new Error("Tag with the following ID does not exist: " + id);
     }
 
-    getAllTags(): Tag[] {
+    getAllTags(): Map<number, Tag> {
         return this._tags;
     }
 

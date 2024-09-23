@@ -1,11 +1,8 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 
 import {
     MediaStationCacheService
 } from "../../../../src/js/mcf/renderer/services/MediaStationCacheService";
-import {
-    MockContentFileService
-} from "../../../__mocks__/mcf/renderer/fileHandling/MockContentFileService";
 import {
     MockMediaStationRepository
 } from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";

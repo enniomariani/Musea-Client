@@ -83,7 +83,7 @@ export class Folder {
         return json;
     }
 
-    addContent(content: Content) {
+    addContent(content: Content):void {
         this._contents.push(content);
     }
 
@@ -178,6 +178,11 @@ export class Folder {
         return null;
     }
 
+    /**
+     * returns a map with the folder-id as key and an array of content-ids of the contents that are directly inside this folder
+     *
+     * @returns {Map<number, number[]>}
+     */
     getAllContentIDsInFolderAndSubFolders(): Map<number, number[]> {
         let allContents: Map<number, number[]> = new Map();
         let contentsOfThisFolder: number[] = [];

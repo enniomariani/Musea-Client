@@ -106,7 +106,7 @@ describe("importFromJSON() ", () => {
         let mockFolder: MockFolder = new MockFolder(0);
         let mediaApp1: MediaApp;
         let mediaApp2: MediaApp;
-        let allTags:Tag[];
+        let allTags:Map<number, Tag>;
         mediaStation.rootFolder = mockFolder;
 
         //method to test
@@ -133,10 +133,10 @@ describe("importFromJSON() ", () => {
 
         allTags = mediaStation.getAllTags();
 
-        expect(allTags[0].id).toBe(0);
-        expect(allTags[0].name).toBe("tag1");
-        expect(allTags[1].id).toBe(1);
-        expect(allTags[1].name).toBe("tag2");
+        expect(allTags.get(0).id).toBe(0);
+        expect(allTags.get(0).name).toBe("tag1");
+        expect(allTags.get(1).id).toBe(1);
+        expect(allTags.get(1).name).toBe("tag2");
     });
 
     it("should pass the properties got for all folders to the root-folder", () => {
@@ -321,8 +321,24 @@ describe("addTag() and getTag()", () => {
         expect(receivedTag).toStrictEqual(tag);
     });
 
-    it("getMediaApp() should throw an error if it does not exist", () => {
+    it("getTag() should throw an error if it does not exist", () => {
         //tests
         expect(() => mediaStation.getTag(20)).toThrow(new Error("Tag with the following ID does not exist: 20"))
+    });
+});
+
+describe("addTag(), removeTag() and getTag()", () => {
+    it("when a tag is added and removed againg, getTag should throw an error", () => {
+        //setup
+        let tag:Tag = new Tag();
+        tag.id = 200;
+        tag.name = "testName";
+
+        //method to test
+        mediaStation.addTag(tag.id, tag.name);
+        mediaStation.removeTag(tag.id);
+
+        //tests
+        expect(() => mediaStation.getTag(200)).toThrow(new Error("Tag with the following ID does not exist: 200"))
     });
 });

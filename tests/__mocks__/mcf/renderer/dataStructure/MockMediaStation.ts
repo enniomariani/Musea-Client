@@ -22,6 +22,7 @@ export class MockMediaStation extends MediaStation{
     addTag: jest.Mock;
     getTag: jest.Mock;
     getAllTags: jest.Mock;
+    removeTag: jest.Mock;
 
     private _rootFolderMock: MockFolder = new MockFolder(0);
 
@@ -43,6 +44,7 @@ export class MockMediaStation extends MediaStation{
         this.getAllMediaApps = jest.fn();
 
         this.addTag = jest.fn();
+        this.removeTag = jest.fn();
         this.getTag = jest.fn();
         this.getAllTags = jest.fn();
 
