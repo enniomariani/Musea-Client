@@ -10,7 +10,7 @@ export class MockTagService extends TagService {
 
     addTagToContent: jest.Mock;
     removeTagFromContent: jest.Mock;
-    getTagsForContent: jest.Mock;
+    getTagIdsForContent: jest.Mock;
 
     findContentsByTag: jest.Mock;
 
@@ -24,7 +24,7 @@ export class MockTagService extends TagService {
 
         this.addTagToContent = jest.fn();
         this.removeTagFromContent = jest.fn();
-        this.getTagsForContent = jest.fn();
+        this.getTagIdsForContent = jest.fn();
 
         this.findContentsByTag = jest.fn();
     }

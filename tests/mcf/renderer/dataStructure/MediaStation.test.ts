@@ -24,7 +24,7 @@ const jsonMock: any = {
     mediaApps: [{id: mediaApp1.id, name: mediaApp1.name, ip: mediaApp1.ip, role: mediaApp1.role},
         {id: mediaApp2.id, name: mediaApp2.name, ip: mediaApp2.ip, role: mediaApp2.role}],
     tags: [{id: 0, name: "tag1"},
-        {id: 1, name: "tag2"}]
+        {id:3, name: "tag2"}]
 }
 
 beforeEach(() => {
@@ -85,7 +85,7 @@ describe("exportToJSON() ", () => {
         mediaStation.addMediaApp(mediaApp2.id, mediaApp2.name, mediaApp2.ip, mediaApp2.role);
 
         mediaStation.addTag(0, "tag1");
-        mediaStation.addTag(1, "tag2");
+        mediaStation.addTag(3, "tag2");
 
         //method to test
         receivedJSONstr = mediaStation.exportToJSON();
@@ -135,8 +135,8 @@ describe("importFromJSON() ", () => {
 
         expect(allTags.get(0).id).toBe(0);
         expect(allTags.get(0).name).toBe("tag1");
-        expect(allTags.get(1).id).toBe(1);
-        expect(allTags.get(1).name).toBe("tag2");
+        expect(allTags.get(3).id).toBe(3);
+        expect(allTags.get(3).name).toBe("tag2");
     });
 
     it("should pass the properties got for all folders to the root-folder", () => {

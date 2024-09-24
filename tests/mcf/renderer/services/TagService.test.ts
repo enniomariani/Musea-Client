@@ -61,14 +61,57 @@ describe("addTag() ", ()=> {
 });
 
 describe("deleteTag() ", ()=> {
+    let mockContent1:MockContent;
+    let mockContent2:MockContent;
+    let mockContent3:MockContent;
+    let allContentIds:Map<number, number[]>;
+
+    function setup(){
+        allContentIds = new Map();
+        allContentIds.set(0, [1, 2]);
+        allContentIds.set(1, [3]);
+
+        mockContent1 = new MockContent(1, 0);
+        mockContent1.tagIds = [12, 223, 0];
+        mockContent2 = new MockContent(2, 0);
+        mockContent2.tagIds = [12, 223, 0, 222];
+        mockContent3 = new MockContent(3, 1);
+        mockContent3.tagIds = [222];
+
+        mockMediaStation.rootFolder.getAllContentIDsInFolderAndSubFolders.mockReturnValue(allContentIds);
+        mockContentManager.getContent.mockImplementation((mediaStation, id)=>{
+            console.log("mock get content: ", mediaStation.id, id)
+                if(mediaStation.id === 0 && id === 1)
+                    return mockContent1;
+                else if(mediaStation.id === 0 && id === 2)
+                    return mockContent2;
+                else if(mediaStation.id === 0 && id === 3)
+                    return mockContent3;
+        });
+    }
 
     it("should call removeTag of the mediastation with the correct parameters", () => {
+        //setup
+        setup();
         //method to test
         tagService.deleteTag(0, 222)
 
         //tests
         expect(mockMediaStation.removeTag).toHaveBeenCalledTimes(1);
         expect(mockMediaStation.removeTag).toHaveBeenCalledWith(222);
+    });
+
+    it("should remove the tags from all contents where it was added to", () => {
+        //setup
+        setup();
+        //method to test
+        tagService.deleteTag(0, 222)
+
+        //tests
+        expect(mockContent1.tagIds).toEqual([12, 223, 0])
+        expect(mockContent2.tagIds).toEqual([12, 223, 0])
+        expect(mockContent3.tagIds).toEqual([])
+
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
@@ -201,29 +244,11 @@ describe("removeTagFromContent() ", ()=> {
     });
 });
 
-describe("getTagsForContent() ", ()=> {
+describe("getTagIdsForContent() ", ()=> {
 
     it("should return all tags of the content", () => {
         //setup
         let mockContent:MockContent = new MockContent(3, 12);
-
-        let tag1:Tag = new Tag();
-        tag1.id = 0;
-        tag1.name = "testTag1";
-        let tag2:Tag = new Tag();
-        tag2.id = 12;
-        tag2.name = "testTag2";
-        let tag3:Tag = new Tag();
-        tag3.id = 21;
-        tag3.name = "testTag3";
-        let mockTags:Map<number, Tag> = new Map();
-        mockTags.set(0, tag1)
-        mockTags.set(12, tag2)
-        mockTags.set(21, tag3)
-
-        mockMediaStation.getAllTags.mockImplementation(() =>{
-            return mockTags;
-        })
 
         mockContent.tagIds = [0, 21];
 
@@ -232,11 +257,11 @@ describe("getTagsForContent() ", ()=> {
                 return mockContent;
         })
         //method to test
-        let allTags:Map<number, string> = tagService.getTagsForContent(0, 3)
+        let allTags:number[] = tagService.getTagIdsForContent(0, 3)
 
         //tests
-        expect(allTags.get(0)).toBe(tag1.name);
-        expect(allTags.get(21)).toBe(tag3.name);
+        expect(allTags[0]).toBe(0);
+        expect(allTags[1]).toBe(21);
     });
 
     it("should throw an error if the mediaStationId could not be found", ()=>{
@@ -244,7 +269,7 @@ describe("getTagsForContent() ", ()=> {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(()=> tagService.getTagsForContent(0, 3)).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
+        expect(()=> tagService.getTagIdsForContent(0, 3)).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });
 

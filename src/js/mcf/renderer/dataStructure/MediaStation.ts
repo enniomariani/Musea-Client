@@ -47,11 +47,8 @@ export class MediaStation {
             rootFolder: this._rootFolder.exportToJSON(),
         };
 
-        for (let i: number = 0; i < this._tags.size; i++){
-            tag = this._tags.get(i);
+        for(const [key, tag] of this._tags)
             json.tags.push({id: tag.id, name: tag.name});
-        }
-
 
         this._mediaApps.forEach((mediaApp: MediaApp) => {
             json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
