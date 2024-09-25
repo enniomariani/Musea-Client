@@ -15,7 +15,7 @@ mediaApp2.ip = "127.0.0.2";
 mediaApp2.role = MediaApp.ROLE_DEFAULT;
 
 const jsonMock: any = {
-    name: "myName",
+    name: "newName",
     folderIdCounter: 2,
     contentIdCounter: 1,
     mediaAppIdCounter: 1,
@@ -79,7 +79,7 @@ describe("exportToJSON() ", () => {
         mediaStation.getNextFolderId();
         mediaStation.getNextTagId();
         mediaStation.getNextContentId();
-        mediaStation.name = "myName";
+        mediaStation.name = "newName";
         mediaStation.rootFolder = mockFolder;
         mediaStation.addMediaApp(mediaApp1.id, mediaApp1.name, mediaApp1.ip, mediaApp1.role);
         mediaStation.addMediaApp(mediaApp2.id, mediaApp2.name, mediaApp2.ip, mediaApp2.role);
@@ -110,10 +110,10 @@ describe("importFromJSON() ", () => {
         mediaStation.rootFolder = mockFolder;
 
         //method to test
-        mediaStation.importFromJSON(jsonMock, new MockFolder(0));
+        mediaStation.importFromJSON(jsonMock, false, new MockFolder(0));
 
         //tests
-        expect(mediaStation.name).toBe("testName");
+        expect(mediaStation.name).toBe("newName");
         expect(mediaStation.getNextFolderId()).toBe(jsonMock.folderIdCounter);
         expect(mediaStation.getNextContentId()).toBe(jsonMock.contentIdCounter);
         expect(mediaStation.getNextMediaAppId()).toBe(jsonMock.mediaAppIdCounter);
@@ -139,13 +139,27 @@ describe("importFromJSON() ", () => {
         expect(allTags.get(3).name).toBe("tag2");
     });
 
+    it("should not overwrite the name if preserveName is true", () => {
+        //setup
+        mediaStation = new MediaStation(0);
+        mediaStation.name = "testName";
+        let mockFolder: MockFolder = new MockFolder(0);
+        mediaStation.rootFolder = mockFolder;
+
+        //method to test
+        mediaStation.importFromJSON(jsonMock, true, new MockFolder(0));
+
+        //tests
+        expect(mediaStation.name).toBe("testName");
+    });
+
     it("should pass the properties got for all folders to the root-folder", () => {
         //setup
         mediaStation = new MediaStation(0);
         mediaStation.rootFolder = new MockFolder(0);
 
         //method to test
-        mediaStation.importFromJSON(jsonMock, new MockFolder(0));
+        mediaStation.importFromJSON(jsonMock, false, new MockFolder(0));
 
         //tests
         expect(mediaStation.rootFolder.importFromJSON).toHaveBeenCalledTimes(1);
@@ -159,7 +173,7 @@ describe("importFromJSON() ", () => {
         mockRootFolder.name = "testName"
 
         //method to test
-        mediaStation.importFromJSON(jsonMock, mockRootFolder);
+        mediaStation.importFromJSON(jsonMock, false, mockRootFolder);
 
         //tests
         expect(mediaStation.rootFolder.id).toBe(2);
@@ -178,7 +192,7 @@ describe("importFromJSON() ", () => {
         mediaStation.addMediaApp(1, "test1", "127.0.0.1", MediaApp.ROLE_DEFAULT)
 
         //method to test
-        mediaStation.importFromJSON(jsonWithoutMediaApps, mockRootFolder);
+        mediaStation.importFromJSON(jsonWithoutMediaApps, false, mockRootFolder);
 
         //tests
         expect(mediaStation.getAllMediaApps().size).toBe(0);

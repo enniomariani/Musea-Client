@@ -21,6 +21,9 @@ export class MediaStation {
         this.reset();
     }
 
+    /**
+     * resets the mediastation, preserves its ID and its name
+     */
     reset(): void {
         this._mediaApps = new Map();
         this._rootFolder = new Folder(0);
@@ -35,7 +38,6 @@ export class MediaStation {
     }
 
     exportToJSON(): string {
-        let tag:Tag;
         let json: any = {
             name: this._name,
             folderIdCounter: this._folderIdCounter,
@@ -58,19 +60,22 @@ export class MediaStation {
     }
 
     /**
-     * TO DO: when tags are added, also reset the tags-array before adding!
      *
      * imports the whole data-structure from the JSON
      *
      * before it imports the data, it deletes the root-folder and all mediaApps
      *
-     * but the name is not overwritten by the import!
-     *
      * @param json
+     * @param {boolean} preserverName
      * @param {Folder} newRootFolder
      */
-    importFromJSON(json: any, newRootFolder: Folder = new Folder(0)): void {
+    importFromJSON(json: any,preserverName:boolean, newRootFolder: Folder = new Folder(0)): void {
         console.log("IMPORT MEDIA-STATION FROM JSON: ", json)
+
+        if(!preserverName){
+            if (this._jsonPropertyExists(json, "name"))
+                this._name = json.name;
+        }
 
         if (this._jsonPropertyExists(json, "folderIdCounter"))
             this._folderIdCounter = json.folderIdCounter;

@@ -56,7 +56,7 @@ export class MediaStationRepository{
                 console.log("CHECK: ", id, key, controllerIp)
 
                 if(await this.isMediaStationCached(id))
-                    mediaStation.importFromJSON(await this._contentFileService.loadFile(id));
+                    mediaStation.importFromJSON(await this._contentFileService.loadFile(id), false);
                 else if(controllerIp)
                     mediaStation.addMediaApp(mediaStation.getNextMediaAppId(), "Controller-App nicht erreichbar", controllerIp, MediaApp.ROLE_CONTROLLER);
             }

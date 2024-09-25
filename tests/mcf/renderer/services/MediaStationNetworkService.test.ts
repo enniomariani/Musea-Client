@@ -551,11 +551,11 @@ describe("downloadContentsOfMediaStation() ", () => {
 
     it("should call mediaStation.importFromJSON with the JSON passed from networkService.getContentFileFrom", async () => {
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, true);
 
         //tests
         expect(mockMediaStation.importFromJSON).toHaveBeenCalledTimes(1);
-        expect(mockMediaStation.importFromJSON).toHaveBeenCalledWith(correctJSON);
+        expect(mockMediaStation.importFromJSON).toHaveBeenCalledWith(correctJSON, true);
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_SUCCESS + "0");
     });
 
@@ -565,7 +565,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false);
 
         //tests
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
@@ -577,7 +577,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(false);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false);
 
         //tests
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
@@ -589,7 +589,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false);
 
         //tests
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
@@ -601,7 +601,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(false);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false);
 
         //tests
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
@@ -613,7 +613,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(false);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, "user");
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false,"user");
 
         //tests
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
@@ -621,7 +621,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
     it("should throw an error if a wrong role-type is passed", async () => {
         //method to test
-        await expect(mediaStationNetworkService.downloadContentsOfMediaStation(0, "wrongRole")).rejects.toThrowError("Role not valid: wrongRole");
+        await expect(mediaStationNetworkService.downloadContentsOfMediaStation(0, false,"wrongRole")).rejects.toThrowError("Role not valid: wrongRole");
     });
 
     it("should return an error if the content-file was not received within the timeout set in NetworkService", async () => {
@@ -630,7 +630,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(null);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, true);
 
         //tests
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
@@ -642,7 +642,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockNetworkService.getContentFileFrom.mockReturnValueOnce("{}");
 
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false);
 
         //tests
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIp);
@@ -654,7 +654,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockNetworkService.getContentFileFrom.mockReturnValueOnce("{}");
 
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false);
 
         //tests
         expect(mockMediaStation.reset).toHaveBeenCalledTimes(1);
@@ -666,7 +666,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockMediaStation.getControllerIp.mockReturnValueOnce(null);
 
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false);
 
         //tests
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP);
@@ -676,7 +676,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         //setup
 
         //method to test
-        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0);
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false);
 
         //tests
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(0);
@@ -688,7 +688,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(() => mediaStationNetworkService.downloadContentsOfMediaStation(0)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
+        expect(() => mediaStationNetworkService.downloadContentsOfMediaStation(0, false)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });
 

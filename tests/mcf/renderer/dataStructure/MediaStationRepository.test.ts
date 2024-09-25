@@ -230,7 +230,7 @@ describe("loadMediaStations() ", ()=>{
 
         //tests
         expect(mockMediaStation2.importFromJSON).toHaveBeenCalledTimes(1);
-        expect(mockMediaStation2.importFromJSON).toHaveBeenCalledWith(mockJSON);
+        expect(mockMediaStation2.importFromJSON).toHaveBeenCalledWith(mockJSON, false);
     });
 
     it("should not throw an error if loaded map is empty", () =>{

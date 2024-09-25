@@ -153,7 +153,7 @@ describe("getControllerIp() ", ()=>{
 });
 
 describe("deleteMediaStation() ", ()=>{
-    it("should call deleteMediaStation from the repo", ()=>{
+    it("should call deleteMediaStation from the repo", async ()=>{
         let createdMediaStation:MockMediaStation = new MockMediaStation(createdID);
 
         mockMediaStationRepository.findMediaStation.mockImplementation((idArg)=>{
@@ -162,18 +162,18 @@ describe("deleteMediaStation() ", ()=>{
         });
 
         //method to test
-        mediaStationDataService.deleteMediaStation(createdID);
+        await mediaStationDataService.deleteMediaStation(createdID);
 
         //tests
         expect(mockMediaStationRepository.deleteMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepository.deleteMediaStation).toHaveBeenCalledWith(createdID);
     });
 
-    it("should throw an error if the mediaStationId could not be found", ()=>{
+    it("should throw an error if the mediaStationId could not be found", async ()=>{
         //setup
         mockMediaStationRepository.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        expect(()=> mediaStationDataService.deleteMediaStation(createdID)).toThrow(new Error("Mediastation with this ID does not exist: " + createdID));
+        await expect(mediaStationDataService.deleteMediaStation(createdID)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + createdID));
     });
 });

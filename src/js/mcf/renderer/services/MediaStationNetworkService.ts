@@ -74,10 +74,12 @@ export class MediaStationNetworkService {
      * Always resolves the promise with different strings (see statics in this class), only throws an error if the passed mediaStationId does not exist
      *
      * @param {number} id
+     * @param {boolean} boolean preserveMSname  if true, the actually set name in the mediaStation object is preserved, if false the name is overwritten by the
+     * name loaded from the contents-file
      * @param {string} role either "admin" or "user": determines if the app registers as admin- or user-app on the media-apps
      * @returns {Promise<string>}
      */
-    async downloadContentsOfMediaStation(id: number, role:string = "admin"): Promise<string> {
+    async downloadContentsOfMediaStation(id: number, preserveMSname:boolean,role:string = "admin"): Promise<string> {
         let mediaStation: MediaStation = this._findMediaStation(id);
         const controllerIP: string = mediaStation.getControllerIp();
         let contentsJSON: string;
@@ -124,7 +126,9 @@ export class MediaStationNetworkService {
             mediaStation.reset();
             return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIP;
         } else {
-            mediaStation.importFromJSON(JSON.parse(contentsJSON));
+            mediaStation.importFromJSON(JSON.parse(contentsJSON), preserveMSname);
+
+            this._mediaStationRepo.updateAndSaveMediaStation(mediaStation);
 
             return MediaStationNetworkService.CONTENT_DOWNLOAD_SUCCESS + mediaStation.id;
         }

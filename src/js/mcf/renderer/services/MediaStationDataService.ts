@@ -18,9 +18,9 @@ export class MediaStationDataService{
         return this._mediaStationRepository.addMediaStation(name);
     }
 
-    deleteMediaStation(id:number):void{
+    async deleteMediaStation(id:number):Promise<void>{
         this._findMediaStation(id);
-        this._mediaStationRepository.deleteMediaStation(id);
+        await this._mediaStationRepository.deleteMediaStation(id);
     }
 
     changeName(id:number, newName:string):void{
