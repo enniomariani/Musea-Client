@@ -144,6 +144,7 @@ export class NetworkService {
      * @returns {Promise<string>}
      */
     async sendMediaFileToIp(ip: string, mediaType: string, mediaFile: Uint8Array, timeout: number = 3000, onSendChunk: Function): Promise<number> {
+        console.log("Send media-file to ip: ", ip, mediaType)
         return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("media", "put", mediaType, mediaFile), timeout, null, onSendChunk);
     }
 
@@ -215,7 +216,7 @@ export class NetworkService {
                 if (onSendChunk !== null)
                     onSendChunk("Daten gesendet, warte auf Antwort...");
 
-                const  timer = setTimeout(() => {
+                const timer = setTimeout(() => {
                     console.log("timeout reached!", rejectValue);
                     this._dataReceivedPromises.delete(ip);
                     resolve(rejectValue); // Resolve with rejectValue on timeout
@@ -236,6 +237,7 @@ export class NetworkService {
                         reject(error);
                     }
                 });
+
 
             }).catch((error) => {
                 reject(error); // Reject on send error

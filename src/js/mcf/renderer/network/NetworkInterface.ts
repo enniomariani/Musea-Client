@@ -146,7 +146,6 @@ export class NetworkInterface extends EventTarget {
         let chunksInfo:Uint8Array = new Uint8Array(2);
         let arrayToSend: Uint8Array;
         let offset:number = 0;
-        let counter:number = 0;
 
         if (this._connection === null || this._connection.readyState !== 1) {
             console.error("WebSocketConnection: sending of data not possible, because connection not ready");
@@ -165,10 +164,12 @@ export class NetworkInterface extends EventTarget {
             arrayToSend.set(buffer, chunksInfo.length);
 
             while (offset < arrayToSend.length) {
-                counter++;
                 const chunk:Uint8Array = arrayToSend.slice(offset, offset + chunkSizeInBytes);
 
-                await this._sendChunk(chunk)
+                if(offset + chunkSizeInBytes >= arrayToSend.length)
+                    this._connection.send(chunk)
+                else
+                    await this._sendChunk(chunk)
 
                 if(onSendChunk)
                     onSendChunk(".");
