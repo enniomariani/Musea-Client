@@ -544,8 +544,8 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(true);
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(true);
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSON));
     });
 
@@ -598,7 +598,7 @@ describe("downloadContentsOfMediaStation() ", () => {
     it("should return an error if the app could not register itself in the controller as admin-app", async () => {
         //setup
         mockNetworkService.sendRegistrationAdminApp = jest.fn();
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(false);
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("no");
 
         //method to test
         answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false);
@@ -607,10 +607,22 @@ describe("downloadContentsOfMediaStation() ", () => {
         expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
     });
 
+    it("should return an error if the app could register itself in the controller as user-app, but is blocked", async () => {
+        //setup
+        mockNetworkService.sendRegistrationUserApp = jest.fn();
+        mockNetworkService.sendRegistrationUserApp.mockReturnValue("yes_blocked");
+
+        //method to test
+        answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false,"user");
+
+        //tests
+        expect(answer).toBe(MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_APP_BLOCKED);
+    });
+
     it("should return an error if the app could not register itself in the controller as user-app", async () => {
         //setup
         mockNetworkService.sendRegistrationUserApp = jest.fn();
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(false);
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("no");
 
         //method to test
         answer = await mediaStationNetworkService.downloadContentsOfMediaStation(0, false,"user");
@@ -821,13 +833,13 @@ describe("syncMediaStation() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
 
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
 
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
 
         mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
     });
@@ -893,9 +905,9 @@ describe("syncMediaStation() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.sendRegistrationAdminApp = jest.fn();
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("no")));
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
 
 
         //method to test
@@ -913,9 +925,9 @@ describe("syncMediaStation() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.sendRegistrationUserApp = jest.fn();
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("no")));
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
 
         //method to test
         let answer: boolean = await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep, "user");
@@ -1046,9 +1058,9 @@ describe("syncMediaStation() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.sendRegistrationAdminApp = jest.fn();
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
+        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("no")));
 
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
@@ -1069,9 +1081,9 @@ describe("syncMediaStation() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.sendRegistrationUserApp = jest.fn();
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("no")));
 
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);

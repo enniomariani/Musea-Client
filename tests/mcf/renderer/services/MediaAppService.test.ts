@@ -353,7 +353,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
         it("should call networkService.openConnection and sendRegistrationAdminApp if appType is admin", async () => {
             //setup
             mockNetworkService.openConnection.mockReturnValueOnce(true);
-            mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(true);
+            mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
             setupMediaAppWithName(true);
 
             //method to test
@@ -371,7 +371,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
-            mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(true);
+            mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
             setupMediaAppWithName(true);
 
             //method to test
@@ -385,7 +385,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(false);
-            mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(true);
+            mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
             setupMediaAppWithName(true);
 
             //method to test
@@ -399,7 +399,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
-            mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(false);
+            mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("no");
             setupMediaAppWithName(true);
 
             //method to test
@@ -414,7 +414,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
         it("should call networkService.openConnection and sendRegistrationUserApp if appType is user", async () => {
             //setup
             mockNetworkService.openConnection.mockReturnValueOnce(true);
-            mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(true);
+            mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
             setupMediaAppWithName(true);
 
             //method to test
@@ -432,7 +432,21 @@ describe("connectAndRegisterToMediaApp() ", () => {
             //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
-            mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(true);
+            mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
+            setupMediaAppWithName(true);
+
+            //method to test
+            answer = await mediaAppService.connectAndRegisterToMediaApp(0, mediaAppId, "user");
+
+            //tests
+            expect(answer).toBe(true);
+        });
+
+        it("should return true if the connection could be established and the registration was accepted, but blocked", async () => {
+            //setup
+            let answer: boolean;
+            mockNetworkService.openConnection.mockReturnValueOnce(true);
+            mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes_block");
             setupMediaAppWithName(true);
 
             //method to test
@@ -446,7 +460,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(false);
-            mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(true);
+            mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
             setupMediaAppWithName(true);
 
             //method to test
@@ -460,7 +474,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
-            mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(false);
+            mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("no");
             setupMediaAppWithName(true);
 
             //method to test
@@ -474,7 +488,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
     it("should throw an error if the app-type is not valid", async () => {
         //setup
         mockNetworkService.openConnection.mockReturnValueOnce(true);
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(false);
+        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("no");
         setupMediaAppWithName(true);
 
         //method to test

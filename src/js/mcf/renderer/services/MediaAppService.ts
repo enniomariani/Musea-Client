@@ -120,10 +120,10 @@ export class MediaAppService {
             return false;
 
         if (appType === "admin") {
-            if (!await this._networkService.sendRegistrationAdminApp(ip))
+            if (await this._networkService.sendRegistrationAdminApp(ip) === "no")
                 return false;
         } else if (appType === "user") {
-            if (!await this._networkService.sendRegistrationUserApp(ip))
+            if (await this._networkService.sendRegistrationUserApp(ip) === "no")
                 return false;
         } else
             throw new Error("App-Type is not valid: " + appType);

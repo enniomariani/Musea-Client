@@ -15,6 +15,7 @@ export class MediaStationNetworkService {
     static CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM: string = "download of contents of mediaStation failed, because controller-app did not answer: ";
     static CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER: string = "download of contents of mediaStation failed, because controller-app does not have a contents.json file saved: ";
     static CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP: string = "download of contents of mediaStation failed, because there is no controller-ip specified!";
+    static CONTENT_DOWNLOAD_FAILED_APP_BLOCKED: string = "download of contents of mediaStation for user-app failed, because it is blocked by an admin-app!";
 
     private _networkService: NetworkService;
     private _mediaStationRepo: MediaStationRepository;
@@ -104,7 +105,7 @@ export class MediaStationNetworkService {
         if (!appIsOnline)
             return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
 
-        let registration: boolean
+        let registration: string
 
         if(role === "admin")
             registration = await this._networkService.sendRegistrationAdminApp(controllerIP);
@@ -113,12 +114,19 @@ export class MediaStationNetworkService {
         else
             throw new Error("Role not valid: " + role);
 
-        if (!registration) {
+        console.log("got registration-answer: ", registration)
+
+        if (registration === "no") {
             console.log("NO registration")
             return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+        }else if(registration === "yes_blocked") {
+            console.log("registration, but blocked")
+            return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_APP_BLOCKED;
         }
 
         contentsJSON = await this._networkService.getContentFileFrom(controllerIP);
+
+        console.log("got contents-file: ", contentsJSON)
 
         if (contentsJSON === null) {
             return MediaStationNetworkService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
@@ -236,7 +244,7 @@ export class MediaStationNetworkService {
 
         let allMediaAppsWithChanges: MediaApp[] = [];
 
-        let registration: boolean;
+        let registration: string;
 
         //send all media to the media-apps
         cachedMediaOfAllMediaStations = this._mediaStationRepo.getAllCachedMedia();
@@ -285,8 +293,10 @@ export class MediaStationNetworkService {
             else
                 throw new Error("Role not valid: " + role);
 
+            console.log("got registration back: ", registration)
+
             //if the connection could be established to a media-app, send it all media that are cached
-            if (registration) {
+            if (registration === "yes") {
                 onSyncStep("Verbindung mit Medien-App hergestellt.");
                 if (await this._sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, onSyncStep) === false)
                     areAllMediaSentSuccesfully = false;
@@ -324,7 +334,7 @@ export class MediaStationNetworkService {
 
                 console.log("beim controller registriert? ", registration)
 
-                if (registration) {
+                if (registration === "yes") {
                     onSyncStep("Verbindung mit Controller-App hergestellt. Sende Daten...");
                     json = mediaStation.exportToJSON();
 

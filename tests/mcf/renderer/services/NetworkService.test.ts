@@ -393,10 +393,10 @@ describe("sendRegistrationAdminApp() ",  ()=>{
         expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("network", "register", "admin"));
     });
 
-    it("should return true if it received a registration-accepted-command", async()=>{
+    it("should return yes if it received a registration-accepted-command", async()=>{
         //setup
         let registrationAcceptedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "accepted");
-        let answer:boolean;
+        let answer:string;
         mockOpenConnectionAndReceiveDataLater(ip1, registrationAcceptedCommand);
 
         //method to test
@@ -404,13 +404,13 @@ describe("sendRegistrationAdminApp() ",  ()=>{
         answer = await networkService.sendRegistrationAdminApp(ip1);
 
         //tests
-        expect(answer).toBe(true);
+        expect(answer).toBe("yes");
     });
 
-    it("should return false if it received a registration-rejected-command", async()=>{
+    it("should return no if it received a registration-rejected-command", async()=>{
         //setup
         let registrationRejectedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "rejected");
-        let answer:boolean;
+        let answer:string;
         mockOpenConnectionAndReceiveDataLater(ip1, registrationRejectedCommand);
 
         //method to test
@@ -418,13 +418,13 @@ describe("sendRegistrationAdminApp() ",  ()=>{
         answer = await networkService.sendRegistrationAdminApp(ip1);
 
         //tests
-        expect(answer).toBe(false);
+        expect(answer).toBe("no");
     });
 
     it("should return null if it received a wrong command", async()=>{
         //setup
         let pongCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "acceppted");
-        let answer:boolean;
+        let answer:string;
         mockOpenConnectionAndReceiveDataLater(ip1, pongCommand);
 
         //method to test
@@ -435,10 +435,10 @@ describe("sendRegistrationAdminApp() ",  ()=>{
         expect(answer).toBe(null);
     });
 
-    it("should return false if it received nothing after 3 seconds", async()=>{
+    it("should return NO if it received nothing after 3 seconds", async()=>{
         //setup
-        let answer:boolean;
-        let answerPromise:Promise<boolean>;
+        let answer:string;
+        let answerPromise:Promise<string>;
         jest.useFakeTimers();
 
         mockOpenConnection();
@@ -453,7 +453,7 @@ describe("sendRegistrationAdminApp() ",  ()=>{
         answer = await answerPromise;
 
         //tests
-        expect(answer).toBe(false);
+        expect(answer).toBe("no");
 
         //tidy up
         jest.useRealTimers();
@@ -475,10 +475,10 @@ describe("sendRegistrationUserApp() ",  ()=>{
         expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("network", "register", "user"));
     });
 
-    it("should return true if it received a registration-accepted-command", async()=>{
+    it("should return yes if it received a registration-accepted-command", async()=>{
         //setup
         let registrationAcceptedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "accepted");
-        let answer:boolean;
+        let answer:string;
         mockOpenConnectionAndReceiveDataLater(ip1, registrationAcceptedCommand);
 
         //method to test
@@ -486,13 +486,27 @@ describe("sendRegistrationUserApp() ",  ()=>{
         answer = await networkService.sendRegistrationUserApp(ip1);
 
         //tests
-        expect(answer).toBe(true);
+        expect(answer).toBe("yes");
     });
 
-    it("should return false if it received a registration-rejected-command", async()=>{
+    it("should return yes_blocked if it received a registration-accepted-but-blocked-command", async()=>{
+        //setup
+        let registrationAcceptedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "accepted_block");
+        let answer:string;
+        mockOpenConnectionAndReceiveDataLater(ip1, registrationAcceptedCommand);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.sendRegistrationUserApp(ip1);
+
+        //tests
+        expect(answer).toBe("yes_block");
+    });
+
+    it("should return no if it received a registration-rejected-command", async()=>{
         //setup
         let registrationRejectedCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "registration", "rejected");
-        let answer:boolean;
+        let answer:string;
         mockOpenConnectionAndReceiveDataLater(ip1, registrationRejectedCommand);
 
         //method to test
@@ -500,13 +514,13 @@ describe("sendRegistrationUserApp() ",  ()=>{
         answer = await networkService.sendRegistrationUserApp(ip1);
 
         //tests
-        expect(answer).toBe(false);
+        expect(answer).toBe("no");
     });
 
     it("should return null if it received a wrong command", async()=>{
         //setup
         let pongCommand:Uint8Array = ConvertNetworkData.encodeCommand("network", "acceppted");
-        let answer:boolean;
+        let answer:string;
         mockOpenConnectionAndReceiveDataLater(ip1, pongCommand);
 
         //method to test
@@ -517,10 +531,10 @@ describe("sendRegistrationUserApp() ",  ()=>{
         expect(answer).toBe(null);
     });
 
-    it("should return false if it received nothing after 3 seconds", async()=>{
+    it("should return no if it received nothing after 3 seconds", async()=>{
         //setup
-        let answer:boolean;
-        let answerPromise:Promise<boolean>;
+        let answer:string;
+        let answerPromise:Promise<string>;
         jest.useFakeTimers();
 
         mockOpenConnection();
@@ -535,7 +549,7 @@ describe("sendRegistrationUserApp() ",  ()=>{
         answer = await answerPromise;
 
         //tests
-        expect(answer).toBe(false);
+        expect(answer).toBe("no");
 
         //tidy up
         jest.useRealTimers();

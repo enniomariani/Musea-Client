@@ -102,12 +102,12 @@ export class NetworkService {
         return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "ping"), timeout, false);
     }
 
-    async sendRegistrationAdminApp(ip: string, timeout: number = 3000): Promise<boolean> {
-        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "admin"), timeout, false);
+    async sendRegistrationAdminApp(ip: string, timeout: number = 3000): Promise<string> {
+        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "admin"), timeout, "no");
     }
 
-    async sendRegistrationUserApp(ip: string, timeout: number = 3000): Promise<boolean> {
-        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "user"), timeout, false);
+    async sendRegistrationUserApp(ip: string, timeout: number = 3000): Promise<string> {
+        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "user"), timeout, "no");
     }
 
     async sendCheckRegistration(ip: string, timeout: number = 3000): Promise<boolean> {
@@ -129,6 +129,7 @@ export class NetworkService {
      * @returns {Promise<string|null>}
      */
     async getContentFileFrom(ip: string, timeout: number = 3000): Promise<string | null> {
+        console.log("get contents file from: ", ip)
         return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("contents", "get"), timeout, null);
     }
 
@@ -241,7 +242,12 @@ export class NetworkService {
                 }
             } else if (convertedData[0] === "network" && convertedData[1] === "registration") {
                 if (promise) {
-                    promise.resolve(convertedData[2] === "accepted");
+                    if(convertedData[2] === "accepted")
+                        promise.resolve("yes");
+                    else if(convertedData[2] === "accepted_block")
+                        promise.resolve("yes_block");
+                    else
+                        promise.resolve("no");
                     this._dataReceivedPromises.delete(ip);
                 }
             } else if (convertedData[0] === "network" && convertedData[1] === "isRegistrationPossible" && convertedData[2] === "yes") {
@@ -255,11 +261,14 @@ export class NetworkService {
                     this._dataReceivedPromises.delete(ip);
                 }
             } else if (convertedData[0] === "contents" && convertedData[1] === "put" && convertedData[2] !== null) {
+                console.log("contents received: ", convertedData[2] )
                 if (promise) {
                     promise.resolve(convertedData[2]);
                     this._dataReceivedPromises.delete(ip);
                 }
             } else if (convertedData[0] === "media" && convertedData[1] === "put" && convertedData[2] !== null && typeof convertedData[2] === "string") {
+                console.log("contents received: ", convertedData[2] )
+
                 if (promise) {
                     promise.resolve(parseInt(convertedData[2]));
                     this._dataReceivedPromises.delete(ip);
