@@ -8,8 +8,8 @@ export class NetworkService {
     private _dataReceivedPromises: Map<string, { resolve: (value: any) => void, reject: (error: any) => void }>;
     private _onConnectionClosedPromises: Map<string, { resolve: () => void, reject: () => void }>;
 
-    private _onBlockReceivedCallback:Function;
-    private _onUnBlockReceivedCallback:Function;
+    private _onBlockReceivedCallback: Function;
+    private _onUnBlockReceivedCallback: Function;
 
     constructor(networkConnectionHandler: NetworkConnectionHandler = new NetworkConnectionHandler()) {
         this._networkConnectionHandler = networkConnectionHandler;
@@ -82,11 +82,11 @@ export class NetworkService {
         });
     }
 
-    onBlockReceived(callback:Function):void{
+    onBlockReceived(callback: Function): void {
         this._onBlockReceivedCallback = callback;
     }
 
-    onUnBlockReceived(callback:Function):void{
+    onUnBlockReceived(callback: Function): void {
         this._onUnBlockReceivedCallback = callback;
     }
 
@@ -143,8 +143,8 @@ export class NetworkService {
      * @param {number} timeout
      * @returns {Promise<string>}
      */
-    async sendMediaFileToIp(ip: string, mediaType: string, mediaFile: Uint8Array, timeout: number = 90000): Promise<number> {
-        return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("media", "put", mediaType, mediaFile), timeout, null);
+    async sendMediaFileToIp(ip: string, mediaType: string, mediaFile: Uint8Array, timeout: number = 3000, onSendChunk: Function): Promise<number> {
+        return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("media", "put", mediaType, mediaFile), timeout, null, onSendChunk);
     }
 
     public async sendContentFileTo(ip: string, contentFileJSON: string): Promise<void> {
@@ -199,29 +199,47 @@ export class NetworkService {
             });
 
             console.log("Networkservice: send command: ", command)
-            await this._networkConnectionHandler.sendData(ip, command);
+            await this._networkConnectionHandler.sendData(ip, command, null);
         });
     }
 
-    private async _createNetworkPromise(ip: string, command: Uint8Array, timeout: number, rejectValue: any): Promise<any> {
+    private async _createNetworkPromise(ip: string, command: Uint8Array, timeout: number, rejectValue: any, onSendChunk: Function = null): Promise<any> {
+
         return new Promise(async (resolve, reject) => {
-            const timer = setTimeout(() => {
-                this._dataReceivedPromises.delete(ip);
-                resolve(rejectValue);
-            }, timeout);
 
-            this._dataReceivedPromises.set(ip, {
-                resolve: (value) => {
-                    clearTimeout(timer);
-                    resolve(value);
-                },
-                reject: (error) => {
-                    clearTimeout(timer);
-                    reject(error);
-                }
+            console.log("sending data to: ", ip);
+            await this._networkConnectionHandler.sendData(ip, command, onSendChunk).then(() => {
+
+                console.log("data sent!");
+
+                if (onSendChunk !== null)
+                    onSendChunk("Daten gesendet, warte auf Antwort...");
+
+                const  timer = setTimeout(() => {
+                    console.log("timeout reached!", rejectValue);
+                    this._dataReceivedPromises.delete(ip);
+                    resolve(rejectValue); // Resolve with rejectValue on timeout
+                }, timeout);
+
+                this._dataReceivedPromises.set(ip, {
+                    resolve: (value) => {
+                        console.log("resolve network-send-promise: ", value, timer)
+                        if (timer) clearTimeout(timer);
+
+                        this._dataReceivedPromises.delete(ip);
+                        resolve(value);
+                    },
+                    reject: (error) => {
+                        if (timer) clearTimeout(timer);
+
+                        this._dataReceivedPromises.delete(ip);
+                        reject(error);
+                    }
+                });
+
+            }).catch((error) => {
+                reject(error); // Reject on send error
             });
-
-            await this._networkConnectionHandler.sendData(ip, command);
         });
     }
 
@@ -236,51 +254,39 @@ export class NetworkService {
             if (convertedData[0] === "network" && convertedData[1] === "ping")
                 await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("network", "pong"));
             else if (convertedData[0] === "network" && convertedData[1] === "pong") {
-                if (promise) {
+                if (promise)
                     promise.resolve(true);
-                    this._dataReceivedPromises.delete(ip);
-                }
             } else if (convertedData[0] === "network" && convertedData[1] === "registration") {
                 if (promise) {
-                    if(convertedData[2] === "accepted")
+                    if (convertedData[2] === "accepted")
                         promise.resolve("yes");
-                    else if(convertedData[2] === "accepted_block")
+                    else if (convertedData[2] === "accepted_block")
                         promise.resolve("yes_block");
                     else
                         promise.resolve("no");
-                    this._dataReceivedPromises.delete(ip);
                 }
             } else if (convertedData[0] === "network" && convertedData[1] === "isRegistrationPossible" && convertedData[2] === "yes") {
-                if (promise) {
+                if (promise)
                     promise.resolve(true);
-                    this._dataReceivedPromises.delete(ip);
-                }
             } else if (convertedData[0] === "network" && convertedData[1] === "isRegistrationPossible" && convertedData[2] === "no") {
-                if (promise) {
+                if (promise)
                     promise.resolve(false);
-                    this._dataReceivedPromises.delete(ip);
-                }
             } else if (convertedData[0] === "contents" && convertedData[1] === "put" && convertedData[2] !== null) {
-                console.log("contents received: ", convertedData[2] )
-                if (promise) {
+                console.log("contents received: ", convertedData[2])
+                if (promise)
                     promise.resolve(convertedData[2]);
-                    this._dataReceivedPromises.delete(ip);
-                }
             } else if (convertedData[0] === "media" && convertedData[1] === "put" && convertedData[2] !== null && typeof convertedData[2] === "string") {
-                console.log("contents received: ", convertedData[2] )
+                console.log("media received: ", convertedData[2], promise)
 
-                if (promise) {
+                if (promise)
                     promise.resolve(parseInt(convertedData[2]));
-                    this._dataReceivedPromises.delete(ip);
-                }
             } else if (convertedData[0] === "system" && convertedData[1] === "block") {
-                if(this._onBlockReceivedCallback)
+                if (this._onBlockReceivedCallback)
                     this._onBlockReceivedCallback();
-            }else if (convertedData[0] === "system" && convertedData[1] === "unblock") {
-                if(this._onUnBlockReceivedCallback)
+            } else if (convertedData[0] === "system" && convertedData[1] === "unblock") {
+                if (this._onUnBlockReceivedCallback)
                     this._onUnBlockReceivedCallback();
-            }
-            else
+            } else
                 console.error("Non-valid network-command received: ", convertedData);
         }
 

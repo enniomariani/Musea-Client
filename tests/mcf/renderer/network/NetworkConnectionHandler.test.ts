@@ -156,6 +156,7 @@ describe("sendData() ", () => {
     it("should call networkInterface.sendDataToServer with the data if the connection exists", () => {
         //setup
         const data: Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
+        let onChunkCallback = jest.fn();
         mockNetworkInterface.connectToServer = jest.fn();
         mockNetworkInterface.connectToServer.mockImplementation((url, onOpen)=>{
             onOpen();
@@ -163,11 +164,11 @@ describe("sendData() ", () => {
         connectionHandler.createConnection(firstIP, onOpen, onError, onClose, onDataReceived, mockNetworkInterface);
 
         //method to test
-        connectionHandler.sendData(firstIP, data);
+        connectionHandler.sendData(firstIP, data, onChunkCallback);
 
         //tests
         expect(mockNetworkInterface.sendDataToServer).toHaveBeenCalledTimes(1);
-        expect(mockNetworkInterface.sendDataToServer).toHaveBeenCalledWith(data);
+        expect(mockNetworkInterface.sendDataToServer).toHaveBeenCalledWith(data, onChunkCallback);
     });
 
     it("should return false if the data could not have been sent", async () => {

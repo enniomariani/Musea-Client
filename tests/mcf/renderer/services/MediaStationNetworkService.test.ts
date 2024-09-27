@@ -852,8 +852,8 @@ describe("syncMediaStation() ", () => {
         expect(answer).toBe(false)
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(1, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp1.name + "/" + mediaApp1.ip);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(2, "Verbindung mit Medien-App hergestellt.");
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(7, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp2.name + "/" + mediaApp2.ip);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(8, "Verbindung mit Medien-App konnte nicht hergestellt werden!");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(9, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp2.name + "/" + mediaApp2.ip);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, "Verbindung mit Medien-App konnte nicht hergestellt werden!");
     });
 
     it("should send the file-data to the media-app if the connection is open", async () => {
@@ -862,8 +862,8 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(mockNetworkService.sendMediaFileToIp).toHaveBeenCalledTimes(2);
-        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(1, mediaApp1.ip, mockCachedMedia[0].fileExtension, fileData);
-        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(2, mediaApp1.ip, mockCachedMedia[2].fileExtension, fileData);
+        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(1, mediaApp1.ip, mockCachedMedia[0].fileExtension, fileData, 360000, mockOnSyncStep);
+        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(2, mediaApp1.ip, mockCachedMedia[2].fileExtension, fileData, 360000, mockOnSyncStep);
     });
 
     it("if it got a media-ID back from the media-App, set the ID of the media-object to this ID", async () => {
@@ -892,10 +892,12 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(answer).toBe(false);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(3, "Medium wird gesendet: " + mockCachedMedia[0].fileExtension);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(4, "Medium erfolgreich gesendet.");
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(5, "Medium wird gesendet: " + mockCachedMedia[2].fileExtension);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(6, "Medium konnte nicht gesendet oder empfangen werden!");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(3, "Lade Medium: " + mockCachedMedia[0].fileExtension);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(4, "Medium geladen, sende...");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(5, "Medium erfolgreich gesendet.");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(6, "Lade Medium: " + mockCachedMedia[0].fileExtension);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(7, "Medium geladen, sende...");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(8, "Medium konnte nicht gesendet oder empfangen werden!");
     });
 
     it("should call the callback mockOnSyncStep with a text that the registration failed, if it failed for a media-app as admin-app", async () => {
@@ -915,7 +917,7 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(answer).toBe(false);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(8, "Medien-App ist erreichbar, aber von einer anderen App blockiert.");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, "Medien-App ist erreichbar, aber von einer anderen App blockiert.");
     });
 
     it("should call the callback mockOnSyncStep with a text that the registration failed, if it failed for a media-app as USER-app", async () => {
@@ -934,7 +936,7 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(answer).toBe(false);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(8, "Medien-App ist erreichbar, aber von einer anderen App blockiert.");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, "Medien-App ist erreichbar, aber von einer anderen App blockiert.");
     });
 
     it("call mediaStationRepo.deleteCachedMedia for every media that got succesfully sent to the media-app", async () => {
@@ -1012,7 +1014,7 @@ describe("syncMediaStation() ", () => {
         await mediaStationNetworkService.syncMediaStation(0, mockOnSyncStep);
 
         //tests
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(13, "Sende contents.json an Controller-App: " + controllerIp);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(17, "Sende contents.json an Controller-App: " + controllerIp);
     });
 
     it("should call the callback mockOnSyncStep with a text if the connection to the controller could not be opened, if all mediaApps have been synced", async () => {
@@ -1030,7 +1032,7 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(answer).toBe(false);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(14, "Controller-App nicht erreichbar!");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(18, "Controller-App nicht erreichbar!");
     });
 
     it("should call the callback mockOnSyncStep with a text if the connection to the controller could be opened, if all mediaApps have been synced", async () => {
@@ -1048,7 +1050,7 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(answer).toBe(true)
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(14, "Verbindung mit Controller-App hergestellt. Sende Registrierungs-Anfrage...");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(18, "Verbindung mit Controller-App hergestellt. Sende Registrierungs-Anfrage...");
     });
 
     it("should call the callback mockOnSyncStep with a text if the connection to the controller could be opened but the registration failed", async () => {
@@ -1071,7 +1073,7 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(answer).toBe(false)
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(15, "Controller-App ist erreichbar, aber von einer anderen App blockiert.");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(19, "Controller-App ist erreichbar, aber von einer anderen App blockiert.");
     });
 
     it("should call the callback mockOnSyncStep with a text if the connection to the controller could be opened but the registration failed as USER-app", async () => {
@@ -1094,7 +1096,7 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(answer).toBe(false)
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(15, "Controller-App ist erreichbar, aber von einer anderen App blockiert.");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(19, "Controller-App ist erreichbar, aber von einer anderen App blockiert.");
     });
 
     it("should throw an error if a wrong role is passed", async () => {

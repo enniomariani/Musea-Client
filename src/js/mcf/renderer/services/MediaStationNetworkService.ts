@@ -367,12 +367,13 @@ export class MediaStationNetworkService {
             return true;
 
         for (const cachedMedia of allCachedMedia) {
-            onSyncStep("Medium wird gesendet: " + cachedMedia.fileExtension);
+            onSyncStep("Lade Medium: " + cachedMedia.fileExtension);
             console.log("SEND MEDIA: ", cachedMedia);
             fileData = await this._mediaStationRepo.getCachedMediaFile(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId, cachedMedia.fileExtension);
-            console.log("LOADED DATA: ", fileData)
 
-            idOnMediaApp = await this._networkService.sendMediaFileToIp(ipMediaApp, cachedMedia.fileExtension, fileData);
+            onSyncStep("Medium geladen, sende...");
+            idOnMediaApp = await this._networkService.sendMediaFileToIp(ipMediaApp, cachedMedia.fileExtension, fileData,360000,
+                onSyncStep);
             console.log("RECEIVED ID FROM MEDIA-APP: ", idOnMediaApp);
 
             if (idOnMediaApp !== null && idOnMediaApp !== undefined && idOnMediaApp >= 0) {

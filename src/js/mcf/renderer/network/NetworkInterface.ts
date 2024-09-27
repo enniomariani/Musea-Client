@@ -141,7 +141,7 @@ export class NetworkInterface extends EventTarget {
      * @param {number} chunkSizeInBytes    // default 32MB chunks (was the fastest in tests compared with 16MB, 8 MB and 64MB))
      * @returns {boolean}
      */
-    async sendDataToServer(buffer: Uint8Array, chunkSizeInBytes: number = 32768 * 1024):Promise<boolean>{
+    async sendDataToServer(buffer: Uint8Array, onSendChunk:Function, chunkSizeInBytes: number = 32768 * 1024):Promise<boolean>{
         let dataViewChunks: DataView = new DataView(new ArrayBuffer(2));
         let chunksInfo:Uint8Array = new Uint8Array(2);
         let arrayToSend: Uint8Array;
@@ -149,7 +149,7 @@ export class NetworkInterface extends EventTarget {
         let counter:number = 0;
 
         if (this._connection === null || this._connection.readyState !== 1) {
-            console.error("WebSocketConnection: sending of string not possible, because connection not ready");
+            console.error("WebSocketConnection: sending of data not possible, because connection not ready");
             return false;
         } else {
             console.log("network interface: send data: ", buffer.length)
@@ -169,6 +169,10 @@ export class NetworkInterface extends EventTarget {
                 const chunk:Uint8Array = arrayToSend.slice(offset, offset + chunkSizeInBytes);
 
                 await this._sendChunk(chunk)
+
+                if(onSendChunk)
+                    onSendChunk(".");
+
                 offset += chunkSizeInBytes;
             }
 
@@ -179,7 +183,8 @@ export class NetworkInterface extends EventTarget {
     private async _sendChunk(chunk:Uint8Array):Promise<void> {
         return new Promise((resolve) => {
             this._connection.send(chunk)
-            setTimeout(resolve, 0); // Set the timeout to 0 ms (or adjust as needed)
+            setTimeout(resolve, 800);   //like this, every chunk is actually processed before the next is sent
+            //if the timeout is smaller, all chunks are cached in the media-app and then sent after all chunks have been added
         });
     }
 
