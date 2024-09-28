@@ -10,7 +10,7 @@ import {MediaApp} from "../../../../src/js/mcf/renderer/dataStructure/MediaApp";
 import {
     MockContentNetworkService
 } from "../../../__mocks__/mcf/renderer/services/MockContentNetworkService";
-import {Image} from "../../../../src/js/mcf/renderer/dataStructure/Media";
+import {Image, Video} from "../../../../src/js/mcf/renderer/dataStructure/Media";
 import {MockMediaService} from "../../../__mocks__/mcf/renderer/services/MockMediaService";
 
 let contentService:ContentService;
@@ -600,13 +600,38 @@ describe("sendCommandSync() ", ()=> {
 
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
     let answerMap:Map<number, MediaApp> = new Map();
-    answerMap.set(0, new MediaApp(0));
-    answerMap.set(1, new MediaApp(1));
+    let mediaApp1:MediaApp = new MediaApp(0);
+    let mediaApp2:MediaApp = new MediaApp(1);
+    let video1:Video = new Video();
+    video1.idOnMediaApp = -1;
+    video1.mediaAppId = 0;
+
+    let image2:Image = new Image();
+    image2.idOnMediaApp = 20;
+    image2.mediaAppId = 1;
+
+    let mockContent:MockContent = new MockContent(0, folderId);
+    mockContent.media.set(0,video1);
+    mockContent.media.set(1, image2);
+    mockContent.lightIntensity = 2;
+
+    answerMap.set(0, mediaApp1);
+    answerMap.set(1, mediaApp2);
     mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+
+    mockMediaStation.getMediaApp.mockImplementation((id) =>{
+        if(id === 0)
+            return mediaApp1;
+        else if(id === 1)
+            return mediaApp2;
+    })
+
     const seekPos:number = 200;
 
-    it("should call contentNetworkService.sendCommandSync with the correct arguments", async () => {
+    it("should call contentNetworkService.sendCommandSync for every mediaApp defined in the mocked mediastation", async () => {
         //setup
+        mockContentManager.getContent = jest.fn();
+        mockContentManager.getContent.mockReturnValue(mockContent);
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
@@ -614,7 +639,7 @@ describe("sendCommandSync() ", ()=> {
 
         //tests
         expect(mockContentNetworkService.sendCommandSync).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandSync).toHaveBeenCalledWith(answerMap,seekPos);
+        expect(mockContentNetworkService.sendCommandSync).toHaveBeenCalledWith( mediaApp1, seekPos);
     });
 
     it("should throw an error if the mediaStationId could not be found", async ()=>{

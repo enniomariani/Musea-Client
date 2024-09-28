@@ -52,18 +52,15 @@ export class ContentNetworkService{
         await this._sendMediaCommandToAllMediaApps(mediaApps, [ContentNetworkService.COMMAND_REW]);
     }
 
-    async sendCommandSync(mediaApps:Map<number, MediaApp>, posInSec:number):Promise<void>{
-        let commands:string[] =  [ContentNetworkService.COMMAND_SYNC];
-
+    async sendCommandSync(mediaApp:MediaApp, posInSec:number):Promise<void>{
         if(posInSec < 0){
             console.error("Sync position is below 0, command is not sent: ", posInSec);
             return;
         }
-
-        if(posInSec)
-            commands.push(posInSec.toString());
-
-        await this._sendMediaCommandToAllMediaApps(mediaApps, commands);
+        if(mediaApp.ip === "")
+            console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
+        else
+            await this._networkService.sendMediaControlTo(mediaApp.ip, [ContentNetworkService.COMMAND_SYNC, posInSec.toString()]);
     }
 
     async sendCommandSeek(mediaApps:Map<number, MediaApp>, posInSec:number):Promise<void>{

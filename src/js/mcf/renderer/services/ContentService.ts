@@ -3,7 +3,7 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {Content} from "../dataStructure/Content";
 import {ContentManager} from "../dataManagers/ContentManager";
 import {ContentNetworkService} from "./ContentNetworkService";
-import {IMedia} from "../dataStructure/Media";
+import {IMedia, Video} from "../dataStructure/Media";
 import {MediaService} from "./MediaService";
 import {MediaApp} from "../dataStructure/MediaApp";
 
@@ -151,7 +151,20 @@ export class ContentService {
 
     async sendCommandSync(mediaStationId: number, pos: number): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandSync(mediaStation.getAllMediaApps(), pos);
+        let media:IMedia;
+
+        console.log("SEND COMMAND SYNC: ", pos)
+
+        let content:Content = this._contentManager.getContent(mediaStation, pos);
+
+        for (const [key, item] of mediaStation.getAllMediaApps()){
+
+            if(content)
+                media = content.media.get(item.id);
+
+            if(media && media instanceof Video)
+                await this._contentNetworkService.sendCommandSync(mediaStation.getMediaApp(item.id), pos);
+        }
     }
 
     async sendCommandSeek(mediaStationId: number, pos: number): Promise<void> {
