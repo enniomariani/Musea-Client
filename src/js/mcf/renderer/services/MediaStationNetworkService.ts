@@ -372,7 +372,7 @@ export class MediaStationNetworkService {
             fileData = await this._mediaStationRepo.getCachedMediaFile(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId, cachedMedia.fileExtension);
 
             onSyncStep("Medium geladen, sende...");
-            idOnMediaApp = await this._networkService.sendMediaFileToIp(ipMediaApp, cachedMedia.fileExtension, fileData,360000,
+            idOnMediaApp = await this._networkService.sendMediaFileToIp(ipMediaApp, cachedMedia.fileExtension, fileData,120000,
                 onSyncStep);
             console.log("RECEIVED ID FROM MEDIA-APP: ", idOnMediaApp);
 

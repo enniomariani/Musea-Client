@@ -57,6 +57,7 @@ export class NetworkInterface extends EventTarget {
         this._onDataReceivedCallBack = onDataReceived;
 
         try {
+            console.log("create new connection: ", url)
             this._connection = new WebSocket(url);
 
             // @ts-ignore
@@ -99,6 +100,8 @@ export class NetworkInterface extends EventTarget {
         this._connection.removeEventListener("error", this._onConnectionErrorFunc);
         this._connection.removeEventListener("open", this._onConnectionOpenFunc);
         this._connection.removeEventListener("close", this._onConnectionClosedFunc);
+
+        this._connection = null;
 
         if (this._onClosed)
             this._onClosed();
@@ -151,7 +154,7 @@ export class NetworkInterface extends EventTarget {
             console.error("WebSocketConnection: sending of data not possible, because connection not ready");
             return false;
         } else {
-            console.log("network interface: send data: ", buffer.length)
+            console.log("network interface: send data length: ", buffer.length)
             console.log("network interface: amount of chunks: ", Math.ceil((buffer.length + 2) / chunkSizeInBytes))
 
             //buffer.length + 2 because the 2 bytes with the information about the amount of chunks are added after the calculation
@@ -165,6 +168,13 @@ export class NetworkInterface extends EventTarget {
 
             while (offset < arrayToSend.length) {
                 const chunk:Uint8Array = arrayToSend.slice(offset, offset + chunkSizeInBytes);
+
+                console.log("send chunk, check connection: ", this._connection)
+
+                if (this._connection === null || this._connection.readyState !== 1) {
+                    console.error("WebSocketConnection: connection was terminated during sending");
+                    return false;
+                }
 
                 if(offset + chunkSizeInBytes >= arrayToSend.length)
                     this._connection.send(chunk)
@@ -190,7 +200,9 @@ export class NetworkInterface extends EventTarget {
     }
 
     closeConnection(): void {
-        this._connection.close();
+
+        if(this._connection)
+            this._connection.close();
     }
 
     private _stringToUint8Array(inputString: string): Uint8Array {

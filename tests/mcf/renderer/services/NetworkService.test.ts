@@ -32,44 +32,31 @@ function mockOpenConnection(receiveImmediateCommand = null) {
     mockNetworkConnectionHandler.sendData.mockImplementation((ip, data) => {
         console.log("mock sendData called: ", ip, data)
         // Return a resolved promise
-        return Promise.resolve();
+        return Promise.resolve(true);
     });
 }
 
-function mockOpenConnectionAndReceiveDataLater(ip, command) {
+function mockOpenConnectionAndReceiveDataLater(ip, command, returnValueSendData = true) {
     let dataReceived;
     mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip, onOpen, onError, onClosed, onDataReceived) => {
         onOpen();
         dataReceived = onDataReceived;
     });
+
     mockNetworkConnectionHandler.sendData = jest.fn();
     mockNetworkConnectionHandler.sendData.mockImplementation((ip, data) => {
         console.log("mock sendData called: ", ip, data)
         // Return a resolved promise
-        return Promise.resolve().then(() => {
+        return Promise.resolve(returnValueSendData).then((answer) => {
             // Use setTimeout to defer dataReceived until after the actual code has finished
-            console.log("mock-promise resolved")
+            console.log("mock-promise resolved", answer)
             timer = setTimeout(() => {
                 console.log("timeout called: ", ip)
                 dataReceived(ip, command);
             }, 20);  // Ensure it runs on the next tick, after promises are resolved
-        });
-    });
-}
 
-function mockOpenConnectionAndResolveSendImmediately(ip, command) {
-    let dataReceived;
-    mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip, onOpen, onError, onClosed, onDataReceived) => {
-        onOpen();
-        dataReceived = onDataReceived;
-    });
-    mockNetworkConnectionHandler.sendData = jest.fn();
-    mockNetworkConnectionHandler.sendData.mockImplementation((ip, data) => {
-        console.log("mock sendData called: ", ip, data)
-        // Return a resolved promise
-        return Promise.resolve();
-        // Use setTimeout to defer dataReceived until after the actual code has finished
-        //     dataReceived(ip, command);
+            return Promise.resolve(returnValueSendData)
+        });
     });
 }
 
@@ -785,6 +772,23 @@ describe("sendMediaFileToIp() ", () => {
 
         //tests
         expect(answer).toBe(null);
+    });
+
+    it("should print an error and return null if the connection did get lost during sending", async () => {
+        //setup
+        let command: Uint8Array = ConvertNetworkData.encodeCommand("media", "put", "data");
+        let answer: number;
+        let logSpy = jest.spyOn(console, "error")
+        mockOpenConnectionAndReceiveDataLater(ip1, command, false);
+
+        //method to test
+        await networkService.openConnection(ip1);
+        answer = await networkService.sendMediaFileToIp(ip1, mediaType, mediaFile, 0, jest.fn());
+
+        //tests
+        expect(answer).toBe(null);
+        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledWith("Connection closed during sending-process: reject-value: ", null);
     });
 
     it("should return null if it received nothing after 90 seconds", async () => {

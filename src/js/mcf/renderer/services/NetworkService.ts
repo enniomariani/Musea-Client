@@ -169,13 +169,20 @@ export class NetworkService {
     }
 
     private _onConnectionClosed(ip: string): void {
-        console.info('Connection closed: ', ip, this._onConnectionClosedPromises);
+        console.info('Connection closed: ', ip, this._onConnectionClosedPromises, this._dataReceivedPromises.has(ip));
         const promise = this._onConnectionClosedPromises.get(ip);
 
         if (promise) {
             console.log("CONNECTION CLOSED WITH PROMISE: ", promise)
             promise.resolve();
             this._onConnectionClosedPromises.delete(ip);
+        }
+
+        //if the app is waiting for a response of a client, but during that, the connection was closed, resolve the
+        //promise with null
+        if (this._dataReceivedPromises.has(ip)) {
+            this._dataReceivedPromises.get(ip).resolve(null);
+            this._dataReceivedPromises.delete(ip);
         }
     }
 
@@ -209,38 +216,40 @@ export class NetworkService {
         return new Promise(async (resolve, reject) => {
 
             console.log("sending data to: ", ip);
-            await this._networkConnectionHandler.sendData(ip, command, onSendChunk).then(() => {
+            let answer:boolean = await this._networkConnectionHandler.sendData(ip, command, onSendChunk);
 
-                console.log("data sent!");
+            //if the connection was closed during the sending-process, resolve with reject-value
+            if (!answer) {
+                console.error("Connection closed during sending-process: reject-value: ", rejectValue)
+                resolve(rejectValue);
+                return;
+            }
 
-                if (onSendChunk !== null)
-                    onSendChunk("Daten gesendet, warte auf Antwort...");
+            console.log("data sent!");
 
-                const timer = setTimeout(() => {
-                    console.log("timeout reached!", rejectValue);
+            if (onSendChunk !== null)
+                onSendChunk("Daten gesendet, warte auf Antwort...");
+
+            const timer = setTimeout(() => {
+                console.log("timeout reached!", rejectValue);
+                this._dataReceivedPromises.delete(ip);
+                resolve(rejectValue); // Resolve with rejectValue on timeout
+            }, timeout);
+
+            this._dataReceivedPromises.set(ip, {
+                resolve: (value) => {
+                    console.log("resolve network-send-promise: ", value, timer)
+                    if (timer) clearTimeout(timer);
+
                     this._dataReceivedPromises.delete(ip);
-                    resolve(rejectValue); // Resolve with rejectValue on timeout
-                }, timeout);
+                    resolve(value);
+                },
+                reject: (error) => {
+                    if (timer) clearTimeout(timer);
 
-                this._dataReceivedPromises.set(ip, {
-                    resolve: (value) => {
-                        console.log("resolve network-send-promise: ", value, timer)
-                        if (timer) clearTimeout(timer);
-
-                        this._dataReceivedPromises.delete(ip);
-                        resolve(value);
-                    },
-                    reject: (error) => {
-                        if (timer) clearTimeout(timer);
-
-                        this._dataReceivedPromises.delete(ip);
-                        reject(error);
-                    }
-                });
-
-
-            }).catch((error) => {
-                reject(error); // Reject on send error
+                    this._dataReceivedPromises.delete(ip);
+                    reject(error);
+                }
             });
         });
     }

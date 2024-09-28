@@ -7,11 +7,18 @@ const serverPath:string = "wss://localhost:1234";
 let server:WS = new WS(serverPath);
 let networkInterface:NetworkInterface = new NetworkInterface();
 
-beforeEach(() => {
+beforeEach(async () => {
+    console.log("before each: clean up")
     WS.clean();
+    await server.closed;
     server = new WS(serverPath);
     networkInterface = new NetworkInterface();
+    console.log("end before each")
 });
+
+afterEach(() =>{
+    jest.clearAllMocks();   //necesary, otherwise the console-errors-counts are not reset
+})
 
 describe("connectToServer(): ", () => {
 
@@ -108,7 +115,7 @@ describe("connectToServer(): ", () => {
     });
 
     test("prints the error when the connection could not be established", async () =>{
-        let logSpy:any = jest.spyOn(global.console, 'error');
+        let logSpy:any = jest.spyOn(console, 'error');
 
         networkInterface.connectToServer("wrong-serverpath", null, null, null);
 
@@ -168,9 +175,10 @@ describe("sendDataToServer() ", ()=>{
 
         let testData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11])
         let testDataWithChunkInfo:Uint8Array = new Uint8Array([0x01, 0x00, 0x00, 0xFF, 0x11])
-        let response;
+        let response:boolean;
 
         networkInterface.connectToServer(serverPath);
+
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
         response = await networkInterface.sendDataToServer(testData, jest.fn());
@@ -185,14 +193,19 @@ describe("sendDataToServer() ", ()=>{
 
         let testData:Uint8Array = new Uint8Array([0x00, 0xFF])
         let onChunkCallback = jest.fn();
-        let response;
+        let response:boolean;
         let promise:Promise<boolean>;
 
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
+
+        jest.useFakeTimers();
         promise = networkInterface.sendDataToServer(testData, onChunkCallback,2);
 
-        jest.advanceTimersByTime(1000);
+        jest.advanceTimersByTime(1600);
+        //tidy up - must be before the await, otherwise the test does not work because of the fake-timers
+        jest.useRealTimers();
+
         response = await promise;
 
         let serverReceivedMessage1 = await server.nextMessage;
@@ -207,16 +220,20 @@ describe("sendDataToServer() ", ()=>{
     it ("should send passed data to server in three chunks, if it is big enough (for test-purpose big enough = bigger than 2 bytes)", async () =>{
 
         let testData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11])
-        let response;
+        let response:boolean;
         let promise:Promise<boolean>;
         let onChunkCallback = jest.fn();
 
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
+        jest.useFakeTimers();
+
         promise = networkInterface.sendDataToServer(testData, onChunkCallback, 2);
 
-        jest.advanceTimersByTime(1000);
+        jest.advanceTimersByTime(2400);
+        //tidy up - must be before the await, otherwise the test does not work because of the fake-timers
+        jest.useRealTimers();
         response = await promise;
 
         let serverReceivedMessage1 = await server.nextMessage;
@@ -233,15 +250,19 @@ describe("sendDataToServer() ", ()=>{
     it ("should send passed data to server in three bigger chunks (separated into 4 bytes)", async () =>{
 
         let testData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66])
-        let response;
+        let response:boolean;
         let promise:Promise<boolean>;
         let onChunkCallback = jest.fn();
 
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
+        jest.useFakeTimers();
+
         promise = networkInterface.sendDataToServer(testData, onChunkCallback, 4);
-        jest.advanceTimersByTime(2000);
+        jest.advanceTimersByTime(2400);
+        //tidy up - must be before the await, otherwise the test does not work because of the fake-timers
+        jest.useRealTimers();
 
         response = await promise;
 
@@ -254,6 +275,34 @@ describe("sendDataToServer() ", ()=>{
         expect(serverReceivedMessage2).toEqual(new Uint8Array([0x11, 0x22, 0x33, 0x44]));
         expect(serverReceivedMessage3).toEqual(new Uint8Array([0x55, 0x66]));
         expect(onChunkCallback).toHaveBeenCalledTimes(3);
+    });
+
+    it ("should print an error and return false if the connection is closed during the sending-process of multiple chunks", async () =>{
+
+        let testData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66])
+        let promise:Promise<boolean>;
+        let answer:boolean;
+        let onChunkCallback = jest.fn();
+
+        let logSpy = jest.spyOn(console, "error")
+
+        networkInterface.connectToServer(serverPath);
+        await server.connected; //wait until client connected to server, otherwise the events would not have been fired
+
+        jest.useFakeTimers();
+
+        promise = networkInterface.sendDataToServer(testData, onChunkCallback, 4);
+        jest.advanceTimersByTime(800);
+        jest.advanceTimersByTime(800);
+        server.close();
+        //tidy up - must be before the await, otherwise the test does not work because of the fake-timers
+        jest.useRealTimers();
+
+        answer = await promise;
+
+        expect(answer).toBe(false);
+        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledWith("WebSocketConnection: connection was terminated during sending");
     });
 
     test("should return false if there is no connection", async () =>{
