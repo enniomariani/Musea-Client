@@ -169,8 +169,6 @@ export class NetworkInterface extends EventTarget {
             while (offset < arrayToSend.length) {
                 const chunk:Uint8Array = arrayToSend.slice(offset, offset + chunkSizeInBytes);
 
-                console.log("send chunk, check connection: ", this._connection)
-
                 if (this._connection === null || this._connection.readyState !== 1) {
                     console.error("WebSocketConnection: connection was terminated during sending");
                     return false;
