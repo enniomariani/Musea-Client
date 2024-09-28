@@ -272,7 +272,7 @@ export class NetworkService {
                     if (convertedData[2] === "accepted")
                         promise.resolve("yes");
                     else if (convertedData[2] === "accepted_block")
-                        promise.resolve("yes_block");
+                        promise.resolve("yes_blocked");
                     else
                         promise.resolve("no");
                 }
