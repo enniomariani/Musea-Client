@@ -529,7 +529,7 @@ describe("sendRegistrationUserApp() ", () => {
         answer = await networkService.sendRegistrationUserApp(ip1);
 
         //tests
-        expect(answer).toBe("yes_block");
+        expect(answer).toBe("yes_blocked");
     });
 
     it("should return no if it received a registration-rejected-command", async () => {
