@@ -635,7 +635,7 @@ describe("sendCommandSync() ", ()=> {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
-        await contentService.sendCommandSync(mediaStationId, seekPos);
+        await contentService.sendCommandSync(mediaStationId, 34,seekPos);
 
         //tests
         expect(mockContentNetworkService.sendCommandSync).toHaveBeenCalledTimes(1);
@@ -647,7 +647,7 @@ describe("sendCommandSync() ", ()=> {
         mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
 
         //tests
-        await expect(contentService.sendCommandSync(mediaStationId, seekPos)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+        await expect(contentService.sendCommandSync(mediaStationId, 23,  seekPos)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
