@@ -4,10 +4,24 @@ import * as fs from 'fs';
 import * as path from "node:path";
 
 let fileService: MainFileService;
-jest.mock('fs');
+jest.mock("fs", () => ({
+    promises: {
+        readFile: jest.fn()
+    },
+    existsSync: jest.fn(),
+    writeFile: jest.fn(),
+    readdirSync: jest.fn(),
+    statSync: jest.fn(),
+    rmSync: jest.fn(),
+    mkdirSync: jest.fn(),
+}));
+
 let mockedFs = fs as jest.Mocked<typeof fs>;
 
+
 beforeEach(() => {
+
+
     fileService = new MainFileService();
 });
 
@@ -16,7 +30,7 @@ afterEach(() => {
 });
 
 describe("saveFile () ", () => {
-    it("should call fs.save with the correct path and the passed file-data as ArrayBufferView", () => {
+    it("should call fs.writeFile with the correct path and the passed file-data as ArrayBufferView", async () => {
         //setup
         let filePath: string = "/path/to/existent/directory/file.txt";
         const directory = path.dirname(filePath);
@@ -29,17 +43,19 @@ describe("saveFile () ", () => {
             else if (path === directory)
                 return true;
         });
+        // @ts-ignore
+        mockedFs.writeFile.mockImplementation((path, data, callback) => callback(null));
 
         //method to test
-        returnValue = fileService.saveFile(filePath, buffer);
+        returnValue = await fileService.saveFile(filePath, buffer);
 
         //expect
-        expect(fs.writeFileSync).toHaveBeenCalledTimes(1);
-        expect(fs.writeFileSync).toHaveBeenCalledWith(filePath, buffer);
+        expect(fs.writeFile).toHaveBeenCalledTimes(1);
+        expect(fs.writeFile).toHaveBeenCalledWith(filePath, buffer, expect.anything());
         expect(returnValue).toEqual(MainFileService.FILE_SAVED_SUCCESSFULLY);
     });
 
-    it("should return an error if the passed parameter overrideExistingFile is true and the file already exists", () => {
+    it("should return an error if the passed parameter overrideExistingFile is true and the file already exists", async () => {
         //setup
         let filePath: string = "/path/to/existent/directory/file.txt";
         const directory = path.dirname(filePath);
@@ -51,16 +67,18 @@ describe("saveFile () ", () => {
             else if (path === directory)
                 return true;
         });
+        // @ts-ignore
+        mockedFs.writeFile.mockImplementation((path, data, callback) => callback(null));
 
         //method to test
-        returnValue = fileService.saveFile(filePath, Buffer.from(fileData), false);
+        returnValue = await fileService.saveFile(filePath, Buffer.from(fileData), false);
 
         //method to test / expect
         expect(returnValue).toEqual(MainFileService.ERROR_FILE_EXISTS);
-        expect(fs.writeFileSync).toHaveBeenCalledTimes(0);
+        expect(fs.writeFile).toHaveBeenCalledTimes(0);
     });
 
-    it("should return an error if the folder where the file should be saved does not exist and createDirectory is false", () => {
+    it("should return an error if the folder where the file should be saved does not exist and createDirectory is false", async () => {
         //setup
         let filePath: string = "/path/to/nonexistent/directory/file.txt";
         const directory:string = path.dirname(filePath);
@@ -73,15 +91,18 @@ describe("saveFile () ", () => {
                 return false;
         });
 
+        // @ts-ignore
+        mockedFs.writeFile.mockImplementation((path, data, callback) => callback(null));
+
         //method to test
-        returnValue = fileService.saveFile(filePath, Buffer.from(fileData), false, false);
+        returnValue = await fileService.saveFile(filePath, Buffer.from(fileData), false, false);
 
         //method to test / expect
         expect(returnValue).toBe(MainFileService.ERROR_DIRECTORY_DOES_NOT_EXIST);
-        expect(fs.writeFileSync).toHaveBeenCalledTimes(0);
+        expect(fs.writeFile).toHaveBeenCalledTimes(0);
     });
 
-    it("should create the folder where the file should be saved if the folder does not exist and createDirectory is true", () => {
+    it("should create the folder where the file should be saved if the folder does not exist and createDirectory is true", async () => {
         //setup
         let filePath: string = "/path/to/nonexistent/directory/file.txt";
         const directory:string = path.dirname(filePath);
@@ -95,13 +116,16 @@ describe("saveFile () ", () => {
                 return false;
         });
 
+        // @ts-ignore
+        mockedFs.writeFile.mockImplementation((path, data, callback) => callback(null));
+
         //method to test
-        returnValue = fileService.saveFile(filePath, Buffer.from(fileData), false, true);
+        returnValue = await fileService.saveFile(filePath, Buffer.from(fileData), false, true);
 
         //method to test / expect
         expect(returnValue).toBe(MainFileService.FILE_SAVED_SUCCESSFULLY);
-        expect(fs.writeFileSync).toHaveBeenCalledTimes(1);
-        expect(fs.writeFileSync).toHaveBeenCalledWith(filePath, buffer);
+        expect(fs.writeFile).toHaveBeenCalledTimes(1);
+        expect(fs.writeFile).toHaveBeenCalledWith(filePath, buffer, expect.anything());
         expect(fs.mkdirSync).toHaveBeenCalledTimes(1);
         expect(fs.mkdirSync).toHaveBeenCalledWith(directory, {recursive: true});
     });
@@ -154,37 +178,32 @@ describe("delete () ", () => {
 });
 
 describe("loadFile () ", () => {
-    it("should return the correct fileData if a file is loaded", () => {
+
+    it("should return the correct fileData if a file is loaded", async() => {
         //setup
         let filePath: string = "/path/to/nonexistent/directory/file.txt";
-        let fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEF]);
+        let fileData: Buffer = new Buffer([0x00, 0xFF, 0xEF]);
         let returnValue: Buffer;
 
-        mockedFs.readFileSync.mockImplementation((path: string): any => {
-            const buffer: Buffer = Buffer.from(fileData);
-            if (path === filePath)
-                return buffer as Buffer;
-            return null;
-        });
+        // @ts-ignore
+        mockedFs.promises.readFile.mockResolvedValue(fileData);
 
         //method to test
-        returnValue = fileService.loadFile(filePath);
+        returnValue = await fileService.loadFile(filePath);
 
         //method to test / expect
         expect(returnValue).toEqual(Buffer.from(fileData));
     });
 
-    it("should return null if the file could not be loaded", () => {
+    it("should return null if the file could not be loaded", async () => {
         //setup
         let filePath: string = "/path/to/nonexistent/directory/file.txt";
         let returnValue: ArrayBufferView;
 
-        mockedFs.readFileSync.mockImplementation(() => {
-            throw new Error("file cannot be loaded");
-        });
+        mockedFs.promises.readFile.mockRejectedValue(new Error("file cannot be loaded"));
 
         //method to test
-        returnValue = fileService.loadFile(filePath);
+        returnValue = await fileService.loadFile(filePath);
 
         //method to test / expect
         expect(returnValue).toEqual(null);

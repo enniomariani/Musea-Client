@@ -499,16 +499,22 @@ describe("updateAndSaveMediaStation() ", ()=>{
 });
 
 describe("cacheMedia() ", ()=>{
+    const fileName = 'mockFile.txt';
+    const fileContent = 'Hello, world!';
+    const fileType = 'text/plain';
+
+    // Create a mock File object
+    const mockFile = new File([fileContent], fileName, { type: fileType });
     it("should call mediaFileService.saveFile with the passed parameters", async ()=>{
         //setup
         let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
 
         //method to test
-        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", data);
+        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", mockFile);
 
         //tests
-        expect(mockMediaFileService.saveFile).toHaveBeenCalledTimes(1);
-        expect(mockMediaFileService.saveFile).toHaveBeenCalledWith(0, 1,2, "jpeg", data);
+        expect(mockMediaFileService.saveFileByPath).toHaveBeenCalledTimes(1);
+        expect(mockMediaFileService.saveFileByPath).toHaveBeenCalledWith(0, 1,2, "jpeg", mockFile);
     });
 
     it("should add the cached media to cachedMedia and create a mediaStationId if it does not exist", async ()=>{
@@ -516,7 +522,7 @@ describe("cacheMedia() ", ()=>{
         let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
 
         //method to test
-        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", data);
+        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", mockFile);
 
         //tests
         expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeNull();
@@ -531,8 +537,8 @@ describe("cacheMedia() ", ()=>{
         let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
 
         //method to test
-        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", data);
-        await mediaStationRepo.cacheMedia(0,2,2,"mp4", data);
+        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", mockFile);
+        await mediaStationRepo.cacheMedia(0,2,2,"mp4", mockFile);
 
         //tests
         expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeNull();

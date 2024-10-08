@@ -20,6 +20,7 @@ declare global {
 
     interface IBackendFileService{
         saveFile(path:string, data:Uint8Array):string;
+        saveFileByPath(path:string, fileInstance:File):Promise<string>;
         deleteFile(path:string):string;
         loadFile(path:string):Prowmise<Uint8Array|null>;
         fileExists(path:string):Promise<boolean>;

@@ -1,6 +1,6 @@
 //the preload-script does NOT SUPPORT ESM!
 
-const {ipcRenderer, contextBridge} = require('electron');
+const {ipcRenderer, contextBridge, webUtils} = require('electron');
 
 console.log("Preload-Script starts: ", process.env.NODE_ENV);
 
@@ -14,6 +14,13 @@ contextBridge.exposeInMainWorld("backend", {
 
 contextBridge.exposeInMainWorld("backendFileService", {
     saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('mediaClientFramework:saveFile', path, data),
+    saveFileByPath: (path: string, fileInstance:File) =>{
+        let pathToLoad:string = webUtils.getPathForFile(fileInstance);
+        fileInstance = null;
+
+        console.log("preload: path for file to save: ", pathToLoad);
+        ipcRenderer.invoke('mediaClientFramework:saveFileByPath', path, pathToLoad)
+    },
     deleteFile: (path: string) => ipcRenderer.invoke('mediaClientFramework:deleteFile', path),
     loadFile: (path: string) => ipcRenderer.invoke('mediaClientFramework:loadFile', path),
     fileExists: (path: string) => ipcRenderer.invoke('mediaClientFramework:fileExists', path),

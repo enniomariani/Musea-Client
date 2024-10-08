@@ -1,6 +1,7 @@
 import {BrowserWindow, ipcMain} from 'electron';
 import {MainFileService} from "./MainFileService";
 import ping from "ping";
+import * as fs from 'fs';
 
 export class MainMediaClientFramework {
 
@@ -14,9 +15,23 @@ export class MainMediaClientFramework {
 
     init(): void {
         //load/save/delete files
-        ipcMain.handle('mediaClientFramework:saveFile', (event:Electron.IpcMainEvent, path: string, data: Uint8Array) => {
-            let dataAsNodeBuffer:Buffer = Buffer.from(data);
-            return this.mainFileService.saveFile(path, dataAsNodeBuffer);
+        ipcMain.handle('mediaClientFramework:saveFile', async (event:Electron.IpcMainEvent, path: string, data: Uint8Array) => {
+            const dataAsNodeBuffer:Buffer = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+            return await   this.mainFileService.saveFile(path, dataAsNodeBuffer);
+        });
+
+        ipcMain.handle('mediaClientFramework:saveFileByPath', async (event:Electron.IpcMainEvent, path: string, pathToLoad: string) => {
+
+            console.log("load file from path: ", pathToLoad)
+
+            try {
+                // Read the file directly in the main process
+                let dataAsNodeBuffer = await fs.promises.readFile(pathToLoad);
+                return await this.mainFileService.saveFile(path, dataAsNodeBuffer);
+            } catch (err) {
+                console.error("Error saving file:", err);
+                return "Error: " + err.message;
+            }
         });
 
         ipcMain.handle('mediaClientFramework:deleteFile', (event:Electron.IpcMainEvent, path: string) => {
@@ -31,18 +46,8 @@ export class MainMediaClientFramework {
             return this.mainFileService.getAllFileNamesInFolder(path);
         });
 
-        ipcMain.handle('mediaClientFramework:loadFile', (event:Electron.IpcMainEvent, path: string) => {
-            let loadedFileData:Buffer|null = this.mainFileService.loadFile(path);
-            let fileDataAsUint8Array:Uint8Array;
-
-            console.log("MainMediaClientFramework: file-data loaded");
-
-            if(loadedFileData === null)
-                return null;
-            else{
-                fileDataAsUint8Array = new Uint8Array(loadedFileData);
-                return fileDataAsUint8Array;
-            }
+        ipcMain.handle('mediaClientFramework:loadFile', async (event:Electron.IpcMainEvent, path: string) => {
+            return await this.mainFileService.loadFile(path);
         });
 
         //ping

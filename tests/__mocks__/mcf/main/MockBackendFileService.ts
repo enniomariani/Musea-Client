@@ -2,6 +2,7 @@
 export class MockBackendFileService implements IBackendFileService{
 
     saveFile: jest.Mock;
+    saveFileByPath: jest.Mock;
     loadFile: jest.Mock;
     deleteFile: jest.Mock;
     fileExists: jest.Mock;
@@ -9,6 +10,7 @@ export class MockBackendFileService implements IBackendFileService{
 
     constructor() {
         this.saveFile = jest.fn();
+        this.saveFileByPath = jest.fn();
         this.loadFile = jest.fn();
         this.deleteFile = jest.fn();
         this.fileExists = jest.fn();

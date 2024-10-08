@@ -6,6 +6,7 @@ let mediaFileService:MediaFileService;
 
 const mockBackendFileService: jest.Mocked<IBackendFileService> = {
     saveFile: jest.fn(),
+    saveFileByPath: jest.fn(),
     loadFile: jest.fn(),
     deleteFile: jest.fn(),
     fileExists: jest.fn(),
@@ -50,6 +51,42 @@ describe("init() and saveFile() ", () => {
         //tests
         expect(mockBackendFileService.saveFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.saveFile).toHaveBeenCalledWith(pathToFolder + pathToSave, fileData);
+    });
+});
+
+describe("init() and saveFileByPath() ", () => {
+    //setup
+    const fileName = 'mockFile.txt';
+    const fileContent = 'Hello, world!';
+    const fileType = 'text/plain';
+
+    // Create a mock File object
+    const mockFile = new File([fileContent], fileName, { type: fileType });
+
+    it("should call saveFileByPath from the backend with the correct parameters", () => {
+
+        let pathToSave:string = "0\\cachedMedia\\2.1.jpeg";
+
+        //method to test
+        mediaFileService.init(pathToFolder);
+        mediaFileService.saveFileByPath(0, 2,1,"jpeg", mockFile)
+
+        //tests
+        expect(mockBackendFileService.saveFileByPath).toHaveBeenCalledTimes(1);
+        expect(mockBackendFileService.saveFileByPath).toHaveBeenCalledWith(pathToFolder + pathToSave, mockFile);
+    });
+
+    it("should call saveFile from the backend with the correct parameters (others than in test 1)", () => {
+        //setup
+        let pathToSave:string = "0\\cachedMedia\\2.5.mp4";
+
+        //method to test
+        mediaFileService.init(pathToFolder);
+        mediaFileService.saveFileByPath(0, 2,5,"mp4", mockFile)
+
+        //tests
+        expect(mockBackendFileService.saveFileByPath).toHaveBeenCalledTimes(1);
+        expect(mockBackendFileService.saveFileByPath).toHaveBeenCalledWith(pathToFolder + pathToSave, mockFile);
     });
 });
 

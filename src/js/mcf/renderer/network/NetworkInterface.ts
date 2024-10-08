@@ -166,6 +166,8 @@ export class NetworkInterface extends EventTarget {
             arrayToSend.set(chunksInfo);
             arrayToSend.set(buffer, chunksInfo.length);
 
+            buffer = null;
+
             while (offset < arrayToSend.length) {
                 const chunk:Uint8Array = arrayToSend.slice(offset, offset + chunkSizeInBytes);
 

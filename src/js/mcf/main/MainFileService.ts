@@ -20,7 +20,7 @@ export class MainFileService {
      * @param {boolean} createDirectory
      * @returns {string}
      */
-    saveFile(filePath:string, fileData:Buffer, overrideExistingFile:boolean = true, createDirectory:boolean = true):string{
+    async saveFile(filePath:string, fileData:Buffer, overrideExistingFile:boolean = true, createDirectory:boolean = true):Promise<string>{
 
         console.log("MainFileService: save File to: ", filePath)
 
@@ -37,12 +37,15 @@ export class MainFileService {
         if(!overrideExistingFile && fs.existsSync(filePath))
             return MainFileService.ERROR_FILE_EXISTS;
 
-        try{
-            fs.writeFileSync(filePath, fileData);//, {},()=>{});
-        }
-        catch(err){
-            return("MainFileService: unhandled error: " + err.message);
-        }
+        await new Promise<void>((resolve, reject) => {
+            fs.writeFile(filePath, fileData, (err) => {
+                if (err)
+                    return reject(err);
+                resolve();
+            });
+        });
+
+        fileData = null;
 
         return MainFileService.FILE_SAVED_SUCCESSFULLY;
     }
@@ -65,21 +68,17 @@ export class MainFileService {
         }
     }
 
-    loadFile(filePath:string):Buffer | null{
-        let loadedFile:Buffer;
+    async loadFile(filePath: string): Promise<Buffer | null> {
+        console.log("Attempting to load file: ", filePath);
 
-        console.log("try to load: ", filePath)
-
-        try{
-            loadedFile = fs.readFileSync(filePath);
-        } catch(error){
-            console.error("MainFileService: file could not be loaded: ", filePath, error)
+        try {
+            let loadedFile:Buffer = await fs.promises.readFile(filePath);
+            console.log("MainFileService: File loaded successfully!");
+            return loadedFile;
+        } catch (error) {
+            console.error("MainFileService: Failed to load file:", filePath, "Error:", error.message);
             return null;
         }
-
-        console.log("MainFileService: file loaded! ");
-
-        return loadedFile;
     }
 
     getAllFileNamesInFolder(pathToFolder:string):string[]{

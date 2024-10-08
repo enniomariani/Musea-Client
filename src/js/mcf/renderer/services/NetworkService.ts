@@ -218,6 +218,8 @@ export class NetworkService {
             console.log("sending data to: ", ip);
             let answer:boolean = await this._networkConnectionHandler.sendData(ip, command, onSendChunk);
 
+            command = null;
+
             //if the connection was closed during the sending-process, resolve with reject-value
             if (!answer) {
                 console.error("Connection closed during sending-process: reject-value: ", rejectValue)

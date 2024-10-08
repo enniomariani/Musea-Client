@@ -43,24 +43,15 @@ export class ModelMain extends EventTarget {
         if(mediaAppReachable){
             await mcf.mediaAppService.connectAndRegisterToMediaApp(0,0);
 
-            let contentId1:number = mcf.contentService.createContent(0, 0, "content1")
-            let contentId2:number = mcf.contentService.createContent(0, 0, "content2")
-            let contentId3:number = mcf.contentService.createContent(0, 0, "content3")
-
             // console.log("DOWNLOAD RESULT: ", await mcf.mediaStationNetworkService.downloadContentsOfMediaStation(0));
 
             console.log("GET NAME OF MEDIASTATION: ", mcf.mediaStationDataService.getName(0));
             console.log("GET NAME OF CONTENTS: ", mcf.folderService.getAllContentsInFolder(0,0));
 
-            //add media
-            mcf.mediaService.addImageAndCacheIt(0,1,0,MediaService.FILE_EXTENSION_IMAGE_JPEG, new Uint8Array([0x00, 0xFF, 0x11]), "testName1")
-            mcf.mediaService.addImageAndCacheIt(0,1,1,MediaService.FILE_EXTENSION_IMAGE_PNG, new Uint8Array([0x00, 0xFF, 0x11]), "testName2")
-
-            mcf.mediaService.addVideoAndCacheIt(0,2,0,130,MediaService.FILE_EXTENSION_VIDEO_MP4, new Uint8Array([0x00, 0xFF, 0x11]), "testName3")
-
+            //sync
             await mcf.mediaStationNetworkService.syncMediaStation(0, (message:string) =>{console.log("SYNC-MESSAGE: ", message)});
 
-            mcf.contentService.sendCommandPlay(0, 1);
+            await mcf.contentService.sendCommandPlay(0, 1);
         }
 
     }

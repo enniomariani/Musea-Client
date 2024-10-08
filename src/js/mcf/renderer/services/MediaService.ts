@@ -27,10 +27,10 @@ export class MediaService {
      * @param {number} contentId
      * @param {number} mediaAppId
      * @param {string} fileExtension    must be one of the static FILE_EXTENSION_IMAGE variables of MediaService
-     * @param {Uint8Array} payload
+     * @param {File} fileInstance
      * @param {string} fileName
      */
-    async addImageAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, fileExtension:string, payload:Uint8Array, fileName:string): Promise<void> {
+    async addImageAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, fileExtension:string, fileInstance:File, fileName:string): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
         if(!(fileExtension === MediaService.FILE_EXTENSION_IMAGE_PNG || fileExtension === MediaService.FILE_EXTENSION_IMAGE_JPEG))
@@ -40,7 +40,7 @@ export class MediaService {
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
 
-        await this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, payload);
+        await this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
     }
 
     /**
@@ -55,10 +55,10 @@ export class MediaService {
      * @param {number} mediaAppId
      * @param {number} duration
      * @param {string} fileExtension    must be one of the static FILE_EXTENSION_VIDEO variables of MediaService
-     * @param {Uint8Array} payload
+     * @param {File} fileInstance
      * @param {string} fileName
      */
-    async addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, duration:number, fileExtension:string, payload:Uint8Array, fileName:string): Promise<void> {
+    async addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, duration:number, fileExtension:string, fileInstance:File, fileName:string): Promise<void> {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
 
         if(fileExtension !== MediaService.FILE_EXTENSION_VIDEO_MP4)
@@ -68,7 +68,7 @@ export class MediaService {
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
 
-        await this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, payload);
+        await this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
     }
 
     /**

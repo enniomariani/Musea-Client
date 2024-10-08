@@ -862,8 +862,8 @@ describe("syncMediaStation() ", () => {
 
         //tests
         expect(mockNetworkService.sendMediaFileToIp).toHaveBeenCalledTimes(2);
-        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(1, mediaApp1.ip, mockCachedMedia[0].fileExtension, fileData, 120000, mockOnSyncStep);
-        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(2, mediaApp1.ip, mockCachedMedia[2].fileExtension, fileData, 120000, mockOnSyncStep);
+        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(1, mediaApp1.ip, mockCachedMedia[0].fileExtension, fileData, 240000, mockOnSyncStep);
+        expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(2, mediaApp1.ip, mockCachedMedia[2].fileExtension, fileData, 240000, mockOnSyncStep);
     });
 
     it("if it got a media-ID back from the media-App, set the ID of the media-object to this ID", async () => {
