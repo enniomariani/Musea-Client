@@ -206,6 +206,8 @@ export class Folder {
     /**
      * looks for contents in this folder and all subfolders which contain the passed string in their name
      *
+     * the search is case-insenstive
+     *
      * @param {string} namePart
      * @returns {Content[]}
      */
@@ -213,19 +215,18 @@ export class Folder {
         let allContentIds:Map<number, number[]> = this.getAllContentIDsInFolderAndSubFolders();
         let results:Content[] = [];
         let content:Content;
+        let namePartLowerCase:string = namePart.toLowerCase();
 
         for (const [folderId, contentIds] of allContentIds){
             for (const contentId of contentIds){
                 content = this.findContent(contentId);
 
-                console.log("found content: ", content)
+                console.log("found content: ", content);
 
                 if(!content)
                     throw new Error("Content with this ID could not be found: " + contentId);
 
-                console.log("search content for name-part: ", content.name, namePart,content.name.includes(namePart) );
-
-                if(content.name.includes(namePart))
+                if(content.name.toLowerCase().includes(namePartLowerCase))
                     results.push(content);
             }
         }

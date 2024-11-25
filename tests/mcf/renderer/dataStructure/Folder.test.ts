@@ -330,7 +330,7 @@ describe("findContent() ", ()=>{
 });
 
 describe("findContentsByNamePart() ", ()=>{
-    it("should return the correct array of contents that match the namePart", ()=>{
+    it("should return the correct array of contents that match the namePart (not case-sensitive)", ()=>{
         //setup
         const allContentIds:Map<number, number[]> = new Map();
 
@@ -339,11 +339,11 @@ describe("findContentsByNamePart() ", ()=>{
         allContentIds.set(2, [5]);
 
         let content1:MockContent = new MockContent(0, 0);
-        content1.name = "test";
+        content1.name = "TEST";
         let content2:MockContent = new MockContent(1, 0);
         content2.name = "tes";
         let content3:MockContent = new MockContent(2, 0);
-        content3.name = "test3";
+        content3.name = "TEst3";
         let content4:MockContent = new MockContent(3, 0);
         content4.name = "teest";
         let content5:MockContent = new MockContent(4, 0);
@@ -357,7 +357,7 @@ describe("findContentsByNamePart() ", ()=>{
         jest.spyOn(folder, 'getAllContentIDsInFolderAndSubFolders').mockReturnValue(allContentIds);
 
         //method to test
-        let result:Content[] = folder.findContentsByNamePart("test");
+        let result:Content[] = folder.findContentsByNamePart("teST");
 
         //tests
         expect(result.length).toEqual(4);
