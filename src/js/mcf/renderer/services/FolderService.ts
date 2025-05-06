@@ -121,6 +121,8 @@ export class FolderService {
     /**
      * returns all contents in the folder and its subfolder which have the namePart in their name (regardless of the position)
      *
+     * the search is case-insensitive at the moment
+     *
      * @param {number} mediaStationId
      * @param {number} folderId
      * @param {string} namePart

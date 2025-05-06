@@ -134,6 +134,66 @@ describe("changeName() ", ()=>{
     });
 });
 
+describe("changeParentFolder() ", ()=>{
+    let folderID:number = 10;
+    let olderParentFolderId:number = 11;
+    let newParentFolderId:number = 12;
+
+    let mockOldParentFolder:MockFolder = new MockFolder(olderParentFolderId);
+    let mockNewParentFolder:MockFolder = new MockFolder(newParentFolderId);
+    let folder:MockFolder = new MockFolder(folderID);
+    folder.parentFolder = mockOldParentFolder;
+
+    function setup():void{
+        mockMediaStation.rootFolder.findFolder.mockImplementation((id:number)=>{
+            if(id === folderID)
+                return folder;
+            else if(id === olderParentFolderId)
+                return mockOldParentFolder;
+            else if(id === newParentFolderId)
+                return mockNewParentFolder;
+            else
+                return null;
+        });
+    }
+
+    it("should remove the passed folder from its actual parent", ()=>{
+        setup();
+
+        //method to test
+        folderManager.changeParentFolder(mockMediaStation, folderID, newParentFolderId);
+
+        //tests
+        expect(mockOldParentFolder.removeSubFolder).toHaveBeenCalledTimes(1);
+        expect(mockOldParentFolder.removeSubFolder).toHaveBeenCalledWith(folderID);
+    });
+
+    it("should add the passed folder to its new parent", ()=>{
+        setup();
+
+        //method to test
+        folderManager.changeParentFolder(mockMediaStation, folderID, newParentFolderId);
+
+        //tests
+        expect(mockNewParentFolder.addSubFolder).toHaveBeenCalledTimes(1);
+        expect(mockNewParentFolder.addSubFolder).toHaveBeenCalledWith(folder);
+    });
+
+    it("should throw an error if the folder could not be found", ()=>{
+        setup();
+
+        //tests
+        expect(()=> folderManager.changeParentFolder(mockMediaStation, folderID + 99, newParentFolderId)).toThrow(Error("Folder with ID does not exist: " + (folderID + 99).toString()));
+    });
+
+    it("should throw an error if the new parent-folder could not be found", ()=>{
+        setup();
+
+        //tests
+        expect(()=> folderManager.changeParentFolder(mockMediaStation, folderID, newParentFolderId +99)).toThrow(Error("Parent-Folder with ID does not exist: " + (newParentFolderId +99).toString()));
+    });
+});
+
 describe("deleteFolder() ", ()=>{
     let folderId:number = 10;
     let parentFodlerId:number = 5;

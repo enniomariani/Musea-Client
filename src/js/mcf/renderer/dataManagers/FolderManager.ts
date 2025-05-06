@@ -43,6 +43,20 @@ export class FolderManager{
         folder.name = name;
     }
 
+    changeParentFolder(mediaStation:MediaStation, folderId:number, newParentId:number):void{
+        let folder:Folder = this.getFolder(mediaStation, folderId);
+        let newParentFolder:Folder = this.getFolder(mediaStation, newParentId);
+
+        if(!folder)
+            throw new Error("Folder with ID does not exist: "+ folderId);
+
+        if(!newParentFolder)
+            throw new Error("Parent-Folder with ID does not exist: "+ newParentId);
+
+        folder.parentFolder.removeSubFolder(folderId);
+        newParentFolder.addSubFolder(folder);
+    }
+
     deleteFolder(mediaStation:MediaStation, id:number, parentFolderId:number):void{
         let parentFolder:Folder = mediaStation.rootFolder.findFolder(parentFolderId);
 
