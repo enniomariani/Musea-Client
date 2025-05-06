@@ -47,6 +47,14 @@ export class FolderService {
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
+    changeParentFolder(mediaStationId:number, folderId:number, newParentId:number):void{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        this._folderManager.changeParentFolder(mediaStation, folderId, newParentId);
+
+        this._mediaStationRepository.updateMediaStation(mediaStation);
+    }
+
     getIdOfParentFolder(mediaStationId: number, folderId: number): number {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let folder: Folder = this._folderManager.getFolder(mediaStation, folderId);

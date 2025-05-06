@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {ContentManager} from "../../../../src/js/mcf/renderer/dataManagers/ContentManager";
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {Content} from "../../../../src/js/mcf/renderer/dataStructure/Content";
@@ -134,6 +134,70 @@ describe("changeName() ", ()=>{
 
         //tests
         expect(()=> contentManager.changeName(mockMediaStation, contentID + 1, newName)).toThrow(Error);
+    });
+});
+
+describe("changeFolder() ", ()=>{
+    let contentID:number = 10;
+    let oldFolderId:number = 3;
+    let newFolderId:number = 18;
+    let content:Content = new Content(contentID, oldFolderId);
+
+    let mockOldFolder:MockFolder = new MockFolder(oldFolderId);
+    let mockNewFolder:MockFolder = new MockFolder(newFolderId);
+
+    function setup():void{
+        mockMediaStation.rootFolder.findFolder.mockImplementation((id:number)=>{
+            if(id === oldFolderId)
+                return mockOldFolder;
+            else if(id === newFolderId)
+                return mockNewFolder;
+            else
+                return null;
+        });
+
+        mockMediaStation.rootFolder.findContent.mockImplementation((id:number)=>{
+            if(id === contentID)
+                return content;
+            else
+                return null;
+        });
+    }
+
+    it("should remove the passed content from its actual folder", ()=>{
+        setup();
+
+        //method to test
+        contentManager.changeFolder(mockMediaStation, contentID, newFolderId);
+
+        //tests
+        expect(mockOldFolder.removeContent).toHaveBeenCalledTimes(1);
+        expect(mockOldFolder.removeContent).toHaveBeenCalledWith(contentID);
+    });
+
+    it("should add the passed content to its new folder", ()=>{
+        setup();
+
+        //method to test
+        contentManager.changeFolder(mockMediaStation, contentID, newFolderId);
+
+        //tests
+        expect(mockNewFolder.addContent).toHaveBeenCalledTimes(1);
+        expect(mockNewFolder.addContent).toHaveBeenCalledWith(content);
+    });
+
+    it("should throw an error if the content could not be found", ()=>{
+        setup();
+
+        //tests
+        expect(()=> contentManager.changeFolder(mockMediaStation, contentID + 99, newFolderId)).toThrow(Error("Content with ID does not exist: " + (contentID + 99).toString()));
+    });
+
+    it("should throw an error if the new folder could not be found", ()=>{
+        setup();
+
+        //tests
+        expect(()=> contentManager.changeFolder(mockMediaStation, contentID, newFolderId + 99)).toThrow(Error("Folder with ID does not exist: " + (newFolderId +99).toString()));
     });
 });
 

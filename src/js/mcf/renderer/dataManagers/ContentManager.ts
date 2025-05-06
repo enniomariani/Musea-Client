@@ -44,6 +44,23 @@ export class ContentManager{
         content.name = name;
     }
 
+    changeFolder(mediaStation:MediaStation, contentId:number, newFolderId:number):void{
+        let content:Content = this.getContent(mediaStation, contentId);
+        let oldFolder:Folder;
+        let newFolder:Folder = mediaStation.rootFolder.findFolder(newFolderId);
+
+        if(!content)
+            throw new Error("Content with ID does not exist: "+ contentId);
+
+        if(!newFolder)
+            throw new Error("Folder with ID does not exist: "+ newFolderId);
+
+        oldFolder = mediaStation.rootFolder.findFolder(content.folderId);
+
+        oldFolder.removeContent(contentId);
+        newFolder.addContent(content);
+    }
+
     changeLightIntensity(mediaStation:MediaStation, id:number, intensity:number):void{
         let content:Content = this.getContent(mediaStation, id);
 

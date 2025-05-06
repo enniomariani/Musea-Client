@@ -218,6 +218,45 @@ describe("changeName() ", () => {
     });
 });
 
+describe("changeParentFolder() ", () => {
+
+    let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
+    let newParentId: number = 28;
+
+    it("should call folderManager.changeName with the correct arguments", () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        //method to test
+        folderService.changeParentFolder(mediaStationId, folderId, newParentId);
+
+        //tests
+        expect(mockFolderManager.changeParentFolder).toHaveBeenCalledTimes(1);
+        expect(mockFolderManager.changeParentFolder).toHaveBeenCalledWith(mockMediaStation, folderId, newParentId);
+    });
+
+    it("should call mediaStationRepository.updateMediaStation", () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockFolderManager.createFolder.mockReturnValueOnce(mockFolder);
+
+        //method to test
+        folderService.changeParentFolder(mediaStationId, folderId, newParentId);
+
+        //tests
+        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        expect(() => folderService.changeParentFolder(mediaStationId, folderId, newParentId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
 describe("getAllSubFoldersInFolder() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     let mockFolder: MockFolder = new MockFolder(0);

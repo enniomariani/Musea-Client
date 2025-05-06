@@ -42,6 +42,14 @@ export class ContentService {
         this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
+    changeFolder(mediaStationId:number, contentId:number, newFolderId:number):void{
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        this._contentManager.changeFolder(mediaStation, contentId, newFolderId);
+
+        this._mediaStationRepository.updateMediaStation(mediaStation);
+    }
+
     getLightIntensity(mediaStationId:number, id:number):number{
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let content:Content = this._contentManager.getContent(mediaStation,id);

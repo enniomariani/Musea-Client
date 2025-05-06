@@ -10,6 +10,7 @@ export class MockFolderService extends FolderService {
     createFolder: jest.Mock;
     getName: jest.Mock;
     changeName: jest.Mock;
+    changeParentFolder: jest.Mock;
     getIdOfParentFolder: jest.Mock;
     deleteFolder: jest.Mock;
 
@@ -22,6 +23,7 @@ export class MockFolderService extends FolderService {
         super(mockMediaStationRepo, mockContentService);
         this.createFolder = jest.fn();
         this.changeName = jest.fn();
+        this.changeParentFolder = jest.fn();
         this.getName = jest.fn();
         this.deleteFolder = jest.fn();
 
