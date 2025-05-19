@@ -12,6 +12,7 @@ export class MockContentService extends ContentService {
     createContent: jest.Mock;
     changeName: jest.Mock;
     deleteContent: jest.Mock;
+    changeFolder: jest.Mock;
 
     sendCommandPlay: jest.Mock;
     sendCommandStop: jest.Mock;
@@ -34,6 +35,7 @@ export class MockContentService extends ContentService {
         this.createContent = jest.fn();
         this.changeName = jest.fn();
         this.deleteContent = jest.fn();
+        this.changeFolder = jest.fn();
 
         this.sendCommandPlay = jest.fn();
         this.sendCommandStop = jest.fn();
