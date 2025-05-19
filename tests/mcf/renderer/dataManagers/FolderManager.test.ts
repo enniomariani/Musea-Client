@@ -179,6 +179,16 @@ describe("changeParentFolder() ", ()=>{
         expect(mockNewParentFolder.addSubFolder).toHaveBeenCalledWith(folder);
     });
 
+    it("should set the new parentFolder in the changed folder", ()=>{
+        setup();
+
+        //method to test
+        folderManager.changeParentFolder(mockMediaStation, folderID, newParentFolderId);
+
+        //tests
+        expect(folder.parentFolder).toEqual(mockNewParentFolder);
+    });
+
     it("should throw an error if the folder could not be found", ()=>{
         setup();
 

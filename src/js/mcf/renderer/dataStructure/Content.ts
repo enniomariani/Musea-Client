@@ -1,7 +1,8 @@
 import {Image, IMedia, Video} from "./Media";
+import * as console from "node:console";
+import {Error} from "memfs/lib/internal/errors";
 
 export class Content {
-
     private _id: number;
     private _name: string;
     private _media: Map<number, IMedia> = new Map();
@@ -158,5 +159,9 @@ export class Content {
 
     get folderId(): number {
         return this._folderId;
+    }
+
+    set folderId(value: number) {
+        this._folderId = value;
     }
 }

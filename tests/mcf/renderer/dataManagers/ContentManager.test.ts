@@ -186,6 +186,16 @@ describe("changeFolder() ", ()=>{
         expect(mockNewFolder.addContent).toHaveBeenCalledWith(content);
     });
 
+    it("should set the folder-id of the content to the new folder", ()=>{
+        setup();
+
+        //method to test
+        contentManager.changeFolder(mockMediaStation, contentID, newFolderId);
+
+        //tests
+        expect(content.folderId).toBe(newFolderId);
+    });
+
     it("should throw an error if the content could not be found", ()=>{
         setup();
 

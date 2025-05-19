@@ -59,6 +59,8 @@ export class ContentManager{
 
         oldFolder.removeContent(contentId);
         newFolder.addContent(content);
+
+        content.folderId = newFolderId;
     }
 
     changeLightIntensity(mediaStation:MediaStation, id:number, intensity:number):void{

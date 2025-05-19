@@ -55,6 +55,7 @@ export class FolderManager{
 
         folder.parentFolder.removeSubFolder(folderId);
         newParentFolder.addSubFolder(folder);
+        folder.parentFolder = newParentFolder;
     }
 
     deleteFolder(mediaStation:MediaStation, id:number, parentFolderId:number):void{
