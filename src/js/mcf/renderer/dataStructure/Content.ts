@@ -1,6 +1,5 @@
 import {Image, IMedia, Video} from "./Media";
 import * as console from "node:console";
-import {Error} from "memfs/lib/internal/errors";
 
 export class Content {
     private _id: number;
