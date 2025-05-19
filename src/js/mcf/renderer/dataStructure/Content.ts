@@ -1,5 +1,4 @@
 import {Image, IMedia, Video} from "./Media";
-import * as console from "node:console";
 
 export class Content {
     private _id: number;
