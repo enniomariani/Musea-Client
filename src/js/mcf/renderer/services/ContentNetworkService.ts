@@ -80,14 +80,10 @@ export class ContentNetworkService{
     async sendCommandLight(mediaApps:Map<number, MediaApp>, presetId:number):Promise<void>{
         let command:string[] = [ContentNetworkService.COMMAND_LIGHT, presetId.toString()];
 
-        console.log("SEND COMMAND LIGHT: ",command,  presetId);
         await this._sendLightCommandToAllMediaApps(mediaApps, command);
     }
 
     private async _sendMediaCommandToAllMediaApps(mediaApps:Map<number, MediaApp>, command:string[]):Promise<void>{
-
-        console.log("SEND COMMAND TO ALL MEDIA-APPS: ", command);
-
         for (const [key, mediaApp] of mediaApps.entries()) {
             if(mediaApp.ip && mediaApp.ip !== "")
                 await this._networkService.sendMediaControlTo(mediaApp.ip, command);
@@ -97,9 +93,6 @@ export class ContentNetworkService{
     }
 
     private async _sendLightCommandToAllMediaApps(mediaApps:Map<number, MediaApp>, command:string[]):Promise<void>{
-
-        console.log("SEND COMMAND TO ALL MEDIA-APPS: ", command)
-
         for (const [key, mediaApp] of mediaApps.entries()) {
             if(mediaApp.ip && mediaApp.ip !== "")
                 await this._networkService.sendLightCommandTo(mediaApp.ip, command);

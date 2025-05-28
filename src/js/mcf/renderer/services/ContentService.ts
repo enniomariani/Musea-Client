@@ -113,8 +113,6 @@ export class ContentService {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let media:IMedia;
 
-        console.log("SEND COMMAND PLAY: ", contentId)
-
         let content:Content = this._contentManager.getContent(mediaStation, contentId);
 
         for (const [key, item] of mediaStation.getAllMediaApps()){
@@ -161,19 +159,12 @@ export class ContentService {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         let media:IMedia;
 
-        console.log("SEND COMMAND SYNC: ", pos)
-
         let content:Content = this._contentManager.getContent(mediaStation, contentId);
-
-        console.log("all media-apps: ", mediaStation.getAllMediaApps())
-        console.log("CONTENT: ", content)
 
         for (const [key, item] of mediaStation.getAllMediaApps()){
 
             if(content)
                 media = content.media.get(item.id);
-
-            console.log("send sync to media? ", key, media, media instanceof  Video)
 
             if(media && media instanceof Video)
                 await this._contentNetworkService.sendCommandSync(mediaStation.getMediaApp(item.id), pos);

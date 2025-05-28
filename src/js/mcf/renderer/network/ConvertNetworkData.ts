@@ -116,5 +116,4 @@ export class ConvertNetworkData {
 
         return parts;
     }
-
 }
