@@ -71,8 +71,7 @@ export class ContentNetworkService{
             return;
         }
 
-        if(posInSec)
-            commands.push(posInSec.toString());
+        commands.push(posInSec.toString());
 
         await this._sendMediaCommandToAllMediaApps(mediaApps, commands);
     }
