@@ -45,7 +45,7 @@ export class NetworkInterface extends EventTarget {
      */
     connectToServer(url: string, onOpen: Function = null, onError: Function = null, onClosed: Function = null, onDataReceived: IOnReceivedData = null): void {
 
-        //return false if the Websocket exists and is connecting (state 0), opening (state 1) or closing (state 2)
+        //abort if the Websocket exists and is connecting (state 0), opening (state 1) or closing (state 2)
         if (this._connection !== null && this._connection.readyState !== 3) {
             console.log("WebSocketConnection: connection already exists and is not closed!");
             return;
@@ -57,13 +57,15 @@ export class NetworkInterface extends EventTarget {
         this._onDataReceivedCallBack = onDataReceived;
 
         try {
-            console.log("create new connection: ", url)
+            console.log("create new connection: ", url);
             this._connection = new WebSocket(url);
 
+            // Close WebSocket connection if it could not be established after a certain time
+            // --> normally not necesary, but if the connection is over WLAN and the connection is unstable, it could be
+            // that the websocket-connection hangs for a long time
             // @ts-ignore
             this._connectionTimeoutTimer = setTimeout(() => {
-                console.log("timeout reached!")
-                this._connection.close(); // Close WebSocket connection if timeout happens
+                this._connection.close();
             }, 3000);
 
         } catch (error) {
@@ -97,6 +99,8 @@ export class NetworkInterface extends EventTarget {
         console.log("WebSocketConnection: WebSocket CLOSED");
         this._connected = false;
 
+        clearTimeout(this._connectionTimeoutTimer);
+
         this._connection.removeEventListener("error", this._onConnectionErrorFunc);
         this._connection.removeEventListener("open", this._onConnectionOpenFunc);
         this._connection.removeEventListener("close", this._onConnectionClosedFunc);
@@ -112,6 +116,8 @@ export class NetworkInterface extends EventTarget {
     private _onConnectionError(): void {
         console.log("WebSocketConnection: WebSocket error");
         this._connected = false;
+
+        clearTimeout(this._connectionTimeoutTimer);
 
         if (this._onError)
             this._onError();

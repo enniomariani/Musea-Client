@@ -1,5 +1,5 @@
 import {WS} from "jest-websocket-mock";
-import {jest, expect, test, beforeEach, describe} from '@jest/globals'
+import {jest, expect, beforeEach, describe, it} from '@jest/globals'
 import {NetworkInterface} from "../../../../src/js/mcf/renderer/network/NetworkInterface";
 
 // create a WSS instance, listening on port 1234 on localhost
@@ -17,12 +17,12 @@ beforeEach(async () => {
 });
 
 afterEach(() =>{
-    jest.clearAllMocks();   //necesary, otherwise the console-errors-counts are not reset
+    jest.clearAllMocks();   //necesary, otherwise the console-errors-counts are not reseted
 })
 
 describe("connectToServer(): ", () => {
 
-    test("client connects successfully to server", async () =>{
+    it("client connects successfully to server", async () =>{
 
         let eventHandler = jest.fn();
         let serverEventHandler = jest.fn();
@@ -40,10 +40,9 @@ describe("connectToServer(): ", () => {
         networkInterface.removeEventListener(NetworkInterface.CONNECTED, eventHandler);
     });
 
-    test("if the connection is established, do not reconnect if connectToServer is called again", async () =>{
+    it("if the connection is established, do not reconnect if connectToServer is called again", async () =>{
 
         let eventHandler = jest.fn();
-        let connectionInitialised:boolean;
 
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
@@ -57,7 +56,23 @@ describe("connectToServer(): ", () => {
         networkInterface.removeEventListener(NetworkInterface.CONNECTED, eventHandler);
     });
 
-    test("fires error and closed-event on server-error", async () =>{
+    it("does not throw if connection-timeout fires after server closes connection", async () => {
+        const onClosed = jest.fn();
+
+        jest.useFakeTimers();
+
+        networkInterface.connectToServer(serverPath, null, null, onClosed);
+
+        server.close();
+
+        expect(() => {
+            jest.advanceTimersByTime(3001);
+        }).not.toThrow();
+
+        jest.useRealTimers();
+    });
+
+    it("fires error and closed-event on server-error", async () =>{
 
         let eventHandlerError = jest.fn();
         let eventHandlerClosed = jest.fn();
@@ -79,7 +94,7 @@ describe("connectToServer(): ", () => {
         networkInterface.removeEventListener(NetworkInterface.CLOSED, eventHandlerClosed);
     });
 
-    test("fires close-event on server closed", async () =>{
+    it("fires close-event on server closed", async () =>{
 
         let eventHandler = jest.fn();
 
@@ -97,7 +112,7 @@ describe("connectToServer(): ", () => {
         networkInterface.removeEventListener(NetworkInterface.CLOSED, eventHandler);
     });
 
-    test("calls onOpen callback when the server is connected", async () =>{
+    it("calls onOpen callback when the server is connected", async () =>{
         let onOpenHandler = jest.fn();
 
         networkInterface.connectToServer(serverPath, onOpenHandler, null, null);
@@ -106,7 +121,7 @@ describe("connectToServer(): ", () => {
         expect(onOpenHandler).toBeCalledTimes(1);
     });
 
-    test("calls onError callback when the connection could not be established", async () =>{
+    it("calls onError callback when the connection could not be established", async () =>{
         let onErrorHandler = jest.fn();
 
         networkInterface.connectToServer("wrong-serverpath", null, onErrorHandler, null);
@@ -114,7 +129,7 @@ describe("connectToServer(): ", () => {
         expect(onErrorHandler).toBeCalledTimes(1);
     });
 
-    test("prints the error when the connection could not be established", async () =>{
+    it("prints the error when the connection could not be established", async () =>{
         let logSpy:any = jest.spyOn(console, 'error');
 
         networkInterface.connectToServer("wrong-serverpath", null, null, null);
@@ -122,7 +137,7 @@ describe("connectToServer(): ", () => {
         expect(logSpy).toBeCalledTimes(1);
     });
 
-    test("calls onError callback when the server-connection threw an error", async () =>{
+    it("calls onError callback when the server-connection threw an error", async () =>{
         let onErrorHandler = jest.fn();
 
         networkInterface.connectToServer(serverPath, null, onErrorHandler, null);
@@ -133,7 +148,7 @@ describe("connectToServer(): ", () => {
         expect(onErrorHandler).toBeCalledTimes(1);
     });
 
-    test("calls onClose callback when the server closed", async () =>{
+    it("calls onClose callback when the server closed", async () =>{
         let onClosedHandler = jest.fn();
 
         networkInterface.connectToServer(serverPath, null, null, onClosedHandler);
@@ -146,7 +161,7 @@ describe("connectToServer(): ", () => {
         expect(onClosedHandler).toBeCalledTimes(1);
     });
 
-    test("calls onDataReceived callback when the server sent a message", async () =>{
+    it("calls onDataReceived callback when the server sent a message", async () =>{
         let onDataReceivedHandler = jest.fn();
         let data:Uint8Array = new Uint8Array([0x00, 0xF0, 0x11, 0x1E]);
 
@@ -159,7 +174,7 @@ describe("connectToServer(): ", () => {
         expect(onDataReceivedHandler).toHaveBeenCalledWith(data);
     });
 
-    test("throws an error if the received data is not a Uint8Array or a string", async () =>{
+    it("throws an error if the received data is not a Uint8Array or a string", async () =>{
         let onDataReceivedHandler = jest.fn();
         let data:Blob = new Blob();
 
@@ -305,7 +320,7 @@ describe("sendDataToServer() ", ()=>{
         expect(logSpy).toHaveBeenCalledWith("WebSocketConnection: connection was terminated during sending");
     });
 
-    test("should return false if there is no connection", async () =>{
+    it("should return false if there is no connection", async () =>{
 
         let testData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11])
         let response:boolean;
