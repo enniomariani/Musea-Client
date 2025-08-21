@@ -14,8 +14,6 @@ declare global {
 
     interface BackendData{
         pathToDataFolder: string;
-        json: any;
-        errorsInJson: string;
     }
 
     interface IBackendFileService{
