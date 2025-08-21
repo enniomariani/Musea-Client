@@ -1,10 +1,8 @@
 import {CreateGlobalSettings} from "./globalSettings/CreateGlobalSettings";
 import {GlobalSettings} from "./globalSettings/GlobalSettings";
-import {MediaClientFramework} from "../../mcf/renderer/MediaClientFramework";
-import {NetworkConnectionHandler} from "../../mcf/renderer/network/NetworkConnectionHandler";
-import {MediaService} from "../../mcf/renderer/services/MediaService";
+import {MediaClientFramework} from "../mcf/renderer/MediaClientFramework";
 
-export class ModelMain extends EventTarget {
+export class MainApp extends EventTarget {
     private _globalSettings:GlobalSettings;
     private _backend:IBackend;
     private _createGlobalSettings:CreateGlobalSettings;

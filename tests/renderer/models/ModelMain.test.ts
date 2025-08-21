@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {ModelMain} from "renderer/models/ModelMain";
-import {GlobalSettings} from "renderer/models/globalSettings/GlobalSettings";
-import {CreateGlobalSettings} from "renderer/models/globalSettings/CreateGlobalSettings"
+import {GlobalSettings} from "../../../src/js/renderer/globalSettings/GlobalSettings";
+import {CreateGlobalSettings} from "../../../src/js/renderer/globalSettings/CreateGlobalSettings"
 
 const mockBackend: jest.Mocked<IBackend> = {
     loadSettings: jest.fn()
@@ -10,7 +10,7 @@ const mockBackend: jest.Mocked<IBackend> = {
 const globalSettings = new GlobalSettings();
 
 //mock classes
-jest.mock('renderer/models/globalSettings/CreateGlobalSettings', () => {
+jest.mock('../../../src/js/renderer/globalSettings/CreateGlobalSettings', () => {
     return {
         CreateGlobalSettings: jest.fn().mockImplementation(() => {
             return {

@@ -1,4 +1,4 @@
-import {GlobalSettingsFactory} from "../../../main/globalSettings/GlobalSettingsFactory";
+import {GlobalSettingsFactory} from "../../main/globalSettings/GlobalSettingsFactory";
 import {GlobalSettings} from "./GlobalSettings";
 
 export class CreateGlobalSettings {
