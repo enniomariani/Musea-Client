@@ -23,7 +23,7 @@ app.whenReady().then(async () => {
     let createWindow:CreateWindow = new CreateWindow();
 
     console.log("Main: create window...");
-    mainWindow = await createWindow.create(windowWidth, windowHeight,false, false,
+    mainWindow = await createWindow.create(windowWidth, windowHeight,
         join(__dirname, '../../index.html'),join(__dirname, 'preload.js'),environment === 'development');
 
     console.log("MAIN WINDOW: ", mainWindow)
@@ -42,11 +42,9 @@ app.whenReady().then(async () => {
 });
 
 ipcMain.handle('app:load-settings', (event, args) => {
-    let pathToDataFolder: string;
-
     //this is necessary because the path to the data-folder is in public_html/daten in the dev-environment but
     //in the resources-folder in the production-environment. If in the production-env nothing is specified as path, it looks in the asar-package
-    pathToDataFolder = environment === 'development' ? join(__dirname, '..', '..', 'daten\\') : join(process.resourcesPath, '\\daten\\');
+    const pathToDataFolder:string = environment === 'development' ? join(__dirname, '..', '..', 'daten\\') : join(process.resourcesPath, '\\daten\\');
 
     console.log("Main: send global-settings-json to renderer: ", pathToDataFolder);
 

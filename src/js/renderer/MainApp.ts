@@ -38,6 +38,5 @@ export class MainApp extends EventTarget {
 
             await mcf.contentService.sendCommandPlay(0, 1);
         }
-
     }
 }
