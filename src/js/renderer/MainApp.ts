@@ -1,31 +1,18 @@
-import {CreateGlobalSettings} from "./globalSettings/CreateGlobalSettings";
-import {GlobalSettings} from "./globalSettings/GlobalSettings";
 import {MediaClientFramework} from "../mcf/renderer/MediaClientFramework";
 
 export class MainApp extends EventTarget {
-    private _globalSettings:GlobalSettings;
     private _backend:IBackend;
-    private _createGlobalSettings:CreateGlobalSettings;
 
-    constructor(createGlobalSettings:CreateGlobalSettings, globalSettings:GlobalSettings, backend:IBackend) {
+    constructor(backend:IBackend) {
         super();
         this._backend = backend;
-        this._globalSettings = globalSettings;
-        this._createGlobalSettings = createGlobalSettings;
-    }
-
-    async loadSettings(){
-        this._globalSettings = await this._createGlobalSettings.create();
-
-        if(this._globalSettings.errorsInJSON === null)
-            console.log("settings.txt loaded successfully - no errors in the settings.txt-file: ", this._globalSettings);
-        else
-            console.error("Errors in the settings.txt, use default-settings, where there was an error: ", this._globalSettings);
     }
 
     async initFrameWork(){
+        let backendData:BackendData = await this._backend.loadSettings();
+
         //for TEST-PURPOSES!! TO DO: REMOVE
-        let mcf:MediaClientFramework = new MediaClientFramework(this._globalSettings.pathToDataFolder);
+        let mcf:MediaClientFramework = new MediaClientFramework(backendData.pathToDataFolder);
         let mediaAppReachable:boolean;
 
         let firstMediaStationId:number = mcf.mediaStationDataService.createMediaStation("111");
