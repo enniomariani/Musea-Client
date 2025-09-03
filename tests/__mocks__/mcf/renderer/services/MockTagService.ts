@@ -1,9 +1,9 @@
 import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository";
-import {TagService} from "../../../../../src/mcf/renderer/services/TagService";
+import {TagDataService} from "../../../../../src/mcf/renderer/services/TagDataService";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
 
-export class MockTagService extends TagService {
+export class MockTagService extends TagDataService {
     createTag: jest.Mock;
     deleteTag: jest.Mock;
     getAllTags: jest.Mock;

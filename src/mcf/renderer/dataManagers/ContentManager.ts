@@ -1,6 +1,6 @@
-import {MediaStation} from "../dataStructure/MediaStation";
 import {Content} from "../dataStructure/Content";
 import {Folder} from "../dataStructure/Folder";
+import {MediaStation} from "../dataStructure/MediaStation";
 
 export class ContentManager{
     constructor(){}

@@ -10,7 +10,7 @@ import {MediaStationNetworkService} from "./services/MediaStationNetworkService"
 import {FolderService} from "./services/FolderService";
 import {MediaService} from "./services/MediaService";
 import {MediaStationCacheService} from "./services/MediaStationCacheService";
-import {TagService} from "./services/TagService";
+import {TagDataService} from "./services/TagDataService";
 
 export interface IMediaClientFramework {
     get mediaStationDataService(): MediaStationDataService
@@ -20,7 +20,7 @@ export interface IMediaClientFramework {
     get contentService(): ContentService
     get mediaService(): MediaService
     get mediaStationCacheService(): MediaStationCacheService
-    get tagService(): TagService
+    get tagService(): TagDataService
 }
 
 export class MediaClientFramework implements IMediaClientFramework {
@@ -40,7 +40,7 @@ export class MediaClientFramework implements IMediaClientFramework {
     protected _folderService: FolderService;
     protected _contentService: ContentService;
     protected _mediaService: MediaService;
-    protected _tagService: TagService;
+    protected _tagService: TagDataService;
 
     constructor(pathToDataFolder: string) {
         this._mediaStationMetaData = new MediaStationLocalMetaData();
@@ -60,7 +60,7 @@ export class MediaClientFramework implements IMediaClientFramework {
         this._contentService = new ContentService(this._mediaStationRepository, this._contentNetworkService, this._mediaService);
         this._folderService = new FolderService(this._mediaStationRepository, this._contentService);
 
-        this._tagService = new TagService(this._mediaStationRepository);
+        this._tagService = new TagDataService(this._mediaStationRepository);
     }
 
     get mediaStationDataService(): MediaStationDataService {
@@ -91,7 +91,7 @@ export class MediaClientFramework implements IMediaClientFramework {
         return this._mediaStationCacheService;
     }
 
-    get tagService(): TagService {
+    get tagService(): TagDataService {
         return this._tagService;
     }
 }

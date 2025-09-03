@@ -5,7 +5,7 @@ import {ContentManager} from "../dataManagers/ContentManager";
 import {Content} from "../dataStructure/Content";
 
 
-export class TagService {
+export class TagDataService {
 
     private _mediaStationRepository: MediaStationRepository;
     private _contentManager: ContentManager;

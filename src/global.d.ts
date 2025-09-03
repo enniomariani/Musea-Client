@@ -20,7 +20,7 @@ declare global {
         saveFile(path:string, data:Uint8Array):string;
         saveFileByPath(path:string, fileInstance:File):Promise<string>;
         deleteFile(path:string):string;
-        loadFile(path:string):Prowmise<Uint8Array|null>;
+        loadFile(path:string):Promise<Uint8Array|null>;
         fileExists(path:string):Promise<boolean>;
         getAllFileNamesInFolder(path:string):Promise<string[]>;
     }

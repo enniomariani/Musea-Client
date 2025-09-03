@@ -4,12 +4,12 @@ import {
     MockMediaStationRepository
 } from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {TagService} from "../../../../src/mcf/renderer/services/TagService";
-import {Tag} from "../../../../src/mcf/renderer/dataStructure/Tag";
+import {Tag} from "@app/mcf/renderer/dataStructure/Tag";
 import {MockContentManager} from "../../../__mocks__/mcf/renderer/dataManagers/MockContentManager";
 import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
+import {TagDataService} from "../../../../src/mcf/renderer/services/TagDataService";
 
-let tagService:TagService;
+let tagService:TagDataService;
 let mockMediaStationRepo:MockMediaStationRepository;
 let mockContentManager:MockContentManager;
 let mockMediaStation:MockMediaStation;
@@ -18,7 +18,7 @@ beforeEach(() => {
     mockMediaStation = new MockMediaStation(0);
     mockMediaStationRepo = new MockMediaStationRepository();
     mockContentManager = new MockContentManager();
-    tagService = new TagService(mockMediaStationRepo, mockContentManager);
+    tagService = new TagDataService(mockMediaStationRepo, mockContentManager);
 
     mockMediaStationRepo.findMediaStation.mockImplementation((id) =>{
         if(id === 0)
