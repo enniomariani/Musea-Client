@@ -1,4 +1,4 @@
-import {MediaManager} from "../../../../../src/mcf/renderer/dataManagers/MediaManager";
+import {MediaManager} from "src/mcf/renderer/dataManagers/MediaManager";
 
 export class MockMediaManager extends MediaManager{
 
