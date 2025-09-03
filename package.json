@@ -33,8 +33,6 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-silent-reporter": "^0.6.0",
     "jest-websocket-mock": "^2.5.0",
-    "memfs": "^4.9.3",
-    "mock-fs": "^5.2.0",
     "rimraf": "^5.0.7",
     "ts-jest": "^29.1.5",
     "ts-loader": "^9.5.1",
