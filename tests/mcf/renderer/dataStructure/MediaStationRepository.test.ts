@@ -7,12 +7,12 @@ import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/Mo
 import {
     MockContentFileService
 } from "../../../__mocks__/mcf/renderer/fileHandling/MockContentFileService";
-import {MediaApp} from "../../../../src/js/mcf/renderer/dataStructure/MediaApp";
-import {MediaStation} from "../../../../src/js/mcf/renderer/dataStructure/MediaStation";
+import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
+import {MediaStation} from "../../../../src/mcf/renderer/dataStructure/MediaStation";
 import {
     ICachedMedia,
     MediaStationRepository
-} from "../../../../src/js/mcf/renderer/dataStructure/MediaStationRepository";
+} from "../../../../src/mcf/renderer/dataStructure/MediaStationRepository";
 import {
     MockMediaFilesMarkedToDeleteService
 } from "../../../__mocks__/mcf/renderer/fileHandling/MockMediaFilesMarkedToDeleteService";

@@ -24,7 +24,7 @@ app.whenReady().then(async () => {
 
     console.log("Main: create window...");
     mainWindow = await createWindow.create(windowWidth, windowHeight,
-        join(__dirname, '../../index.html'),join(__dirname, 'preload.js'),environment === 'development');
+        join(__dirname, '../index.html'),join(__dirname, 'preload.js'),environment === 'development');
 
     console.log("MAIN WINDOW: ", mainWindow)
 

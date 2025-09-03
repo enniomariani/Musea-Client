@@ -1,9 +1,9 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {NetworkService} from "../../../../src/js/mcf/renderer/services/NetworkService";
+import {NetworkService} from "../../../../src/mcf/renderer/services/NetworkService";
 import {
     MockNetworkConnectionHandler
 } from "../../../__mocks__/mcf/renderer/network/MockNetworkConnectionHandler";
-import {ConvertNetworkData} from "../../../../src/js/mcf/renderer/network/ConvertNetworkData";
+import {ConvertNetworkData} from "../../../../src/mcf/renderer/network/ConvertNetworkData";
 
 let mockNetworkConnectionHandler: MockNetworkConnectionHandler;
 let networkService: NetworkService;

@@ -5,7 +5,7 @@
   "version": "1.0.3",
   "description": "Framework for media management and communication with app that contain the media-server-frameworks",
   "type": "module",
-  "main": "./build/js/main/main.js",
+  "main": "./build/main/main.js",
   "scripts": {
     "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js ./tests --maxWorkers=50% --coverage --reporters jest-silent-reporter",
     "dev": "cross-env NODE_ENV=development npm start",

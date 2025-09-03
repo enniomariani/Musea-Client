@@ -3,19 +3,19 @@
   "compilerOptions": {
     "rootDir": "./",
     "types": ["jest"],
-    "baseUrl": "../src/js",
+    "baseUrl": "../src",
     "paths": {
       "../src/js/*": [
-        "../src/js/*"
+        "../src/*"
       ]
     }
   },
   "compileOnSave": false,
   "include": [
-    "../src/js",
+    "../src",
     "../**/*.ts",
-    "../src/js/global.d.ts",
-    "../src/js/**/*.ts"
+    "../src/global.d.ts",
+    "../src/**/*.ts"
   ],
   "references": [
     { "path": "../src" }

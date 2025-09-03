@@ -1,5 +1,5 @@
 import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository";
-import {FolderService} from "../../../../../src/js/mcf/renderer/services/FolderService";
+import {FolderService} from "../../../../../src/mcf/renderer/services/FolderService";
 import {MockContentService} from "./MockContentService";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();

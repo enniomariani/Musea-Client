@@ -1,4 +1,4 @@
-import {MediaStation} from "../../../../../src/js/mcf/renderer/dataStructure/MediaStation";
+import {MediaStation} from "../../../../../src/mcf/renderer/dataStructure/MediaStation";
 import {MockFolder} from "./MockFolder";
 
 export class MockMediaStation extends MediaStation{

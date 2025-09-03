@@ -1,6 +1,6 @@
 import {
     ContentNetworkService
-} from "../../../../../src/js/mcf/renderer/services/ContentNetworkService";
+} from "../../../../../src/mcf/renderer/services/ContentNetworkService";
 import {MockNetworkService} from "./MockNetworkService";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();

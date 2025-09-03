@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
-import {ContentManager} from "../../../../src/js/mcf/renderer/dataManagers/ContentManager";
+import {ContentManager} from "../../../../src/mcf/renderer/dataManagers/ContentManager";
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {Content} from "../../../../src/js/mcf/renderer/dataStructure/Content";
+import {Content} from "../../../../src/mcf/renderer/dataStructure/Content";
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 
 let contentManager:ContentManager;

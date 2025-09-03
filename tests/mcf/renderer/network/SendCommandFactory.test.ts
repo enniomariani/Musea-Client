@@ -1,12 +1,12 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {SendCommandFactory} from "../../../../src/js/mcf/renderer/network/SendCommandFactory";
-import {ConvertNetworkData} from "../../../../src/js/mcf/renderer/network/ConvertNetworkData";
+import {SendCommandFactory} from "../../../../src/mcf/renderer/network/SendCommandFactory";
+import {ConvertNetworkData} from "../../../../src/mcf/renderer/network/ConvertNetworkData";
 
 let sendCommandFactory:SendCommandFactory;
 let createdCommand:ArrayBuffer;
 
 let correctArrayBuffer:Uint8Array = new Uint8Array([0x00, 0xFF, 0x1E, 0x22]);
-jest.mock('../../../../src/js/mcf/renderer/network/ConvertNetworkData');
+jest.mock('../../../../src/mcf/renderer/network/ConvertNetworkData');
 
 let mockEncodeCommand = jest.fn((...parts:(string | Uint8Array)[]):Uint8Array=>{
     return null;

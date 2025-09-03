@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const directoryPath = path.join(process.cwd(), 'build/js');
+const directoryPath = path.join(process.cwd(), 'build');
 
 async function addJsExtension(filePath) {
     const content = await fs.readFile(filePath, 'utf8');

@@ -5,7 +5,7 @@ import {MockFolderService} from "./services/MockFolderService";
 import {MockContentService} from "./services/MockContentService";
 import {MockMediaService} from "./services/MockMediaService";
 import {MockMediaStationCacheService} from "./services/MockMediaStationCacheService";
-import {IMediaClientFramework} from "../../../../src/js/mcf/renderer/MediaClientFramework";
+import {IMediaClientFramework} from "../../../../src/mcf/renderer/MediaClientFramework";
 import {MockTagService} from "./services/MockTagService";
 
 export class MockMediaClientFramework implements  IMediaClientFramework{

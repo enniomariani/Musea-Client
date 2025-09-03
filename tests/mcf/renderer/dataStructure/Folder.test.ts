@@ -1,8 +1,8 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {Folder} from "../../../../src/js/mcf/renderer/dataStructure/Folder";
+import {Folder} from "../../../../src/mcf/renderer/dataStructure/Folder";
 import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
-import {Content} from "../../../../src/js/mcf/renderer/dataStructure/Content";
+import {Content} from "../../../../src/mcf/renderer/dataStructure/Content";
 
 let folder:Folder;
 let subFolder1:Folder = new Folder(1);

@@ -1,4 +1,4 @@
-import {FolderManager} from "../../../../../src/js/mcf/renderer/dataManagers/FolderManager";
+import {FolderManager} from "../../../../../src/mcf/renderer/dataManagers/FolderManager";
 
 export class MockFolderManager extends FolderManager{
 

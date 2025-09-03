@@ -4,9 +4,9 @@ import {
 } from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {MockMediaManager} from "../../../__mocks__/mcf/renderer/dataManagers/MockMediaManager";
-import {Image, Video} from "../../../../src/js/mcf/renderer/dataStructure/Media";
-import {MediaService} from "../../../../src/js/mcf/renderer/services/MediaService";
-import {MediaManager} from "../../../../src/js/mcf/renderer/dataManagers/MediaManager";
+import {Image, Video} from "../../../../src/mcf/renderer/dataStructure/Media";
+import {MediaService} from "../../../../src/mcf/renderer/services/MediaService";
+import {MediaManager} from "../../../../src/mcf/renderer/dataManagers/MediaManager";
 
 let mediaService: MediaService;
 let mockMediaStationRepo: MockMediaStationRepository;

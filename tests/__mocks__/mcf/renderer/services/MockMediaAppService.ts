@@ -1,5 +1,5 @@
 import {MockNetworkService} from "./MockNetworkService";
-import {MediaAppService} from "../../../../../src/js/mcf/renderer/services/MediaAppService";
+import {MediaAppService} from "../../../../../src/mcf/renderer/services/MediaAppService";
 import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();

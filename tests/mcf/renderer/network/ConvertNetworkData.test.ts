@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
-import {ConvertNetworkData} from "../../../../src/js/mcf/renderer/network/ConvertNetworkData";
+import {ConvertNetworkData} from "../../../../src/mcf/renderer/network/ConvertNetworkData";
 
 
 beforeEach(() => {

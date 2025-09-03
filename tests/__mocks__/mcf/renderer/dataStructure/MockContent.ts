@@ -1,4 +1,4 @@
-import {Content} from "../../../../../src/js/mcf/renderer/dataStructure/Content";
+import {Content} from "../../../../../src/mcf/renderer/dataStructure/Content";
 
 
 export class MockContent extends Content{

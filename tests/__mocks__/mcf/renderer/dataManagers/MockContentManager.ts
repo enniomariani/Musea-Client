@@ -1,4 +1,4 @@
-import {ContentManager} from "../../../../../src/js/mcf/renderer/dataManagers/ContentManager";
+import {ContentManager} from "../../../../../src/mcf/renderer/dataManagers/ContentManager";
 
 export class MockContentManager extends ContentManager{
 
