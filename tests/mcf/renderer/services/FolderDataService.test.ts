@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
 
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {FolderService} from "../../../../src/mcf/renderer/services/FolderService";
+import {FolderDataService} from "@app/mcf/renderer/services/FolderDataService";
 import {
     MockMediaStationRepository
 } from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
@@ -10,7 +10,7 @@ import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockCon
 import {MockFolderManager} from "../../../__mocks__/mcf/renderer/dataManagers/MockFolderManager";
 import {MockContentDataService} from "__mocks__/mcf/renderer/services/MockContentDataService";
 
-let folderService: FolderService;
+let folderService: FolderDataService;
 let mockMediaStationRepo: MockMediaStationRepository;
 let mockFolderManager: MockFolderManager;
 let mockContentService: MockContentDataService;
@@ -26,7 +26,7 @@ beforeEach(() => {
     mockMediaStationRepo = new MockMediaStationRepository();
     mockFolderManager = new MockFolderManager();
     mockContentService = new MockContentDataService();
-    folderService = new FolderService(mockMediaStationRepo, mockContentService, mockFolderManager);
+    folderService = new FolderDataService(mockMediaStationRepo, mockContentService, mockFolderManager);
 });
 
 afterEach(() => {

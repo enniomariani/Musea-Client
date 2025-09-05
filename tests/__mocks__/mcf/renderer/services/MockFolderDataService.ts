@@ -1,12 +1,12 @@
 import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository";
-import {FolderService} from "../../../../../src/mcf/renderer/services/FolderService";
+import {FolderDataService} from "@app/mcf/renderer/services/FolderDataService";
 import {MockContentDataService} from "__mocks__/mcf/renderer/services/MockContentDataService";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
 const mockContentService:MockContentDataService = new MockContentDataService();
 
 
-export class MockFolderService extends FolderService {
+export class MockFolderDataService extends FolderDataService {
     createFolder: jest.Mock;
     getName: jest.Mock;
     changeName: jest.Mock;

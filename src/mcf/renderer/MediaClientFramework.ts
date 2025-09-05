@@ -7,7 +7,7 @@ import {NetworkConnectionHandler} from "./network/NetworkConnectionHandler";
 import {ContentDataService} from "src/mcf/renderer/services/ContentDataService";
 import {ContentNetworkService} from "./services/ContentNetworkService";
 import {MediaStationNetworkService} from "./services/MediaStationNetworkService";
-import {FolderService} from "./services/FolderService";
+import {FolderDataService} from "src/mcf/renderer/services/FolderDataService";
 import {MediaService} from "./services/MediaService";
 import {MediaStationCacheService} from "./services/MediaStationCacheService";
 import {TagDataService} from "./services/TagDataService";
@@ -16,7 +16,7 @@ export interface IMediaClientFramework {
     get mediaStationDataService(): MediaStationDataService
     get mediaStationNetworkService(): MediaStationNetworkService
     get mediaAppService(): MediaAppService
-    get folderService(): FolderService
+    get folderService(): FolderDataService
     get contentService(): ContentDataService
     get mediaService(): MediaService
     get mediaStationCacheService(): MediaStationCacheService
@@ -37,7 +37,7 @@ export class MediaClientFramework implements IMediaClientFramework {
     protected _mediaStationCacheService: MediaStationCacheService;
     protected _mediaAppService: MediaAppService;
 
-    protected _folderService: FolderService;
+    protected _folderService: FolderDataService;
     protected _contentService: ContentDataService;
     protected _mediaService: MediaService;
     protected _tagService: TagDataService;
@@ -58,7 +58,7 @@ export class MediaClientFramework implements IMediaClientFramework {
 
         this._mediaService = new MediaService(this._mediaStationRepository);
         this._contentService = new ContentDataService(this._mediaStationRepository, this._contentNetworkService, this._mediaService);
-        this._folderService = new FolderService(this._mediaStationRepository, this._contentService);
+        this._folderService = new FolderDataService(this._mediaStationRepository, this._contentService);
 
         this._tagService = new TagDataService(this._mediaStationRepository);
     }
@@ -75,7 +75,7 @@ export class MediaClientFramework implements IMediaClientFramework {
         return this._mediaAppService;
     }
 
-    get folderService(): FolderService {
+    get folderService(): FolderDataService {
         return this._folderService;
     }
 

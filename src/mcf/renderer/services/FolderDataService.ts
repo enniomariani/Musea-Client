@@ -6,7 +6,7 @@ import {FolderManager} from "../dataManagers/FolderManager";
 import {ContentDataService} from "src/mcf/renderer/services/ContentDataService";
 
 
-export class FolderService {
+export class FolderDataService {
 
     private _mediaStationRepository: MediaStationRepository;
     private _folderManager: FolderManager;
