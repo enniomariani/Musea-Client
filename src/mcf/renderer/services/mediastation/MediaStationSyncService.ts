@@ -33,7 +33,7 @@ export class MediaStationSyncService {
      */
     async sync(mediaStationId: number, onSyncStep: IOnSyncStep, role:string  = "admin"): Promise<boolean> {
         console.log("SYNC MEDIA STATION: ", mediaStationId)
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepo.requireMediaStation(mediaStationId);
         let json: string;
         let connectionIsOpen: boolean;
         let mediaApp: MediaApp;
@@ -211,14 +211,5 @@ export class MediaStationSyncService {
             await this._networkService.sendDeleteMediaTo(ipMediaApp, id);
             await this._mediaStationRepo.deleteStoredMediaID(mediaStationId, mediaAppId, id);
         }
-    }
-
-    private _findMediaStation(id: number): MediaStation {
-        let mediaStation: MediaStation = this._mediaStationRepo.findMediaStation(id);
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-        else
-            return mediaStation;
     }
 }

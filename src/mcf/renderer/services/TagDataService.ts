@@ -16,7 +16,7 @@ export class TagDataService {
     }
 
     createTag(mediaStationId: number, name: string): number {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let tagId: number = mediaStation.getNextTagId();
 
         mediaStation.addTag(tagId, name);
@@ -25,7 +25,7 @@ export class TagDataService {
     }
 
     deleteTag(mediaStationId: number, id: number): void {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let allContentIds: Map<number, number[]> = mediaStation.rootFolder.getAllContentIDsInFolderAndSubFolders();
         let content: Content;
 
@@ -44,7 +44,7 @@ export class TagDataService {
     }
 
     getAllTags(mediaStationId: number): Map<number, string> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let returnMap: Map<number, string> = new Map();
         let allTags: Map<number, Tag> = mediaStation.getAllTags();
 
@@ -55,7 +55,7 @@ export class TagDataService {
     }
 
     addTagToContent(mediaStationId: number, contentId: number, tagId: number): void {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let content: Content = this._contentManager.getContent(mediaStation, contentId);
 
         if (content.tagIds.indexOf(tagId) !== -1)
@@ -65,7 +65,7 @@ export class TagDataService {
     }
 
     removeTagFromContent(mediaStationId: number, contentId: number, tagId: number): void {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let content: Content = this._contentManager.getContent(mediaStation, contentId);
         let tagIndex: number = content.tagIds.indexOf(tagId);
 
@@ -76,7 +76,7 @@ export class TagDataService {
     }
 
     getTagIdsForContent(mediaStationId: number, contentId: number): number[] {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let content: Content = this._contentManager.getContent(mediaStation, contentId);
         let tagIds:number[] = content.tagIds.concat();      //this is important, because if there is no copy made, changes in the returned array would directly affect the content!
 
@@ -84,7 +84,7 @@ export class TagDataService {
     }
 
     findContentsByTag(mediaStationId: number, tagId: number): Map<number, string> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let returnMap: Map<number, string> = new Map();
         let allContentIds: Map<number, number[]> = mediaStation.rootFolder.getAllContentIDsInFolderAndSubFolders();
         let content: Content;
@@ -98,14 +98,5 @@ export class TagDataService {
         }
 
         return returnMap;
-    }
-
-    private _findMediaStation(id: number): MediaStation {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(id);
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-        else
-            return mediaStation;
     }
 }

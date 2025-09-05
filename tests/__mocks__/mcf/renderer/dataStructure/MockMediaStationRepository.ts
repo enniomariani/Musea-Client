@@ -16,6 +16,7 @@ export class MockMediaStationRepository extends MediaStationRepository{
     loadMediaStations: jest.Mock;
     addMediaStation: jest.Mock;
     findMediaStation: jest.Mock;
+    requireMediaStation: jest.Mock;
     deleteMediaStation: jest.Mock;
     updateMediaStation: jest.Mock;
     updateAndSaveMediaStation: jest.Mock;
@@ -38,6 +39,7 @@ export class MockMediaStationRepository extends MediaStationRepository{
         this.loadMediaStations = jest.fn();
         this.addMediaStation = jest.fn();
         this.findMediaStation = jest.fn();
+        this.requireMediaStation = jest.fn();
         this.deleteMediaStation = jest.fn();
         this.updateMediaStation = jest.fn();
         this.updateAndSaveMediaStation = jest.fn();

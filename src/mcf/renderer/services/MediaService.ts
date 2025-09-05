@@ -31,7 +31,7 @@ export class MediaService {
      * @param {string} fileName
      */
     async addImageAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, fileExtension:string, fileInstance:File, fileName:string): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         if(!(fileExtension === MediaService.FILE_EXTENSION_IMAGE_PNG || fileExtension === MediaService.FILE_EXTENSION_IMAGE_JPEG))
             throw new Error("Non-valid file-extension passed: " +  fileExtension);
@@ -59,7 +59,7 @@ export class MediaService {
      * @param {string} fileName
      */
     async addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, duration:number, fileExtension:string, fileInstance:File, fileName:string): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         if(fileExtension !== MediaService.FILE_EXTENSION_VIDEO_MP4)
             throw new Error("Non-valid file-extension passed: " +  fileExtension);
@@ -80,7 +80,7 @@ export class MediaService {
      * @returns {string}
      */
     getFileName(mediaStationId:number, contentId:number, mediaAppId:number): string{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         return this._mediaManager.getFileName(mediaStation, contentId, mediaAppId);
     }
@@ -94,7 +94,7 @@ export class MediaService {
      * @returns {string}
      */
     getMediaType(mediaStationId:number, contentId:number, mediaAppId:number): string{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         return this._mediaManager.getMediaType(mediaStation, contentId, mediaAppId);
     }
@@ -111,7 +111,7 @@ export class MediaService {
      * @returns {Promise<void>}
      */
     async deleteMedia(mediaStationId:number, contentId:number, mediaAppId:number):Promise<void>{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let idOnMediaApp:number = this._mediaManager.getIdOnMediaApp(mediaStation, contentId, mediaAppId);
 
         if(this._mediaStationRepository.isMediaCached(mediaStationId, contentId, mediaAppId))
@@ -121,14 +121,5 @@ export class MediaService {
 
         this._mediaManager.deleteMedia(mediaStation, contentId, mediaAppId);
         this._mediaStationRepository.updateMediaStation(mediaStation);
-    }
-
-    private _findMediaStation(id: number): MediaStation {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(id);
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-        else
-            return mediaStation;
     }
 }

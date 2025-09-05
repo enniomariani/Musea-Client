@@ -71,7 +71,7 @@ describe("renameMediaStation() ", ()=>{
 
         let createdMediaStation:MediaStation = new MediaStation(createdID);
 
-        mockMediaStationRepository.findMediaStation.mockImplementation((idArg)=>{
+        mockMediaStationRepository.requireMediaStation.mockImplementation((idArg)=>{
             if(idArg === createdID)
                 return createdMediaStation;
         });
@@ -80,18 +80,10 @@ describe("renameMediaStation() ", ()=>{
         mediaStationDataService.changeName(createdID, newName);
 
         //tests
-        expect(mockMediaStationRepository.findMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepository.findMediaStation).toHaveBeenCalledWith(createdID);
+        expect(mockMediaStationRepository.requireMediaStation).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepository.requireMediaStation).toHaveBeenCalledWith(createdID);
         expect(mockMediaStationRepository.updateAndSaveMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepository.updateAndSaveMediaStation).toHaveBeenCalledWith(createdMediaStation);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", ()=>{
-        //setup
-        mockMediaStationRepository.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(()=> mediaStationDataService.changeName(createdID,"testName")).toThrow(new Error("Mediastation with this ID does not exist: " + createdID));
     });
 });
 
@@ -103,7 +95,7 @@ describe("getName() ", ()=>{
         let createdMediaStation:MediaStation = new MediaStation(createdID);
         createdMediaStation.name = newName;
 
-        mockMediaStationRepository.findMediaStation.mockImplementation((idArg)=>{
+        mockMediaStationRepository.requireMediaStation.mockImplementation((idArg)=>{
             if(idArg === createdID)
                 return createdMediaStation;
         });
@@ -114,14 +106,6 @@ describe("getName() ", ()=>{
         //tests
         expect(nameReturned).toBe(newName);
     });
-
-    it("should throw an error if the mediaStationId could not be found", ()=>{
-        //setup
-        mockMediaStationRepository.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(()=> mediaStationDataService.getName(createdID)).toThrow(new Error("Mediastation with this ID does not exist: " + createdID));
-    });
 });
 
 describe("getControllerIp() ", ()=>{
@@ -131,7 +115,7 @@ describe("getControllerIp() ", ()=>{
         let createdMediaStation:MockMediaStation = new MockMediaStation(createdID);
         createdMediaStation.getControllerIp.mockImplementationOnce((idArg)=>{return controllerIp})
 
-        mockMediaStationRepository.findMediaStation.mockImplementation((idArg)=>{
+        mockMediaStationRepository.requireMediaStation.mockImplementation((idArg)=>{
             if(idArg === createdID)
                 return createdMediaStation;
         });
@@ -142,21 +126,13 @@ describe("getControllerIp() ", ()=>{
         //tests
         expect(ipReturned).toBe(controllerIp);
     });
-
-    it("should throw an error if the mediaStationId could not be found", ()=>{
-        //setup
-        mockMediaStationRepository.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(()=> mediaStationDataService.getControllerIp(createdID)).toThrow(new Error("Mediastation with this ID does not exist: " + createdID));
-    });
 });
 
 describe("deleteMediaStation() ", ()=>{
     it("should call deleteMediaStation from the repo", async ()=>{
         let createdMediaStation:MockMediaStation = new MockMediaStation(createdID);
 
-        mockMediaStationRepository.findMediaStation.mockImplementation((idArg)=>{
+        mockMediaStationRepository.requireMediaStation.mockImplementation((idArg)=>{
             if(idArg === createdID)
                 return createdMediaStation;
         });
@@ -167,13 +143,5 @@ describe("deleteMediaStation() ", ()=>{
         //tests
         expect(mockMediaStationRepository.deleteMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepository.deleteMediaStation).toHaveBeenCalledWith(createdID);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", async ()=>{
-        //setup
-        mockMediaStationRepository.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        await expect(mediaStationDataService.deleteMediaStation(createdID)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + createdID));
     });
 });

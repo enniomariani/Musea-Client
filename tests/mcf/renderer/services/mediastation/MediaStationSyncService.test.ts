@@ -151,7 +151,7 @@ describe("sync() ", () => {
             mocksCalled.push("mockContentFileService.deleteFile");
         });
 
-        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -505,14 +505,5 @@ describe("sync() ", () => {
         console.log("mock calls: ", mocksCalled)
         expect(answer).toBe(false);
         expect(mockMediaStationRepo.removeCachedMediaStation).toHaveBeenCalledTimes(0);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation = jest.fn();
-        mockMediaStationRepo.findMediaStation.mockReturnValue(null);
-
-        //tests
-        expect(() => service.sync(0, mockOnSyncStep)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });

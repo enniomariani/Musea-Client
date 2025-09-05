@@ -20,7 +20,7 @@ beforeEach(() => {
     mockContentManager = new MockContentManager();
     tagService = new TagDataService(mockMediaStationRepo, mockContentManager);
 
-    mockMediaStationRepo.findMediaStation.mockImplementation((id) =>{
+    mockMediaStationRepo.requireMediaStation.mockImplementation((id) =>{
         if(id === 0)
             return mockMediaStation;
     });
@@ -49,14 +49,6 @@ describe("addTag() ", ()=> {
 
         //tests
         expect(id).toBe(333);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", ()=>{
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(()=> tagService.createTag(0, "newTag")).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });
 
@@ -113,14 +105,6 @@ describe("deleteTag() ", ()=> {
         expect(mockContent3.tagIds).toEqual([])
 
     });
-
-    it("should throw an error if the mediaStationId could not be found", ()=>{
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(()=> tagService.deleteTag(0, 222)).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
-    });
 });
 
 describe("getAllTags() ", ()=> {
@@ -151,14 +135,6 @@ describe("getAllTags() ", ()=> {
         expect(receivedTags.get(0)).toEqual(tag1.name);
         expect(receivedTags.get(1)).toEqual(tag2.name);
         expect(receivedTags.get(2)).toEqual(tag3.name);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", ()=>{
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(()=> tagService.getAllTags(0)).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });
 
@@ -193,14 +169,6 @@ describe("addTagToContent() ", ()=> {
         //method to test
         expect(()=> tagService.addTagToContent(0, 3, 21)).toThrow(new Error("Content has tag-id already: " + 21));
     });
-
-    it("should throw an error if the mediaStationId could not be found", ()=>{
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(()=> tagService.addTagToContent(0, 3, 222)).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
-    });
 });
 
 describe("removeTagFromContent() ", ()=> {
@@ -234,14 +202,6 @@ describe("removeTagFromContent() ", ()=> {
         //method to test
         expect(()=> tagService.removeTagFromContent(0, 3, 4)).toThrow(new Error("Content has no tag-id: " + 4));
     });
-
-    it("should throw an error if the mediaStationId could not be found", ()=>{
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(()=> tagService.removeTagFromContent(0, 3, 222)).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
-    });
 });
 
 describe("getTagIdsForContent() ", ()=> {
@@ -262,14 +222,6 @@ describe("getTagIdsForContent() ", ()=> {
         //tests
         expect(allTags[0]).toBe(0);
         expect(allTags[1]).toBe(21);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", ()=>{
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(()=> tagService.getTagIdsForContent(0, 3)).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });
 
@@ -312,13 +264,4 @@ describe("findContentsByTag() ", ()=> {
         expect(allContentsWithThisTag.get(2)).toBe("content 2");
         expect(allContentsWithThisTag.get(20)).toBe("content 20");
     });
-
-    it("should throw an error if the mediaStationId could not be found", ()=>{
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(()=> tagService.findContentsByTag(0, 3)).toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
-
-});

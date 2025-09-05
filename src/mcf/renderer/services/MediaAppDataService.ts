@@ -16,7 +16,7 @@ export class MediaAppDataService {
     }
 
     createMediaApp(mediaStationId: number, name: string, ip: string): number {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
+        let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let mediaAppId: number;
 
         if (!mediaStation)
@@ -36,7 +36,7 @@ export class MediaAppDataService {
 
     getAllMediaApps(mediaStationId: number): Map<number, IMediaAppData> {
         let map: Map<number, IMediaAppData> = new Map();
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
+        let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         if (!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
@@ -59,7 +59,7 @@ export class MediaAppDataService {
     }
 
     changeName(mediaStationId: number, mediaAppId: number, name: string): void {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
+        let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let mediaApp: MediaApp = this._getMediaApp(mediaStationId, mediaAppId);
 
         mediaApp.name = name;
@@ -72,7 +72,7 @@ export class MediaAppDataService {
     }
 
     changeIp(mediaStationId: number, mediaAppId: number, ip: string): void {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
+        let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         this._getMediaApp(mediaStationId, mediaAppId).ip = ip;
 
@@ -85,7 +85,7 @@ export class MediaAppDataService {
     }
 
     private _getMediaApp(mediaStationId: number, mediaAppId: number): MediaApp {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
+        let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let mediaApp: MediaApp;
 
         if (!mediaStation)

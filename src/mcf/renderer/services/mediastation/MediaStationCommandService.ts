@@ -21,76 +21,76 @@ export class MediaStationCommandService  {
     }
 
     async sendCommandPlay(mediaStationId: number, contentId: number | null): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let media:IMedia;
 
-        let content:Content = this._contentManager.getContent(mediaStation, contentId);
+        let content:Content = this._contentManager.getContent(ms, contentId);
 
-        for (const [key, item] of mediaStation.getAllMediaApps()){
+        for (const [key, item] of ms.getAllMediaApps()){
 
             if(content)
                 media = content.media.get(item.id);
 
             if(media && media.idOnMediaApp !== -1)
-                await this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.id), media.idOnMediaApp);
+                await this._contentNetworkService.sendCommandPlay(ms.getMediaApp(item.id), media.idOnMediaApp);
             else if(!content)
-                await this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.id), null);
+                await this._contentNetworkService.sendCommandPlay(ms.getMediaApp(item.id), null);
             else
-                await this._contentNetworkService.sendCommandStop(mediaStation.getMediaApp(item.id));
+                await this._contentNetworkService.sendCommandStop(ms.getMediaApp(item.id));
         }
 
         if(contentId !== null)
-            await this._contentNetworkService.sendCommandLight(mediaStation.getAllMediaApps(), content.lightIntensity);
+            await this._contentNetworkService.sendCommandLight(ms.getAllMediaApps(), content.lightIntensity);
     }
 
     async sendCommandStop(mediaStationId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        for (const [key, item] of mediaStation.getAllMediaApps())
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
+        for (const [key, item] of ms.getAllMediaApps())
             await this._contentNetworkService.sendCommandStop(item);
 
-        await this._contentNetworkService.sendCommandLight(mediaStation.getAllMediaApps(), ContentDataService.DEFAULT_DMX_PRESET);
+        await this._contentNetworkService.sendCommandLight(ms.getAllMediaApps(), ContentDataService.DEFAULT_DMX_PRESET);
     }
 
     async sendCommandPause(mediaStationId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandPause(mediaStation.getAllMediaApps());
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
+        await this._contentNetworkService.sendCommandPause(ms.getAllMediaApps());
     }
 
     async sendCommandFwd(mediaStationId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandFwd(mediaStation.getAllMediaApps());
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
+        await this._contentNetworkService.sendCommandFwd(ms.getAllMediaApps());
     }
 
     async sendCommandRew(mediaStationId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandRew(mediaStation.getAllMediaApps());
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
+        await this._contentNetworkService.sendCommandRew(ms.getAllMediaApps());
     }
 
     async sendCommandSync(mediaStationId: number, contentId:number, pos: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let media:IMedia;
 
-        let content:Content = this._contentManager.getContent(mediaStation, contentId);
+        let content:Content = this._contentManager.getContent(ms, contentId);
 
-        for (const [key, item] of mediaStation.getAllMediaApps()){
+        for (const [key, item] of ms.getAllMediaApps()){
 
             if(content)
                 media = content.media.get(item.id);
 
             if(media && media instanceof Video)
-                await this._contentNetworkService.sendCommandSync(mediaStation.getMediaApp(item.id), pos);
+                await this._contentNetworkService.sendCommandSync(ms.getMediaApp(item.id), pos);
         }
     }
 
     async sendCommandSeek(mediaStationId: number, pos: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandSeek(mediaStation.getAllMediaApps(), pos);
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
+        await this._contentNetworkService.sendCommandSeek(ms.getAllMediaApps(), pos);
     }
 
     async sendCommandMute(mediaStationId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
-        for (const [key, item] of mediaStation.getAllMediaApps()) {
+        for (const [key, item] of ms.getAllMediaApps()) {
             if (item.ip && item.ip !== "")
                 await this._networkService.sendSystemCommandTo(item.ip, ["volume", "mute"]);
             else
@@ -99,9 +99,9 @@ export class MediaStationCommandService  {
     }
 
     async sendCommandUnmute(mediaStationId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
-        for (const [key, item] of mediaStation.getAllMediaApps()) {
+        for (const [key, item] of ms.getAllMediaApps()) {
             if (item.ip && item.ip !== "")
                 await this._networkService.sendSystemCommandTo(item.ip, ["volume", "unmute"]);
             else
@@ -110,23 +110,13 @@ export class MediaStationCommandService  {
     }
 
     async sendCommandSetVolume(mediaStationId: number, volume: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
-        for (const [key, item] of mediaStation.getAllMediaApps()) {
+        for (const [key, item] of ms.getAllMediaApps()) {
             if (item.ip && item.ip !== "")
                 await this._networkService.sendSystemCommandTo(item.ip, ["volume", "set", volume.toString()]);
             else
                 console.error("Sending set volume-command to media-app failed, because there is no ip set: ", item.name, item.ip)
         }
-    }
-
-
-    private _findMediaStation(id: number): MediaStation {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(id);
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-        else
-            return mediaStation;
     }
 }

@@ -321,6 +321,39 @@ describe("findMediaStation() ", ()=>{
     });
 });
 
+
+describe("requireMediaStation() ", ()=>{
+    it("should return the mediaStation object with the passed ID", ()=>{
+        //setup
+        let receivedId:number;
+        let nameMediaStation:string = "testName";
+        let foundMediaStation:MediaStation;
+
+        receivedId = mediaStationRepo.addMediaStation(nameMediaStation);
+        mediaStationRepo.addMediaStation("testName2");
+
+        //method to test
+        foundMediaStation = mediaStationRepo.requireMediaStation(receivedId);
+
+
+        //tests
+        expect(foundMediaStation.id).toEqual(receivedId);
+        expect(foundMediaStation.name).toEqual(nameMediaStation);
+
+    });
+
+    it("should trhow if the mediastation can not be found", ()=>{
+        //setup
+        let nameMediaStation:string = "testName";
+
+        mediaStationRepo.addMediaStation(nameMediaStation);
+        mediaStationRepo.addMediaStation("testName2");
+
+        //tests
+        expect(()=>mediaStationRepo.requireMediaStation(20)).toThrow(new Error("Mediastation with this ID does not exist: 20"));
+    });
+});
+
 describe("deleteMediaStation() ", ()=>{
     it("should remove the mediastation-object from the repository", async ()=>{
         //setup

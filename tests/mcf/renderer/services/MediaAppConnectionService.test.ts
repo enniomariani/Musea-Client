@@ -25,7 +25,7 @@ let mediaStation: MockMediaStation;
 let mediaApp1: MediaApp;
 let mediaApp2: MediaApp;
 
-function setupMediaAppWithName(repoReturnsMediaStation: boolean, addMediaStation: boolean = true, mediaStationId: number = 0): MediaApp {
+function setupMediaAppWithName(addMediaStation: boolean = true, mediaStationId: number = 0): MediaApp {
     mediaApp1 = new MediaApp(0);
     mediaApp2 = new MediaApp(1);
     mediaApp1 = new MediaApp(mediaAppId);
@@ -49,8 +49,8 @@ function setupMediaAppWithName(repoReturnsMediaStation: boolean, addMediaStation
         mediaStation.getMediaApp.mockReturnValue(mediaApp1);
     }
 
-    mockMediaStationRepo.findMediaStation.mockImplementation((id) => {
-        return repoReturnsMediaStation ? mediaStation : null;
+    mockMediaStationRepo.requireMediaStation.mockImplementation((id) => {
+        return mediaStation;
     });
     return mediaApp1;
 }
@@ -73,7 +73,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             //setup
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
-            setupMediaAppWithName(true);
+            setupMediaAppWithName();
 
             //method to test
             await service.connectAndRegisterToMediaApp(0, mediaAppId, "admin");
@@ -91,7 +91,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
-            setupMediaAppWithName(true);
+            setupMediaAppWithName();
 
             //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "admin");
@@ -105,7 +105,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(false);
             mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
-            setupMediaAppWithName(true);
+            setupMediaAppWithName();
 
             //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "admin");
@@ -119,7 +119,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("no");
-            setupMediaAppWithName(true);
+            setupMediaAppWithName();
 
             //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "admin");
@@ -134,7 +134,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             //setup
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
-            setupMediaAppWithName(true);
+            setupMediaAppWithName();
 
             //method to test
             await service.connectAndRegisterToMediaApp(0, mediaAppId, "user");
@@ -152,7 +152,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
-            setupMediaAppWithName(true);
+            setupMediaAppWithName();
 
             //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "user");
@@ -166,7 +166,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes_block");
-            setupMediaAppWithName(true);
+            setupMediaAppWithName();
 
             //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "user");
@@ -180,7 +180,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(false);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
-            setupMediaAppWithName(true);
+            setupMediaAppWithName();
 
             //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "user");
@@ -194,7 +194,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("no");
-            setupMediaAppWithName(true);
+            setupMediaAppWithName();
 
             //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "user");
@@ -208,23 +208,15 @@ describe("connectAndRegisterToMediaApp() ", () => {
         //setup
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("no");
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         //method to test
         await expect(service.connectAndRegisterToMediaApp(0, mediaAppId, "not-valid")).rejects.toThrow(Error("App-Type is not valid: not-valid"));
     });
 
-    it("should throw an error if the mediaStationId could not be found", async () => {
-        //setup
-        setupMediaAppWithName(false);
-
-        //tests
-        await expect(service.connectAndRegisterToMediaApp(0, mediaAppId, "admin")).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
-    });
-
     it("should throw an error if the MediaApp ID could not be found", async () => {
         //setup
-        setupMediaAppWithName(true, false);
+        setupMediaAppWithName( false);
 
         //tests
         await expect(service.connectAndRegisterToMediaApp(0, mediaAppId, "admin")).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
@@ -236,7 +228,7 @@ describe("unregisterAndCloseMediaApp() ", () => {
     it("should call networkService.openConnection and sendRegistration", async () => {
         //setup
         mockNetworkService.unregisterAndCloseConnection.mockReturnValueOnce(true);
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         //method to test
         await service.unregisterAndCloseMediaApp(0, mediaAppId);
@@ -246,18 +238,9 @@ describe("unregisterAndCloseMediaApp() ", () => {
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(ip1);
     });
 
-    it("should throw an error if the mediaStationId could not be found", async () => {
-        //setup
-        setupMediaAppWithName(false);
-
-        //tests
-        expect(service.unregisterAndCloseMediaApp(0, mediaAppId)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
-
-    });
-
     it("should throw an error if the MediaApp ID could not be found", async () => {
         //setup
-        setupMediaAppWithName(true, false);
+        setupMediaAppWithName(false);
 
         //tests
         expect(service.unregisterAndCloseMediaApp(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
@@ -269,7 +252,7 @@ describe("isOnline() ", () => {
     it("should call networkService.openConnection", async () => {
         //setup
         let returnValue: boolean;
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
@@ -284,7 +267,7 @@ describe("isOnline() ", () => {
     it("should return false if networkService.openConnection returns false", async () => {
         //setup
         let returnValue: boolean;
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         mockNetworkService.openConnection.mockReturnValueOnce(false);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
@@ -299,7 +282,7 @@ describe("isOnline() ", () => {
     it("should return true if networkService.isMediaAppOnline returns true", async () => {
         //setup
         let returnValue: boolean;
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
@@ -314,7 +297,7 @@ describe("isOnline() ", () => {
     it("should return false if networkService.isMediaAppOnline returns false", async () => {
         //setup
         let returnValue: boolean;
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
@@ -326,17 +309,9 @@ describe("isOnline() ", () => {
         expect(returnValue).toBe(false);
     });
 
-    it("should throw an error if the mediaStationId could not be found", async () => {
-        //setup
-        setupMediaAppWithName(false);
-
-        //tests
-        expect(service.isOnline(0, mediaAppId)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
-    });
-
     it("should throw an error if the MediaApp ID could not be found", async () => {
         //setup
-        setupMediaAppWithName(true, false);
+        setupMediaAppWithName(false);
 
         //tests
         expect(service.isOnline(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
@@ -348,7 +323,7 @@ describe("pcRespondsToPing() ", () => {
     it("should return true if networkService.pcRespondsToPing returns true", async () => {
         //setup
         let returnValue: boolean;
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
 
@@ -362,7 +337,7 @@ describe("pcRespondsToPing() ", () => {
     it("should return true if networkService.pcRespondsToPing returns false", async () => {
         //setup
         let returnValue: boolean;
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
 
@@ -373,17 +348,9 @@ describe("pcRespondsToPing() ", () => {
         expect(returnValue).toBe(false);
     });
 
-    it("should throw an error if the mediaStationId could not be found", async () => {
-        //setup
-        setupMediaAppWithName(false);
-
-        //tests
-        expect(service.pcRespondsToPing(0, mediaAppId)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
-    });
-
     it("should throw an error if the MediaApp ID could not be found", async () => {
         //setup
-        setupMediaAppWithName(true, false);
+        setupMediaAppWithName( false);
 
         //tests
         expect(service.pcRespondsToPing(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
@@ -436,7 +403,7 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         answer = null;
         mockMediaStation = new MockMediaStation(0);
 
-        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
         mockMediaStation.getControllerIp.mockReturnValue(controllerIp);
         mockNetworkService.openConnection.mockImplementation((ip:string) =>{
             if(ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
@@ -696,14 +663,5 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         //tests
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(controllerIp);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", async () => {
-        //setup
-        mockMediaStationRepo.findMediaStation = jest.fn();
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        await expect(service.checkOnlineStatusOfAllMediaApps(0)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });

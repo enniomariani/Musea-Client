@@ -26,7 +26,7 @@ let mediaStation: MockMediaStation;
 let mediaApp1: MediaApp;
 let mediaApp2: MediaApp;
 
-function setupMediaAppWithName(repoReturnsMediaStation: boolean, addMediaStation: boolean = true, mediaStationId: number = 0): MediaApp {
+function setupMediaAppWithName(addMediaStation: boolean = true, mediaStationId: number = 0): MediaApp {
     mediaApp1 = new MediaApp(0);
     mediaApp2 = new MediaApp(1);
     mediaApp1 = new MediaApp(mediaAppId);
@@ -50,8 +50,8 @@ function setupMediaAppWithName(repoReturnsMediaStation: boolean, addMediaStation
         mediaStation.getMediaApp.mockReturnValue(mediaApp1);
     }
 
-    mockMediaStationRepo.findMediaStation.mockImplementation((id) => {
-        return repoReturnsMediaStation ? mediaStation : null;
+    mockMediaStationRepo.requireMediaStation.mockImplementation((id) => {
+        return  mediaStation;
     });
     return mediaApp1;
 }
@@ -71,7 +71,7 @@ describe("createMediaApp() ", () => {
         //setup
         let mediaStation: MockMediaStation = new MockMediaStation(0);
         mediaStation.getNextMediaAppId.mockReturnValueOnce(mediaAppId);
-        mockMediaStationRepo.findMediaStation.mockImplementationOnce((id) => {
+        mockMediaStationRepo.requireMediaStation.mockImplementationOnce((id) => {
             return mediaStation;
         });
 
@@ -85,7 +85,7 @@ describe("createMediaApp() ", () => {
 
     it("should call mediaStationRepository.updateAndSaveMediaStation if media-App ID is 0", () => {
         //setup
-        setupMediaAppWithName(true, true, 0);
+        setupMediaAppWithName( true, 0);
         mediaStation.getNextMediaAppId.mockReturnValueOnce(0);
 
         //method to test
@@ -98,7 +98,7 @@ describe("createMediaApp() ", () => {
 
     it("should call mediaStationRepository.updateMediaStation if media-App ID is higher than 0", () => {
         //setup
-        setupMediaAppWithName(true, true, 0);
+        setupMediaAppWithName( true, 0);
         mediaStation.getNextMediaAppId.mockReturnValueOnce(2);
 
         //method to test
@@ -114,7 +114,7 @@ describe("createMediaApp() ", () => {
         let mediaStation: MockMediaStation = new MockMediaStation(0);
         mediaAppId = 1;
         mediaStation.getNextMediaAppId.mockReturnValueOnce(mediaAppId);
-        mockMediaStationRepo.findMediaStation.mockImplementationOnce((id) => {
+        mockMediaStationRepo.requireMediaStation.mockImplementationOnce((id) => {
             return mediaStation;
         });
 
@@ -131,7 +131,7 @@ describe("createMediaApp() ", () => {
         let mediaStation: MockMediaStation = new MockMediaStation(0);
         let result: number;
         mediaStation.getNextMediaAppId.mockReturnValueOnce(mediaAppId);
-        mockMediaStationRepo.findMediaStation.mockImplementationOnce((id) => {
+        mockMediaStationRepo.requireMediaStation.mockImplementationOnce((id) => {
             if (id === mediaAppId)
                 return mediaStation;
         });
@@ -142,23 +142,13 @@ describe("createMediaApp() ", () => {
         //tests
         expect(result).toBe(mediaAppId);
     });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation.mockImplementationOnce((id) => {
-            return null;
-        });
-
-        //tests
-        expect(() => mediaAppService.createMediaApp(0, ip1, name1)).toThrow(Error("Mediastation with this ID does not exist: 0"));
-    });
 });
 
 describe("getAllMediaApps() ", () => {
     it("should call mediaStation.getAllMediaApps and convert ip, name and role to a map", () => {
         //setup
         let returnValue: Map<number, IMediaAppData>;
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         //method to test
         returnValue = mediaAppService.getAllMediaApps(0);
@@ -173,21 +163,13 @@ describe("getAllMediaApps() ", () => {
         expect(returnValue.get(1).ip).toBe(ip2);
         expect(returnValue.get(1).isController).toBe(false);
     });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        setupMediaAppWithName(false);
-
-        //tests
-        expect(() => mediaAppService.getAllMediaApps(0)).toThrow(Error("Mediastation with this ID does not exist: 0"));
-    });
 });
 
 describe("getName() ", () => {
     it("should return the name of the mediaApp", () => {
         //setup
         let returnValue: string;
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         //method to test
         returnValue = mediaAppService.getName(0, mediaAppId);
@@ -196,17 +178,9 @@ describe("getName() ", () => {
         expect(returnValue).toBe(name1);
     });
 
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        setupMediaAppWithName(false);
-
-        //tests
-        expect(() => mediaAppService.getName(0, mediaAppId)).toThrow(Error("Mediastation with this ID does not exist: 0"));
-    });
-
     it("should throw an error if the MediaApp ID could not be found", () => {
         //setup
-        setupMediaAppWithName(true, false);
+        setupMediaAppWithName( false);
 
         //tests
         expect(() => mediaAppService.getName(0, mediaAppId)).toThrow(Error("Media-App with this ID does not exist: 0"));
@@ -217,7 +191,7 @@ describe("changeName() ", () => {
     let newName: string = "newName";
     it("should change the name of the mediaApp", () => {
         //setup
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         //method to test
         mediaAppService.changeName(0, mediaAppId, newName);
@@ -228,7 +202,7 @@ describe("changeName() ", () => {
 
     it("should call mediaStationRepository.updateMediaStation", () => {
         //setup
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         //method to test
         mediaAppService.changeName(0, mediaAppId, newName);
@@ -238,18 +212,9 @@ describe("changeName() ", () => {
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mediaStation);
     });
 
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        setupMediaAppWithName(false);
-
-        //tests
-        expect(() => mediaAppService.changeName(0, mediaAppId, newName)).toThrow(Error("Mediastation with this ID does not exist: 0"));
-
-    });
-
     it("should throw an error if the MediaApp ID could not be found", () => {
         //setup
-        setupMediaAppWithName(true, false);
+        setupMediaAppWithName(false);
 
         //tests
         expect(() => mediaAppService.changeName(0, mediaAppId, newName)).toThrow(Error("Media-App with this ID does not exist: 0"));
@@ -261,7 +226,7 @@ describe("getIp() ", () => {
     it("should return the ip of the mediaApp", () => {
         //setup
         let returnValue: string;
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         //method to test
         returnValue = mediaAppService.getIp(0, mediaAppId);
@@ -270,17 +235,9 @@ describe("getIp() ", () => {
         expect(returnValue).toBe(ip1);
     });
 
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        setupMediaAppWithName(false);
-
-        //tests
-        expect(() => mediaAppService.getIp(0, mediaAppId)).toThrow(Error("Mediastation with this ID does not exist: 0"));
-    });
-
     it("should throw an error if the MediaApp ID could not be found", () => {
         //setup
-        setupMediaAppWithName(true, false);
+        setupMediaAppWithName(false);
 
         //tests
         expect(() => mediaAppService.getIp(0, mediaAppId)).toThrow(Error("Media-App with this ID does not exist: 0"));
@@ -291,7 +248,7 @@ describe("changeIp() ", () => {
     let newIp: string = "newName";
     it("should change the name of the mediaApp", () => {
         //setup
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         //method to test
         mediaAppService.changeIp(0, mediaAppId, newIp);
@@ -304,7 +261,7 @@ describe("changeIp() ", () => {
 
     it("should call mediaStationRepository.updateAndSaveMediaStation if media-App ID is 0", () => {
         //setup
-        setupMediaAppWithName(true);
+        setupMediaAppWithName();
 
         //method to test
         mediaAppService.changeIp(0, mediaAppId, newIp);
@@ -316,7 +273,7 @@ describe("changeIp() ", () => {
 
     it("should call mediaStationRepository.updateMediaStation if media-App ID is higher than 0", () => {
         //setup
-        setupMediaAppWithName(true, true, 0);
+        setupMediaAppWithName( true, 0);
         mediaStation.getMediaApp.mockReturnValue(new MediaApp(1));
 
         //method to test
@@ -327,17 +284,9 @@ describe("changeIp() ", () => {
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mediaStation);
     });
 
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        setupMediaAppWithName(false);
-
-        //tests
-        expect(() => mediaAppService.changeIp(0, mediaAppId, newIp)).toThrow(Error("Mediastation with this ID does not exist: 0"));
-    });
-
     it("should throw an error if the MediaApp ID could not be found", () => {
         //setup
-        setupMediaAppWithName(true, false);
+        setupMediaAppWithName(false);
 
         //tests
         expect(() => mediaAppService.changeIp(0, mediaAppId, newIp)).toThrow(Error("Media-App with this ID does not exist: 0"));

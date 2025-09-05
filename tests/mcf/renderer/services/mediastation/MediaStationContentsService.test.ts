@@ -30,7 +30,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         answer = null;
         mockMediaStation = new MockMediaStation(0);
 
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
@@ -183,14 +183,5 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         //tests
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(0);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation = jest.fn();
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(() => service.downloadContentsOfMediaStation(0, false)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });

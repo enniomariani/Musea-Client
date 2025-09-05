@@ -88,6 +88,17 @@ export class MediaStationRepository{
 
         return mediaStation;
     }
+    /**
+     * Returns the MediaStation or throws if it does not exist.
+     */
+    requireMediaStation(id:number):MediaStation {
+        const ms:MediaStation = this._allMediaStations.get(id);
+
+        if (!ms)
+            throw new Error("Mediastation with this ID does not exist: " + id);
+
+        return ms;
+    }
 
     /**
      * deletes the media Station and removes all cached media files if there are any

@@ -21,7 +21,7 @@ export class ContentDataService  {
 
     createContent(mediaStationId: number, folderId: number, name: string): number {
         let content: Content;
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         content = this._contentManager.createContent(mediaStation, name, folderId);
 
@@ -31,7 +31,7 @@ export class ContentDataService  {
     }
 
     changeName(mediaStationId: number, contentId: number, name: string): void {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         this._contentManager.changeName(mediaStation, contentId, name);
 
@@ -39,7 +39,7 @@ export class ContentDataService  {
     }
 
     changeFolder(mediaStationId:number, contentId:number, newFolderId:number):void{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         this._contentManager.changeFolder(mediaStation, contentId, newFolderId);
 
@@ -47,7 +47,7 @@ export class ContentDataService  {
     }
 
     getLightIntensity(mediaStationId:number, id:number):number{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let content:Content = this._contentManager.getContent(mediaStation,id);
 
         if (!content)
@@ -57,7 +57,7 @@ export class ContentDataService  {
     }
 
     getFolderId(mediaStationId:number, id:number):number{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let content:Content = this._contentManager.getContent(mediaStation,id);
 
         if (!content)
@@ -67,7 +67,7 @@ export class ContentDataService  {
     }
 
     changeLightIntensity(mediaStationId:number, id:number, intensity:number):void{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         this._contentManager.changeLightIntensity(mediaStation, id, intensity);
 
@@ -75,7 +75,7 @@ export class ContentDataService  {
     }
 
     getMaxDuration(mediaStationId:number, contentId:number):number{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let content:Content = this._contentManager.getContent(mediaStation,contentId);
 
         if (!content)
@@ -93,7 +93,7 @@ export class ContentDataService  {
      * @returns {Promise<void>}
      */
     async deleteContent(mediaStationId:number, folderId:number, contentId:number):Promise<void>{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let allMediaApps: Map<number, MediaApp> = mediaStation.getAllMediaApps();
 
         for(const [key, mediaApp] of allMediaApps)
@@ -103,14 +103,5 @@ export class ContentDataService  {
         this._contentManager.deleteContent(mediaStation, folderId, contentId);
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
-    }
-
-    private _findMediaStation(id: number): MediaStation {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(id);
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-        else
-            return mediaStation;
     }
 }

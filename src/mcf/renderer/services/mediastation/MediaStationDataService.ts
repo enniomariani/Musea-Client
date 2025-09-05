@@ -1,7 +1,6 @@
 import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
 import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 
-
 export class MediaStationDataService{
 
     private _mediaStationRepository:MediaStationRepository;
@@ -19,36 +18,27 @@ export class MediaStationDataService{
     }
 
     async deleteMediaStation(id:number):Promise<void>{
-        this._findMediaStation(id);
+        this._mediaStationRepository.requireMediaStation(id);
         await this._mediaStationRepository.deleteMediaStation(id);
     }
 
     changeName(id:number, newName:string):void{
-        let mediaStation:MediaStation = this._findMediaStation(id);
+        const ms:MediaStation = this._mediaStationRepository.requireMediaStation(id);
 
-        mediaStation.name = newName;
+        ms.name = newName;
 
-        this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
+        this._mediaStationRepository.updateAndSaveMediaStation(ms);
     }
 
     getControllerIp(id:number):string|null{
-        let mediaStation:MediaStation = this._findMediaStation(id);
+        const ms:MediaStation = this._mediaStationRepository.requireMediaStation(id);
 
-        return mediaStation.getControllerIp();
+        return ms.getControllerIp();
     }
 
     getName(id:number):string{
-        let mediaStation:MediaStation = this._findMediaStation(id);
+        const ms:MediaStation = this._mediaStationRepository.requireMediaStation(id);
 
-        return mediaStation.name;
-    }
-
-    private _findMediaStation(id: number): MediaStation {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(id);
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-        else
-            return mediaStation;
+        return ms.name;
     }
 }

@@ -1,6 +1,4 @@
 import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
-import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
-
 
 export class MediaStationCacheService{
 
@@ -11,20 +9,12 @@ export class MediaStationCacheService{
     }
 
     cacheMediaStation(id:number){
-        let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(id);
-
-        if(!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-
+        this._mediaStationRepository.requireMediaStation(id);
         this._mediaStationRepository.cacheMediaStation(id);
     }
 
     async isMediaStationCached(id:number):Promise<boolean>{
-        let mediaStation:MediaStation = this._mediaStationRepository.findMediaStation(id);
-
-        if(!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-
+        this._mediaStationRepository.requireMediaStation(id);
         return await this._mediaStationRepository.isMediaStationCached(id);
     }
 }

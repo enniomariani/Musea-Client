@@ -37,7 +37,7 @@ describe("createFolder() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     it("should call contentManager.createFolder with the correct arguments", () => {
         //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.createFolder.mockReturnValueOnce(mockFolder);
 
         //method to test
@@ -51,7 +51,7 @@ describe("createFolder() ", () => {
     it("should return the ID of the created content", () => {
         //setup
         let returnValue: number;
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.createFolder.mockReturnValueOnce(mockFolder);
 
         //method to test
@@ -64,7 +64,7 @@ describe("createFolder() ", () => {
 
     it("should call mediaStationRepository.updateMediaStation", () => {
         //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.createFolder.mockReturnValueOnce(mockFolder);
 
         //method to test
@@ -73,14 +73,6 @@ describe("createFolder() ", () => {
         //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(() => folderService.createFolder(mediaStationId, folderId, "testName")).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -93,7 +85,7 @@ describe("getIdOfParentFolder() ", () => {
         const mockParentFolder: MockFolder = new MockFolder(77);
         const mockFolder: MockFolder = new MockFolder(folderId);
         mockFolder.parentFolder = mockParentFolder;
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.getFolder.mockImplementation((mediaStationLocal, id) => {
             console.log("get folder: ", mediaStationLocal.id, id)
             if (mediaStationLocal.id === mockMediaStation.id && id === folderId)
@@ -107,17 +99,9 @@ describe("getIdOfParentFolder() ", () => {
         expect(answer).toBe(77);
     });
 
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(() => folderService.getIdOfParentFolder(mediaStationId, folderId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
-    });
-
     it("should throw an error if the the folderId could not be found", () => {
         //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.getFolder = jest.fn();
         mockFolderManager.getFolder.mockReturnValue(null);
 
@@ -129,7 +113,7 @@ describe("getIdOfParentFolder() ", () => {
         //setup
         const mockFolder: MockFolder = new MockFolder(folderId);
         mockFolder.parentFolder = null;
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.getFolder.mockImplementation((mediaStationLocal, id) => {
             if (mediaStationLocal.id === mockMediaStation.id && id === folderId)
                 return mockFolder;
@@ -147,7 +131,7 @@ describe("getName() ", () => {
     it("should return the name of the folder", () => {
         //setup
         mockFolder.name = "firstName";
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.getFolder.mockImplementation((mediaStation, id) => {
             if (mediaStation === mockMediaStation && id === folderId)
                 return mockFolder;
@@ -162,19 +146,11 @@ describe("getName() ", () => {
 
     it("should throw an error if the folderId could not be found", () => {
         //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.getFolder.mockReturnValue(null);
 
         //tests
         expect(() => folderService.getName(mediaStationId, folderId)).toThrow(new Error("Folder with this ID does not exist: " + folderId));
-    });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(() => folderService.getName(mediaStationId, folderId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -186,7 +162,7 @@ describe("changeName() ", () => {
     it("should call folderManager.changeName with the correct arguments", () => {
         //setup
         mockFolder.name = "firstName";
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
         folderService.changeName(mediaStationId, folderId, newName);
@@ -198,7 +174,7 @@ describe("changeName() ", () => {
 
     it("should call mediaStationRepository.updateMediaStation", () => {
         //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.createFolder.mockReturnValueOnce(mockFolder);
 
         //method to test
@@ -207,14 +183,6 @@ describe("changeName() ", () => {
         //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(() => folderService.changeName(mediaStationId, folderId, newName)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -225,7 +193,7 @@ describe("changeParentFolder() ", () => {
 
     it("should call folderManager.changeName with the correct arguments", () => {
         //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
         //method to test
         folderService.changeParentFolder(mediaStationId, folderId, newParentId);
@@ -237,7 +205,7 @@ describe("changeParentFolder() ", () => {
 
     it("should call mediaStationRepository.updateMediaStation", () => {
         //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.createFolder.mockReturnValueOnce(mockFolder);
 
         //method to test
@@ -246,14 +214,6 @@ describe("changeParentFolder() ", () => {
         //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
-    });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(() => folderService.changeParentFolder(mediaStationId, folderId, newParentId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -272,7 +232,7 @@ describe("getAllSubFoldersInFolder() ", () => {
     it("should return the result of folder.getAllSubFolders", () => {
         //setup
         let result: Map<number, string> = new Map();
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.rootFolder.findFolder.mockReturnValueOnce(mockFolder);
         mockFolder.getAllSubFolders.mockReturnValueOnce(mapWithAllSubFolders);
 
@@ -287,19 +247,11 @@ describe("getAllSubFoldersInFolder() ", () => {
     it("should throw an error if the folderId could not be found", () => {
         //setup
         mockMediaStation.rootFolder = mockFolder;
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.rootFolder.findFolder.mockReturnValueOnce(null);
 
         //tests
         expect(() => folderService.getAllSubFoldersInFolder(mediaStationId, folderId)).toThrow(new Error("Folder with this ID does not exist: " + folderId));
-    });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(() => folderService.getAllSubFoldersInFolder(mediaStationId, folderId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -319,7 +271,7 @@ describe("getAllContentsInFolder() ", () => {
     it("should return the result of folder.getAllContents", () => {
         //setup
         let result: Map<number, string> = new Map();
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.rootFolder.findFolder.mockReturnValueOnce(mockFolder);
         mockFolder.getAllContents.mockReturnValueOnce(mapWithAllContents);
 
@@ -334,19 +286,11 @@ describe("getAllContentsInFolder() ", () => {
     it("should throw an error if the folderId could not be found", () => {
         //setup
         mockMediaStation.rootFolder = mockFolder;
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.rootFolder.findFolder.mockReturnValueOnce(null);
 
         //tests
         expect(() => folderService.getAllContentsInFolder(mediaStationId, folderId)).toThrow(new Error("Folder with this ID does not exist: " + folderId));
-    });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(() => folderService.getAllContentsInFolder(mediaStationId, folderId)).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -363,7 +307,7 @@ describe("deleteFolder() ", () => {
         returnedContentIds.set(5, [2]);
 
         mockFolder.getAllContentIDsInFolderAndSubFolders.mockReturnValue(returnedContentIds);
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.getFolder.mockReturnValueOnce(mockFolder);
 
         //method to test
@@ -382,7 +326,7 @@ describe("deleteFolder() ", () => {
 
     it("should call folderManager.deleteFolder with the correct arguments", async () => {
         //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.getFolder.mockReturnValueOnce(mockFolder);
 
         //method to test
@@ -395,7 +339,7 @@ describe("deleteFolder() ", () => {
 
     it("should call mediaStationRepository.updateMediaStation", async () => {
         //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.getFolder.mockReturnValueOnce(mockFolder);
 
         //method to test
@@ -409,19 +353,11 @@ describe("deleteFolder() ", () => {
     it("should throw an error if the folderId could not be found", async () => {
         //setup
         mockMediaStation.rootFolder = mockFolder;
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockFolderManager.getFolder.mockReturnValueOnce(null);
 
         //tests
         await expect(folderService.deleteFolder(mediaStationId, folderId)).rejects.toThrow(new Error("Folder with this ID does not exist: " + folderId));
-    });
-
-    it("should throw an error if the mediaStationId could not be found", async () => {
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        await expect(folderService.deleteFolder(mediaStationId, folderId)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });
 
@@ -440,7 +376,7 @@ describe("findContentsByNamePart() ", () => {
     it("should return the result of folder.findContentsByNamePart", () => {
         //setup
         let result:Map<number, string>;
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.rootFolder.findFolder.mockReturnValueOnce(mockFolder);
         mockFolder.findContentsByNamePart.mockImplementation((namePart:string) =>{
             if(namePart === "name")
@@ -460,18 +396,10 @@ describe("findContentsByNamePart() ", () => {
     it("should throw an error if the folderId could not be found", () => {
         //setup
         mockMediaStation.rootFolder = mockFolder;
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStation.rootFolder.findFolder.mockReturnValueOnce(null);
 
         //tests
         expect(() => folderService.findContentsByNamePart(mediaStationId, folderId, "namePart")).toThrow(new Error("Folder with this ID does not exist: " + folderId));
-    });
-
-    it("should throw an error if the mediaStationId could not be found", () => {
-        //setup
-        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
-
-        //tests
-        expect(() => folderService.findContentsByNamePart(mediaStationId, folderId, "namePart")).toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
     });
 });

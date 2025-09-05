@@ -33,7 +33,7 @@ export class MediaStationContentsService {
      * @returns {Promise<string>}
      */
     async downloadContentsOfMediaStation(id: number, preserveMSname:boolean,role:string = "admin"): Promise<string> {
-        let mediaStation: MediaStation = this._findMediaStation(id);
+        const mediaStation: MediaStation = this._mediaStationRepo.requireMediaStation(id);
         const controllerIP: string = mediaStation.getControllerIp();
         let contentsJSON: string;
 
@@ -92,14 +92,5 @@ export class MediaStationContentsService {
 
             return MediaStationContentsService.CONTENT_DOWNLOAD_SUCCESS + mediaStation.id;
         }
-    }
-
-    private _findMediaStation(id: number): MediaStation {
-        let mediaStation: MediaStation = this._mediaStationRepo.findMediaStation(id);
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-        else
-            return mediaStation;
     }
 }

@@ -71,7 +71,6 @@ export class MediaAppConnectionService {
         });
     }
 
-
     /**
      * checks if all media-apps (including the controller) are online, reachable and registration is possible (as admin-app)
      *
@@ -83,7 +82,7 @@ export class MediaAppConnectionService {
      * @returns {Promise<boolean>}
      */
     async checkOnlineStatusOfAllMediaApps(id: number): Promise<boolean> {
-        let mediaStation: MediaStation = this._findMediaStation(id);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(id);
         const controllerIP: string = mediaStation.getControllerIp();
         let contentsJSONstr: string;
         let contentsJSON: any;
@@ -145,11 +144,8 @@ export class MediaAppConnectionService {
     }
 
     private _getMediaApp(mediaStationId: number, mediaAppId: number): MediaApp {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(mediaStationId);
+        let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let mediaApp: MediaApp;
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
 
         mediaApp = mediaStation.getMediaApp(mediaAppId);
 
@@ -157,14 +153,5 @@ export class MediaAppConnectionService {
             throw new Error("Media-App with this ID does not exist: " + mediaAppId);
 
         return mediaApp;
-    }
-
-    private _findMediaStation(id: number): MediaStation {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(id);
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-        else
-            return mediaStation;
     }
 }

@@ -20,7 +20,7 @@ export class FolderDataService {
 
     createFolder(mediaStationId: number, parentFolderId: number, name: string): number {
         let folder: Folder;
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         folder = this._folderManager.createFolder(mediaStation, name, parentFolderId);
 
@@ -30,7 +30,7 @@ export class FolderDataService {
     }
 
     getName(mediaStationId: number, id: number): string {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let folder: Folder = this._folderManager.getFolder(mediaStation, id);
 
         if (!folder)
@@ -40,7 +40,7 @@ export class FolderDataService {
     }
 
     changeName(mediaStationId: number, folderId: number, name: string): void {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         this._folderManager.changeName(mediaStation, folderId, name);
 
@@ -48,7 +48,7 @@ export class FolderDataService {
     }
 
     changeParentFolder(mediaStationId:number, folderId:number, newParentId:number):void{
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         this._folderManager.changeParentFolder(mediaStation, folderId, newParentId);
 
@@ -56,7 +56,7 @@ export class FolderDataService {
     }
 
     getIdOfParentFolder(mediaStationId: number, folderId: number): number {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let folder: Folder = this._folderManager.getFolder(mediaStation, folderId);
 
         if (!folder)
@@ -76,7 +76,7 @@ export class FolderDataService {
      * @returns {Map<number, string>}
      */
     getAllSubFoldersInFolder(mediaStationId: number, folderId: number): Map<number, string> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let folder: Folder = this._findFolder(mediaStation.rootFolder, folderId);
         let allSubFolders: Map<number, Folder> = folder.getAllSubFolders();
         let returnMap: Map<number, string> = new Map();
@@ -89,7 +89,7 @@ export class FolderDataService {
     }
 
     getAllContentsInFolder(mediaStationId: number, folderId: number): Map<number, string> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let folder: Folder = this._findFolder(mediaStation.rootFolder, folderId);
         let allContents: Map<number, Content> = folder.getAllContents();
         let returnMap: Map<number, string> = new Map();
@@ -109,7 +109,7 @@ export class FolderDataService {
      * @returns {Promise<void>}
      */
     async deleteFolder(mediaStationId: number, folderId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let folder: Folder = this._folderManager.getFolder(mediaStation, folderId);
 
         if (!folder)
@@ -137,7 +137,7 @@ export class FolderDataService {
      * @returns {Map<number, string>}
      */
     findContentsByNamePart(mediaStationId: number, folderId: number, namePart: string): Map<number, string> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let folder: Folder = this._findFolder(mediaStation.rootFolder, folderId);
         let allContents: Content[] = folder.findContentsByNamePart(namePart);
         let returnMap: Map<number, string> = new Map();
@@ -155,14 +155,5 @@ export class FolderDataService {
             throw new Error("Folder with this ID does not exist: " + id);
         else
             return folder;
-    }
-
-    private _findMediaStation(id: number): MediaStation {
-        let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(id);
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + id);
-        else
-            return mediaStation;
     }
 }
