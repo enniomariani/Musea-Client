@@ -5,14 +5,17 @@ import {ContentManager} from "src/mcf/renderer/dataManagers/ContentManager";
 import {ContentNetworkService} from "src/mcf/renderer/services/ContentNetworkService";
 import {IMedia, Video} from "src/mcf/renderer/dataStructure/Media";
 import {ContentDataService} from "src/mcf/renderer/services/ContentDataService";
+import {NetworkService} from "src/mcf/renderer/services/NetworkService";
 
 export class MediaStationCommandService  {
     private _mediaStationRepository: MediaStationRepository;
+    private _networkService: NetworkService;
     private _contentManager: ContentManager;
     private _contentNetworkService: ContentNetworkService;
 
-    constructor(mediaStationRepository: MediaStationRepository, contentNetworkService: ContentNetworkService, contentManager: ContentManager = new ContentManager()) {
+    constructor(mediaStationRepository: MediaStationRepository, networkService: NetworkService, contentNetworkService: ContentNetworkService, contentManager: ContentManager = new ContentManager()) {
         this._mediaStationRepository = mediaStationRepository;
+        this._networkService = networkService;
         this._contentManager = contentManager;
         this._contentNetworkService = contentNetworkService;
     }
@@ -83,6 +86,40 @@ export class MediaStationCommandService  {
         let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
         await this._contentNetworkService.sendCommandSeek(mediaStation.getAllMediaApps(), pos);
     }
+
+    async sendCommandMute(mediaStationId: number): Promise<void> {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        for (const [key, item] of mediaStation.getAllMediaApps()) {
+            if (item.ip && item.ip !== "")
+                await this._networkService.sendSystemCommandTo(item.ip, ["volume", "mute"]);
+            else
+                console.error("Sending mute-command to media-app failed, because there is no ip set: ", item.name, item.ip)
+        }
+    }
+
+    async sendCommandUnmute(mediaStationId: number): Promise<void> {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        for (const [key, item] of mediaStation.getAllMediaApps()) {
+            if (item.ip && item.ip !== "")
+                await this._networkService.sendSystemCommandTo(item.ip, ["volume", "unmute"]);
+            else
+                console.error("Sending unmute-command to media-app failed, because there is no ip set: ", item.name, item.ip)
+        }
+    }
+
+    async sendCommandSetVolume(mediaStationId: number, volume: number): Promise<void> {
+        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
+
+        for (const [key, item] of mediaStation.getAllMediaApps()) {
+            if (item.ip && item.ip !== "")
+                await this._networkService.sendSystemCommandTo(item.ip, ["volume", "set", volume.toString()]);
+            else
+                console.error("Sending set volume-command to media-app failed, because there is no ip set: ", item.name, item.ip)
+        }
+    }
+
 
     private _findMediaStation(id: number): MediaStation {
         let mediaStation: MediaStation = this._mediaStationRepository.findMediaStation(id);

@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
+import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {
     MockMediaStationRepository
 } from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
@@ -11,21 +11,23 @@ import {
 } from "__mocks__/mcf/renderer/services/MockContentNetworkService";
 import {Image, Video} from "@app/mcf/renderer/dataStructure/Media";
 import {MediaStationCommandService} from "@app/mcf/renderer/services/mediastation/MediaStationCommandService";
+import {MockNetworkService} from "__mocks__/mcf/renderer/services/MockNetworkService";
 
 let service:MediaStationCommandService;
 let mockMediaStationRepo:MockMediaStationRepository;
+let mockNetworkService:MockNetworkService;
 let mockContentManager:MockContentManager;
 let mockContentNetworkService:MockContentNetworkService;
 
 const mediaStationId:number = 0;
 const folderId:number = 10;
-const contentId:number = 12;
 
 beforeEach(() => {
     mockMediaStationRepo = new MockMediaStationRepository();
+    mockNetworkService = new MockNetworkService();
     mockContentManager = new MockContentManager();
     mockContentNetworkService = new MockContentNetworkService();
-    service = new MediaStationCommandService(mockMediaStationRepo, mockContentNetworkService, mockContentManager);
+    service = new MediaStationCommandService(mockMediaStationRepo,mockNetworkService, mockContentNetworkService, mockContentManager);
 });
 
 afterEach(() => {
@@ -358,5 +360,153 @@ describe("sendCommandSeek() ", ()=> {
 
         //tests
         await expect(service.sendCommandSeek(mediaStationId, seekPos)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + mediaStationId));
+    });
+});
+
+
+describe("sendCommandSetVolume() ", () => {
+    let mediaApp1: MediaApp = new MediaApp(0);
+    mediaApp1.ip = "127.0.0.1"
+    let mediaApp2: MediaApp = new MediaApp(1);
+    mediaApp2.ip = "127.0.0.2"
+    let mediaAppMap: Map<number, MediaApp> = new Map();
+    mediaAppMap.set(0, mediaApp1);
+    mediaAppMap.set(1, mediaApp2);
+
+    let mockMediaStation: MockMediaStation = new MockMediaStation(0);
+    mockMediaStation.getAllMediaApps.mockReturnValue(mediaAppMap);
+
+    it("should call networkService.sendMediaControlTo for the mediaApp with the correct mute-command", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+
+        //method to test
+        await service.sendCommandSetVolume(0, 0.3);
+
+        //tests
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(2);
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, ["volume", "set", "0.3"]);
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(2, mediaApp2.ip, ["volume", "set", "0.3"]);
+    });
+
+    it("should print an error if the media-App has no IP set", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+        mediaApp2.ip = "";
+        let logSpy: any = jest.spyOn(global.console, 'error');
+
+        //method to test
+        await service.sendCommandSetVolume(0, 0.3);
+
+        //tests
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation = jest.fn();
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        await expect(service.sendCommandSetVolume(0, 0.3)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
+    });
+});
+
+describe("sendCommandMute() ", () => {
+    let mediaApp1: MediaApp = new MediaApp(0);
+    mediaApp1.ip = "127.0.0.1"
+    let mediaApp2: MediaApp = new MediaApp(1);
+    mediaApp2.ip = "127.0.0.2"
+    let mediaAppMap: Map<number, MediaApp> = new Map();
+    mediaAppMap.set(0, mediaApp1);
+    mediaAppMap.set(1, mediaApp2);
+
+    let mockMediaStation: MockMediaStation = new MockMediaStation(0);
+    mockMediaStation.getAllMediaApps.mockReturnValue(mediaAppMap);
+
+    it("should call networkService.sendMediaControlTo for the mediaApp with the correct mute-command", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+
+        //method to test
+        await service.sendCommandMute(0);
+
+        //tests
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(2);
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, ["volume", "mute"]);
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(2, mediaApp2.ip, ["volume", "mute"]);
+    });
+
+    it("should print an error if the media-App has no IP set", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+        mediaApp2.ip = "";
+        let logSpy: any = jest.spyOn(global.console, 'error');
+
+        //method to test
+        await service.sendCommandMute(0);
+
+        //tests
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation = jest.fn();
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        await expect(service.sendCommandMute(0)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
+    });
+});
+
+describe("sendCommandUnmute() ", () => {
+    let mediaApp1: MediaApp = new MediaApp(0);
+    mediaApp1.ip = "127.0.0.1"
+    let mediaApp2: MediaApp = new MediaApp(1);
+    mediaApp2.ip = "127.0.0.2"
+    let mediaAppMap: Map<number, MediaApp> = new Map();
+    mediaAppMap.set(0, mediaApp1);
+    mediaAppMap.set(1, mediaApp2);
+
+    let mockMediaStation: MockMediaStation = new MockMediaStation(0);
+    mockMediaStation.getAllMediaApps.mockReturnValue(mediaAppMap);
+
+    it("should call networkService.sendMediaControlTo for the mediaApp with the correct unmute-command", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+
+        //method to test
+        await service.sendCommandUnmute(0);
+
+        //tests
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(2);
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, ["volume", "unmute"]);
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(2, mediaApp2.ip, ["volume", "unmute"]);
+    });
+
+    it("should print an error if the media-App has no IP set", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation.mockReturnValue(mockMediaStation);
+        mediaApp2.ip = "";
+        let logSpy: any = jest.spyOn(global.console, 'error');
+
+        //method to test
+        await service.sendCommandUnmute(0);
+
+        //tests
+        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("should throw an error if the mediaStationId could not be found", async () => {
+        //setup
+        mockMediaStationRepo.findMediaStation = jest.fn();
+        mockMediaStationRepo.findMediaStation.mockReturnValueOnce(null);
+
+        //tests
+        await expect(service.sendCommandUnmute(0)).rejects.toThrow(new Error("Mediastation with this ID does not exist: " + 0));
     });
 });
