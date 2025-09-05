@@ -1,10 +1,10 @@
-import {MockMediaStationDataService} from "./services/MockMediaStationDataService";
-import {MockMediaStationNetworkService} from "./services/MockMediaStationNetworkService";
+import {MockMediaStationDataService} from "tests/__mocks__/mcf/renderer/services/mediastation/MockMediaStationDataService";
+import {MockMediaStationNetworkService} from "tests/__mocks__/mcf/renderer/services/mediastation/MockMediaStationNetworkService";
 import {MockMediaAppService} from "./services/MockMediaAppService";
 import {MockFolderDataService} from "tests/__mocks__/mcf/renderer/services/MockFolderDataService";
 import {MockContentDataService} from "__mocks__/mcf/renderer/services/MockContentDataService";
 import {MockMediaService} from "./services/MockMediaService";
-import {MockMediaStationCacheService} from "./services/MockMediaStationCacheService";
+import {MockMediaStationCacheService} from "tests/__mocks__/mcf/renderer/services/mediastation/MockMediaStationCacheService";
 import {IMediaClientFramework} from "@app/mcf/renderer/MediaClientFramework";
 import {MockTagService} from "./services/MockTagService";
 

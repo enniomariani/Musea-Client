@@ -1,9 +1,9 @@
-import {NetworkService} from "./NetworkService";
-import {ICachedMedia, MediaStationRepository} from "../dataStructure/MediaStationRepository";
-import {MediaStation} from "../dataStructure/MediaStation";
-import {MediaApp} from "../dataStructure/MediaApp";
-import {Content} from "../dataStructure/Content";
-import {IMedia} from "../dataStructure/Media";
+import {NetworkService} from "src/mcf/renderer/services/NetworkService";
+import {ICachedMedia, MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
+import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
+import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
+import {Content} from "src/mcf/renderer/dataStructure/Content";
+import {IMedia} from "src/mcf/renderer/dataStructure/Media";
 
 export interface IOnSyncStep {
     (message: string): void
@@ -56,14 +56,6 @@ export class MediaStationNetworkService {
             else
                 console.error("Sending set volume-command to media-app failed, because there is no ip set: ", item.name, item.ip)
         }
-    }
-
-    onBlockReceived(callback:Function):void{
-        this._networkService.onBlockReceived(callback);
-    }
-
-    onUnBlockReceived(callback:Function):void{
-        this._networkService.onUnBlockReceived(callback);
     }
 
     /**

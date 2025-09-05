@@ -1,0 +1,47 @@
+import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
+import {MockNetworkService} from "__mocks__/mcf/renderer/services/MockNetworkService";
+import {MediaStationEventService} from "@app/mcf/renderer/services/mediastation/MediaStationEventService";
+
+let service: MediaStationEventService;
+let mockNetworkService: MockNetworkService;
+
+beforeEach(() => {
+    mockNetworkService = new MockNetworkService();
+    service = new MediaStationEventService(mockNetworkService);
+});
+
+afterEach(() => {
+    jest.clearAllMocks();
+});
+
+describe("onBlockReceived() ",  ()=> {
+    it("should call the callback if the callback was called from the network-service", async () => {
+        //setup
+        let blockReceivedCallback:Function = jest.fn();
+        mockNetworkService.onBlockReceived.mockImplementation((callback) =>{
+            callback();
+        })
+
+        // Method to test
+        service.onBlockReceived(blockReceivedCallback);
+
+        //tests
+        expect(blockReceivedCallback).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("onUnBlockReceived() ",  ()=> {
+    it("should call the callback if the callback was called from the network-service", async () => {
+        //setup
+        let unBlockReceivedCallback:Function = jest.fn();
+        mockNetworkService.onUnBlockReceived.mockImplementation((callback) =>{
+            callback();
+        })
+
+        // Method to test
+        service.onUnBlockReceived(unBlockReceivedCallback);
+
+        //tests
+        expect(unBlockReceivedCallback).toHaveBeenCalledTimes(1);
+    });
+});

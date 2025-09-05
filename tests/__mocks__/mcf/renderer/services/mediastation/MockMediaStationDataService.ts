@@ -1,7 +1,7 @@
-import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository";
+import {MockMediaStationRepository} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {
     MediaStationDataService
-} from "../../../../../src/mcf/renderer/services/MediaStationDataService";
+} from "@app/mcf/renderer/services/mediastation/MediaStationDataService";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
 

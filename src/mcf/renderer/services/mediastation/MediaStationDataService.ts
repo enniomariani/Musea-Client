@@ -1,5 +1,5 @@
-import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
-import {MediaStation} from "../dataStructure/MediaStation";
+import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
+import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 
 
 export class MediaStationDataService{

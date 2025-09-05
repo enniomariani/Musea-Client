@@ -1,22 +1,20 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MockNetworkService} from "../../../__mocks__/mcf/renderer/services/MockNetworkService";
+import {MockNetworkService} from "__mocks__/mcf/renderer/services/MockNetworkService";
 import {
     IOnSyncStep,
     MediaStationNetworkService
-} from "../../../../src/mcf/renderer/services/MediaStationNetworkService";
+} from "@app/mcf/renderer/services/mediastation/MediaStationNetworkService";
 import {
     MockMediaStationRepository
-} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
-import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
+} from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
+import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {
     ICachedMedia
-} from "../../../../src/mcf/renderer/dataStructure/MediaStationRepository";
-import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
-import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
-import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
-import {Image} from "../../../../src/mcf/renderer/dataStructure/Media";
-import {ConvertNetworkData} from "../../../../src/mcf/renderer/network/ConvertNetworkData";
-
+} from "@app/mcf/renderer/dataStructure/MediaStationRepository";
+import {MediaApp} from "@app/mcf/renderer/dataStructure/MediaApp";
+import {MockFolder} from "__mocks__/mcf/renderer/dataStructure/MockFolder";
+import {MockContent} from "__mocks__/mcf/renderer/dataStructure/MockContent";
+import {Image} from "@app/mcf/renderer/dataStructure/Media";
 
 let mediaStationNetworkService: MediaStationNetworkService;
 let mockMediaStationRepo: MockMediaStationRepository;
@@ -30,38 +28,6 @@ beforeEach(() => {
 
 afterEach(() => {
     jest.clearAllMocks();
-});
-
-describe("onBlockReceived() ",  ()=> {
-    it("should call the callback if the callback was called from the network-service", async () => {
-        //setup
-        let blockReceivedCallback:Function = jest.fn();
-        mockNetworkService.onBlockReceived.mockImplementation((callback) =>{
-            callback();
-        })
-
-        // Method to test
-        mediaStationNetworkService.onBlockReceived(blockReceivedCallback);
-
-        //tests
-        expect(blockReceivedCallback).toHaveBeenCalledTimes(1);
-    });
-});
-
-describe("onUnBlockReceived() ",  ()=> {
-    it("should call the callback if the callback was called from the network-service", async () => {
-        //setup
-        let unBlockReceivedCallback:Function = jest.fn();
-        mockNetworkService.onUnBlockReceived.mockImplementation((callback) =>{
-            callback();
-        })
-
-        // Method to test
-        mediaStationNetworkService.onUnBlockReceived(unBlockReceivedCallback);
-
-        //tests
-        expect(unBlockReceivedCallback).toHaveBeenCalledTimes(1);
-    });
 });
 
 describe("sendCommandSetVolume() ", () => {
