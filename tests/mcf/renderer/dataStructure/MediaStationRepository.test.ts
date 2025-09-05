@@ -481,7 +481,7 @@ describe("updateMediaStation() ", ()=>{
 
     it("should throw an error if the passed mediastation is not in the repo", ()=>{
         //setup
-        let newMediaStation:MediaStation = new MediaStation(100);
+        let newMediaStation:MockMediaStation = new MockMediaStation(100);
         let error:boolean = false;
 
         //method to test
@@ -499,7 +499,7 @@ describe("updateMediaStation() ", ()=>{
 describe("updateAndSaveMediaStation() ", ()=>{
     it("should call updateMediaStation", ()=>{
         //setup
-        let mediaStation:MediaStation = new MediaStation(0);
+        let mediaStation:MockMediaStation = new MockMediaStation(0);
         mediaStationRepo.updateMediaStation = jest.fn();
 
         //method to test

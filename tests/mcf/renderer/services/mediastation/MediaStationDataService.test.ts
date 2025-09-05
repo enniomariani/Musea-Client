@@ -69,7 +69,7 @@ describe("renameMediaStation() ", ()=>{
     it("should call findMediaStation and updateAndSaveMediaStation from the repo", ()=>{
         let newName:string = "mediaStationNameNeu";
 
-        let createdMediaStation:MediaStation = new MediaStation(createdID);
+        let createdMediaStation:MockMediaStation = new MockMediaStation(createdID);
 
         mockMediaStationRepository.requireMediaStation.mockImplementation((idArg)=>{
             if(idArg === createdID)
@@ -92,7 +92,7 @@ describe("getName() ", ()=>{
         let newName:string = "mediaStationNameNeu";
 
         let nameReturned:string;
-        let createdMediaStation:MediaStation = new MediaStation(createdID);
+        let createdMediaStation:MockMediaStation = new MockMediaStation(createdID);
         createdMediaStation.name = newName;
 
         mockMediaStationRepository.requireMediaStation.mockImplementation((idArg)=>{

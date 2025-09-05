@@ -1,9 +1,10 @@
 import {MediaApp} from "./MediaApp";
 import {Folder} from "./Folder";
-import {Tag} from "./Tag";
-
+import {TagManager} from "src/mcf/renderer/dataManagers/TagManager";
+import {Tag} from "src/mcf/renderer/dataStructure/Tag";
 
 export class MediaStation {
+
     private _id: number;
     private _name: string;
     private _mediaApps: Map<number, MediaApp>;
@@ -14,10 +15,11 @@ export class MediaStation {
     private _mediaAppIdCounter: number;
     private _tagIdCounter: number;
 
-    private _tags: Map<number, Tag>;
+    private _tagManager:TagManager;
 
-    constructor(id: number) {
+    constructor(id: number, tagManager:TagManager) {
         this._id = id;
+        this._tagManager = tagManager;
         this.reset();
     }
 
@@ -34,10 +36,12 @@ export class MediaStation {
         this._mediaAppIdCounter = 0;
         this._tagIdCounter = 0;
 
-        this._tags = new Map();
+        this._tagManager.reset();
     }
 
     exportToJSON(): string {
+        const allTags:Map<number, Tag> = this._tagManager.getAllTags();
+
         let json: any = {
             name: this._name,
             folderIdCounter: this._folderIdCounter,
@@ -49,8 +53,11 @@ export class MediaStation {
             rootFolder: this._rootFolder.exportToJSON(),
         };
 
-        for(const [key, tag] of this._tags)
+        for(const [key, tag] of allTags){
+            console.log("TAG: ", tag.id, tag.name);
             json.tags.push({id: tag.id, name: tag.name});
+        }
+
 
         this._mediaApps.forEach((mediaApp: MediaApp) => {
             json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
@@ -87,10 +94,10 @@ export class MediaStation {
         this._importMediaAppsFromJSON(json);
 
         if (this._jsonPropertyExists(json, "tags")) {
-            this._tags = new Map();
+            this._tagManager.reset();
 
             for (let i: number = 0; i < json.tags.length; i++)
-                this.addTag(json.tags[i].id, json.tags[i].name);
+                this._tagManager.addTag(json.tags[i].id, json.tags[i].name);
         }
 
         if (this._jsonPropertyExists(json, "rootFolder")) {
@@ -195,40 +202,6 @@ export class MediaStation {
         return this._mediaApps;
     }
 
-    /**
-     * adds a tag, if a tag with the same ID alread exists, it is replaced
-     *
-     * @param {number} id
-     * @param {string} name
-     */
-    addTag(id: number, name: string): void {
-        let tag: Tag = new Tag();
-        tag.id = id;
-        tag.name = name;
-
-        this._tags.set(id, tag);
-    }
-
-    removeTag(id: number): void {
-        if (this._tags.has(id))
-            this._tags.delete(id);
-        else
-            throw new Error("Tag with the following ID does not exist: " + id);
-    }
-
-    getTag(id: number): Tag {
-        let tag: Tag = this._tags.get(id);
-
-        if (tag)
-            return tag;
-        else
-            throw new Error("Tag with the following ID does not exist: " + id);
-    }
-
-    getAllTags(): Map<number, Tag> {
-        return this._tags;
-    }
-
     get id(): number {
         return this._id;
     }
@@ -247,5 +220,9 @@ export class MediaStation {
 
     set rootFolder(value: Folder) {
         this._rootFolder = value;
+    }
+
+    get tagManager(): TagManager {
+        return this._tagManager;
     }
 }

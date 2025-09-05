@@ -4,6 +4,7 @@ import {MediaFileService} from "../fileHandling/MediaFileService";
 import {MediaApp} from "./MediaApp";
 import {ContentFileService} from "../fileHandling/ContentFileService";
 import {MediaFilesMarkedToDeleteService} from "../fileHandling/MediaFilesMarkedToDeleteService";
+import {TagManager} from "src/mcf/renderer/dataManagers/TagManager";
 
 export interface ICachedMedia{
     contentId:number
@@ -25,7 +26,7 @@ export class MediaStationRepository{
     private _pathToMainFolder:string;
     private _cachedMedia:Map<number, ICachedMedia[]> = new Map();
 
-    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaFileService:MediaFileService = new MediaFileService(), mediaFilesMarkedToDeleteService = new MediaFilesMarkedToDeleteService(), contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id)) {
+    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaFileService:MediaFileService = new MediaFileService(), mediaFilesMarkedToDeleteService = new MediaFilesMarkedToDeleteService(), contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id, new TagManager())) {
         this._mediaStationMetaData = mediaStationMetaData;
         this._pathToMainFolder = pathToMainFolder;
         this._mediaFileService = mediaFileService;

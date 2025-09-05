@@ -6,20 +6,18 @@ import {NetworkService} from "./services/NetworkService";
 import {NetworkConnectionHandler} from "./network/NetworkConnectionHandler";
 import {ContentDataService} from "src/mcf/renderer/services/ContentDataService";
 import {ContentNetworkService} from "./services/ContentNetworkService";
-import {MediaStationNetworkService} from "src/mcf/renderer/services/mediastation/MediaStationNetworkService";
 import {FolderDataService} from "src/mcf/renderer/services/FolderDataService";
 import {MediaService} from "./services/MediaService";
 import {MediaStationCacheService} from "src/mcf/renderer/services/mediastation/MediaStationCacheService";
 import {TagDataService} from "./services/TagDataService";
+import {MediaStationService} from "src/mcf/renderer/services/mediastation/MediaStationService";
 
 export interface IMediaClientFramework {
-    get mediaStationDataService(): MediaStationDataService
-    get mediaStationNetworkService(): MediaStationNetworkService
     get mediaAppService(): MediaAppDataService
     get folderService(): FolderDataService
     get contentService(): ContentDataService
     get mediaService(): MediaService
-    get mediaStationCacheService(): MediaStationCacheService
+    get mediaStationService(): MediaStationService
     get tagService(): TagDataService
 }
 
@@ -32,11 +30,9 @@ export class MediaClientFramework implements IMediaClientFramework {
     protected _networkService: NetworkService;
     protected _contentNetworkService: ContentNetworkService;
 
-    protected _mediaStationDataService: MediaStationDataService;
-    protected _mediaStationNetworkService: MediaStationNetworkService;
-    protected _mediaStationCacheService: MediaStationCacheService;
-    protected _mediaAppService: MediaAppDataService;
+    protected _mediaStationService: MediaStationService;
 
+    protected _mediaAppService: MediaAppDataService;
     protected _folderService: FolderDataService;
     protected _contentService: ContentDataService;
     protected _mediaService: MediaService;
@@ -51,24 +47,14 @@ export class MediaClientFramework implements IMediaClientFramework {
         this._networkService = new NetworkService(this._networkConnectionHandler);
         this._contentNetworkService = new ContentNetworkService(this._networkService);
 
-        this._mediaStationDataService = new MediaStationDataService(this._mediaStationRepository);
-        this._mediaStationNetworkService = new MediaStationNetworkService(this._networkService, this._mediaStationRepository);
-        this._mediaStationCacheService = new MediaStationCacheService(this._mediaStationRepository);
-        this._mediaAppService = new MediaAppDataService(this._mediaStationRepository, this._networkService);
+        this._mediaStationService = new MediaStationService(this._mediaStationRepository, this._networkService);
+        this._mediaAppService = new MediaAppDataService(this._mediaStationRepository);
 
         this._mediaService = new MediaService(this._mediaStationRepository);
-        this._contentService = new ContentDataService(this._mediaStationRepository, this._contentNetworkService, this._mediaService);
+        this._contentService = new ContentDataService(this._mediaStationRepository, this._mediaService);
         this._folderService = new FolderDataService(this._mediaStationRepository, this._contentService);
 
         this._tagService = new TagDataService(this._mediaStationRepository);
-    }
-
-    get mediaStationDataService(): MediaStationDataService {
-        return this._mediaStationDataService;
-    }
-
-    get mediaStationNetworkService(): MediaStationNetworkService {
-        return this._mediaStationNetworkService;
     }
 
     get mediaAppService(): MediaAppDataService {
@@ -87,8 +73,8 @@ export class MediaClientFramework implements IMediaClientFramework {
         return this._mediaService;
     }
 
-    get mediaStationCacheService(): MediaStationCacheService {
-        return this._mediaStationCacheService;
+    get mediaStationService(): MediaStationService {
+        return this._mediaStationService;
     }
 
     get tagService(): TagDataService {
