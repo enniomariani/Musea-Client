@@ -8,12 +8,12 @@ import {
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
 import {MockFolderManager} from "../../../__mocks__/mcf/renderer/dataManagers/MockFolderManager";
-import {MockContentService} from "../../../__mocks__/mcf/renderer/services/MockContentService";
+import {MockContentDataService} from "__mocks__/mcf/renderer/services/MockContentDataService";
 
 let folderService: FolderService;
 let mockMediaStationRepo: MockMediaStationRepository;
 let mockFolderManager: MockFolderManager;
-let mockContentService: MockContentService;
+let mockContentService: MockContentDataService;
 
 const mediaStationId: number = 0;
 const folderId: number = 14;
@@ -25,7 +25,7 @@ beforeEach(() => {
 
     mockMediaStationRepo = new MockMediaStationRepository();
     mockFolderManager = new MockFolderManager();
-    mockContentService = new MockContentService();
+    mockContentService = new MockContentDataService();
     folderService = new FolderService(mockMediaStationRepo, mockContentService, mockFolderManager);
 });
 

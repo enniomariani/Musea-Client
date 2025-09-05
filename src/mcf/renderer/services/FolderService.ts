@@ -3,16 +3,16 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {Folder} from "../dataStructure/Folder";
 import {Content} from "../dataStructure/Content";
 import {FolderManager} from "../dataManagers/FolderManager";
-import {ContentService} from "./ContentService";
+import {ContentDataService} from "src/mcf/renderer/services/ContentDataService";
 
 
 export class FolderService {
 
     private _mediaStationRepository: MediaStationRepository;
     private _folderManager: FolderManager;
-    private _contentService: ContentService;
+    private _contentService: ContentDataService;
 
-    constructor(mediaStationRepository: MediaStationRepository, contentService: ContentService, folderManager: FolderManager = new FolderManager()) {
+    constructor(mediaStationRepository: MediaStationRepository, contentService: ContentDataService, folderManager: FolderManager = new FolderManager()) {
         this._mediaStationRepository = mediaStationRepository;
         this._contentService = contentService;
         this._folderManager = folderManager;

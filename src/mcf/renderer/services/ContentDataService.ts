@@ -2,24 +2,20 @@ import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
 import {Content} from "../dataStructure/Content";
 import {ContentManager} from "../dataManagers/ContentManager";
-import {ContentNetworkService} from "./ContentNetworkService";
-import {IMedia, Video} from "../dataStructure/Media";
 import {MediaService} from "./MediaService";
 import {MediaApp} from "../dataStructure/MediaApp";
 
 
-export class ContentService {
+export class ContentDataService  {
     static DEFAULT_DMX_PRESET:number = 2;
 
     private _mediaStationRepository: MediaStationRepository;
     private _contentManager: ContentManager;
-    private _contentNetworkService: ContentNetworkService;
     private _mediaService: MediaService;
 
-    constructor(mediaStationRepository: MediaStationRepository, contentNetworkService: ContentNetworkService, mediaService:MediaService, contentManager: ContentManager = new ContentManager()) {
+    constructor(mediaStationRepository: MediaStationRepository, mediaService:MediaService, contentManager: ContentManager = new ContentManager()) {
         this._mediaStationRepository = mediaStationRepository;
         this._contentManager = contentManager;
-        this._contentNetworkService = contentNetworkService;
         this._mediaService = mediaService;
     }
 
@@ -107,73 +103,6 @@ export class ContentService {
         this._contentManager.deleteContent(mediaStation, folderId, contentId);
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
-    }
-
-    async sendCommandPlay(mediaStationId: number, contentId: number | null): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        let media:IMedia;
-
-        let content:Content = this._contentManager.getContent(mediaStation, contentId);
-
-        for (const [key, item] of mediaStation.getAllMediaApps()){
-
-            if(content)
-                media = content.media.get(item.id);
-
-            if(media && media.idOnMediaApp !== -1)
-                await this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.id), media.idOnMediaApp);
-            else if(!content)
-                await this._contentNetworkService.sendCommandPlay(mediaStation.getMediaApp(item.id), null);
-            else
-                await this._contentNetworkService.sendCommandStop(mediaStation.getMediaApp(item.id));
-        }
-
-        if(contentId !== null)
-            await this._contentNetworkService.sendCommandLight(mediaStation.getAllMediaApps(), content.lightIntensity);
-    }
-
-    async sendCommandStop(mediaStationId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        for (const [key, item] of mediaStation.getAllMediaApps())
-            await this._contentNetworkService.sendCommandStop(item);
-
-        await this._contentNetworkService.sendCommandLight(mediaStation.getAllMediaApps(), ContentService.DEFAULT_DMX_PRESET);
-    }
-
-    async sendCommandPause(mediaStationId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandPause(mediaStation.getAllMediaApps());
-    }
-
-    async sendCommandFwd(mediaStationId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandFwd(mediaStation.getAllMediaApps());
-    }
-
-    async sendCommandRew(mediaStationId: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandRew(mediaStation.getAllMediaApps());
-    }
-
-    async sendCommandSync(mediaStationId: number, contentId:number, pos: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        let media:IMedia;
-
-        let content:Content = this._contentManager.getContent(mediaStation, contentId);
-
-        for (const [key, item] of mediaStation.getAllMediaApps()){
-
-            if(content)
-                media = content.media.get(item.id);
-
-            if(media && media instanceof Video)
-                await this._contentNetworkService.sendCommandSync(mediaStation.getMediaApp(item.id), pos);
-        }
-    }
-
-    async sendCommandSeek(mediaStationId: number, pos: number): Promise<void> {
-        let mediaStation: MediaStation = this._findMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandSeek(mediaStation.getAllMediaApps(), pos);
     }
 
     private _findMediaStation(id: number): MediaStation {

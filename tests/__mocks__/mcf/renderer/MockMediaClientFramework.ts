@@ -2,7 +2,7 @@ import {MockMediaStationDataService} from "./services/MockMediaStationDataServic
 import {MockMediaStationNetworkService} from "./services/MockMediaStationNetworkService";
 import {MockMediaAppService} from "./services/MockMediaAppService";
 import {MockFolderService} from "./services/MockFolderService";
-import {MockContentService} from "./services/MockContentService";
+import {MockContentDataService} from "__mocks__/mcf/renderer/services/MockContentDataService";
 import {MockMediaService} from "./services/MockMediaService";
 import {MockMediaStationCacheService} from "./services/MockMediaStationCacheService";
 import {IMediaClientFramework} from "@app/mcf/renderer/MediaClientFramework";
@@ -13,7 +13,7 @@ export class MockMediaClientFramework implements  IMediaClientFramework{
     private _mockMediaStationNetworkService: MockMediaStationNetworkService = new MockMediaStationNetworkService();
     private _mockMediaAppService: MockMediaAppService = new MockMediaAppService();
     private _mockFolderService: MockFolderService = new MockFolderService();
-    private _mockContentService: MockContentService = new MockContentService();
+    private _mockContentService: MockContentDataService = new MockContentDataService();
     private _mockMediaService: MockMediaService = new MockMediaService();
     private _mockMediaStationCacheService: MockMediaStationCacheService = new MockMediaStationCacheService();
     private _mockTagService: MockTagService = new MockTagService();
@@ -36,7 +36,7 @@ export class MockMediaClientFramework implements  IMediaClientFramework{
         return this._mockFolderService;
     }
 
-    get contentService(): MockContentService {
+    get contentService(): MockContentDataService {
         return this._mockContentService;
     }
 

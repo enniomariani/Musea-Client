@@ -21,7 +21,8 @@
   "include": [
     "src",
     "src/renderer/global.d.ts",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "tests"
   ],
   "exclude": [
     "build"

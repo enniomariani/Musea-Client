@@ -1,9 +1,9 @@
 import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository";
 import {FolderService} from "../../../../../src/mcf/renderer/services/FolderService";
-import {MockContentService} from "./MockContentService";
+import {MockContentDataService} from "__mocks__/mcf/renderer/services/MockContentDataService";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
-const mockContentService:MockContentService = new MockContentService();
+const mockContentService:MockContentDataService = new MockContentDataService();
 
 
 export class MockFolderService extends FolderService {
