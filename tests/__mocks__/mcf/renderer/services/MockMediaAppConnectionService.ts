@@ -10,6 +10,7 @@ export class MockMediaAppConnectionService extends MediaAppConnectionService{
     pcRespondsToPing: jest.Mock;
     connectAndRegisterToMediaApp: jest.Mock;
     unregisterAndCloseMediaApp: jest.Mock;
+    checkOnlineStatusOfAllMediaApps: jest.Mock;
 
     constructor() {
         super(mockMediaStationRepo, mockNetworkService);
@@ -17,5 +18,6 @@ export class MockMediaAppConnectionService extends MediaAppConnectionService{
         this.pcRespondsToPing = jest.fn();
         this.connectAndRegisterToMediaApp = jest.fn();
         this.unregisterAndCloseMediaApp = jest.fn();
+        this.checkOnlineStatusOfAllMediaApps = jest.fn();
     }
 }
