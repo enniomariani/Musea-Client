@@ -1,16 +1,16 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {Tag} from "../../../../src/mcf/renderer/dataStructure/Tag";
-import {TagManager} from "@app/mcf/renderer/dataManagers/TagManager";
+import {Tag} from "@app/mcf/renderer/dataStructure/Tag";
+import {TagRegistry} from "@app/mcf/renderer/registries/TagRegistry";
 import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 
-let tagManager: TagManager;
+let tagRegistry: TagRegistry;
 let mockMediaStation:MockMediaStation;
 
 beforeEach(() => {
     mockMediaStation = new MockMediaStation(0);
     mockMediaStation.getNextTagId.mockReturnValue(200);
 
-    tagManager = new TagManager();
+    tagRegistry = new TagRegistry();
 });
 
 afterEach(() => {
@@ -24,8 +24,8 @@ describe("addTag() and getTag()", () => {
         let tag:Tag = new Tag(200, "testName");
 
         //method to test
-        tagManager.addTag(mockMediaStation, tag.name);
-        receivedTag = tagManager.getTag(200);
+        tagRegistry.addTag(mockMediaStation, tag.name);
+        receivedTag = tagRegistry.getTag(200);
 
         //tests
         expect(receivedTag).toStrictEqual(tag);
@@ -33,7 +33,7 @@ describe("addTag() and getTag()", () => {
 
     it("getTag() should throw an error if the tag-id does not exist", () => {
         //tests
-        expect(() => tagManager.getTag(20)).toThrow(new Error("Tag with the following ID does not exist: 20"))
+        expect(() => tagRegistry.getTag(20)).toThrow(new Error("Tag with the following ID does not exist: 20"))
     });
 });
 
@@ -43,11 +43,11 @@ describe("addTag(), removeTag() and getTag()", () => {
         let tag:Tag = new Tag(200, "testName");
 
         //method to test
-        tagManager.addTag(mockMediaStation, tag.name);
-        tagManager.removeTag(tag.id);
+        tagRegistry.addTag(mockMediaStation, tag.name);
+        tagRegistry.removeTag(tag.id);
 
         //tests
-        expect(() => tagManager.getTag(200)).toThrow(new Error("Tag with the following ID does not exist: 200"))
+        expect(() => tagRegistry.getTag(200)).toThrow(new Error("Tag with the following ID does not exist: 200"))
     });
 });
 
@@ -60,16 +60,16 @@ describe("addTag(), reset(), getAllTags()", () => {
 
         //method to test
         mockMediaStation.getNextTagId.mockReturnValueOnce(200);
-        tagManager.addTag(mockMediaStation, tag1.name);
+        tagRegistry.addTag(mockMediaStation, tag1.name);
         mockMediaStation.getNextTagId.mockReturnValueOnce(201);
-        tagManager.addTag(mockMediaStation, tag2.name);
-        receivedTags = tagManager.getAllTags();
+        tagRegistry.addTag(mockMediaStation, tag2.name);
+        receivedTags = tagRegistry.getAllTags();
 
         //tests
         expect(receivedTags.get(200)).toStrictEqual(tag1);
         expect(receivedTags.get(201)).toStrictEqual(tag2);
 
-        tagManager.reset();
-        expect(tagManager.getAllTags().size).toBe(0);
+        tagRegistry.reset();
+        expect(tagRegistry.getAllTags().size).toBe(0);
     });
 });

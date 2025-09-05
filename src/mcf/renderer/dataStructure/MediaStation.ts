@@ -1,6 +1,6 @@
 import {MediaApp} from "./MediaApp";
 import {Folder} from "./Folder";
-import {TagManager} from "src/mcf/renderer/dataManagers/TagManager";
+import {TagRegistry} from "src/mcf/renderer/registries/TagRegistry";
 import {Tag} from "src/mcf/renderer/dataStructure/Tag";
 
 export class MediaStation {
@@ -15,9 +15,9 @@ export class MediaStation {
     private _mediaAppIdCounter: number;
     private _tagIdCounter: number;
 
-    private _tagManager:TagManager;
+    private _tagManager:TagRegistry;
 
-    constructor(id: number, tagManager:TagManager) {
+    constructor(id: number, tagManager:TagRegistry) {
         this._id = id;
         this._tagManager = tagManager;
         this.reset();
@@ -57,7 +57,6 @@ export class MediaStation {
             console.log("TAG: ", tag.id, tag.name);
             json.tags.push({id: tag.id, name: tag.name});
         }
-
 
         this._mediaApps.forEach((mediaApp: MediaApp) => {
             json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
@@ -222,7 +221,7 @@ export class MediaStation {
         this._rootFolder = value;
     }
 
-    get tagManager(): TagManager {
+    get tagManager(): TagRegistry {
         return this._tagManager;
     }
 }

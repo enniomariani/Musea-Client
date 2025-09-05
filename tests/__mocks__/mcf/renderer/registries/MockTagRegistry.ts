@@ -1,6 +1,6 @@
-import {TagManager} from "@app/mcf/renderer/dataManagers/TagManager";
+import {TagRegistry} from "@app/mcf/renderer/registries/TagRegistry";
 
-export class MockTagManager extends TagManager{
+export class MockTagRegistry extends TagRegistry{
 
     addTag: jest.Mock;
     removeTag: jest.Mock;

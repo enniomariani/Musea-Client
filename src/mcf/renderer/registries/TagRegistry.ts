@@ -1,7 +1,7 @@
 import {Tag} from "src/mcf/renderer/dataStructure/Tag";
 import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 
-export class TagManager{
+export class TagRegistry {
     private _tags: Map<number, Tag> = new Map();
 
     constructor(){}

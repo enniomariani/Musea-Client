@@ -1,8 +1,8 @@
 import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 import {MockFolder} from "./MockFolder";
-import {MockTagManager} from "tests/__mocks__/mcf/renderer/dataManagers/MockTagManager";
+import {MockTagRegistry} from "tests/__mocks__/mcf/renderer/registries/MockTagRegistry";
 
-const mockTagManager:MockTagManager = new MockTagManager();
+const mockTagManager:MockTagRegistry = new MockTagRegistry();
 
 export class MockMediaStation extends MediaStation{
 
@@ -22,7 +22,7 @@ export class MockMediaStation extends MediaStation{
     getAllMediaApps: jest.Mock;
 
     private _rootFolderMock: MockFolder = new MockFolder(0);
-    private _mockTagManager: MockTagManager = new MockTagManager();
+    private _mockTagManager: MockTagRegistry = new MockTagRegistry();
 
     constructor(id) {
         super(id, mockTagManager);
@@ -44,7 +44,7 @@ export class MockMediaStation extends MediaStation{
         this.getControllerIp.mockReturnValue("mock-controller-ip")
     }
 
-    override get tagManager(): MockTagManager {
+    override get tagManager(): MockTagRegistry {
         return this._mockTagManager;
     }
 

@@ -3,10 +3,10 @@ import {MediaStation} from "../../../../src/mcf/renderer/dataStructure/MediaStat
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
 import {Tag} from "../../../../src/mcf/renderer/dataStructure/Tag";
-import {MockTagManager} from "__mocks__/mcf/renderer/dataManagers/MockTagManager";
+import {MockTagRegistry} from "__mocks__/mcf/renderer/registries/MockTagRegistry";
 
 let mediaStation: MediaStation;
-let mockTagManager:MockTagManager;
+let mockTagManager:MockTagRegistry;
 let mediaApp1: MediaApp = new MediaApp(0);
 mediaApp1.name = "app1";
 mediaApp1.ip = "127.0.0.1";
@@ -30,7 +30,7 @@ const jsonMock: any = {
 }
 
 beforeEach(() => {
-    mockTagManager = new MockTagManager();
+    mockTagManager = new MockTagRegistry();
     mediaStation = new MediaStation(0, mockTagManager);
 });
 

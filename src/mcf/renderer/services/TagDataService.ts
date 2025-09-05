@@ -3,7 +3,7 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {Tag} from "../dataStructure/Tag";
 import {ContentManager} from "../dataManagers/ContentManager";
 import {Content} from "../dataStructure/Content";
-import {TagManager} from "src/mcf/renderer/dataManagers/TagManager";
+import {TagRegistry} from "src/mcf/renderer/registries/TagRegistry";
 
 
 export class TagDataService {
