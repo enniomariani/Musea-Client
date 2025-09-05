@@ -1,7 +1,7 @@
 import {MediaStationRepository} from "./dataStructure/MediaStationRepository";
 import {MediaStationDataService} from "src/mcf/renderer/services/mediastation/MediaStationDataService";
 import {MediaStationLocalMetaData} from "./fileHandling/MediaStationLocalMetaData";
-import {MediaAppService} from "./services/MediaAppService";
+import {MediaAppDataService} from "src/mcf/renderer/services/MediaAppDataService";
 import {NetworkService} from "./services/NetworkService";
 import {NetworkConnectionHandler} from "./network/NetworkConnectionHandler";
 import {ContentDataService} from "src/mcf/renderer/services/ContentDataService";
@@ -15,7 +15,7 @@ import {TagDataService} from "./services/TagDataService";
 export interface IMediaClientFramework {
     get mediaStationDataService(): MediaStationDataService
     get mediaStationNetworkService(): MediaStationNetworkService
-    get mediaAppService(): MediaAppService
+    get mediaAppService(): MediaAppDataService
     get folderService(): FolderDataService
     get contentService(): ContentDataService
     get mediaService(): MediaService
@@ -35,7 +35,7 @@ export class MediaClientFramework implements IMediaClientFramework {
     protected _mediaStationDataService: MediaStationDataService;
     protected _mediaStationNetworkService: MediaStationNetworkService;
     protected _mediaStationCacheService: MediaStationCacheService;
-    protected _mediaAppService: MediaAppService;
+    protected _mediaAppService: MediaAppDataService;
 
     protected _folderService: FolderDataService;
     protected _contentService: ContentDataService;
@@ -54,7 +54,7 @@ export class MediaClientFramework implements IMediaClientFramework {
         this._mediaStationDataService = new MediaStationDataService(this._mediaStationRepository);
         this._mediaStationNetworkService = new MediaStationNetworkService(this._networkService, this._mediaStationRepository);
         this._mediaStationCacheService = new MediaStationCacheService(this._mediaStationRepository);
-        this._mediaAppService = new MediaAppService(this._mediaStationRepository, this._networkService);
+        this._mediaAppService = new MediaAppDataService(this._mediaStationRepository, this._networkService);
 
         this._mediaService = new MediaService(this._mediaStationRepository);
         this._contentService = new ContentDataService(this._mediaStationRepository, this._contentNetworkService, this._mediaService);
@@ -71,7 +71,7 @@ export class MediaClientFramework implements IMediaClientFramework {
         return this._mediaStationNetworkService;
     }
 
-    get mediaAppService(): MediaAppService {
+    get mediaAppService(): MediaAppDataService {
         return this._mediaAppService;
     }
 
