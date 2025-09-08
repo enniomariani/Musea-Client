@@ -1,382 +1,260 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {
-    MediaAppCommandService
-} from "@app/mcf/renderer/network/MediaAppCommandService";
+import {MediaAppCommandService} from "@app/mcf/renderer/network/MediaAppCommandService";
 import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
 import {MediaApp} from "@app/mcf/renderer/dataStructure/MediaApp";
 
-let commandService:MediaAppCommandService;
-let mockNetworkService:MockNetworkService;
+let service: MediaAppCommandService;
+let net: MockNetworkService;
 
-const contentId:number = 12;
-let mediaApp1:MediaApp;
-let mediaApp2:MediaApp;
-let mediaApp3:MediaApp;
-let mediaApps:Map<number, MediaApp>;
-
-let logSpy:any = jest.spyOn(global.console, 'error');
+const contentId = 12;
+let app1: MediaApp;
+let app2: MediaApp;
+let app3: MediaApp;
+let apps: Map<number, MediaApp>;
 
 beforeEach(() => {
-    mediaApp1 = new MediaApp(0);
-    mediaApp1.ip = "127.0.0.1";
-    mediaApp2 = new MediaApp(1);
-    mediaApp2.ip = "127.0.0.2";
-    mediaApp3 = new MediaApp(2);
-    mediaApp3.ip = "127.0.0.3";
+    app1 = new MediaApp(0);
+    app1.ip = "127.0.0.1";
+    app2 = new MediaApp(1);
+    app2.ip = "127.0.0.2";
+    app3 = new MediaApp(2);
+    app3.ip = "127.0.0.3";
 
-    mediaApps = new Map([[0, mediaApp1], [1, mediaApp2], [2, mediaApp3]]);
+    apps = new Map([[0, app1], [1, app2], [2, app3]]);
 
-    mockNetworkService = new MockNetworkService();
-    commandService = new MediaAppCommandService(mockNetworkService);
+    net = new MockNetworkService();
+    service = new MediaAppCommandService(net);
 });
 
 afterEach(() => {
     jest.clearAllMocks();
 });
 
-function checkIfCommandWasSuccesfullySentTo(mediaApps:Map<number, MediaApp>, method:Function, command:string[]):void{
-    let callTime:number = 1;
-
-    expect(method).toHaveBeenCalledTimes(mediaApps.size);
-
-    for (const [key, item] of mediaApps){
-        expect(method).toHaveBeenNthCalledWith(callTime, item.ip, command);
-        callTime++;
+function expectSentTo(targets: Map<number, MediaApp>, method: Function, command: string[]): void {
+    let nth = 1;
+    expect(method).toHaveBeenCalledTimes(targets.size);
+    for (const [, app] of targets) {
+        expect(method).toHaveBeenNthCalledWith(nth, app.ip, command);
+        nth++;
     }
 }
 
-describe("sendCommandPlay() ", ()=> {
-
-    it("should call networkService.sendMediaControlTo for the mediaApp passed and send the PLAY-command", async () => {
-        //setup
-        const command:string[] = [MediaAppCommandService.COMMAND_PLAY, contentId.toString()];
-
-        //method to test
-        await commandService.sendCommandPlay(mediaApp1,contentId);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1]]), mockNetworkService.sendMediaControlTo, command);
+describe("sendCommandPlay()", () => {
+    it("PLAY with contentId", async () => {
+        const cmd = [MediaAppCommandService.COMMAND_PLAY, contentId.toString()];
+        await service.sendCommandPlay(app1, contentId);
+        expectSentTo(new Map([[0, app1]]), net.sendMediaControlTo, cmd);
     });
 
-    it("should call networkService.sendMediaControlTo for the mediaApp passed and send the PLAY-command if contentId = 0", async () => {
-        //setup
-        const command:string[] = [MediaAppCommandService.COMMAND_PLAY, "0"];
-
-        //method to test
-        await commandService.sendCommandPlay(mediaApp2,0);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp2]]), mockNetworkService.sendMediaControlTo, command);
+    it("PLAY with contentId 0", async () => {
+        const cmd = [MediaAppCommandService.COMMAND_PLAY, "0"];
+        await service.sendCommandPlay(app2, 0);
+        expectSentTo(new Map([[0, app2]]), net.sendMediaControlTo, cmd);
     });
 
-    it("should call networkService.sendMediaControlTo for every mediaApp defined in the mediaStation with the correct PLAY-command if there is no contentId passed", async () => {
-        //setup
-        const command:string[] = [MediaAppCommandService.COMMAND_PLAY];
-
-        //method to test
-        await commandService.sendCommandPlay(mediaApp3,null);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp3]]), mockNetworkService.sendMediaControlTo, command);
+    it("PLAY without contentId", async () => {
+        const cmd = [MediaAppCommandService.COMMAND_PLAY];
+        await service.sendCommandPlay(app3, null);
+        expectSentTo(new Map([[0, app3]]), net.sendMediaControlTo, cmd);
     });
 
-    it("should print an error if the media-App has no IP set", async () => {
-        //setup
-        mediaApp2.ip = "";
-
-        //method to test
-        await commandService.sendCommandPlay(mediaApp2,null);
-
-        //tests
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenCalledTimes(0);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("PLAY no ip", async () => {
+        app2.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandPlay(app2, null);
+        expect(net.sendMediaControlTo).toHaveBeenCalledTimes(0);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 });
 
-describe("sendCommandStop() ", ()=> {
-    it("should call networkService.sendMediaControlTo for the mediaApp with the correct STOP-command", async () => {
-        //setup
-        const command:string[] = [MediaAppCommandService.COMMAND_STOP];
-
-        //method to test
-        await commandService.sendCommandStop(mediaApp1);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1]]), mockNetworkService.sendMediaControlTo, command);
+describe("sendCommandStop()", () => {
+    it("STOP one app", async () => {
+        const cmd = [MediaAppCommandService.COMMAND_STOP];
+        await service.sendCommandStop(app1);
+        expectSentTo(new Map([[0, app1]]), net.sendMediaControlTo, cmd);
     });
 
-    it("should print an error if the media-App has no IP set", async () => {
-        //setup
-        mediaApp2.ip = "";
-
-        //method to test
-        await commandService.sendCommandStop(mediaApp2);
-
-        //tests
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenCalledTimes(0);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("STOP no ip", async () => {
+        app2.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandStop(app2);
+        expect(net.sendMediaControlTo).toHaveBeenCalledTimes(0);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 });
 
-describe("sendCommandPause() ", ()=> {
-    const command:string[] = [MediaAppCommandService.COMMAND_PAUSE];
+describe("sendCommandPause()", () => {
+    const cmd = [MediaAppCommandService.COMMAND_PAUSE];
 
-    it("should call networkService.sendMediaControlTo for every mediaApp defined in the mediaStation with the correct PAUSE-command", async () => {
-        //method to test
-        await commandService.sendCommandPause(mediaApps);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(mediaApps, mockNetworkService.sendMediaControlTo, command);
+    it("PAUSE all", async () => {
+        await service.sendCommandPause(apps);
+        expectSentTo(apps, net.sendMediaControlTo, cmd);
     });
 
-    it("should print an error if one of the media-Apps has no IP set, but still send the command to the others", async () => {
-        //setup
-        mediaApp2.ip = "";
-
-        //method to test
-        await commandService.sendCommandPause(mediaApps);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1], [1, mediaApp3]]), mockNetworkService.sendMediaControlTo, command);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("PAUSE skip empty ip", async () => {
+        app2.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandPause(apps);
+        expectSentTo(new Map([[0, app1], [1, app3]]), net.sendMediaControlTo, cmd);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 });
 
-describe("sendCommandFwd() ", ()=> {
-    const command:string[] = [MediaAppCommandService.COMMAND_FWD];
+describe("sendCommandFwd()", () => {
+    const cmd = [MediaAppCommandService.COMMAND_FWD];
 
-    it("should call networkService.sendMediaControlTo for every mediaApp defined in the mediaStation with the correct FWD-command", async () => {
-        //method to test
-        await commandService.sendCommandFwd(mediaApps);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(mediaApps,mockNetworkService.sendMediaControlTo, command);
+    it("FWD all", async () => {
+        await service.sendCommandFwd(apps);
+        expectSentTo(apps, net.sendMediaControlTo, cmd);
     });
 
-    it("should print an error if one of the media-Apps has no IP set, but still send the command to the others", async () => {
-        //setup
-        mediaApp2.ip = "";
-
-        //method to test
-        await commandService.sendCommandFwd(mediaApps);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1], [1, mediaApp3]]), mockNetworkService.sendMediaControlTo, command);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("FWD skip empty ip", async () => {
+        app2.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandFwd(apps);
+        expectSentTo(new Map([[0, app1], [1, app3]]), net.sendMediaControlTo, cmd);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 });
 
-describe("sendCommandRew() ", ()=> {
-    const command:string[] = [MediaAppCommandService.COMMAND_REW];
+describe("sendCommandRew()", () => {
+    const cmd = [MediaAppCommandService.COMMAND_REW];
 
-    it("should call networkService.sendMediaControlTo for every mediaApp defined in the mediaStation with the correct REW-command", async () => {
-        //method to test
-        await commandService.sendCommandRew(mediaApps);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(mediaApps, mockNetworkService.sendMediaControlTo, command);
+    it("REW all", async () => {
+        await service.sendCommandRew(apps);
+        expectSentTo(apps, net.sendMediaControlTo, cmd);
     });
 
-    it("should print an error if one of the media-Apps has no IP set, but still send the command to the others", async () => {
-        //setup
-        mediaApp2.ip = "";
-
-        //method to test
-        await commandService.sendCommandRew(mediaApps);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1], [1, mediaApp3]]), mockNetworkService.sendMediaControlTo, command);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("REW skip empty ip", async () => {
+        app2.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandRew(apps);
+        expectSentTo(new Map([[0, app1], [1, app3]]), net.sendMediaControlTo, cmd);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 });
 
-describe("sendCommandSeek() ", ()=> {
-    it("should call networkService.sendMediaControlTo for every mediaApp defined in the mediaStation with the correct SEEK-command", async () => {
-        //setup
-        const position:number = 233;
-        const command:string[] = [MediaAppCommandService.COMMAND_SEEK , position.toString()];
-
-        //method to test
-        await commandService.sendCommandSeek(mediaApps, position);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(mediaApps, mockNetworkService.sendMediaControlTo, command);
+describe("sendCommandSeek()", () => {
+    it("SEEK all pos>0", async () => {
+        const pos = 233;
+        const cmd = [MediaAppCommandService.COMMAND_SEEK, pos.toString()];
+        await service.sendCommandSeek(apps, pos);
+        expectSentTo(apps, net.sendMediaControlTo, cmd);
     });
 
-    it("should call networkService.sendMediaControlTo for every mediaApp defined in the mediaStation with the correct SEEK-command, when position is 0", async () => {
-        //setup
-        const position:number = 0;
-        const command:string[] = [MediaAppCommandService.COMMAND_SEEK , position.toString()];
-
-        //method to test
-        await commandService.sendCommandSeek(mediaApps, position);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(mediaApps, mockNetworkService.sendMediaControlTo, command);
+    it("SEEK all pos=0", async () => {
+        const pos = 0;
+        const cmd = [MediaAppCommandService.COMMAND_SEEK, pos.toString()];
+        await service.sendCommandSeek(apps, pos);
+        expectSentTo(apps, net.sendMediaControlTo, cmd);
     });
 
-    it("should print an error if one of the media-Apps has no IP set, but still send the command to the others", async () => {
-        //setup
-        const position:number = 233;
-        const command:string[] = [MediaAppCommandService.COMMAND_SEEK, position.toString()];
-        mediaApp2.ip = "";
-
-        //method to test
-        await commandService.sendCommandSeek(mediaApps, position);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1], [1, mediaApp3]]), mockNetworkService.sendMediaControlTo, command);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("SEEK skip empty ip", async () => {
+        const pos = 233;
+        const cmd = [MediaAppCommandService.COMMAND_SEEK, pos.toString()];
+        app2.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandSeek(apps, pos);
+        expectSentTo(new Map([[0, app1], [1, app3]]), net.sendMediaControlTo, cmd);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 
-    it("should print an error if the position is below 0 and not send it", async () => {
-        //setup
-        const position:number = -20;
-
-        //method to test
-        await commandService.sendCommandSeek(mediaApps, position);
-
-        //tests
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenCalledTimes(0);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("SEEK invalid pos", async () => {
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandSeek(apps, -20);
+        expect(net.sendMediaControlTo).toHaveBeenCalledTimes(0);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 });
 
-describe("sendCommandSync() ", ()=> {
-    it("should call networkService.sendMediaControlTo for the passed mediaApp with the correct SEEK-command", async () => {
-        //setup
-        const position:number = 233;
-        const command:string[] = [MediaAppCommandService.COMMAND_SYNC , position.toString()];
-
-        //method to test
-        await commandService.sendCommandSync(mediaApp1, position);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1]]), mockNetworkService.sendMediaControlTo, command);
+describe("sendCommandSync()", () => {
+    it("SYNC one app", async () => {
+        const pos = 233;
+        const cmd = [MediaAppCommandService.COMMAND_SYNC, pos.toString()];
+        await service.sendCommandSync(app1, pos);
+        expectSentTo(new Map([[0, app1]]), net.sendMediaControlTo, cmd);
     });
 
-    it("should print an error if the media-Apps has no IP set", async () => {
-        //setup
-        const position:number = 233;
-        mediaApp1.ip = "";
-
-        //method to test
-        await commandService.sendCommandSync(mediaApp1, position);
-
-        //tests
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenCalledTimes(0);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("SYNC no ip", async () => {
+        const pos = 233;
+        app1.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandSync(app1, pos);
+        expect(net.sendMediaControlTo).toHaveBeenCalledTimes(0);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 
-    it("should print an error if the position is below 0 and not send it", async () => {
-        //setup
-        const position:number = -20;
-
-        //method to test
-        await commandService.sendCommandSync(mediaApp1, position);
-
-        //tests
-        expect(mockNetworkService.sendMediaControlTo).toHaveBeenCalledTimes(0);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("SYNC invalid pos", async () => {
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandSync(app1, -20);
+        expect(net.sendMediaControlTo).toHaveBeenCalledTimes(0);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 });
 
-describe("sendCommandLight() ", ()=> {
-    it("should call networkService.sendLightCommandTo for every mediaApp defined in the mediaStation with the correct LIGHT-command", async () => {
-        //setup
-        const command:string[] = [MediaAppCommandService.COMMAND_LIGHT];
-        command.push("2")
-
-        //method to test
-        await commandService.sendCommandLight(mediaApps, 2);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(mediaApps, mockNetworkService.sendLightCommandTo, command);
+describe("sendCommandLight()", () => {
+    it("LIGHT all", async () => {
+        const cmd = [MediaAppCommandService.COMMAND_LIGHT, "2"];
+        await service.sendCommandLight(apps, 2);
+        expectSentTo(apps, net.sendLightCommandTo, cmd);
     });
 
-    it("should print an error if one of the media-Apps has no IP set, but still send the command to the others", async () => {
-        //setup
-        const command:string[] = [MediaAppCommandService.COMMAND_LIGHT];
-        command.push("1");
-        mediaApp2.ip = "";
-
-        //method to test
-        await commandService.sendCommandLight(mediaApps, 1);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1], [1, mediaApp3]]), mockNetworkService.sendLightCommandTo, command);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("LIGHT skip empty ip", async () => {
+        const cmd = [MediaAppCommandService.COMMAND_LIGHT, "1"];
+        app2.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandLight(apps, 1);
+        expectSentTo(new Map([[0, app1], [1, app3]]), net.sendLightCommandTo, cmd);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 });
 
-describe("sendCommandMute() ", ()=> {
-    const command:string[] = ["volume", MediaAppCommandService.COMMAND_MUTE];
-
-    it("should call networkService.sendSystemCommand for every mediaApp defined in the mediaStation with the correct command", async () => {
-        //method to test
-        await commandService.sendCommandMute(mediaApps);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(mediaApps, mockNetworkService.sendSystemCommandTo, command);
+describe("system", () => {
+    it("MUTE all", async () => {
+        const cmd = ["volume", MediaAppCommandService.COMMAND_MUTE];
+        await service.sendCommandMute(apps);
+        expectSentTo(apps, net.sendSystemCommandTo, cmd);
     });
 
-    it("should print an error if one of the media-Apps has no IP set, but still send the command to the others", async () => {
-        //setup
-        mediaApp2.ip = "";
-
-        //method to test
-        await commandService.sendCommandMute(mediaApps);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1], [1, mediaApp3]]), mockNetworkService.sendSystemCommandTo, command);
-        expect(logSpy).toHaveBeenCalledTimes(1);
-    });
-});
-
-describe("sendCommandUnMute() ", ()=> {
-    const command:string[] = ["volume", MediaAppCommandService.COMMAND_UNMUTE];
-
-    it("should call networkService.sendSystemCommand for every mediaApp defined in the mediaStation with the correct command", async () => {
-        //method to test
-        await commandService.sendCommandUnmute(mediaApps);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(mediaApps, mockNetworkService.sendSystemCommandTo, command);
+    it("UNMUTE all", async () => {
+        const cmd = ["volume", MediaAppCommandService.COMMAND_UNMUTE];
+        await service.sendCommandUnmute(apps);
+        expectSentTo(apps, net.sendSystemCommandTo, cmd);
     });
 
-    it("should print an error if one of the media-Apps has no IP set, but still send the command to the others", async () => {
-        //setup
-        mediaApp2.ip = "";
-
-        //method to test
-        await commandService.sendCommandUnmute(mediaApps);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1], [1, mediaApp3]]), mockNetworkService.sendSystemCommandTo, command);
-        expect(logSpy).toHaveBeenCalledTimes(1);
-    });
-});
-
-describe("sendCommandSetVolume() ", ()=> {
-    const command:string[] = ["volume", MediaAppCommandService.COMMAND_SET_VOLUME, "0.3"];
-
-    it("should call networkService.sendSystemCommand for every mediaApp defined in the mediaStation with the correct command", async () => {
-        //method to test
-        await commandService.sendCommandSetVolume(mediaApps, 0.3);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(mediaApps, mockNetworkService.sendSystemCommandTo, command);
+    it("MUTE skip empty ip", async () => {
+        const cmd = ["volume", MediaAppCommandService.COMMAND_MUTE];
+        app2.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandMute(apps);
+        expectSentTo(new Map([[0, app1], [1, app3]]), net.sendSystemCommandTo, cmd);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 
-    it("should print an error if one of the media-Apps has no IP set, but still send the command to the others", async () => {
-        //setup
-        mediaApp2.ip = "";
+    it("SET_VOLUME all", async () => {
+        const cmd = ["volume", MediaAppCommandService.COMMAND_SET_VOLUME, "0.3"];
+        await service.sendCommandSetVolume(apps, 0.3);
+        expectSentTo(apps, net.sendSystemCommandTo, cmd);
+    });
 
-        //method to test
-        await commandService.sendCommandSetVolume(mediaApps, 0.3);
-
-        //tests
-        checkIfCommandWasSuccesfullySentTo(new Map([[0, mediaApp1], [1, mediaApp3]]), mockNetworkService.sendSystemCommandTo, command);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+    it("SET_VOLUME skip empty ip", async () => {
+        const cmd = ["volume", MediaAppCommandService.COMMAND_SET_VOLUME, "0.3"];
+        app2.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandSetVolume(apps, 0.3);
+        expectSentTo(new Map([[0, app1], [1, app3]]), net.sendSystemCommandTo, cmd);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
     });
 });
