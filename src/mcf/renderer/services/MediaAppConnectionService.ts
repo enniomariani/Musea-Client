@@ -3,6 +3,37 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp} from "../dataStructure/MediaApp";
 import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 
+export enum ConnectionStatus {
+    /**
+     * ICMP echo (host reachability) failed or is blocked by the network.
+     * Note: ICMP can be blocked even when the service is reachable.
+     */
+    IcmpPingFailed = "icmpPingFailed",
+
+    /**
+     * TCP connection to the service port could not be established (timeout/refused).
+     * However, ICMP echo (host reachability) was successful.
+     */
+    TcpConnectionFailed = "tcpConnectionFailed",
+
+    /**
+     * WebSocket ping timed out after a successful connection.
+     */
+    WebSocketPingTimeout = "webSocketPingTimeout",
+
+    /**
+     * Registration failed after the WS connection was established.
+     * This means that another user- or admin-app is already registered on the MediaApp
+     */
+    RegistrationFailed = "registrationFailed",
+
+    /**
+     * MediaApp is reachable, connected, and healthy.
+     */
+    Online = "online",
+}
+
+
 export class MediaAppConnectionService {
     private _mediaStationRepository: MediaStationRepository;
     private _networkService: NetworkService;
@@ -53,7 +84,7 @@ export class MediaAppConnectionService {
         } else if (appType === "user") {
             if (await this._networkService.sendRegistrationUserApp(ip) === "no")
                 return false;
-        }
+            }
 
         return true;
     }
