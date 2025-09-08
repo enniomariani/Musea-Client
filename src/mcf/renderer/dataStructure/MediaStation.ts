@@ -54,10 +54,8 @@ export class MediaStation {
             rootFolder: this._rootFolder.exportToJSON(),
         };
 
-        for(const [key, tag] of allTags){
-            console.log("TAG: ", tag.id, tag.name);
+        for(const [key, tag] of allTags)
             json.tags.push({id: tag.id, name: tag.name});
-        }
 
         this._mediaAppRegistry.getAll().forEach((mediaApp: MediaApp) => {
             json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
@@ -73,13 +71,12 @@ export class MediaStation {
      * before it imports the data, it deletes the root-folder and all mediaApps
      *
      * @param json
-     * @param {boolean} preserverName
+     * @param {boolean} preserveName
      * @param {Folder} newRootFolder
      */
-    importFromJSON(json: any,preserverName:boolean, newRootFolder: Folder = new Folder(0)): void {
-        console.log("IMPORT MEDIA-STATION FROM JSON: ", json)
+    importFromJSON(json: any,preserveName:boolean, newRootFolder: Folder = new Folder(0)): void {
 
-        if(!preserverName){
+        if(!preserveName){
             if (this._jsonPropertyExists(json, "name"))
                 this._name = json.name;
         }
@@ -93,7 +90,8 @@ export class MediaStation {
         if (this._jsonPropertyExists(json, "mediaAppIdCounter"))
             this._mediaAppIdCounter = json.mediaAppIdCounter;
 
-        this._mediaAppRegistry.importFromJSON(json.mediaApps);
+        if (this._jsonPropertyExists(json, "mediaApps"))
+            this._mediaAppRegistry.importFromJSON(json.mediaApps);
 
         if (this._jsonPropertyExists(json, "tags")) {
             this._tagRegistry.reset();

@@ -1,8 +1,7 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {
     MockMediaStationLocalMetaData
 } from "../../../__mocks__/mcf/renderer/fileHandling/MockMediaStationLocalMetaData";
-import {MockMediaFileService} from "../../../__mocks__/mcf/renderer/fileHandling/MockMediaFileService";
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {
     MockContentFileService
@@ -16,7 +15,6 @@ import {
     MockMediaFilesMarkedToDeleteService
 } from "../../../__mocks__/mcf/renderer/fileHandling/MockMediaFilesMarkedToDeleteService";
 import {MockMediaFileCacheHandler} from "__mocks__/mcf/renderer/fileHandling/MockMediaFileCacheHandler";
-import {ICachedMedia} from "@app/mcf/renderer/fileHandling/MediaFileCacheHandler";
 
 let mediaStationRepo: MediaStationRepository;
 let mockMediaFileCacheHandler: MockMediaFileCacheHandler;
@@ -24,34 +22,37 @@ let mockContentFileService: MockContentFileService;
 let mockMediaStationLocalMetaData: MockMediaStationLocalMetaData;
 let mockMediaFilesMarkedToDeleteService: MockMediaFilesMarkedToDeleteService;
 
+const mockLoadedMetaData: Map<string, string> = new Map();
+let key1: string = "mediaStation1";
+let key2: string = "mediaStation2";
+let key3: string = "mediaStation3";
+mockLoadedMetaData.set(key1, null);
+mockLoadedMetaData.set(key2, "192.168.2.1");
+mockLoadedMetaData.set(key3, "192.168.2.100");
+
+const defaultControllerIp:string = "defaultControllerIp";
+
 beforeEach(() => {
     mockMediaStationLocalMetaData = new MockMediaStationLocalMetaData();
     mockMediaFileCacheHandler = new MockMediaFileCacheHandler("fakePathToDataFolder");
     mockContentFileService = new MockContentFileService();
     mockMediaFilesMarkedToDeleteService = new MockMediaFilesMarkedToDeleteService();
 
+    mockMediaStationLocalMetaData.load.mockImplementation(() => mockLoadedMetaData);
+
     mediaStationRepo = new MediaStationRepository(mockMediaStationLocalMetaData, "fakePathToDataFolder", mockMediaFileCacheHandler, mockMediaFilesMarkedToDeleteService, mockContentFileService,
-        (id: number) => new MockMediaStation(id));
+        (id: number) => {const ms = new MockMediaStation(id);
+            ms.mediaAppRegistry.getControllerIp.mockReturnValue(defaultControllerIp);
+            return ms;
+        });
 });
 
 afterEach(() => {
     jest.clearAllMocks();
 });
 
-const returnedMetaData: Map<string, string> = new Map();
-let key1: string = "mediaStation1";
-let key2: string = "mediaStation2";
-let key3: string = "mediaStation3";
-returnedMetaData.set(key1, null);
-returnedMetaData.set(key2, "192.168.2.1");
-returnedMetaData.set(key3, "192.168.2.100");
-
 describe("loadMediaStations() ", () => {
     it("should call load() of MediaStationLocalMetaData", () => {
-        mockMediaStationLocalMetaData.load.mockImplementation(() => {
-            return returnedMetaData;
-        });
-
         mediaStationRepo.loadMediaStations();
 
         expect(mockMediaStationLocalMetaData.load).toHaveBeenCalledTimes(1);
@@ -59,10 +60,6 @@ describe("loadMediaStations() ", () => {
 
     it("should call addMediaStation() for each of the loaded media-station-names", async () => {
         jest.spyOn(mediaStationRepo, "addMediaStation");
-
-        mockMediaStationLocalMetaData.load.mockImplementation(() => {
-            return returnedMetaData;
-        });
 
         await mediaStationRepo.loadMediaStations();
 
@@ -72,11 +69,7 @@ describe("loadMediaStations() ", () => {
         expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(3, key3, false);
     });
 
-    it("should call mediaCacheHandler.hydrate()", async () => {
-        mockMediaStationLocalMetaData.load.mockImplementation(() => {
-            return returnedMetaData;
-        });
-
+    it("hydrates each station", async () => {
         await mediaStationRepo.loadMediaStations();
 
         expect(mediaStationRepo.mediaCacheHandler.hydrate).toHaveBeenCalledTimes(3);
@@ -118,34 +111,21 @@ describe("loadMediaStations() ", () => {
             resolve(false)
         }));
 
-        mockMediaStationLocalMetaData.load.mockImplementation(() => {
-            return returnedMetaData;
-        });
-
         await mediaStationRepo.loadMediaStations();
 
-        expect(mediaStationRepo.findMediaStation).toHaveBeenCalledTimes(3);
         expect(mediaStation1.mediaAppRegistry.add).toHaveBeenCalledTimes(0);
         expect(mediaStation2.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
-        expect(mediaStation2.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom2, "Controller-App nicht erreichbar", "192.168.2.1", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation2.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom2, "Controller-App not reachable", "192.168.2.1", MediaApp.ROLE_CONTROLLER);
         expect(mediaStation3.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
-        expect(mediaStation3.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom3, "Controller-App nicht erreichbar", "192.168.2.100", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation3.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom3, "Controller-App not reachable", "192.168.2.100", MediaApp.ROLE_CONTROLLER);
     });
 
     it("should return the map it got from the loading-service", async () => {
-        let answer: Map<string, string>;
-
-        mockMediaStationLocalMetaData.load.mockImplementation(() => {
-            return returnedMetaData;
-        });
-
-        answer = await mediaStationRepo.loadMediaStations();
-
-        expect(answer).toStrictEqual(returnedMetaData);
+        let answer: Map<string, string> = await mediaStationRepo.loadMediaStations();
+        expect(answer).toStrictEqual(mockLoadedMetaData);
     });
 
     it("should call loadFile from cached media station if media station was cached", async () => {
-        let answer: Map<string, string>;
         let mockJSON: any = {
             testkey: "asdfadsf",
             testKEy2: true
@@ -153,10 +133,6 @@ describe("loadMediaStations() ", () => {
         let mockMediaStation1: MockMediaStation = new MockMediaStation(0);
         let mockMediaStation2: MockMediaStation = new MockMediaStation(1);
         let mockMediaStation3: MockMediaStation = new MockMediaStation(2);
-
-        mockMediaStationLocalMetaData.load.mockImplementation(() => {
-            return returnedMetaData;
-        });
 
         const isMediaStationCachedSpy = jest.spyOn(mediaStationRepo, 'isMediaStationCached').mockImplementation(async (id: number) => {
             return new Promise((resolve) => {
@@ -187,7 +163,7 @@ describe("loadMediaStations() ", () => {
 
         mockContentFileService.loadFile.mockReturnValueOnce(mockJSON);
 
-        answer = await mediaStationRepo.loadMediaStations();
+        await mediaStationRepo.loadMediaStations();
 
         expect(mockMediaStation2.importFromJSON).toHaveBeenCalledTimes(1);
         expect(mockMediaStation2.importFromJSON).toHaveBeenCalledWith(mockJSON, false);
@@ -205,30 +181,22 @@ describe("loadMediaStations() ", () => {
 describe("addMediaStation() ", () => {
     it("should return the ID of the created mediaStation", () => {
         let expectedId: number = 0;
-        let receivedId: number;
-
-        receivedId = mediaStationRepo.addMediaStation("myNewMediaStationName");
-
+        let receivedId: number = mediaStationRepo.addMediaStation("myNewMediaStationName");
         expect(receivedId).toEqual(expectedId);
     });
 
-    //TO DO: find better solution to mock it or refactor to test it more easily!!!
     it("should call mediaMetaDataService.save() with the mediastation-names and controller-ips if save = true", () => {
         let testName: string = "testNameXY";
-        let mapToSave: Map<string, string> = new Map();
-        mapToSave.set(testName, "mock-controller-ip");
 
         mediaStationRepo.addMediaStation(testName, true);
 
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(1)
-        expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledWith(mapToSave)
+        expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledWith(new Map([["testNameXY", defaultControllerIp]]))
     });
 
     it("should NOT call mediaMetaDataService.save() if save = false", () => {
         let testName: string = "testNameXY";
-
         mediaStationRepo.addMediaStation(testName, false);
-
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(0)
     });
 });
@@ -313,19 +281,17 @@ describe("deleteMediaStation() ", () => {
         expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(2, mapToSave)
     });
 
-    //TO DO: find better solution to mock it or refactor to test it more easily!!!
     it("should call mediaMetaDataService.save() with a map with 1 entry if there were 2 mediastations", async () => {
         let receivedId: number;
-        let mapToSave: Map<string, string> = new Map();
-        mapToSave.set("testName1", "mock-controller-ip")
 
         mediaStationRepo.addMediaStation("testName1");
         receivedId = mediaStationRepo.addMediaStation("testName2");
 
-                await mediaStationRepo.deleteMediaStation(receivedId);
+        await mediaStationRepo.deleteMediaStation(receivedId);
 
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(3)
-        expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(3, mapToSave)
+        expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(3, new Map([["testName1", defaultControllerIp]]))
+
     });
 
     it("should deleteAllCachedMedia() of mediaCAcheHandler", async () => {

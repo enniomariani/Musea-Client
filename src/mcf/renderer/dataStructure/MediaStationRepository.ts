@@ -51,7 +51,7 @@ export class MediaStationRepository{
                 if(await this.isMediaStationCached(id))
                     mediaStation.importFromJSON(await this._contentFileService.loadFile(id), false);
                 else if(controllerIp)
-                    mediaStation.mediaAppRegistry.add(mediaStation.getNextMediaAppId(), "Controller-App nicht erreichbar", controllerIp, MediaApp.ROLE_CONTROLLER);
+                    mediaStation.mediaAppRegistry.add(mediaStation.getNextMediaAppId(), "Controller-App not reachable", controllerIp, MediaApp.ROLE_CONTROLLER);
             }
         }
 
@@ -64,7 +64,6 @@ export class MediaStationRepository{
         newMediaStation.name = name;
 
         this._allMediaStations.set(this._mediaStationIdCounter, newMediaStation);
-
         this._mediaStationIdCounter++;
 
         if(save)
@@ -163,6 +162,8 @@ export class MediaStationRepository{
             controllerIp = mediaStation.mediaAppRegistry.getControllerIp();
             map.set(mediaStation.name, controllerIp);
         });
+
+        console.log("create map: ", map);
 
         return map;
     }
