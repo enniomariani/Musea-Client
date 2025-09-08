@@ -72,8 +72,8 @@ describe("addImageAndCacheIt() ", () => {
         await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, mockFile, fileName);
 
         //tests
-        expect(mockMediaStationRepo.cacheMedia).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.cacheMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0, fileExtension, mockFile);
+        expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0, fileExtension, mockFile);
     });
 
     it("should throw an error if the passed fileExtension is not one of the MediaService.FILE_EXTENSION_IMAGE vars", async () => {
@@ -132,8 +132,8 @@ describe("addVideoAndCacheIt() ", () => {
         await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, mockFile, fileName);
 
         //tests
-        expect(mockMediaStationRepo.cacheMedia).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.cacheMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0, fileExtension, mockFile);
+        expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0, fileExtension, mockFile);
     });
 
     it("should throw an error if the passed fileExtension is not one of the MediaService.FILE_EXTENSION_VIDEO vars", async() => {
@@ -195,7 +195,7 @@ describe("deleteMedia() ", () => {
     it("should call mediaStationRepository.deleteCachedMedia if mediaStationRepository.isMediaCached is true", async () => {
         //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaStationRepo.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
+        mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
             if (msID === mediaStationId && cID === contentId && mediaAppId === 0)
                 return true;
             else
@@ -206,14 +206,14 @@ describe("deleteMedia() ", () => {
         await mediaService.deleteMedia(mediaStationId, contentId, 0);
 
         //tests
-        expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0);
+        expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0);
     });
 
     it("should not call mediaStationRepository.deleteCachedMedia if mediaStationRepository.isMediaCached is false", async () => {
         //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaStationRepo.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
+        mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
             if (msID === mediaStationId && cID === contentId && mediaAppId === 0)
                 return false;
             else
@@ -224,14 +224,14 @@ describe("deleteMedia() ", () => {
         await mediaService.deleteMedia(mediaStationId, contentId, 0);
 
         //tests
-        expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledTimes(0);
+        expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledTimes(0);
     });
 
     it("should call mediaStationRepository.markMediaIDtoDelete if mediaStationRepository.isMediaCached is false", async () => {
         //setup
         const idOnMediaApp: number = 20;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaStationRepo.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
+        mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
             if (msID === mediaStationId && cID === contentId && mediaAppId === 0)
                 return false;
             else

@@ -1,17 +1,11 @@
 import {MediaStation} from "./MediaStation";
 import {MediaStationLocalMetaData} from "../fileHandling/MediaStationLocalMetaData";
-import {MediaFileService} from "../fileHandling/MediaFileService";
 import {MediaApp} from "./MediaApp";
 import {ContentFileService} from "../fileHandling/ContentFileService";
 import {MediaFilesMarkedToDeleteService} from "../fileHandling/MediaFilesMarkedToDeleteService";
 import {TagRegistry} from "src/mcf/renderer/registries/TagRegistry";
 import {MediaAppRegistry} from "src/mcf/renderer/registries/MediaAppRegistry";
-
-export interface ICachedMedia{
-    contentId:number
-    mediaAppId:number
-    fileExtension:string
-}
+import {MediaFileCacheHandler} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 
 export class MediaStationRepository{
 
@@ -19,23 +13,22 @@ export class MediaStationRepository{
     private _mediaStationIdCounter:number = 0;
 
     private _mediaStationMetaData:MediaStationLocalMetaData;
-    private _mediaFileService:MediaFileService;
     private _contentFileService:ContentFileService;
     private _mediaFilesMarkedToDeleteService:MediaFilesMarkedToDeleteService;
     private _mediaStationFactory: (id: number) => MediaStation;
 
-    private _pathToMainFolder:string;
-    private _cachedMedia:Map<number, ICachedMedia[]> = new Map();
+    private _mediaCacheHandler:MediaFileCacheHandler;
 
-    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaFileService:MediaFileService = new MediaFileService(), mediaFilesMarkedToDeleteService = new MediaFilesMarkedToDeleteService(), contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id, new TagRegistry(), new MediaAppRegistry())) {
+    private _pathToMainFolder:string;
+
+    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaCacheHandler:MediaFileCacheHandler = new MediaFileCacheHandler(pathToMainFolder), mediaFilesMarkedToDeleteService = new MediaFilesMarkedToDeleteService(), contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id, new TagRegistry(), new MediaAppRegistry())) {
         this._mediaStationMetaData = mediaStationMetaData;
         this._pathToMainFolder = pathToMainFolder;
-        this._mediaFileService = mediaFileService;
         this._contentFileService = contentFileService;
         this._mediaFilesMarkedToDeleteService = mediaFilesMarkedToDeleteService;
         this._mediaStationFactory = mediaStationFactory;
 
-        this._mediaFileService.init(this._pathToMainFolder)
+        this._mediaCacheHandler = mediaCacheHandler;
         this._contentFileService.init(this._pathToMainFolder)
         this._mediaFilesMarkedToDeleteService.init(this._pathToMainFolder)
         this._mediaStationMetaData.init(this._pathToMainFolder + "savedMediaStations.json")
@@ -53,9 +46,7 @@ export class MediaStationRepository{
                 id = this.addMediaStation(key, false);
                 mediaStation = this.findMediaStation(id);
 
-                this._cachedMedia.set(id, await this._mediaFileService.getAllCachedMedia(id));
-
-                console.log("CHECK: ", id, key, controllerIp)
+                await this._mediaCacheHandler.hydrate(id);
 
                 if(await this.isMediaStationCached(id))
                     mediaStation.importFromJSON(await this._contentFileService.loadFile(id), false);
@@ -77,7 +68,7 @@ export class MediaStationRepository{
         this._mediaStationIdCounter++;
 
         if(save)
-            this._mediaStationMetaData.save(this.getNameControllerMap());
+            this._mediaStationMetaData.save(this._getNameControllerMap());
 
         return newMediaStation.id;
     }
@@ -108,23 +99,13 @@ export class MediaStationRepository{
      * @param {number} id
      */
     async deleteMediaStation(id:number):Promise<void> {
-        let mediaArr:ICachedMedia[];
-
         if(await this.isMediaStationCached(id))
             this.removeCachedMediaStation(id);
 
         this._allMediaStations.delete(id);
-        this._mediaStationMetaData.save(this.getNameControllerMap());
+        this._mediaStationMetaData.save(this._getNameControllerMap());
 
-        if(this._cachedMedia.has(id)){
-
-            mediaArr = this._cachedMedia.get(id);
-
-            for(let i:number = 0; i < mediaArr.length; i++)
-                this._mediaFileService.deleteFile(id, mediaArr[i].contentId, mediaArr[i].mediaAppId, mediaArr[i].fileExtension);
-
-            this._cachedMedia.delete(id);
-        }
+        this._mediaCacheHandler.deleteAllCachedMedia(id);
     }
 
     updateMediaStation(mediaStation:MediaStation):void {
@@ -142,7 +123,7 @@ export class MediaStationRepository{
     updateAndSaveMediaStation(mediaStation:MediaStation):void {
         this.updateMediaStation(mediaStation);
 
-        this._mediaStationMetaData.save(this.getNameControllerMap());
+        this._mediaStationMetaData.save(this._getNameControllerMap());
     }
 
     cacheMediaStation(id:number):void{
@@ -169,78 +150,6 @@ export class MediaStationRepository{
         return await this._contentFileService.fileExists(id);
     }
 
-    async cacheMedia(mediaStationId: number, contentId:number, mediaAppId:number,fileExtension:string, fileInstance:File):Promise<void>{
-        let cachedMediaArr:ICachedMedia[];
-        await this._mediaFileService.saveFileByPath(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
-
-        if(!this._cachedMedia.has(mediaStationId))
-            this._cachedMedia.set(mediaStationId, []);
-
-        cachedMediaArr = this._cachedMedia.get(mediaStationId);
-
-        cachedMediaArr.push( {contentId: contentId, mediaAppId:mediaAppId, fileExtension:fileExtension});
-    }
-
-    /**
-     * returns false if the mediastation-ID does not exist or if there is no cached media for the passed contentId and
-     * mediaApp-ID.
-     *
-     * @param {number} mediaStationId
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @returns {boolean}
-     */
-    isMediaCached(mediaStationId: number, contentId:number, mediaAppId:number): boolean{
-        let cachedArr:ICachedMedia[] = this._cachedMedia.get(mediaStationId);
-
-        if(!cachedArr)
-            return false;
-
-        let cachedMediaIndex:number = cachedArr.findIndex((cachedMedia:ICachedMedia  )=>{
-            return cachedMedia.contentId === contentId && cachedMedia.mediaAppId === mediaAppId;
-        });
-
-        return cachedMediaIndex !== -1;
-    }
-
-    /**
-     * throws an error if the mediastation-ID does not exist or if there is no cached media for the passed contentId and
-     * mediaApp-ID.
-     *
-     * @param {number} mediaStationId
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @returns {boolean}
-     */
-    deleteCachedMedia(mediaStationId: number, contentId:number, mediaAppId:number):void{
-        let cachedArr:ICachedMedia[] = this._cachedMedia.get(mediaStationId);
-
-        if(!cachedArr)
-            throw new Error("No media cached for mediastation with ID: " + mediaStationId);
-
-        let indexToDelete:number = cachedArr.findIndex((cachedMedia:ICachedMedia  )=>{
-            return cachedMedia.contentId === contentId && cachedMedia.mediaAppId === mediaAppId;
-        });
-
-        if(indexToDelete === -1)
-            throw new Error("No media cached for media-App-ID " + mediaAppId + " in content-ID "+ contentId + " of mediastation with ID: " + mediaStationId);
-
-        this._mediaFileService.deleteFile(mediaStationId, contentId, mediaAppId, cachedArr[indexToDelete].fileExtension);
-
-        cachedArr.splice(indexToDelete, 1);
-
-        if(cachedArr.length <= 0)
-            this._cachedMedia.delete(mediaStationId);
-    }
-
-    async getCachedMediaFile(mediaStationId: number, contentId:number, mediaAppId:number, fileExtension:string):Promise<Uint8Array|null>{
-        return await this._mediaFileService.loadFile(mediaStationId, contentId, mediaAppId, fileExtension);
-    }
-
-    getAllCachedMedia():Map<number, ICachedMedia[]>{
-        return this._cachedMedia;
-    }
-
     async markMediaIDtoDelete(mediaStationId:number,mediaAppId:number, id:number):Promise<void>{
 
         if(!this.findMediaStation(mediaStationId))
@@ -263,7 +172,7 @@ export class MediaStationRepository{
         return await this._mediaFilesMarkedToDeleteService.getAllIDS(mediaStationId);
     }
 
-    private getNameControllerMap():Map<string, string> {
+    private _getNameControllerMap():Map<string, string> {
         let map:Map<string, string> = new Map();
         let controllerIp:string;
 
@@ -273,5 +182,9 @@ export class MediaStationRepository{
         });
 
         return map;
+    }
+
+    get mediaCacheHandler(): MediaFileCacheHandler {
+        return this._mediaCacheHandler;
     }
 }

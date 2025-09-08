@@ -10,26 +10,27 @@ import {
 import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
 import {MediaStation} from "../../../../src/mcf/renderer/dataStructure/MediaStation";
 import {
-    ICachedMedia,
     MediaStationRepository
 } from "../../../../src/mcf/renderer/dataStructure/MediaStationRepository";
 import {
     MockMediaFilesMarkedToDeleteService
 } from "../../../__mocks__/mcf/renderer/fileHandling/MockMediaFilesMarkedToDeleteService";
+import {MockMediaFileCacheHandler} from "__mocks__/mcf/renderer/fileHandling/MockMediaFileCacheHandler";
+import {ICachedMedia} from "@app/mcf/renderer/fileHandling/MediaFileCacheHandler";
 
 let mediaStationRepo:MediaStationRepository;
-let mockMediaFileService:MockMediaFileService;
+let mockMediaFileCacheHandler:MockMediaFileCacheHandler;
 let mockContentFileService:MockContentFileService;
 let mockMediaStationLocalMetaData:MockMediaStationLocalMetaData;
 let mockMediaFilesMarkedToDeleteService:MockMediaFilesMarkedToDeleteService;
 
 beforeEach(() => {
     mockMediaStationLocalMetaData = new MockMediaStationLocalMetaData();
-    mockMediaFileService = new MockMediaFileService();
+    mockMediaFileCacheHandler = new MockMediaFileCacheHandler("fakePathToDataFolder");
     mockContentFileService = new MockContentFileService();
     mockMediaFilesMarkedToDeleteService = new MockMediaFilesMarkedToDeleteService();
 
-    mediaStationRepo = new MediaStationRepository(mockMediaStationLocalMetaData, "fakePathToDataFolder", mockMediaFileService,mockMediaFilesMarkedToDeleteService, mockContentFileService,
+    mediaStationRepo = new MediaStationRepository(mockMediaStationLocalMetaData, "fakePathToDataFolder", mockMediaFileCacheHandler,mockMediaFilesMarkedToDeleteService, mockContentFileService,
         (id:number) => new MockMediaStation(id));
 });
 
@@ -77,43 +78,20 @@ describe("loadMediaStations() ", ()=>{
         expect(mediaStationRepo.addMediaStation).toHaveBeenNthCalledWith(3, key3, false);
     });
 
-    it("should load the cached media for each of the loaded media-station-names", async () =>{
+    it("should call mediaCacheHandler.hydrate()", async () =>{
         //setup
-        const expectedCachedMedia0:ICachedMedia[] = [
-            {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"},
-            {contentId: 3, mediaAppId: 6, fileExtension: "mp4"},
-            {contentId: 0, mediaAppId: 0, fileExtension: "jpeg"}
-        ];
-        const expectedCachedMedia1:ICachedMedia[] = [
-            {contentId: 1, mediaAppId: 2, fileExtension: "png"},
-            {contentId: 39, mediaAppId: 6, fileExtension: "png"},
-            {contentId: 250, mediaAppId: 0, fileExtension: "jpeg"}
-        ];
-        let allExpectedCachedMedia:Map<number, ICachedMedia[]> = new Map();
-        allExpectedCachedMedia.set(0, expectedCachedMedia0);
-        allExpectedCachedMedia.set(1, expectedCachedMedia1);
-        allExpectedCachedMedia.set(2, []);
-
-        jest.spyOn(mediaStationRepo, "addMediaStation");
-
         mockMediaStationLocalMetaData.load.mockImplementation(()=>{
             return returnedMetaData;
-        });
-
-        mockMediaFileService.getAllCachedMedia.mockImplementation(async (stationId:number) => {
-            if(stationId === 0)
-                return expectedCachedMedia0;
-            else if(stationId === 1)
-                return expectedCachedMedia1;
-            else if(stationId === 2)
-                return [];
         });
 
         //method to test
         await mediaStationRepo.loadMediaStations();
 
         //tests
-        expect(mediaStationRepo.getAllCachedMedia()).toEqual(allExpectedCachedMedia);
+        expect(mediaStationRepo.mediaCacheHandler.hydrate).toHaveBeenCalledTimes(3);
+        expect(mediaStationRepo.mediaCacheHandler.hydrate).toHaveBeenNthCalledWith(1, 0);
+        expect(mediaStationRepo.mediaCacheHandler.hydrate).toHaveBeenNthCalledWith(2, 1);
+        expect(mediaStationRepo.mediaCacheHandler.hydrate).toHaveBeenNthCalledWith(3, 2);
     });
 
     it("should call addMediaApp() for each mediastation which has a controller-app saved", async () =>{
@@ -322,7 +300,6 @@ describe("findMediaStation() ", ()=>{
     });
 });
 
-
 describe("requireMediaStation() ", ()=>{
     it("should return the mediaStation object with the passed ID", ()=>{
         //setup
@@ -407,7 +384,7 @@ describe("deleteMediaStation() ", ()=>{
         expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(3, mapToSave)
     });
 
-    it("should remove any cached media if there are some and clear the cachedMedia map", async ()=>{
+    it("should deleteAllCachedMedia() of mediaCAcheHandler", async ()=>{
         //setup
         let receivedId:number;
         let mapToSave:Map<string, string> = new Map();
@@ -415,16 +392,13 @@ describe("deleteMediaStation() ", ()=>{
 
         mediaStationRepo.addMediaStation("testName1");
         receivedId = mediaStationRepo.addMediaStation("testName2");
-        mediaStationRepo.getAllCachedMedia().set(receivedId, [{contentId: 0, mediaAppId: 2, fileExtension: "jpeg"}, {contentId: 22, mediaAppId: 23, fileExtension: "mp4"}])
 
         //method to test
         await mediaStationRepo.deleteMediaStation(receivedId);
 
         //tests
-        expect(mockMediaFileService.deleteFile).toHaveBeenCalledTimes(2);
-        expect(mockMediaFileService.deleteFile).toHaveBeenNthCalledWith(1, receivedId, 0, 2, "jpeg");
-        expect(mockMediaFileService.deleteFile).toHaveBeenNthCalledWith(2, receivedId, 22, 23, "mp4");
-        expect(mediaStationRepo.getAllCachedMedia().get(receivedId)).toBeUndefined();
+        expect(mediaStationRepo.mediaCacheHandler.deleteAllCachedMedia).toHaveBeenCalledTimes(1);
+        expect(mediaStationRepo.mediaCacheHandler.deleteAllCachedMedia).toHaveBeenCalledWith(receivedId);
     });
 
     it("should remove cached mediastation if it was cached", async ()=>{
@@ -530,192 +504,6 @@ describe("updateAndSaveMediaStation() ", ()=>{
         //tests
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(2)
         expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(2, mapToSave)
-    });
-});
-
-describe("cacheMedia() ", ()=>{
-    const fileName = 'mockFile.txt';
-    const fileContent = 'Hello, world!';
-    const fileType = 'text/plain';
-
-    // Create a mock File object
-    const mockFile = new File([fileContent], fileName, { type: fileType });
-    it("should call mediaFileService.saveFile with the passed parameters", async ()=>{
-        //setup
-        let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
-
-        //method to test
-        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", mockFile);
-
-        //tests
-        expect(mockMediaFileService.saveFileByPath).toHaveBeenCalledTimes(1);
-        expect(mockMediaFileService.saveFileByPath).toHaveBeenCalledWith(0, 1,2, "jpeg", mockFile);
-    });
-
-    it("should add the cached media to cachedMedia and create a mediaStationId if it does not exist", async ()=>{
-        //setup
-        let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
-
-        //method to test
-        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", mockFile);
-
-        //tests
-        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeNull();
-        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeUndefined();
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].mediaAppId).toBe(2);
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].contentId).toBe(1);
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].fileExtension).toBe("jpeg");
-    });
-
-    it("should add the cached media to cachedMedia if the mediastation already exists and has already a cached file set", async ()=>{
-        //setup
-        let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
-
-        //method to test
-        await mediaStationRepo.cacheMedia(0,1,2,"jpeg", mockFile);
-        await mediaStationRepo.cacheMedia(0,2,2,"mp4", mockFile);
-
-        //tests
-        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeNull();
-        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeUndefined();
-        expect(mediaStationRepo.getAllCachedMedia().get(0).length).toBe(2);
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[1].mediaAppId).toBe(2);
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[1].contentId).toBe(2);
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[1].fileExtension).toBe("mp4");
-    });
-});
-
-describe("isMediaCached() ", ()=>{
-    it("should return true if the media is cached", async ()=>{
-        //setup
-        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
-        let answer:boolean;
-        mockMediaFileService.fileExists.mockReturnValueOnce(true);
-
-        //method to test
-        answer = mediaStationRepo.isMediaCached(0,1,2);
-
-        //tests
-        expect(answer).toBe(true);
-    });
-
-    it("should return false if the media is not cached", ()=>{
-        //setup
-        let answer:boolean;
-        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
-
-        //method to test
-        answer = mediaStationRepo.isMediaCached(0,1,1);
-
-        //tests
-        expect(answer).toBe(false);
-    });
-
-    it("should return false if there is no media cached for the mediastation", async ()=>{
-        //setup
-        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
-        let answer:boolean;
-        mockMediaFileService.fileExists.mockReturnValueOnce(true);
-
-        //method to test
-        answer = mediaStationRepo.isMediaCached(1,1,2);
-
-        //tests
-        expect(answer).toBe(false);
-    });
-});
-
-describe("deleteCachedMedia() ", ()=>{
-    it("should call mediaFileService.deleteFile with the passed parameters", ()=>{
-        //setup
-        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 3, mediaAppId: 3, fileExtension: "mp4"}, {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
-
-        //method to test
-        mediaStationRepo.deleteCachedMedia(0,1,2);
-
-        //tests
-        expect(mockMediaFileService.deleteFile).toHaveBeenCalledTimes(1);
-        expect(mockMediaFileService.deleteFile).toHaveBeenCalledWith(0, 1,2, "jpeg");
-    });
-
-    it("should remove the cached media from cachedMedia but other entries should be preserved, element to delete is first in array", ()=>{
-        //setup
-        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 3, mediaAppId: 3, fileExtension: "mp4"}, {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
-
-        //method to test
-        mediaStationRepo.deleteCachedMedia(0,3,3);
-
-        //tests
-        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeUndefined();
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].contentId).toBe(1);
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].mediaAppId).toBe(2);
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].fileExtension).toBe("jpeg");
-    });
-
-    it("should remove the cached media from cachedMedia but other entries should be preserved, element to delete is last in array", ()=>{
-        //setup
-        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 3, mediaAppId: 3, fileExtension: "mp4"}, {contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
-
-        //method to test
-        mediaStationRepo.deleteCachedMedia(0,1,2);
-
-        //tests
-        expect(mediaStationRepo.getAllCachedMedia().get(0)).not.toBeUndefined();
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].contentId).toBe(3);
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].mediaAppId).toBe(3);
-        expect(mediaStationRepo.getAllCachedMedia().get(0)[0].fileExtension).toBe("mp4");
-    });
-
-    it("should remove the cached media to cachedMedia and remove the mediaStationId if there are no cached media left", ()=>{
-        //setup
-        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
-
-        //method to test
-        mediaStationRepo.deleteCachedMedia(0,1,2);
-
-        //tests
-        expect(mediaStationRepo.getAllCachedMedia().get(0)).toBeUndefined();
-    });
-
-    it("should throw an error if there are no media cached for the passed mediastation", ()=>{
-        //setup
-        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
-
-        //tests
-        expect(()=> mediaStationRepo.deleteCachedMedia(1,1,2)).toThrow("No media cached for mediastation with ID: 1")
-    });
-
-    it("should throw an error if there is no cached media for the passed contentId and mediaAppID", ()=>{
-        //setup
-        mediaStationRepo.getAllCachedMedia().set(0, [{contentId: 1, mediaAppId: 2, fileExtension: "jpeg"}]);
-
-        //tests
-        expect(()=> mediaStationRepo.deleteCachedMedia(0,2,2)).toThrow("No media cached for media-App-ID 2 in content-ID 2 of mediastation with ID: 0")
-    });
-
-});
-
-describe("getCachedMediaFile() ", ()=>{
-    it("should call mediaFileService.loadFile with the passed parameters", async ()=>{
-        //method to test
-        await mediaStationRepo.getCachedMediaFile(0,1,2, "jpeg");
-
-        //tests
-        expect(mockMediaFileService.loadFile).toHaveBeenCalledTimes(1);
-        expect(mockMediaFileService.loadFile).toHaveBeenCalledWith(0, 1,2, "jpeg");
-    })
-
-    it("should return what mediaFileService.loadFile returns", async ()=>{
-        //setup
-        let answer:Uint8Array;
-        let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
-        mockMediaFileService.loadFile.mockReturnValueOnce(data);
-
-        //method to test
-        answer = await mediaStationRepo.getCachedMediaFile(0,1,2, "jpeg");
-
-        //tests
-        expect(answer).toEqual(data);
     });
 });
 

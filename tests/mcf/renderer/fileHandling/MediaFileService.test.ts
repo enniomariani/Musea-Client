@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MediaFileService} from "../../../../src/mcf/renderer/fileHandling/MediaFileService";
-import {ICachedMedia} from "../../../../src/mcf/renderer/dataStructure/MediaStationRepository";
+import {ICachedMedia} from "@app/mcf/renderer/fileHandling/MediaFileCacheHandler";
 
 let mediaFileService:MediaFileService;
 

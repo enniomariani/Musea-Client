@@ -4,14 +4,12 @@ import {
     MockMediaStationRepository
 } from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {
-    ICachedMedia
-} from "@app/mcf/renderer/dataStructure/MediaStationRepository";
 import {MediaApp} from "@app/mcf/renderer/dataStructure/MediaApp";
 import {MockFolder} from "__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {MockContent} from "__mocks__/mcf/renderer/dataStructure/MockContent";
 import {Image} from "@app/mcf/renderer/dataStructure/Media";
 import {IOnSyncStep, MediaStationSyncService} from "@app/mcf/renderer/services/mediastation/MediaStationSyncService";
+import {ICachedMedia} from "@app/mcf/renderer/fileHandling/MediaFileCacheHandler";
 
 let service: MediaStationSyncService;
 let mockMediaStationRepo: MockMediaStationRepository;
@@ -67,7 +65,7 @@ describe("sync() ", () => {
         mocksCalled = [];
         mockOnSyncStep = jest.fn();
 
-        mockMediaStationRepo.getAllCachedMedia.mockImplementation(() => {
+        mockMediaStationRepo.mediaCacheHandler.getAllCachedMedia.mockImplementation(() => {
             mocksCalled.push("mockMediaStationRepo.getAllCachedMedia");
             let map: Map<number, ICachedMedia[]> = new Map();
             map.set(0, mockCachedMedia);
@@ -80,7 +78,7 @@ describe("sync() ", () => {
             return map;
         });
 
-        mockMediaStationRepo.getCachedMediaFile.mockImplementation((mediaStationId: number, contentId: number, mediaAppId: number, fileExtension: string): Uint8Array => {
+        mockMediaStationRepo.mediaCacheHandler.getCachedMediaFile.mockImplementation((mediaStationId: number, contentId: number, mediaAppId: number, fileExtension: string): Uint8Array => {
             mocksCalled.push("mockMediaStationRepo.getCachedMediaFile");
             if (mediaStationId === mockMediaStation.id) {
                 let passedCMedia: ICachedMedia = {contentId, mediaAppId, fileExtension};
@@ -95,7 +93,7 @@ describe("sync() ", () => {
                 return null;
         });
 
-        mockMediaStationRepo.getCachedMediaFile.mockImplementation((mediaStationId: number, contentId: number, mediaAppId: number, fileExtension: string): Promise<Uint8Array | null> => {
+        mockMediaStationRepo.mediaCacheHandler.getCachedMediaFile.mockImplementation((mediaStationId: number, contentId: number, mediaAppId: number, fileExtension: string): Promise<Uint8Array | null> => {
             mocksCalled.push("mockMediaStationRepo.getCachedMediaFile");
             let foundCachedMedia: ICachedMedia = mockCachedMedia.find(function (cachedMedia: ICachedMedia) {
                 return cachedMedia.mediaAppId === mediaAppId && cachedMedia.contentId === contentId && cachedMedia.fileExtension === fileExtension;
@@ -200,8 +198,8 @@ describe("sync() ", () => {
 
     it("it should NOT throw if mediaStationRepo.getAllCachedMedia() returns an empty Map", async () => {
         //setup
-        mockMediaStationRepo.getAllCachedMedia = jest.fn();
-        mockMediaStationRepo.getAllCachedMedia.mockImplementation(() => {
+        mockMediaStationRepo.mediaCacheHandler.getAllCachedMedia = jest.fn();
+        mockMediaStationRepo.mediaCacheHandler.getAllCachedMedia.mockImplementation(() => {
             let map: Map<number, ICachedMedia[]> = new Map();
             return map;
         });
@@ -267,8 +265,8 @@ describe("sync() ", () => {
         await service.sync(0, mockOnSyncStep);
 
         //tests
-        expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.deleteCachedMedia).toHaveBeenCalledWith(0, 0, 0);
+        expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledTimes(1);
+        expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledWith(0, 0, 0);
     })
 
     it("call networkService.sendDeleteMediaTo for every id that is marked to delete in the mediastation repo", async () => {

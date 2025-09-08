@@ -1,4 +1,4 @@
-import {ICachedMedia} from "../dataStructure/MediaStationRepository";
+import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 
 export class MediaFileService {
 

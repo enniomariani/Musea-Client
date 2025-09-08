@@ -40,7 +40,7 @@ export class MediaService {
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
 
-        await this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
+        await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
     }
 
     /**
@@ -68,7 +68,7 @@ export class MediaService {
 
         this._mediaStationRepository.updateMediaStation(mediaStation);
 
-        await this._mediaStationRepository.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
+        await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
     }
 
     /**
@@ -114,8 +114,8 @@ export class MediaService {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let idOnMediaApp:number = this._mediaManager.getIdOnMediaApp(mediaStation, contentId, mediaAppId);
 
-        if(this._mediaStationRepository.isMediaCached(mediaStationId, contentId, mediaAppId))
-            this._mediaStationRepository.deleteCachedMedia(mediaStationId, contentId, mediaAppId);
+        if(this._mediaStationRepository.mediaCacheHandler.isMediaCached(mediaStationId, contentId, mediaAppId))
+            this._mediaStationRepository.mediaCacheHandler.deleteCachedMedia(mediaStationId, contentId, mediaAppId);
         else
             await this._mediaStationRepository.markMediaIDtoDelete(mediaStationId,mediaAppId,  idOnMediaApp);
 

@@ -1,9 +1,10 @@
 import {NetworkService} from "src/mcf/renderer/services/NetworkService";
-import {ICachedMedia, MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
+import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
 import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 import {Content} from "src/mcf/renderer/dataStructure/Content";
 import {IMedia} from "src/mcf/renderer/dataStructure/Media";
+import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 
 export interface IOnSyncStep {
     (message: string): void
@@ -52,7 +53,7 @@ export class MediaStationSyncService {
         let registration: string;
 
         //send all media to the media-apps
-        cachedMediaOfAllMediaStations = this._mediaStationRepo.getAllCachedMedia();
+        cachedMediaOfAllMediaStations = this._mediaStationRepo.mediaCacheHandler.getAllCachedMedia();
         allCachedMedia = cachedMediaOfAllMediaStations.get(mediaStationId);
         allMediaIdsToDelete = await this._mediaStationRepo.getAllMediaIDsToDelete(mediaStationId);
 
@@ -174,7 +175,7 @@ export class MediaStationSyncService {
         for (const cachedMedia of allCachedMedia) {
             onSyncStep("Lade Medium: " + cachedMedia.fileExtension);
             console.log("SEND MEDIA: ", cachedMedia);
-            fileData = await this._mediaStationRepo.getCachedMediaFile(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId, cachedMedia.fileExtension);
+            fileData = await this._mediaStationRepo.mediaCacheHandler.getCachedMediaFile(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId, cachedMedia.fileExtension);
 
             onSyncStep("Medium geladen, sende...");
             idOnMediaApp = await this._networkService.sendMediaFileToIp(ipMediaApp, cachedMedia.fileExtension, fileData,240000,
@@ -193,7 +194,7 @@ export class MediaStationSyncService {
 
                 console.log("SET NEW ID FOR MEDIA: ", content.id, media.idOnMediaApp, idOnMediaApp)
 
-                this._mediaStationRepo.deleteCachedMedia(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId);
+                this._mediaStationRepo.mediaCacheHandler.deleteCachedMedia(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId);
             } else {
                 areAllMediaSentSuccesfully = false;
                 console.log("MEDIUM KONNTE NICHT GESENDET ODER EMPFANGEN WERDEN!")
