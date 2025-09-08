@@ -55,7 +55,7 @@ export class MediaStationRepository{
             }
         }
 
-        return new Promise((resolve) =>{resolve(loadedMetaData)});
+        return loadedMetaData;
     }
 
     addMediaStation(name:string, save:boolean = true):number{
