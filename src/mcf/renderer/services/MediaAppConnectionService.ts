@@ -54,9 +54,7 @@ export class MediaAppConnectionService {
         let connection: boolean = await this._networkService.openConnection(ip);
 
         if (!connection)
-            return new Promise((resolve) => {
-                resolve(false)
-            });
+            return false;
 
         return await this._networkService.isMediaAppOnline(ip);
     }
@@ -91,11 +89,7 @@ export class MediaAppConnectionService {
 
     async unregisterAndCloseMediaApp(mediaStationId: number, mediaAppId: number): Promise<void> {
         let ip: string = this._getMediaApp(mediaStationId, mediaAppId).ip;
-
-        return new Promise(async (resolve) => {
-            await this._networkService.unregisterAndCloseConnection(ip);
-            resolve();
-        });
+        await this._networkService.unregisterAndCloseConnection(ip);
     }
 
     /**
