@@ -39,8 +39,8 @@ describe("addTag() ", () => {
         tagService.createTag(0, "newTag")
 
         //tests
-        expect(mockMediaStation.tagManager.addTag).toHaveBeenCalledTimes(1);
-        expect(mockMediaStation.tagManager.addTag).toHaveBeenCalledWith(mockMediaStation, "newTag");
+        expect(mockMediaStation.tagRegistry.add).toHaveBeenCalledTimes(1);
+        expect(mockMediaStation.tagRegistry.add).toHaveBeenCalledWith(mockMediaStation, "newTag");
     });
 
     it("should return the id of the newly created tag", () => {
@@ -89,8 +89,8 @@ describe("deleteTag() ", () => {
         tagService.deleteTag(0, 222)
 
         //tests
-        expect(mockMediaStation.tagManager.removeTag).toHaveBeenCalledTimes(1);
-        expect(mockMediaStation.tagManager.removeTag).toHaveBeenCalledWith(222);
+        expect(mockMediaStation.tagRegistry.remove).toHaveBeenCalledTimes(1);
+        expect(mockMediaStation.tagRegistry.remove).toHaveBeenCalledWith(222);
     });
 
     it("should remove the tags from all contents where it was added to", () => {
@@ -119,7 +119,7 @@ describe("getAllTags() ", () => {
         mockTags.set(1, tag2)
         mockTags.set(2, tag3)
 
-        mockMediaStation.tagManager.getAllTags.mockImplementation(() => {
+        mockMediaStation.tagRegistry.getAll.mockImplementation(() => {
             return mockTags;
         })
         //method to test

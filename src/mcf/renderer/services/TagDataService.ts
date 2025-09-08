@@ -20,7 +20,7 @@ export class TagDataService {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let tagId: number = mediaStation.getNextTagId();
 
-        mediaStation.tagManager.addTag(mediaStation, name);
+        mediaStation.tagRegistry.add(mediaStation, name);
 
         return tagId;
     }
@@ -30,7 +30,7 @@ export class TagDataService {
         let allContentIds: Map<number, number[]> = mediaStation.rootFolder.getAllContentIDsInFolderAndSubFolders();
         let content: Content;
 
-        mediaStation.tagManager.removeTag(id);
+        mediaStation.tagRegistry.remove(id);
 
         for (const [key, contentIdsInFolder] of allContentIds) {
             for (let i: number = 0; i < contentIdsInFolder.length; i++) {
@@ -47,7 +47,7 @@ export class TagDataService {
     getAllTags(mediaStationId: number): Map<number, string> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let returnMap: Map<number, string> = new Map();
-        let allTags: Map<number, Tag> = mediaStation.tagManager.getAllTags();
+        let allTags: Map<number, Tag> = mediaStation.tagRegistry.getAll();
 
         for (const [key, tag] of allTags)
             returnMap.set(key, tag.name);

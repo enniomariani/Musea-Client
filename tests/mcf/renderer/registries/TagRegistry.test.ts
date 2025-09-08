@@ -24,8 +24,8 @@ describe("addTag() and getTag()", () => {
         let tag:Tag = new Tag(200, "testName");
 
         //method to test
-        tagRegistry.addTag(mockMediaStation, tag.name);
-        receivedTag = tagRegistry.getTag(200);
+        tagRegistry.add(mockMediaStation, tag.name);
+        receivedTag = tagRegistry.get(200);
 
         //tests
         expect(receivedTag).toStrictEqual(tag);
@@ -33,7 +33,7 @@ describe("addTag() and getTag()", () => {
 
     it("getTag() should throw an error if the tag-id does not exist", () => {
         //tests
-        expect(() => tagRegistry.getTag(20)).toThrow(new Error("Tag with the following ID does not exist: 20"))
+        expect(() => tagRegistry.get(20)).toThrow(new Error("Tag with the following ID does not exist: 20"))
     });
 });
 
@@ -43,11 +43,11 @@ describe("addTag(), removeTag() and getTag()", () => {
         let tag:Tag = new Tag(200, "testName");
 
         //method to test
-        tagRegistry.addTag(mockMediaStation, tag.name);
-        tagRegistry.removeTag(tag.id);
+        tagRegistry.add(mockMediaStation, tag.name);
+        tagRegistry.remove(tag.id);
 
         //tests
-        expect(() => tagRegistry.getTag(200)).toThrow(new Error("Tag with the following ID does not exist: 200"))
+        expect(() => tagRegistry.get(200)).toThrow(new Error("Tag with the following ID does not exist: 200"))
     });
 });
 
@@ -60,16 +60,16 @@ describe("addTag(), reset(), getAllTags()", () => {
 
         //method to test
         mockMediaStation.getNextTagId.mockReturnValueOnce(200);
-        tagRegistry.addTag(mockMediaStation, tag1.name);
+        tagRegistry.add(mockMediaStation, tag1.name);
         mockMediaStation.getNextTagId.mockReturnValueOnce(201);
-        tagRegistry.addTag(mockMediaStation, tag2.name);
-        receivedTags = tagRegistry.getAllTags();
+        tagRegistry.add(mockMediaStation, tag2.name);
+        receivedTags = tagRegistry.getAll();
 
         //tests
         expect(receivedTags.get(200)).toStrictEqual(tag1);
         expect(receivedTags.get(201)).toStrictEqual(tag2);
 
         tagRegistry.reset();
-        expect(tagRegistry.getAllTags().size).toBe(0);
+        expect(tagRegistry.getAll().size).toBe(0);
     });
 });

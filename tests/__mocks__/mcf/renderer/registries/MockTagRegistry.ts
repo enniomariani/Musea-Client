@@ -2,16 +2,18 @@ import {TagRegistry} from "@app/mcf/renderer/registries/TagRegistry";
 
 export class MockTagRegistry extends TagRegistry{
 
-    addTag: jest.Mock;
-    removeTag: jest.Mock;
-    getTag: jest.Mock;
-    getAllTags: jest.Mock;
+    add: jest.Mock;
+    remove: jest.Mock;
+    get: jest.Mock;
+    getAll: jest.Mock;
+    reset: jest.Mock;
 
     constructor() {
         super();
-        this.addTag = jest.fn();
-        this.removeTag = jest.fn();
-        this.getTag = jest.fn();
-        this.getAllTags = jest.fn();
+        this.add = jest.fn();
+        this.remove = jest.fn();
+        this.get = jest.fn();
+        this.getAll = jest.fn();
+        this.reset = jest.fn();
     }
 }

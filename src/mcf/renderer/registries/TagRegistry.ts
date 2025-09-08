@@ -6,21 +6,21 @@ export class TagRegistry {
 
     constructor(){}
 
-    addTag(ms:MediaStation, name: string): void {
+    add(ms:MediaStation, name: string): void {
         const id:number = ms.getNextTagId();
         let tag: Tag = new Tag(id, name);
 
         this._tags.set(id, tag);
     }
 
-    removeTag(id: number): void {
+    remove(id: number): void {
         if (this._tags.has(id))
             this._tags.delete(id);
         else
             throw new Error("Tag with the following ID does not exist: " + id);
     }
 
-    getTag(id: number): Tag {
+    get(id: number): Tag {
         let tag: Tag = this._tags.get(id);
 
         if (tag)
@@ -29,7 +29,7 @@ export class TagRegistry {
             throw new Error("Tag with the following ID does not exist: " + id);
     }
 
-    getAllTags(): Map<number, Tag> {
+    getAll(): Map<number, Tag> {
         return this._tags;
     }
 

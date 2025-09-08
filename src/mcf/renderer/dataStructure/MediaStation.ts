@@ -1,13 +1,13 @@
-import {MediaApp} from "./MediaApp";
 import {Folder} from "./Folder";
 import {TagRegistry} from "src/mcf/renderer/registries/TagRegistry";
 import {Tag} from "src/mcf/renderer/dataStructure/Tag";
+import {MediaAppRegistry} from "src/mcf/renderer/registries/MediaAppRegistry";
+import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 
 export class MediaStation {
 
     private _id: number;
     private _name: string;
-    private _mediaApps: Map<number, MediaApp>;
     private _rootFolder: Folder;
 
     private _folderIdCounter: number;
@@ -15,11 +15,13 @@ export class MediaStation {
     private _mediaAppIdCounter: number;
     private _tagIdCounter: number;
 
-    private _tagManager:TagRegistry;
+    private _tagRegistry:TagRegistry;
+    private _mediaAppRegistry:MediaAppRegistry;
 
-    constructor(id: number, tagManager:TagRegistry) {
+    constructor(id: number, tagRegistry:TagRegistry, mediaAppRegistry:MediaAppRegistry) {
         this._id = id;
-        this._tagManager = tagManager;
+        this._tagRegistry = tagRegistry;
+        this._mediaAppRegistry = mediaAppRegistry;
         this.reset();
     }
 
@@ -27,7 +29,6 @@ export class MediaStation {
      * resets the mediastation, preserves its ID and its name
      */
     reset(): void {
-        this._mediaApps = new Map();
         this._rootFolder = new Folder(0);
         this._rootFolder.name = "root";
 
@@ -36,11 +37,12 @@ export class MediaStation {
         this._mediaAppIdCounter = 0;
         this._tagIdCounter = 0;
 
-        this._tagManager.reset();
+        this._tagRegistry.reset();
+        this._mediaAppRegistry.reset();
     }
 
     exportToJSON(): string {
-        const allTags:Map<number, Tag> = this._tagManager.getAllTags();
+        const allTags:Map<number, Tag> = this._tagRegistry.getAll();
 
         let json: any = {
             name: this._name,
@@ -58,7 +60,7 @@ export class MediaStation {
             json.tags.push({id: tag.id, name: tag.name});
         }
 
-        this._mediaApps.forEach((mediaApp: MediaApp) => {
+        this._mediaAppRegistry.getAll().forEach((mediaApp: MediaApp) => {
             json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
         });
 
@@ -89,14 +91,16 @@ export class MediaStation {
             this._contentIdCounter = json.contentIdCounter;
         if (this._jsonPropertyExists(json, "tagIdCounter"))
             this._tagIdCounter = json.tagIdCounter;
+        if (this._jsonPropertyExists(json, "mediaAppIdCounter"))
+            this._mediaAppIdCounter = json.mediaAppIdCounter;
 
-        this._importMediaAppsFromJSON(json);
+        this._mediaAppRegistry.importFromJSON(json.mediaApps);
 
         if (this._jsonPropertyExists(json, "tags")) {
-            this._tagManager.reset();
+            this._tagRegistry.reset();
 
             for (let i: number = 0; i < json.tags.length; i++)
-                this._tagManager.addTag(json.tags[i].id, json.tags[i].name);
+                this._tagRegistry.add(json.tags[i].id, json.tags[i].name);
         }
 
         if (this._jsonPropertyExists(json, "rootFolder")) {
@@ -105,56 +109,11 @@ export class MediaStation {
         }
     }
 
-    private _importMediaAppsFromJSON(json: any): void {
-        let mediaApp: MediaApp;
-
-        if (this._jsonPropertyExists(json, "mediaAppIdCounter"))
-            this._mediaAppIdCounter = json.mediaAppIdCounter;
-
-        this._mediaApps = new Map();
-
-        if (json.mediaApps) {
-            for (let i: number = 0; i < json.mediaApps.length; i++) {
-                console.log("FOUND MEDIA-APP IN JSON: ", json.mediaApps[i], json.mediaApps[i].id, json.mediaApps[i].name)
-                if (this._jsonPropertyExists(json.mediaApps[i], "id"))
-                    mediaApp = new MediaApp(json.mediaApps[i].id);
-                if (this._jsonPropertyExists(json.mediaApps[i], "name"))
-                    mediaApp.name = json.mediaApps[i].name;
-                if (this._jsonPropertyExists(json.mediaApps[i], "ip"))
-                    mediaApp.ip = json.mediaApps[i].ip;
-                if (this._jsonPropertyExists(json.mediaApps[i], "role"))
-                    mediaApp.role = json.mediaApps[i].role;
-
-                this._mediaApps.set(mediaApp.id, mediaApp);
-            }
-        }
-    }
-
     private _jsonPropertyExists(json: any, propName: string): boolean {
         if (json.hasOwnProperty(propName))
             return true;
         else
             throw new Error("MediaStation: missing property in JSON: " + propName);
-    }
-
-    /**
-     * returns null and prints an error  if there is no controller-app defined
-     *
-     * @returns {string | null}
-     */
-    getControllerIp(): string | null {
-        let result: string;
-
-        this._mediaApps.forEach((mediaApp: MediaApp) => {
-            if (mediaApp.role === MediaApp.ROLE_CONTROLLER)
-                result = mediaApp.ip;
-        });
-
-        if (result)
-            return result;
-
-        console.error("No controller-app is set for mediaStation: ", this._id, this._name)
-        return null;
     }
 
     getNextMediaAppId(): number {
@@ -181,26 +140,6 @@ export class MediaStation {
         return actualID;
     }
 
-    addMediaApp(id: number, name: string, ip: string, role: string): void {
-        let mediaApp: MediaApp = new MediaApp(id);
-        mediaApp.ip = ip;
-        mediaApp.name = name;
-        mediaApp.role = role;
-
-        this._mediaApps.set(id, mediaApp);
-    }
-
-    getMediaApp(id: number): MediaApp {
-        if (this._mediaApps.has(id))
-            return this._mediaApps.get(id);
-        else
-            throw new Error("Media App with the following ID does not exist: " + id);
-    }
-
-    getAllMediaApps(): Map<number, MediaApp> {
-        return this._mediaApps;
-    }
-
     get id(): number {
         return this._id;
     }
@@ -221,7 +160,7 @@ export class MediaStation {
         this._rootFolder = value;
     }
 
-    get tagManager(): TagRegistry {
-        return this._tagManager;
+    get tagRegistry(): TagRegistry {
+        return this._tagRegistry;
     }
 }

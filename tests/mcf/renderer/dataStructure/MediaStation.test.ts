@@ -4,9 +4,12 @@ import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFold
 import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
 import {Tag} from "../../../../src/mcf/renderer/dataStructure/Tag";
 import {MockTagRegistry} from "__mocks__/mcf/renderer/registries/MockTagRegistry";
+import {MockMediaAppRegistry} from "__mocks__/mcf/renderer/registries/MockMediaAppRegistry";
 
 let mediaStation: MediaStation;
-let mockTagManager:MockTagRegistry;
+let mockTagRegistry:MockTagRegistry;
+let mockMediaAppRegistry:MockMediaAppRegistry;
+
 let mediaApp1: MediaApp = new MediaApp(0);
 mediaApp1.name = "app1";
 mediaApp1.ip = "127.0.0.1";
@@ -30,8 +33,9 @@ const jsonMock: any = {
 }
 
 beforeEach(() => {
-    mockTagManager = new MockTagRegistry();
-    mediaStation = new MediaStation(0, mockTagManager);
+    mockTagRegistry = new MockTagRegistry();
+    mockMediaAppRegistry = new MockMediaAppRegistry();
+    mediaStation = new MediaStation(0, mockTagRegistry, mockMediaAppRegistry);
 });
 
 afterEach(() => {
@@ -44,7 +48,7 @@ describe("reset() ", () => {
         mediaStation.name = name;
         mediaStation.rootFolder.name = "root";
 
-        //increase the tag-ids to test if the ids have been reset after the calling of the function
+        //increase the ids to test if the ids have been reset after the calling of the function
         mediaStation.getNextMediaAppId();
         mediaStation.getNextMediaAppId();
         mediaStation.getNextFolderId();
@@ -53,8 +57,6 @@ describe("reset() ", () => {
         mediaStation.getNextContentId();
         mediaStation.getNextTagId();
         mediaStation.getNextTagId();
-
-        mediaStation.addMediaApp(0, "testName", "localhost", MediaApp.ROLE_CONTROLLER)
 
         //method to test
         mediaStation.reset();
@@ -66,7 +68,8 @@ describe("reset() ", () => {
         expect(mediaStation.getNextContentId()).toEqual(0);
         expect(mediaStation.getNextTagId()).toEqual(0);
         expect(mediaStation.getNextFolderId()).toEqual(1);
-        expect(mediaStation.getAllMediaApps()).toEqual(new Map());
+        expect(mockMediaAppRegistry.reset).toHaveBeenCalledTimes(2);    //2 because the constructor also calls reset
+        expect(mockTagRegistry.reset).toHaveBeenCalledTimes(2);
     });
 });
 
@@ -86,10 +89,9 @@ describe("exportToJSON() ", () => {
         mediaStation.getNextContentId();
         mediaStation.name = "newName";
         mediaStation.rootFolder = mockFolder;
-        mediaStation.addMediaApp(mediaApp1.id, mediaApp1.name, mediaApp1.ip, mediaApp1.role);
-        mediaStation.addMediaApp(mediaApp2.id, mediaApp2.name, mediaApp2.ip, mediaApp2.role);
 
-        mockTagManager.getAllTags.mockReturnValueOnce(new Map([[0, tag1],[3,tag2]]));
+        mockTagRegistry.getAll.mockReturnValueOnce(new Map([[0, tag1],[3,tag2]]));
+        mockMediaAppRegistry.getAll.mockReturnValueOnce(new Map([[mediaApp1.id, mediaApp1],[mediaApp2.id,mediaApp2]]));
 
         //method to test
         receivedJSONstr = mediaStation.exportToJSON();
@@ -121,21 +123,12 @@ describe("importFromJSON() ", () => {
         expect(mediaStation.getNextMediaAppId()).toBe(jsonMock.mediaAppIdCounter);
         expect(mediaStation.getNextTagId()).toBe(jsonMock.tagIdCounter);
 
-        mediaApp1 = mediaStation.getMediaApp(0);
-        mediaApp2 = mediaStation.getMediaApp(1);
+        expect(mockMediaAppRegistry.importFromJSON).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppRegistry.importFromJSON).toHaveBeenCalledWith(jsonMock.mediaApps);
 
-        expect(mediaApp1.id).toBe(0);
-        expect(mediaApp1.name).toBe(mediaApp1.name);
-        expect(mediaApp1.ip).toBe(mediaApp1.ip);
-        expect(mediaApp1.role).toBe(mediaApp1.role);
-        expect(mediaApp2.id).toBe(1);
-        expect(mediaApp2.name).toBe(mediaApp2.name);
-        expect(mediaApp2.ip).toBe(mediaApp2.ip);
-        expect(mediaApp2.role).toBe(mediaApp2.role);
-
-        expect(mockTagManager.addTag).toHaveBeenCalledTimes(2);
-        expect(mockTagManager.addTag).toHaveBeenCalledWith(0, "tag1");
-        expect(mockTagManager.addTag).toHaveBeenCalledWith(3, "tag2");
+        expect(mockTagRegistry.add).toHaveBeenCalledTimes(2);
+        expect(mockTagRegistry.add).toHaveBeenCalledWith(0, "tag1");
+        expect(mockTagRegistry.add).toHaveBeenCalledWith(3, "tag2");
     });
 
     it("should not overwrite the name if preserveName is true", () => {
@@ -175,52 +168,7 @@ describe("importFromJSON() ", () => {
         expect(mediaStation.rootFolder.id).toBe(2);
         expect(mediaStation.rootFolder.name).toBe(mockRootFolder.name);
     });
-
-    it("should remove the already added mediaApps from the array", () => {
-        //setup
-        const jsonWithoutMediaApps: any = jsonMock;
-        jsonWithoutMediaApps.mediaApps = [];
-        const mockRootFolder: MockFolder = new MockFolder(2);
-        mockRootFolder.name = "testName"
-
-        mediaStation.addMediaApp(0, "test1", "127.0.0.1", MediaApp.ROLE_CONTROLLER)
-        mediaStation.addMediaApp(1, "test1", "127.0.0.1", MediaApp.ROLE_DEFAULT)
-
-        //method to test
-        mediaStation.importFromJSON(jsonWithoutMediaApps, false, mockRootFolder);
-
-        //tests
-        expect(mediaStation.getAllMediaApps().size).toBe(0);
-    });
 });
-
-describe("getControllerIp() ", () => {
-    it("should return the IP of the controller-app", () => {
-        //setup
-        let returnValue: string;
-        mediaStation.addMediaApp(mediaApp1.id, mediaApp1.name, mediaApp1.ip, mediaApp1.role);
-
-        //method to test
-        returnValue = mediaStation.getControllerIp();
-
-        //tests
-        expect(returnValue).toBe(mediaApp1.ip);
-    });
-
-    it("should return null and print an error if there is no controller-app", () => {
-        //setup
-        let returnValue: string;
-        let logSpy: any = jest.spyOn(global.console, 'error');
-
-        //method to test
-        returnValue = mediaStation.getControllerIp();
-
-        //tests
-        expect(logSpy).toHaveBeenCalledTimes(1);
-        expect(returnValue).toEqual(null);
-    });
-});
-
 
 describe("getNextMediaAppId() ", () => {
     it("should return an increased ID everytime it's called", () => {
@@ -288,28 +236,5 @@ describe("getNextTagId() ", () => {
             console.log("got id: ", answerPerCall[i], " expected ID: ", idPerCall[i])
             expect(answerPerCall[i]).toBe(idPerCall[i]);
         }
-    });
-});
-
-describe("addMediaApp() and getMediaApp()", () => {
-    it("getMediApp should return the mediaApp that was created with addMediaApp()", () => {
-        //setup
-        let receivedMediaApp: MediaApp;
-        let mediaApp: MediaApp = new MediaApp(0);
-        mediaApp.ip = "localhost"
-        mediaApp.name = "firstMediaApp"
-        mediaApp.role = MediaApp.ROLE_CONTROLLER;
-
-        //method to test
-        mediaStation.addMediaApp(0, mediaApp.name, mediaApp.ip, mediaApp.role);
-        receivedMediaApp = mediaStation.getMediaApp(0);
-
-        //tests
-        expect(receivedMediaApp).toStrictEqual(mediaApp);
-    });
-
-    it("getMediaApp() should throw an error if it does not exist", () => {
-        //tests
-        expect(() => mediaStation.getMediaApp(20)).toThrow(new Error("Media App with the following ID does not exist: 20"))
     });
 });
