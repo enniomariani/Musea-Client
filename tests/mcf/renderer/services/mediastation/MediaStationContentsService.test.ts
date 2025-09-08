@@ -31,7 +31,7 @@ describe("downloadContentsOfMediaStation() ", () => {
         mockMediaStation = new MockMediaStation(0);
 
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
+        mockMediaStation.mediaAppRegistry.getControllerIp.mockReturnValueOnce(controllerIp);
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
@@ -165,8 +165,8 @@ describe("downloadContentsOfMediaStation() ", () => {
 
     it("should return an error if there is no controller-ip specified", async () => {
         //setup
-        mockMediaStation.getControllerIp = jest.fn();
-        mockMediaStation.getControllerIp.mockReturnValueOnce(null);
+        mockMediaStation.mediaAppRegistry.getControllerIp = jest.fn();
+        mockMediaStation.mediaAppRegistry.getControllerIp.mockReturnValueOnce(null);
 
         //method to test
         answer = await service.downloadContentsOfMediaStation(0, false);

@@ -83,7 +83,7 @@ export class MediaAppConnectionService {
      */
     async checkOnlineStatusOfAllMediaApps(id: number): Promise<boolean> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(id);
-        const controllerIP: string = mediaStation.getControllerIp();
+        const controllerIP: string = mediaStation.mediaAppRegistry.getControllerIp();
         let contentsJSONstr: string;
         let contentsJSON: any;
 
@@ -147,7 +147,7 @@ export class MediaAppConnectionService {
         let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let mediaApp: MediaApp;
 
-        mediaApp = mediaStation.getMediaApp(mediaAppId);
+        mediaApp = mediaStation.mediaAppRegistry.get(mediaAppId);
 
         if (!mediaApp)
             throw new Error("Media-App with this ID does not exist: " + mediaAppId);

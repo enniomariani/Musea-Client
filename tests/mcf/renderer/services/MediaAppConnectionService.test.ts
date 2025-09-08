@@ -26,9 +26,8 @@ let mediaApp1: MediaApp;
 let mediaApp2: MediaApp;
 
 function setupMediaAppWithName(addMediaStation: boolean = true, mediaStationId: number = 0): MediaApp {
-    mediaApp1 = new MediaApp(0);
-    mediaApp2 = new MediaApp(1);
     mediaApp1 = new MediaApp(mediaAppId);
+    mediaApp2 = new MediaApp(1);
     mediaStation = new MockMediaStation(mediaStationId);
 
     mediaApp1.ip = ip1;
@@ -42,11 +41,11 @@ function setupMediaAppWithName(addMediaStation: boolean = true, mediaStationId: 
     let answerMap: Map<number, MediaApp> = new Map();
     answerMap.set(0, mediaApp1);
     answerMap.set(1, mediaApp2);
-    mediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    mediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
 
     if (addMediaStation) {
-        mediaStation.getAllMediaApps.mockReturnValue(answerMap);
-        mediaStation.getMediaApp.mockReturnValue(mediaApp1);
+        mediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
+        mediaStation.mediaAppRegistry.get.mockReturnValue(mediaApp1);
     }
 
     mockMediaStationRepo.requireMediaStation.mockImplementation((id) => {
@@ -404,7 +403,7 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         mockMediaStation = new MockMediaStation(0);
 
         mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
-        mockMediaStation.getControllerIp.mockReturnValue(controllerIp);
+        mockMediaStation.mediaAppRegistry.getControllerIp.mockReturnValue(controllerIp);
         mockNetworkService.openConnection.mockImplementation((ip:string) =>{
             if(ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
                 return true;

@@ -263,7 +263,7 @@ describe("deleteContent() ", ()=> {
     const allMediaApps:Map<number, MediaApp> = new Map();
     allMediaApps.set(0, new MediaApp(0));
     allMediaApps.set(1, new MediaApp(1));
-    mockMediaStation.getAllMediaApps.mockReturnValue(allMediaApps);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(allMediaApps);
 
     it("should call contentManager.deleteContent with the correct arguments", async () => {
         //setup

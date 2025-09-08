@@ -5,6 +5,7 @@ import {MediaApp} from "./MediaApp";
 import {ContentFileService} from "../fileHandling/ContentFileService";
 import {MediaFilesMarkedToDeleteService} from "../fileHandling/MediaFilesMarkedToDeleteService";
 import {TagRegistry} from "src/mcf/renderer/registries/TagRegistry";
+import {MediaAppRegistry} from "src/mcf/renderer/registries/MediaAppRegistry";
 
 export interface ICachedMedia{
     contentId:number
@@ -26,7 +27,7 @@ export class MediaStationRepository{
     private _pathToMainFolder:string;
     private _cachedMedia:Map<number, ICachedMedia[]> = new Map();
 
-    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaFileService:MediaFileService = new MediaFileService(), mediaFilesMarkedToDeleteService = new MediaFilesMarkedToDeleteService(), contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id, new TagRegistry())) {
+    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaFileService:MediaFileService = new MediaFileService(), mediaFilesMarkedToDeleteService = new MediaFilesMarkedToDeleteService(), contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id, new TagRegistry(), new MediaAppRegistry())) {
         this._mediaStationMetaData = mediaStationMetaData;
         this._pathToMainFolder = pathToMainFolder;
         this._mediaFileService = mediaFileService;
@@ -59,7 +60,7 @@ export class MediaStationRepository{
                 if(await this.isMediaStationCached(id))
                     mediaStation.importFromJSON(await this._contentFileService.loadFile(id), false);
                 else if(controllerIp)
-                    mediaStation.addMediaApp(mediaStation.getNextMediaAppId(), "Controller-App nicht erreichbar", controllerIp, MediaApp.ROLE_CONTROLLER);
+                    mediaStation.mediaAppRegistry.add(mediaStation.getNextMediaAppId(), "Controller-App nicht erreichbar", controllerIp, MediaApp.ROLE_CONTROLLER);
             }
         }
 
@@ -267,7 +268,7 @@ export class MediaStationRepository{
         let controllerIp:string;
 
         this._allMediaStations.forEach((mediaStation:MediaStation, key:number)=>{
-            controllerIp = mediaStation.getControllerIp();
+            controllerIp = mediaStation.mediaAppRegistry.getControllerIp();
             map.set(mediaStation.name, controllerIp);
         });
 

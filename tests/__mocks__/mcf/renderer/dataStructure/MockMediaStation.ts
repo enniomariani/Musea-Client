@@ -24,7 +24,8 @@ export class MockMediaStation extends MediaStation{
     getAllMediaApps: jest.Mock;
 
     private _rootFolderMock: MockFolder = new MockFolder(0);
-    private _mockTagManager: MockTagRegistry = new MockTagRegistry();
+    private _mockTagRegistry: MockTagRegistry = new MockTagRegistry();
+    private _mockMediaAppRegistry: MockMediaAppRegistry = new MockMediaAppRegistry();
 
     constructor(id) {
         super(id, mockTagRegistry, mockMediaAppRegistry);
@@ -47,7 +48,11 @@ export class MockMediaStation extends MediaStation{
     }
 
     override get tagRegistry(): MockTagRegistry {
-        return this._mockTagManager;
+        return this._mockTagRegistry;
+    }
+
+    override get mediaAppRegistry(): MockMediaAppRegistry {
+        return this._mockMediaAppRegistry;
     }
 
     get rootFolder(): MockFolder {

@@ -30,10 +30,11 @@ export class MediaStationDataService{
         this._mediaStationRepository.updateAndSaveMediaStation(ms);
     }
 
+    //TO DO: extract into mediaAppService?
     getControllerIp(id:number):string|null{
         const ms:MediaStation = this._mediaStationRepository.requireMediaStation(id);
 
-        return ms.getControllerIp();
+        return ms.mediaAppRegistry.getControllerIp();
     }
 
     getName(id:number):string{

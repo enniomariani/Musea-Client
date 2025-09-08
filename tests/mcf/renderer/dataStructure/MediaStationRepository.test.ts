@@ -37,7 +37,7 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-let returnedMetaData:Map<string, string> = new Map();
+const returnedMetaData:Map<string, string> = new Map();
 let key1:string = "mediaStation1";
 let key2:string = "mediaStation2";
 let key3:string = "mediaStation3";
@@ -158,11 +158,11 @@ describe("loadMediaStations() ", ()=>{
 
         //tests
         expect(mediaStationRepo.findMediaStation).toHaveBeenCalledTimes(3);
-        expect(mediaStation1.addMediaApp).toHaveBeenCalledTimes(0);
-        expect(mediaStation2.addMediaApp).toHaveBeenCalledTimes(1);
-        expect(mediaStation2.addMediaApp).toHaveBeenCalledWith(idREturnedFrom2, "Controller-App nicht erreichbar", "192.168.2.1", MediaApp.ROLE_CONTROLLER);
-        expect(mediaStation3.addMediaApp).toHaveBeenCalledTimes(1);
-        expect(mediaStation3.addMediaApp).toHaveBeenCalledWith(idREturnedFrom3, "Controller-App nicht erreichbar", "192.168.2.100", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation1.mediaAppRegistry.add).toHaveBeenCalledTimes(0);
+        expect(mediaStation2.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
+        expect(mediaStation2.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom2, "Controller-App nicht erreichbar", "192.168.2.1", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation3.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
+        expect(mediaStation3.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom3, "Controller-App nicht erreichbar", "192.168.2.100", MediaApp.ROLE_CONTROLLER);
     });
 
     it("should return the map it got from the loading-service", async () =>{
@@ -257,6 +257,7 @@ describe("addMediaStation() ", ()=>{
         expect(receivedId).toEqual(expectedId);
     });
 
+    //TO DO: find better solution to mock it or refactor to test it more easily!!!
     it("should call mediaMetaDataService.save() with the mediastation-names and controller-ips if save = true", ()=>{
         //setup
         let testName:string = "testNameXY";
@@ -388,6 +389,7 @@ describe("deleteMediaStation() ", ()=>{
         expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(2, mapToSave)
     });
 
+    //TO DO: find better solution to mock it or refactor to test it more easily!!!
     it("should call mediaMetaDataService.save() with a map with 1 entry if there were 2 mediastations", async ()=>{
         //setup
         let receivedId:number;
@@ -522,7 +524,7 @@ describe("updateAndSaveMediaStation() ", ()=>{
 
         //method to test
         mediaStation = mediaStationRepo.findMediaStation(receivedId) as MockMediaStation;
-        mediaStation.getControllerIp.mockReturnValue(newIp)
+        mediaStation.mediaAppRegistry.getControllerIp.mockReturnValue(newIp)
         mediaStationRepo.updateAndSaveMediaStation(mediaStation);
 
         //tests

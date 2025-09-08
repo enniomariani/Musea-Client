@@ -55,9 +55,9 @@ describe("sendCommandPlay() ", ()=> {
 
     answerMap.set(0, mediaApp1);
     answerMap.set(1, mediaApp2);
-    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
 
-    mockMediaStation.getMediaApp.mockImplementation((id) =>{
+    mockMediaStation.mediaAppRegistry.get.mockImplementation((id) =>{
         if(id === 0)
             return mediaApp1;
         else if(id === 1)
@@ -147,7 +147,7 @@ describe("sendCommandStop() ", ()=> {
     let mediaApp2:MediaApp = new MediaApp(1);
     answerMap.set(0, mediaApp1);
     answerMap.set(1, mediaApp2);
-    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
 
     it("should call contentNetworkService.sendCommandStop for every mediaApp defined in the mocked mediastation", async () => {
         //setup
@@ -181,7 +181,7 @@ describe("sendCommandPause() ", ()=> {
     let answerMap:Map<number, MediaApp> = new Map();
     answerMap.set(0, new MediaApp(0));
     answerMap.set(1, new MediaApp(1));
-    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
 
     it("should call contentNetworkService.sendCommandPause with the correct arguments", async () => {
         //setup
@@ -202,7 +202,7 @@ describe("sendCommandFwd() ", ()=> {
     let answerMap:Map<number, MediaApp> = new Map();
     answerMap.set(0, new MediaApp(0));
     answerMap.set(1, new MediaApp(1));
-    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
 
     it("should call contentNetworkService.sendCommandFwd with the correct arguments", async () => {
         //setup
@@ -223,7 +223,7 @@ describe("sendCommandRew() ", ()=> {
     let answerMap:Map<number, MediaApp> = new Map();
     answerMap.set(0, new MediaApp(0));
     answerMap.set(1, new MediaApp(1));
-    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
 
     it("should call contentNetworkService.sendCommandRew with the correct arguments", async () => {
         //setup
@@ -259,9 +259,9 @@ describe("sendCommandSync() ", ()=> {
 
     answerMap.set(0, mediaApp1);
     answerMap.set(1, mediaApp2);
-    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
 
-    mockMediaStation.getMediaApp.mockImplementation((id) =>{
+    mockMediaStation.mediaAppRegistry.get.mockImplementation((id) =>{
         if(id === 0)
             return mediaApp1;
         else if(id === 1)
@@ -291,7 +291,7 @@ describe("sendCommandSeek() ", ()=> {
     let answerMap:Map<number, MediaApp> = new Map();
     answerMap.set(0, new MediaApp(0));
     answerMap.set(1, new MediaApp(1));
-    mockMediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
     const seekPos:number = 200;
 
     it("should call contentNetworkService.sendCommandSeek with the correct arguments", async () => {
@@ -318,7 +318,7 @@ describe("sendCommandSetVolume() ", () => {
     mediaAppMap.set(1, mediaApp2);
 
     let mockMediaStation: MockMediaStation = new MockMediaStation(0);
-    mockMediaStation.getAllMediaApps.mockReturnValue(mediaAppMap);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(mediaAppMap);
 
     it("should call networkService.sendMediaControlTo for the mediaApp with the correct mute-command", async () => {
         //setup
@@ -358,7 +358,7 @@ describe("sendCommandMute() ", () => {
     mediaAppMap.set(1, mediaApp2);
 
     let mockMediaStation: MockMediaStation = new MockMediaStation(0);
-    mockMediaStation.getAllMediaApps.mockReturnValue(mediaAppMap);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(mediaAppMap);
 
     it("should call networkService.sendMediaControlTo for the mediaApp with the correct mute-command", async () => {
         //setup
@@ -398,7 +398,7 @@ describe("sendCommandUnmute() ", () => {
     mediaAppMap.set(1, mediaApp2);
 
     let mockMediaStation: MockMediaStation = new MockMediaStation(0);
-    mockMediaStation.getAllMediaApps.mockReturnValue(mediaAppMap);
+    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(mediaAppMap);
 
     it("should call networkService.sendMediaControlTo for the mediaApp with the correct unmute-command", async () => {
         //setup

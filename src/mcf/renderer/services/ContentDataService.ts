@@ -94,7 +94,7 @@ export class ContentDataService  {
      */
     async deleteContent(mediaStationId:number, folderId:number, contentId:number):Promise<void>{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let allMediaApps: Map<number, MediaApp> = mediaStation.getAllMediaApps();
+        let allMediaApps: Map<number, MediaApp> = mediaStation.mediaAppRegistry.getAll();
 
         for(const [key, mediaApp] of allMediaApps)
             if(this._mediaService.getMediaType(mediaStationId, contentId, mediaApp.id) !== null)

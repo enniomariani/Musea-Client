@@ -60,7 +60,7 @@ export class MediaStationSyncService {
         //then for media app 2, etc.
         if (allCachedMedia) {
             for (const cachedMedia of allCachedMedia) {
-                mediaApp = mediaStation.getMediaApp(cachedMedia.mediaAppId);
+                mediaApp = mediaStation.mediaAppRegistry.get(cachedMedia.mediaAppId);
 
                 if (!allMediaToAdd.has(mediaApp)) {
                     allMediaToAdd.set(mediaApp, []);
@@ -72,7 +72,7 @@ export class MediaStationSyncService {
         }
 
         for (const [mediaAppId, idsToDelete] of allMediaIdsToDelete) {
-            mediaApp = mediaStation.getMediaApp(mediaAppId);
+            mediaApp = mediaStation.mediaAppRegistry.get(mediaAppId);
             allMediaToDelete.set(mediaApp, idsToDelete);
 
             if (allMediaAppsWithChanges.indexOf(mediaApp) === -1)
@@ -120,7 +120,7 @@ export class MediaStationSyncService {
 
         if (allMediaAppsWereSynced && areAllMediaSentSuccesfully) {
             // send content-file (last step in synchronisation)
-            ip = mediaStation.getControllerIp();
+            ip = mediaStation.mediaAppRegistry.getControllerIp();
 
             onSyncStep("Sende contents.json an Controller-App: " + ip);
 

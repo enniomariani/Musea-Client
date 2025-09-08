@@ -5,7 +5,6 @@ import {MediaAppRegistry} from "src/mcf/renderer/registries/MediaAppRegistry";
 import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 
 export class MediaStation {
-
     private _id: number;
     private _name: string;
     private _rootFolder: Folder;
@@ -162,5 +161,9 @@ export class MediaStation {
 
     get tagRegistry(): TagRegistry {
         return this._tagRegistry;
+    }
+
+    get mediaAppRegistry(): MediaAppRegistry {
+        return this._mediaAppRegistry;
     }
 }

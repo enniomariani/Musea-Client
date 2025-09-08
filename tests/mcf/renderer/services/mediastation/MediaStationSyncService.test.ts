@@ -49,7 +49,7 @@ describe("sync() ", () => {
     mediaApp2.name = "second media app";
     mediaApp2.ip = "127.0.0.2";
 
-    mockMediaStation.getMediaApp.mockImplementation((id) => {
+    mockMediaStation.mediaAppRegistry.get.mockImplementation((id) => {
         if (id === 0) return mediaApp1;
         else if (id === 1) return mediaApp2;
         else throw new Error("MOCK-ERROR: MEDIA APP ID NOT DEFINED!");
@@ -164,7 +164,7 @@ describe("sync() ", () => {
         mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
         mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
 
-        mockMediaStation.getControllerIp.mockReturnValueOnce(controllerIp);
+        mockMediaStation.mediaAppRegistry.getControllerIp.mockReturnValueOnce(controllerIp);
     });
 
     it("should call the callback mockOnSyncStep with the text, that the connection is opening and if it succeeded or not", async () => {

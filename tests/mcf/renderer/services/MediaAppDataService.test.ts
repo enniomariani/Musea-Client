@@ -43,11 +43,11 @@ function setupMediaAppWithName(addMediaStation: boolean = true, mediaStationId: 
     let answerMap: Map<number, MediaApp> = new Map();
     answerMap.set(0, mediaApp1);
     answerMap.set(1, mediaApp2);
-    mediaStation.getAllMediaApps.mockReturnValue(answerMap);
+    mediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
 
     if (addMediaStation) {
-        mediaStation.getAllMediaApps.mockReturnValue(answerMap);
-        mediaStation.getMediaApp.mockReturnValue(mediaApp1);
+        mediaStation.mediaAppRegistry.getAll.mockReturnValue(answerMap);
+        mediaStation.mediaAppRegistry.get.mockReturnValue(mediaApp1);
     }
 
     mockMediaStationRepo.requireMediaStation.mockImplementation((id) => {
@@ -79,8 +79,8 @@ describe("createMediaApp() ", () => {
         mediaAppService.createMediaApp(0, name1, ip1);
 
         //tests
-        expect(mediaStation.addMediaApp).toHaveBeenCalledTimes(1);
-        expect(mediaStation.addMediaApp).toHaveBeenCalledWith(mediaAppId, name1, ip1, MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
+        expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledWith(mediaAppId, name1, ip1, MediaApp.ROLE_CONTROLLER);
     });
 
     it("should call mediaStationRepository.updateAndSaveMediaStation if media-App ID is 0", () => {
@@ -122,8 +122,8 @@ describe("createMediaApp() ", () => {
         mediaAppService.createMediaApp(0, name1, ip1);
 
         //tests
-        expect(mediaStation.addMediaApp).toHaveBeenCalledTimes(1);
-        expect(mediaStation.addMediaApp).toHaveBeenCalledWith(mediaAppId, name1, ip1, MediaApp.ROLE_DEFAULT);
+        expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
+        expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledWith(mediaAppId, name1, ip1, MediaApp.ROLE_DEFAULT);
     });
 
     it("should return the ID of the newly created mediaApp", () => {

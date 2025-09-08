@@ -24,7 +24,7 @@ export class MediaAppDataService {
 
         mediaAppId = mediaStation.getNextMediaAppId();
 
-        mediaStation.addMediaApp(mediaAppId, name, ip, mediaAppId === 0 ? MediaApp.ROLE_CONTROLLER : MediaApp.ROLE_DEFAULT);
+        mediaStation.mediaAppRegistry.add(mediaAppId, name, ip, mediaAppId === 0 ? MediaApp.ROLE_CONTROLLER : MediaApp.ROLE_DEFAULT);
 
         if (mediaAppId === 0)
             this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
@@ -41,7 +41,7 @@ export class MediaAppDataService {
         if (!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
 
-        let allMediaApps: Map<number, MediaApp> = mediaStation.getAllMediaApps();
+        let allMediaApps: Map<number, MediaApp> = mediaStation.mediaAppRegistry.getAll();
 
         allMediaApps.forEach((mediaApp: MediaApp) => {
             map.set(mediaApp.id, {
@@ -76,8 +76,6 @@ export class MediaAppDataService {
 
         this._getMediaApp(mediaStationId, mediaAppId).ip = ip;
 
-        console.log("ID: ", mediaAppId)
-
         if (mediaAppId === 0)
             this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
         else
@@ -91,7 +89,7 @@ export class MediaAppDataService {
         if (!mediaStation)
             throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
 
-        mediaApp = mediaStation.getMediaApp(mediaAppId);
+        mediaApp = mediaStation.mediaAppRegistry.get(mediaAppId);
 
         if (!mediaApp)
             throw new Error("Media-App with this ID does not exist: " + mediaAppId);
