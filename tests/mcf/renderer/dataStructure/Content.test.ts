@@ -24,13 +24,10 @@ const expectedJSON:any = {
 
 describe("importFromJSON() ", () => {
     it("should set all properties for itself", () => {
-        //setup
         content = new Content(0, 3);
 
-        //method to test
         content.importFromJSON(expectedJSON);
 
-        //tests
         expect(content.id).toBe(expectedJSON.id);
         expect(content.name).toBe(expectedJSON.name);
         expect(content.tagIds).toEqual(tagIds)
@@ -39,14 +36,11 @@ describe("importFromJSON() ", () => {
     });
 
     it("should set all media correctly", () => {
-        //setup
         let video:Video;
         content = new Content(0, 4);
 
-        //method to test
         content.importFromJSON(expectedJSON);
 
-        //tests
         expect(content.media.size).toBe(2);
         video = content.media.get(0) as Video;
         expect(video).not.toBeNull();
@@ -64,8 +58,6 @@ describe("importFromJSON() ", () => {
 
 describe("exportToJSON() ", ()=>{
     it("should receive a valid JSON that contains all set properties of the content", ()=>{
-        //setup
-
         let receivedJSON:any;
         content.name = "myName";
         content.tagIds = tagIds;
@@ -84,10 +76,8 @@ describe("exportToJSON() ", ()=>{
         content.media.set(video.mediaAppId, video)
         content.media.set(image.mediaAppId, image)
 
-        //method to test
         receivedJSON = content.exportToJSON();
 
-        //tests
         expect(JSON.stringify(receivedJSON)).not.toBe(undefined);
         expect(receivedJSON).toMatchObject(expectedJSON);
     });
@@ -95,7 +85,6 @@ describe("exportToJSON() ", ()=>{
 
 describe("getMaxDuration() ", ()=>{
     it("should return the maximum duration of all video-media attached to the content", ()=>{
-        //setup
         let values:number[] = [100, 50, 200, 20, 1];
         let video:Video;
 
@@ -106,12 +95,10 @@ describe("getMaxDuration() ", ()=>{
             content.media.set(i, video);
         }
 
-        //tests
         expect(content.getMaxDuration()).toBe(200);
     });
 
     it("should return 0 if there are no videos in the media", ()=>{
-        //setup
         let image:Image;
 
         for(let i:number = 0; i < 5; i++){
@@ -120,7 +107,6 @@ describe("getMaxDuration() ", ()=>{
             content.media.set(i,image);
         }
 
-        //tests
         expect(content.getMaxDuration()).toBe(0);
     });
 });

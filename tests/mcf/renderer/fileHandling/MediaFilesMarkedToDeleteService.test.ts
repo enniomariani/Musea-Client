@@ -44,7 +44,6 @@ function createJSONandConvertToBinary(idsApp1: number[], idsApp2: number[]): Uin
 describe("init() and addID() ", () => {
 
     it("should call saveFile from the backend with the new ID, if there was no ID saved before", async () => {
-        //setup
         const idToSave: number = 5;
         const fileToSave: string = pathToSave + "\\" + mediaStationId.toString() + "\\ids_to_delete.json";
         mockBackendFileService.fileExists.mockImplementation((path: string) => {
@@ -53,17 +52,14 @@ describe("init() and addID() ", () => {
             })
         });
 
-        //method to test
         mediaFilesMarkedToDeleteService.init(pathToSave);
         await mediaFilesMarkedToDeleteService.addID(mediaStationId,0, idToSave);
 
-        //tests
         expect(mockBackendFileService.saveFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.saveFile).toHaveBeenCalledWith(fileToSave, createJSONandConvertToBinary([idToSave], null));
     });
 
     it("should call saveFile from the backend with the new ID, if there were other IDs saved before", async () => {
-        //setup
         let savedData: Uint8Array;
         let uint8Array: Uint8Array;
         const savedIDsApp1: number[] = [5, 30, 0];
@@ -93,7 +89,6 @@ describe("init() and addID() ", () => {
 
         uint8Array = createJSONandConvertToBinary(savedIDsApp1, savedIDsApp2);
 
-        //method to test
         mediaFilesMarkedToDeleteService.init(pathToSave);
         await mediaFilesMarkedToDeleteService.addID(mediaStationId, 0, savedIDsApp1[0]);
         await mediaFilesMarkedToDeleteService.addID(mediaStationId, 0, savedIDsApp1[1]);
@@ -103,7 +98,6 @@ describe("init() and addID() ", () => {
         await mediaFilesMarkedToDeleteService.addID(mediaStationId, 1, savedIDsApp2[2]);
         await mediaFilesMarkedToDeleteService.addID(mediaStationId, 1, savedIDsApp2[3]);
 
-        //tests
         expect(mockBackendFileService.saveFile).toHaveBeenCalledTimes(7);
         expect(mockBackendFileService.saveFile).toHaveBeenNthCalledWith(7, fileToSave, uint8Array);
     });
@@ -112,7 +106,6 @@ describe("init() and addID() ", () => {
 describe("init() and removeID() ", () => {
 
     it("should call saveFile from the backend with the ID removed, if there were IDs saved before", async () => {
-        //setup
         let expectedUint8Array: any;
         let loadedUint8Array: Uint8Array;
         const savedIDs: number[] = [5, 30, 0];
@@ -138,17 +131,14 @@ describe("init() and removeID() ", () => {
                 return null;
         });
 
-        //method to test
         mediaFilesMarkedToDeleteService.init(pathToSave);
         await mediaFilesMarkedToDeleteService.removeID(mediaStationId,0,  idToDelete);
 
-        //tests
         expect(mockBackendFileService.saveFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.saveFile).toHaveBeenCalledWith(fileToSave, expectedUint8Array);
     });
 
     it("should throw an error if there were no saved IDs before", async () => {
-        //setup
         const idToDelete: number = 30;
 
         mockBackendFileService.fileExists.mockImplementation((path: string) => {
@@ -157,15 +147,12 @@ describe("init() and removeID() ", () => {
             })
         });
 
-        //method to test
         mediaFilesMarkedToDeleteService.init(pathToSave);
 
-        //tests
         expect(mediaFilesMarkedToDeleteService.removeID(mediaStationId,0, idToDelete)).rejects.toThrow(Error("ID can't be removed because there are no saved IDs!"))
     });
 
     it("should throw an error if the ID passed was not added before, but there are IDs saved", async () => {
-        //setup
         let loadedUint8Array: Uint8Array;
         const savedIDs: number[] = [5, 30, 0];
         const idToDelete: number = 25;
@@ -189,10 +176,8 @@ describe("init() and removeID() ", () => {
                 return null;
         });
 
-        //method to test
         mediaFilesMarkedToDeleteService.init(pathToSave);
 
-        //tests
         expect(mediaFilesMarkedToDeleteService.removeID(mediaStationId, 0, idToDelete)).rejects.toThrow(Error("ID can not be deleted because it was not saved before: " + idToDelete))
     });
 });
@@ -200,7 +185,6 @@ describe("init() and removeID() ", () => {
 describe("init() and getAllIds() ", () => {
 
     it("should return the IDs loaded from the file loaded from the backend", async () => {
-        //setup
         let loadedIDs: Map<number, number[]>;
         let uint8Array: Uint8Array;
         const savedIDs: Map<number, number[]> = new Map();
@@ -222,16 +206,13 @@ describe("init() and getAllIds() ", () => {
                 return null;
         });
 
-        //method to test
         mediaFilesMarkedToDeleteService.init(pathToSave);
         loadedIDs = await mediaFilesMarkedToDeleteService.getAllIDS(mediaStationId);
 
-        //tests
         expect(loadedIDs).toEqual(savedIDs);
     });
 
     it("should return an empty array if there were no IDs saved yet", async () => {
-        //setup
         let loadedIDs: Map<number, number[]>
 
         mockBackendFileService.fileExists.mockImplementation((path: string) => {
@@ -240,11 +221,9 @@ describe("init() and getAllIds() ", () => {
             })
         });
 
-        //method to test
         mediaFilesMarkedToDeleteService.init(pathToSave);
         loadedIDs = await mediaFilesMarkedToDeleteService.getAllIDS(mediaStationId);
 
-        //tests
         expect(loadedIDs).toEqual(new Map());
     });
 });

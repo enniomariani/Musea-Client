@@ -26,65 +26,52 @@ afterEach(() => {
 
 describe("init() and saveFile() ", () => {
     it("should call saveFile from the backend with the correct parameters", () => {
-        //setup
         const fileData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
         let pathToSave:string = "0\\cachedMedia\\2.1.jpeg";
 
-        //method to test
         mediaFileService.init(pathToFolder);
         mediaFileService.saveFile(0, 2,1,"jpeg", fileData)
 
-        //tests
         expect(mockBackendFileService.saveFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.saveFile).toHaveBeenCalledWith(pathToFolder + pathToSave, fileData);
     });
 
     it("should call saveFile from the backend with the correct parameters (others than in test 1)", () => {
-        //setup
         const fileData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
         let pathToSave:string = "0\\cachedMedia\\2.5.mp4";
 
-        //method to test
         mediaFileService.init(pathToFolder);
         mediaFileService.saveFile(0, 2,5,"mp4", fileData)
 
-        //tests
         expect(mockBackendFileService.saveFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.saveFile).toHaveBeenCalledWith(pathToFolder + pathToSave, fileData);
     });
 });
 
 describe("init() and saveFileByPath() ", () => {
-    //setup
     const fileName = 'mockFile.txt';
     const fileContent = 'Hello, world!';
     const fileType = 'text/plain';
 
-    // Create a mock File object
     const mockFile = new File([fileContent], fileName, { type: fileType });
 
     it("should call saveFileByPath from the backend with the correct parameters", () => {
 
         let pathToSave:string = "0\\cachedMedia\\2.1.jpeg";
 
-        //method to test
         mediaFileService.init(pathToFolder);
         mediaFileService.saveFileByPath(0, 2,1,"jpeg", mockFile)
 
-        //tests
         expect(mockBackendFileService.saveFileByPath).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.saveFileByPath).toHaveBeenCalledWith(pathToFolder + pathToSave, mockFile);
     });
 
     it("should call saveFile from the backend with the correct parameters (others than in test 1)", () => {
-        //setup
         let pathToSave:string = "0\\cachedMedia\\2.5.mp4";
 
-        //method to test
         mediaFileService.init(pathToFolder);
         mediaFileService.saveFileByPath(0, 2,5,"mp4", mockFile)
 
-        //tests
         expect(mockBackendFileService.saveFileByPath).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.saveFileByPath).toHaveBeenCalledWith(pathToFolder + pathToSave, mockFile);
     });
@@ -92,27 +79,21 @@ describe("init() and saveFileByPath() ", () => {
 
 describe("init() and deleteFile() ", () => {
     it("should call deleteFile from the backend with the correct parameters", () => {
-        //setup
         let pathToSave:string = "0\\cachedMedia\\2.1.jpeg";
 
-        //method to test
         mediaFileService.init(pathToFolder);
         mediaFileService.deleteFile(0, 2,1,"jpeg")
 
-        //tests
         expect(mockBackendFileService.deleteFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.deleteFile).toHaveBeenCalledWith(pathToFolder + pathToSave);
     });
 
     it("should call deleteFile from the backend with the correct parameters (others than in test 1)", () => {
-        //setup
         let pathToSave:string = "0\\cachedMedia\\2.5.mp4";
 
-        //method to test
         mediaFileService.init(pathToFolder);
         mediaFileService.deleteFile(0, 2,5,"mp4")
 
-        //tests
         expect(mockBackendFileService.deleteFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.deleteFile).toHaveBeenCalledWith(pathToFolder + pathToSave);
     });
@@ -120,7 +101,6 @@ describe("init() and deleteFile() ", () => {
 
 describe("init() and loadFile() ", () => {
     it("should call loadFile from the backend with the correct parameters ", async () => {
-        //setup
         let fileData:Uint8Array;
         let loadedFileData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
         let pathToLoad:string = "0\\cachedMedia\\2.1.jpeg";
@@ -131,18 +111,15 @@ describe("init() and loadFile() ", () => {
            })
         });
 
-        //method to test
         mediaFileService.init(pathToFolder);
         fileData = await mediaFileService.loadFile(0, 2,1,"jpeg")
 
-        //tests
         expect(mockBackendFileService.loadFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.loadFile).toHaveBeenCalledWith(pathToFolder + pathToLoad);
         expect(fileData).toEqual(loadedFileData);
     });
 
     it("should call loadFile from the backend with the correct parameters  (others than in test 1)", async () => {
-        //setup
         let fileData:Uint8Array;
         let loadedFileData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
         let pathToLoad:string = "0\\cachedMedia\\2.5.mp4";
@@ -153,18 +130,15 @@ describe("init() and loadFile() ", () => {
             })
         });
 
-        //method to test
         mediaFileService.init(pathToFolder);
         fileData = await mediaFileService.loadFile(0, 2,5,"mp4")
 
-        //tests
         expect(mockBackendFileService.loadFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.loadFile).toHaveBeenCalledWith(pathToFolder + pathToLoad);
         expect(fileData).toEqual(loadedFileData);
     });
 
     it("should return null if the backend returned null (the file does not exist)", async () => {
-        //setup
         let fileData:Uint8Array;
         let pathToLoad:string = "0\\cachedMedia\\2.5.mp4";
 
@@ -174,11 +148,9 @@ describe("init() and loadFile() ", () => {
             })
         });
 
-        //method to test
         mediaFileService.init(pathToFolder);
         fileData = await mediaFileService.loadFile(0, 2,5,"mp4")
 
-        //tests
         expect(mockBackendFileService.loadFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.loadFile).toHaveBeenCalledWith(pathToFolder + pathToLoad);
         expect(fileData).toEqual(null);
@@ -187,7 +159,6 @@ describe("init() and loadFile() ", () => {
 
 describe("init () and fileExists() ", () => {
     it("should return true if backendFileService.fileExists returns true", async () => {
-        //setup
         let answer:boolean;
         let pathToLoad:string = pathToFolder + "0\\cachedMedia\\2.1.jpeg";
 
@@ -203,16 +174,13 @@ describe("init () and fileExists() ", () => {
 
         });
 
-        //method to test
         mediaFileService.init(pathToFolder);
         answer = await mediaFileService.fileExists(0, 2,1,"jpeg")
 
-        //tests
         expect(answer).toBe(true);
     });
 
     it("should return false if backendFileService.fileExists returns false", async () => {
-        //setup
         let answer:boolean;
         let pathToLoad:string = "0\\cachedMedia\\6.2.jpeg";
 
@@ -225,18 +193,15 @@ describe("init () and fileExists() ", () => {
             })
         });
 
-        //method to test
         mediaFileService.init(pathToFolder);
         answer = await mediaFileService.fileExists(0, 2,1,"jpeg")
 
-        //tests
         expect(answer).toBe(false);
     });
 });
 
 describe("init () and getAllCachedMedia() ", () => {
     it("should return the data in form of an ICachedMedia-array of the loaded-file-names from the backend", async () => {
-        //setup
         let answer:ICachedMedia[];
         const expectedAnswer:ICachedMedia[]= [
             {contentId: 1, mediaAppId: 2, fileExtension: "png"},
@@ -258,16 +223,13 @@ describe("init () and getAllCachedMedia() ", () => {
             })
         });
 
-        //method to test
         mediaFileService.init(pathToFolder);
         answer = await mediaFileService.getAllCachedMedia(0);
 
-        //tests
         expect(answer).toEqual(expectedAnswer);
     });
 
     it("should return an empty array if there were no files in the folder", async () => {
-        //setup
         let answer:ICachedMedia[];
         mockBackendFileService.getAllFileNamesInFolder.mockImplementationOnce((path:string):Promise<string[]> =>{
             return new Promise((resolve) =>{
@@ -275,16 +237,13 @@ describe("init () and getAllCachedMedia() ", () => {
             })
         });
 
-        //method to test
         mediaFileService.init(pathToFolder);
         answer = await mediaFileService.getAllCachedMedia(0);
 
-        //tests
         expect(answer).toEqual([]);
     });
 
     it("should throw an error if a file does have less than two points in it", async () => {
-        //setup
         let fileNames:string[] = ["1.2.png", "23.jpeg", "5.0.mp4", "0.0.jpeg", "0.1.jpeg"]
 
         mockBackendFileService.getAllFileNamesInFolder.mockImplementationOnce((path:string):Promise<string[]> =>{
@@ -297,13 +256,11 @@ describe("init () and getAllCachedMedia() ", () => {
             })
         });
 
-        //method to test / expect
         mediaFileService.init(pathToFolder);
         expect(mediaFileService.getAllCachedMedia(0)).rejects.toThrow(Error("Not-valid file found in the cache-folder: 23.jpeg"));
     });
 
     it("should throw an error if a file does have more than two points in it", async () => {
-        //setup
         let fileNames:string[] = ["1.2.png", "2.2.3.jpeg", "5.0.mp4", "0.0.jpeg", "0.1.jpeg"]
 
         mockBackendFileService.getAllFileNamesInFolder.mockImplementationOnce((path:string):Promise<string[]> =>{
@@ -316,7 +273,6 @@ describe("init () and getAllCachedMedia() ", () => {
             })
         });
 
-        //method to test / expect
         mediaFileService.init(pathToFolder);
         expect(mediaFileService.getAllCachedMedia(0)).rejects.toThrow(Error("Not-valid file found in the cache-folder: 2.2.3.jpeg"));
     });

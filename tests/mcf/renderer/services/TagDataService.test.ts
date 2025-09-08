@@ -35,19 +35,17 @@ afterEach(() => {
 describe("addTag() ", () => {
 
     it("should call addTag of the tagmanager with the correct parameters", () => {
-        //method to test
+
         tagService.createTag(0, "newTag")
 
-        //tests
         expect(mockMediaStation.tagRegistry.add).toHaveBeenCalledTimes(1);
         expect(mockMediaStation.tagRegistry.add).toHaveBeenCalledWith(mockMediaStation, "newTag");
     });
 
     it("should return the id of the newly created tag", () => {
-        //method to test
+
         let id: number = tagService.createTag(0, "newTag");
 
-        //tests
         expect(id).toBe(333);
     });
 });
@@ -83,23 +81,19 @@ describe("deleteTag() ", () => {
     }
 
     it("should call removeTag of the tagmanager with the correct parameters", () => {
-        //setup
         setup();
-        //method to test
+
         tagService.deleteTag(0, 222)
 
-        //tests
         expect(mockMediaStation.tagRegistry.remove).toHaveBeenCalledTimes(1);
         expect(mockMediaStation.tagRegistry.remove).toHaveBeenCalledWith(222);
     });
 
     it("should remove the tags from all contents where it was added to", () => {
-        //setup
         setup();
-        //method to test
+
         tagService.deleteTag(0, 222)
 
-        //tests
         expect(mockContent1.tagIds).toEqual([12, 223, 0])
         expect(mockContent2.tagIds).toEqual([12, 223, 0])
         expect(mockContent3.tagIds).toEqual([])
@@ -110,7 +104,6 @@ describe("deleteTag() ", () => {
 describe("getAllTags() ", () => {
 
     it("should return all tags of the mediastation", () => {
-        //setup
         let tag1: Tag = new Tag(0, "testTag1");
         let tag2: Tag = new Tag(1, "testTag2");
         let tag3: Tag = new Tag(2, "testTag3");
@@ -122,10 +115,9 @@ describe("getAllTags() ", () => {
         mockMediaStation.tagRegistry.getAll.mockImplementation(() => {
             return mockTags;
         })
-        //method to test
+
         let receivedTags: Map<number, string> = tagService.getAllTags(0)
 
-        //tests
         expect(receivedTags.get(0)).toEqual(tag1.name);
         expect(receivedTags.get(1)).toEqual(tag2.name);
         expect(receivedTags.get(2)).toEqual(tag3.name);
@@ -135,7 +127,6 @@ describe("getAllTags() ", () => {
 describe("addTagToContent() ", () => {
 
     it("should add the passed tag-id to the tag-ids of the content", () => {
-        //setup
         let mockContent: MockContent = new MockContent(22, 12);
         let expectedTags: number[] = [12, 3, 21, 22];
         mockContent.tagIds = [12, 3, 21];
@@ -144,15 +135,13 @@ describe("addTagToContent() ", () => {
             if (id === 3)
                 return mockContent;
         })
-        //method to test
+
         tagService.addTagToContent(0, 3, 22)
 
-        //tests
         expect(mockContent.tagIds).toEqual(expectedTags);
     });
 
     it("should throw an error if the ID is already on the content", () => {
-        //setup
         let mockContent: MockContent = new MockContent(22, 12);
         mockContent.tagIds = [12, 3, 21];
 
@@ -160,7 +149,7 @@ describe("addTagToContent() ", () => {
             if (id === 3)
                 return mockContent;
         })
-        //method to test
+
         expect(() => tagService.addTagToContent(0, 3, 21)).toThrow(new Error("Content has tag-id already: " + 21));
     });
 });
@@ -168,7 +157,6 @@ describe("addTagToContent() ", () => {
 describe("removeTagFromContent() ", () => {
 
     it("should remove the passed tag-id from the tag-ids of the content", () => {
-        //setup
         let mockContent: MockContent = new MockContent(22, 12);
         let expectedTags: number[] = [12, 3];
         mockContent.tagIds = [12, 3, 21];
@@ -177,15 +165,13 @@ describe("removeTagFromContent() ", () => {
             if (id === 3)
                 return mockContent;
         })
-        //method to test
+
         tagService.removeTagFromContent(0, 3, 21)
 
-        //tests
         expect(mockContent.tagIds).toEqual(expectedTags);
     });
 
     it("should throw an error if the ID is not on the content", () => {
-        //setup
         let mockContent: MockContent = new MockContent(22, 12);
         mockContent.tagIds = [12, 3, 21];
 
@@ -193,7 +179,7 @@ describe("removeTagFromContent() ", () => {
             if (id === 3)
                 return mockContent;
         })
-        //method to test
+
         expect(() => tagService.removeTagFromContent(0, 3, 4)).toThrow(new Error("Content has no tag-id: " + 4));
     });
 });
@@ -201,7 +187,6 @@ describe("removeTagFromContent() ", () => {
 describe("getTagIdsForContent() ", () => {
 
     it("should return all tags of the content", () => {
-        //setup
         let mockContent: MockContent = new MockContent(3, 12);
 
         mockContent.tagIds = [0, 21];
@@ -210,10 +195,9 @@ describe("getTagIdsForContent() ", () => {
             if (id === 3)
                 return mockContent;
         })
-        //method to test
+
         let allTags: number[] = tagService.getTagIdsForContent(0, 3)
 
-        //tests
         expect(allTags[0]).toBe(0);
         expect(allTags[1]).toBe(21);
     });
@@ -250,10 +234,8 @@ describe("findContentsByTag() ", () => {
             return allContents.get(id);
         });
 
-        //method to test
         let allContentsWithThisTag: Map<number, string> = tagService.findContentsByTag(0, 3)
 
-        //tests
         expect(allContentsWithThisTag.size).toBe(2);
         expect(allContentsWithThisTag.get(2)).toBe("content 2");
         expect(allContentsWithThisTag.get(20)).toBe("content 20");

@@ -38,50 +38,39 @@ describe("addImageAndCacheIt() ", () => {
 
 
     it("should call contentManager.createImage with the correct arguments", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(image);
 
-        //method to test
         await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, mockFile, fileName);
 
-        //tests
         expect(mockMediaManager.createImage).toHaveBeenCalledTimes(1);
         expect(mockMediaManager.createImage).toHaveBeenCalledWith(mockMediaStation, contentId, 0, fileName);
     });
 
     it("should call mediaStationRepository.updateMediaStation", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(image);
 
-        //method to test
         await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, mockFile, fileName);
 
-        //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });
 
     it("should call mediaStationRepository.cacheMedia with the correct arguments", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(image);
 
-        //method to test
         await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, mockFile, fileName);
 
-        //tests
         expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0, fileExtension, mockFile);
     });
 
     it("should throw an error if the passed fileExtension is not one of the MediaService.FILE_EXTENSION_IMAGE vars", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(image);
 
-        //tests
         await expect(mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, "otherFileExtension", mockFile, fileName)).rejects.toThrow(new Error("Non-valid file-extension passed: otherFileExtension"));
     });
 });
@@ -98,50 +87,39 @@ describe("addVideoAndCacheIt() ", () => {
     const mockFile = new File([fileContent], fileName, { type: fileType });
 
     it("should call contentManager.createVideo with the correct arguments", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
-        //method to test
         await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, mockFile, fileName);
 
-        //tests
         expect(mockMediaManager.createVideo).toHaveBeenCalledTimes(1);
         expect(mockMediaManager.createVideo).toHaveBeenCalledWith(mockMediaStation, contentId, 0, 199, fileName);
     });
 
     it("should call mediaStationRepository.updateMediaStation", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
-        //method to test
         await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, mockFile, fileName);
 
-        //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });
 
     it("should call mediaStationRepository.cacheMedia with the correct arguments", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
-        //method to test
         await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, mockFile, fileName);
 
-        //tests
         expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0, fileExtension, mockFile);
     });
 
     it("should throw an error if the passed fileExtension is not one of the MediaService.FILE_EXTENSION_VIDEO vars", async() => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
-        //tests
         await expect(mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 150, "otherFileExtension", mockFile, fileName)).rejects.toThrow(new Error("Non-valid file-extension passed: otherFileExtension"));
     });
 });
@@ -149,15 +127,12 @@ describe("addVideoAndCacheIt() ", () => {
 describe("getFileName() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     it("should call contentManager.getFileName with the correct arguments", () => {
-        //setup
         let answer: string;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.getFileName.mockReturnValueOnce("fileNameX");
 
-        //method to test
         answer = mediaService.getFileName(mediaStationId, contentId, 0);
 
-        //tests
         expect(answer).toBe("fileNameX");
     });
 });
@@ -165,15 +140,12 @@ describe("getFileName() ", () => {
 describe("getMediaType() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     it("should call contentManager.getMediaType with the correct arguments", () => {
-        //setup
         let answer: string;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.getMediaType.mockReturnValueOnce(MediaManager.MEDIA_TYPE_IMAGE);
 
-        //method to test
         answer = mediaService.getMediaType(mediaStationId, contentId, 0);
 
-        //tests
         expect(answer).toBe(MediaManager.MEDIA_TYPE_IMAGE);
     });
 });
@@ -181,19 +153,15 @@ describe("getMediaType() ", () => {
 describe("deleteMedia() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     it("should call mediaManager.deleteMedia with the correct arguments", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
-        //method to test
         await mediaService.deleteMedia(mediaStationId, contentId, 0);
 
-        //tests
         expect(mockMediaManager.deleteMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaManager.deleteMedia).toHaveBeenCalledWith(mockMediaStation, contentId, 0);
     });
 
     it("should call mediaStationRepository.deleteCachedMedia if mediaStationRepository.isMediaCached is true", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
             if (msID === mediaStationId && cID === contentId && mediaAppId === 0)
@@ -202,16 +170,13 @@ describe("deleteMedia() ", () => {
                 return false;
         });
 
-        //method to test
         await mediaService.deleteMedia(mediaStationId, contentId, 0);
 
-        //tests
         expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0);
     });
 
     it("should not call mediaStationRepository.deleteCachedMedia if mediaStationRepository.isMediaCached is false", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
             if (msID === mediaStationId && cID === contentId && mediaAppId === 0)
@@ -220,15 +185,12 @@ describe("deleteMedia() ", () => {
                 return true;
         });
 
-        //method to test
         await mediaService.deleteMedia(mediaStationId, contentId, 0);
 
-        //tests
         expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledTimes(0);
     });
 
     it("should call mediaStationRepository.markMediaIDtoDelete if mediaStationRepository.isMediaCached is false", async () => {
-        //setup
         const idOnMediaApp: number = 20;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
@@ -245,22 +207,17 @@ describe("deleteMedia() ", () => {
                 return null;
         });
 
-        //method to test
         await mediaService.deleteMedia(mediaStationId, contentId, 0);
 
-        //tests
         expect(mockMediaStationRepo.markMediaIDtoDelete).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.markMediaIDtoDelete).toHaveBeenCalledWith(mediaStationId, 0, idOnMediaApp);
     });
 
     it("should call mediaStationRepository.updateMediaStation", async () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
-        //method to test
         await mediaService.deleteMedia(mediaStationId, contentId, 0);
 
-        //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });

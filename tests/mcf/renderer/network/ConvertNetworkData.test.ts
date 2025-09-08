@@ -1,7 +1,6 @@
 import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
 import {ConvertNetworkData} from "../../../../src/mcf/renderer/network/ConvertNetworkData";
 
-
 beforeEach(() => {
 
 });
@@ -9,7 +8,6 @@ beforeEach(() => {
 afterEach(() => {
     jest.clearAllMocks();
 });
-
 
 function arrayBufferToHex(buffer: ArrayBuffer): string {
     const byteArray: Uint8Array = new Uint8Array(buffer);
@@ -129,12 +127,10 @@ const cases = [
 describe('encodeCommand(): ', () => {
     test.each(cases)('$description', ({dataParts, expectedData}) => {
         if(expectedData instanceof Uint8Array) {
-            // Method to test
             let data: ArrayBuffer = ConvertNetworkData.encodeCommand(...dataParts);
 
             console.log("--ENCODE COMPARE-- \nRECEVIED: ", new Uint8Array(data), "\n EXPECTED: ", expectedData);
 
-            // Tests
             expect(data).toStrictEqual(expectedData);
         }
     });
@@ -143,39 +139,31 @@ describe('encodeCommand(): ', () => {
 describe('decodeCommand(): ', () => {
 
     test.each(cases)('$description', ({dataParts, expectedData}) => {
-        // Method to test
         let data = ConvertNetworkData.decodeCommand(expectedData);
 
         console.log("--DECODE COMPARE-- \nRECEVIED: ", data, "\n EXPECTED: ", dataParts);
 
-        // Tests
         expect(data).toStrictEqual(dataParts);
     });
 
     it("should return an error string if the passed data is empty", ()=>{
-        // Method to test
         let command:Uint8Array = new Uint8Array([]);
         let convertedCommand = ConvertNetworkData.decodeCommand(command);
 
-        // Tests
         expect(convertedCommand).toStrictEqual([ConvertNetworkData.INTERPRETATION_ERROR]);
     });
 
     it("should return an error string if the passed data has 0 parts defined in the header (first byte)", ()=>{
-        // Method to test
         let command:Uint8Array = new Uint8Array([0,1,200,10,30,50]);
         let convertedCommand = ConvertNetworkData.decodeCommand(command);
 
-        // Tests
         expect(convertedCommand).toStrictEqual([ConvertNetworkData.INTERPRETATION_ERROR]);
     });
 
     it("should return an error string if the passed data has only a header and no parts", ()=>{
-        // Method to test
         let command:Uint8Array = new Uint8Array([1,1,200,10,30,50]);
         let convertedCommand = ConvertNetworkData.decodeCommand(command);
 
-        // Tests
         expect(convertedCommand).toStrictEqual([ConvertNetworkData.INTERPRETATION_ERROR]);
     });
 });

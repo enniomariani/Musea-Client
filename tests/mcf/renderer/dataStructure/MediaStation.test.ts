@@ -58,10 +58,8 @@ describe("reset() ", () => {
         mediaStation.getNextTagId();
         mediaStation.getNextTagId();
 
-        //method to test
         mediaStation.reset();
 
-        //tests
         expect(mediaStation.name).toEqual(name);
         expect(mediaStation.rootFolder.name).toEqual("root");
         expect(mediaStation.getNextMediaAppId()).toEqual(0);
@@ -93,10 +91,8 @@ describe("exportToJSON() ", () => {
         mockTagRegistry.getAll.mockReturnValueOnce(new Map([[0, tag1],[3,tag2]]));
         mockMediaAppRegistry.getAll.mockReturnValueOnce(new Map([[mediaApp1.id, mediaApp1],[mediaApp2.id,mediaApp2]]));
 
-        //method to test
         receivedJSONstr = mediaStation.exportToJSON();
 
-        //tests
         expect(() => JSON.parse(receivedJSONstr)).not.toThrow();
         receivedJSON = JSON.parse(receivedJSONstr);
 
@@ -106,17 +102,12 @@ describe("exportToJSON() ", () => {
 
 describe("importFromJSON() ", () => {
     it("should set all properties according to the passed json", () => {
-        //setup
         mediaStation.name = "testName";
         let mockFolder: MockFolder = new MockFolder(0);
-        let mediaApp1: MediaApp;
-        let mediaApp2: MediaApp;
         mediaStation.rootFolder = mockFolder;
 
-        //method to test
         mediaStation.importFromJSON(jsonMock, false, new MockFolder(0));
 
-        //tests
         expect(mediaStation.name).toBe("newName");
         expect(mediaStation.getNextFolderId()).toBe(jsonMock.folderIdCounter);
         expect(mediaStation.getNextContentId()).toBe(jsonMock.contentIdCounter);
@@ -132,39 +123,30 @@ describe("importFromJSON() ", () => {
     });
 
     it("should not overwrite the name if preserveName is true", () => {
-        //setup
         mediaStation.name = "testName";
         let mockFolder: MockFolder = new MockFolder(0);
         mediaStation.rootFolder = mockFolder;
 
-        //method to test
         mediaStation.importFromJSON(jsonMock, true, new MockFolder(0));
 
-        //tests
         expect(mediaStation.name).toBe("testName");
     });
 
     it("should pass the properties got for all folders to the root-folder", () => {
-        //setup
         mediaStation.rootFolder = new MockFolder(0);
 
-        //method to test
         mediaStation.importFromJSON(jsonMock, false, new MockFolder(0));
 
-        //tests
         expect(mediaStation.rootFolder.importFromJSON).toHaveBeenCalledTimes(1);
         expect(mediaStation.rootFolder.importFromJSON).toHaveBeenCalledWith({id: 0, name: "Test", subfolders: []});
     });
 
     it("should reset the root folder", () => {
-        //setup
         const mockRootFolder: MockFolder = new MockFolder(2);
         mockRootFolder.name = "testName"
 
-        //method to test
         mediaStation.importFromJSON(jsonMock, false, mockRootFolder);
 
-        //tests
         expect(mediaStation.rootFolder.id).toBe(2);
         expect(mediaStation.rootFolder.name).toBe(mockRootFolder.name);
     });
@@ -175,11 +157,9 @@ describe("getNextMediaAppId() ", () => {
         let idPerCall: number[] = [0, 1, 2, 3, 4, 5, 6];
         let answerPerCall: number[] = [];
 
-        //method to test
         for (let i: number = 0; i < idPerCall.length; i++)
             answerPerCall.push(mediaStation.getNextMediaAppId());
 
-        //tests
         for (let i: number = 0; i < idPerCall.length; i++) {
             console.log("got id: ", answerPerCall[i], " expected ID: ", idPerCall[i])
             expect(answerPerCall[i]).toBe(idPerCall[i]);
@@ -193,11 +173,9 @@ describe("getNextContentId() ", () => {
         let idPerCall: number[] = [0, 1, 2, 3, 4, 5, 6];
         let answerPerCall: number[] = [];
 
-        //method to test
         for (let i: number = 0; i < idPerCall.length; i++)
             answerPerCall.push(mediaStation.getNextContentId());
 
-        //tests
         for (let i: number = 0; i < idPerCall.length; i++) {
             console.log("got id: ", answerPerCall[i], " expected ID: ", idPerCall[i])
             expect(answerPerCall[i]).toBe(idPerCall[i]);
@@ -210,11 +188,9 @@ describe("getNextFolderId() ", () => {
         let idPerCall: number[] = [1, 2, 3, 4, 5, 6];   //starts at 1 because 0 is the root folder which already set when creating the mediastation
         let answerPerCall: number[] = [];
 
-        //method to test
         for (let i: number = 0; i < idPerCall.length; i++)
             answerPerCall.push(mediaStation.getNextFolderId());
 
-        //tests
         for (let i: number = 0; i < idPerCall.length; i++) {
             console.log("got id: ", answerPerCall[i], " expected ID: ", idPerCall[i])
             expect(answerPerCall[i]).toBe(idPerCall[i]);
@@ -227,11 +203,9 @@ describe("getNextTagId() ", () => {
         let idPerCall: number[] = [0, 1, 2, 3, 4, 5, 6];
         let answerPerCall: number[] = [];
 
-        //method to test
         for (let i: number = 0; i < idPerCall.length; i++)
             answerPerCall.push(mediaStation.getNextTagId());
 
-        //tests
         for (let i: number = 0; i < idPerCall.length; i++) {
             console.log("got id: ", answerPerCall[i], " expected ID: ", idPerCall[i])
             expect(answerPerCall[i]).toBe(idPerCall[i]);

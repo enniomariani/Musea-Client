@@ -34,41 +34,32 @@ afterEach(() => {
 describe("createContent() ", ()=> {
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
     it("should call contentManager.createContent with the correct arguments", () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.createContent.mockReturnValueOnce(mockContent);
 
-        //method to test
         contentService.createContent(mediaStationId,folderId,"testName");
 
-        //tests
         expect(mockContentManager.createContent).toHaveBeenCalledTimes(1);
         expect(mockContentManager.createContent).toHaveBeenCalledWith(mockMediaStation, "testName", folderId);
     });
 
     it("should return the ID of the created content", () => {
-        //setup
         let returnValue:number;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.createContent.mockReturnValueOnce(mockContent);
 
-        //method to test
         returnValue = contentService.createContent(mediaStationId,folderId,"testName");
 
-        //tests
         expect(returnValue).toBe(contentId);
 
     });
 
     it("should call mediaStationRepository.updateMediaStation", ()=>{
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.createContent.mockReturnValueOnce(mockContent);
 
-        //method to test
         contentService.createContent(mediaStationId,folderId,"testName")
 
-        //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });
@@ -80,27 +71,21 @@ describe("changeName() ", ()=> {
     let newName:string = "newName";
 
     it("should call contentManager.changeName with the correct arguments", () => {
-        //setup
         mockContent.name = "firstName";
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
-        //method to test
         contentService.changeName(mediaStationId,folderId,newName);
 
-        //tests
         expect(mockContentManager.changeName).toHaveBeenCalledTimes(1);
         expect(mockContentManager.changeName).toHaveBeenCalledWith(mockMediaStation, folderId, newName);
     });
 
     it("should call mediaStationRepository.updateMediaStation", ()=>{
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.createContent.mockReturnValueOnce(mockContent);
 
-        //method to test
         contentService.changeName(mediaStationId,folderId,newName);
 
-        //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });
@@ -112,25 +97,19 @@ describe("changeParentFolder() ", () => {
     let newFolderId: number = 28;
 
     it("should call folderManager.changeName with the correct arguments", () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
-        //method to test
         contentService.changeFolder(mediaStationId, contentId, newFolderId);
 
-        //tests
         expect(mockContentManager.changeFolder).toHaveBeenCalledTimes(1);
         expect(mockContentManager.changeFolder).toHaveBeenCalledWith(mockMediaStation, contentId, newFolderId);
     });
 
     it("should call mediaStationRepository.updateMediaStation", () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
-        //method to test
         contentService.changeFolder(mediaStationId, contentId, newFolderId);
 
-        //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });
@@ -141,7 +120,6 @@ describe("getLightIntensity() ", ()=> {
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
 
     it("should return the lightIntensity of the content", () => {
-        //setup
         mockContent.lightIntensity = 33;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.getContent.mockImplementation(( mediaStation, id)=>{
@@ -149,19 +127,15 @@ describe("getLightIntensity() ", ()=> {
                 return mockContent;
         });
 
-        //method to test
         let answer:number = contentService.getLightIntensity(mediaStationId,contentId);
 
-        //tests
         expect(answer).toEqual(mockContent.lightIntensity);
     });
 
     it("should throw an error if the contentId could not be found", ()=>{
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.getContent.mockReturnValue(null);
 
-        //tests
         expect(()=> contentService.getLightIntensity(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
     });
 });
@@ -171,26 +145,21 @@ describe("getFolderId() ", ()=> {
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
 
     it("should return the folderId of the content", () => {
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.getContent.mockImplementation(( mediaStation, id)=>{
             if(mediaStation === mockMediaStation && id === contentId)
                 return mockContent;
         });
 
-        //method to test
         let answer:number = contentService.getFolderId(mediaStationId,contentId);
 
-        //tests
         expect(answer).toEqual(folderId);
     });
 
     it("should throw an error if the contentId could not be found", ()=>{
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.getContent.mockReturnValue(null);
 
-        //tests
         expect(()=> contentService.getFolderId(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
     });
 });
@@ -200,7 +169,6 @@ describe("getDuration() ", ()=> {
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
 
     it("should return the lightIntensity of the content", () => {
-        //setup
         mockContent.getMaxDuration.mockReturnValue( 221);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.getContent.mockImplementation(( mediaStation, id)=>{
@@ -208,19 +176,15 @@ describe("getDuration() ", ()=> {
                 return mockContent;
         });
 
-        //method to test
         let answer:number = contentService.getMaxDuration(mediaStationId,contentId);
 
-        //tests
         expect(answer).toEqual(221);
     });
 
     it("should throw an error if the contentId could not be found", ()=>{
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.getContent.mockReturnValue(null);
 
-        //tests
         expect(()=> contentService.getMaxDuration(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
     });
 });
@@ -231,27 +195,21 @@ describe("changeLightIntensity() ", ()=> {
     let newIntensity:number = 33;
 
     it("should call contentManager.changeLightIntensity with the correct arguments", () => {
-        //setup
         mockContent.lightIntensity = 0;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
-        //method to test
         contentService.changeLightIntensity(mediaStationId,contentId,newIntensity);
 
-        //tests
         expect(mockContentManager.changeLightIntensity).toHaveBeenCalledTimes(1);
         expect(mockContentManager.changeLightIntensity).toHaveBeenCalledWith(mockMediaStation, contentId, newIntensity);
     });
 
     it("should call mediaStationRepository.updateMediaStation", ()=>{
-        //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.createContent.mockReturnValueOnce(mockContent);
 
-        //method to test
         contentService.changeLightIntensity(mediaStationId,contentId,newIntensity);
 
-        //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });
@@ -266,54 +224,42 @@ describe("deleteContent() ", ()=> {
     mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(allMediaApps);
 
     it("should call contentManager.deleteContent with the correct arguments", async () => {
-        //setup
         mockMediaService.getMediaType.mockReturnValue("image");
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
-        //method to test
         await contentService.deleteContent(mediaStationId,folderId, contentId);
 
-        //tests
         expect(mockContentManager.deleteContent).toHaveBeenCalledTimes(1);
         expect(mockContentManager.deleteContent).toHaveBeenCalledWith(mockMediaStation, folderId, contentId);
     });
 
     it("should call mediaService.deleteMedia for each mediaApp defined with the correct arguments", async () => {
-        //setup
         mockMediaService.getMediaType.mockReturnValue("image");
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
-        //method to test
         await contentService.deleteContent(mediaStationId,folderId, contentId);
 
-        //tests
         expect(mockMediaService.deleteMedia).toHaveBeenCalledTimes(2);
         expect(mockMediaService.deleteMedia).toHaveBeenNthCalledWith(1, mediaStationId, contentId, 0);
         expect(mockMediaService.deleteMedia).toHaveBeenNthCalledWith(2, mediaStationId, contentId, 1);
     });
 
     it("should NOT call mediaService.deleteMedia if mediaService.getMediaType returns null for all media-Apps", async ()=>{
-        //setup
         mockMediaService.getMediaType.mockReturnValue(null);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
-        //method to test
         await contentService.deleteContent(mediaStationId,folderId, contentId);
 
-        //tests
         expect(mockMediaService.deleteMedia).toHaveBeenCalledTimes(0);
     });
 
     it("should call mediaStationRepository.updateMediaStation", async ()=>{
-        //setup
         mockMediaService.getMediaType.mockReturnValue("image");
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockContentManager.createContent.mockReturnValueOnce(mockContent);
 
-        //method to test
         await contentService.deleteContent(mediaStationId,folderId, contentId);
 
-        //tests
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });

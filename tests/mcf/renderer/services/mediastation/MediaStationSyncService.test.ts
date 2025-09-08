@@ -166,10 +166,9 @@ describe("sync() ", () => {
     });
 
     it("should call the callback mockOnSyncStep with the text, that the connection is opening and if it succeeded or not", async () => {
-        //method to test
+
         let answer: boolean = await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(answer).toBe(false)
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(1, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp1.name + "/" + mediaApp1.ip);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(2, "Verbindung mit Medien-App hergestellt.");
@@ -178,26 +177,23 @@ describe("sync() ", () => {
     });
 
     it("should send the file-data to the media-app if the connection is open", async () => {
-        //method to test
+
         await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(mockNetworkService.sendMediaFileToIp).toHaveBeenCalledTimes(2);
         expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(1, mediaApp1.ip, mockCachedMedia[0].fileExtension, fileData, 240000, mockOnSyncStep);
         expect(mockNetworkService.sendMediaFileToIp).toHaveBeenNthCalledWith(2, mediaApp1.ip, mockCachedMedia[2].fileExtension, fileData, 240000, mockOnSyncStep);
     });
 
     it("if it got a media-ID back from the media-App, set the ID of the media-object to this ID", async () => {
-        //method to test
+
         await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(image1.idOnMediaApp).toBe(99);
         expect(image2.idOnMediaApp).toBe(-1);
     });
 
     it("it should NOT throw if mediaStationRepo.getAllCachedMedia() returns an empty Map", async () => {
-        //setup
         mockMediaStationRepo.mediaCacheHandler.getAllCachedMedia = jest.fn();
         mockMediaStationRepo.mediaCacheHandler.getAllCachedMedia.mockImplementation(() => {
             let map: Map<number, ICachedMedia[]> = new Map();
@@ -208,10 +204,9 @@ describe("sync() ", () => {
     });
 
     it("should call the callback mockOnSyncStep with the text, that it is trying to send a media and if it succeeded or not", async () => {
-        //method to test
+
         let answer: boolean = await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(answer).toBe(false);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(3, "Lade Medium: " + mockCachedMedia[0].fileExtension);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(4, "Medium geladen, sende...");
@@ -222,7 +217,6 @@ describe("sync() ", () => {
     });
 
     it("should call the callback mockOnSyncStep with a text that the registration failed, if it failed for a media-app as admin-app", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -232,17 +226,13 @@ describe("sync() ", () => {
         mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("no")));
         mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
 
-
-        //method to test
         let answer: boolean = await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(answer).toBe(false);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, "Medien-App ist erreichbar, aber von einer anderen App blockiert.");
     });
 
     it("should call the callback mockOnSyncStep with a text that the registration failed, if it failed for a media-app as USER-app", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -252,25 +242,21 @@ describe("sync() ", () => {
         mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("no")));
         mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
 
-        //method to test
         let answer: boolean = await service.sync(0, mockOnSyncStep, "user");
 
-        //tests
         expect(answer).toBe(false);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, "Medien-App ist erreichbar, aber von einer anderen App blockiert.");
     });
 
     it("call mediaStationRepo.deleteCachedMedia for every media that got succesfully sent to the media-app", async () => {
-        //method to test
+
         await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledWith(0, 0, 0);
     })
 
     it("call networkService.sendDeleteMediaTo for every id that is marked to delete in the mediastation repo", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -285,10 +271,8 @@ describe("sync() ", () => {
             return map;
         });
 
-        //method to test
         await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenCalledTimes(3);
         expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, 3);
         expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenNthCalledWith(2, mediaApp1.ip, 0);
@@ -296,7 +280,6 @@ describe("sync() ", () => {
     })
 
     it("call mediaStationRepo.deleteStoredMediaID for every id that is marked to delete in the mediastation repo", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -311,10 +294,8 @@ describe("sync() ", () => {
             return map;
         });
 
-        //method to test
         await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenCalledTimes(3);
         expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(1, 0, mediaApp1.id, 3);
         expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(2, 0, mediaApp1.id, 0);
@@ -322,7 +303,6 @@ describe("sync() ", () => {
     })
 
     it("should call the callback mockOnSyncStep with the text, that it is trying to send data to the controller, if all mediaApps have been synced", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -331,15 +311,12 @@ describe("sync() ", () => {
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
-        //method to test
         await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(17, "Sende contents.json an Controller-App: " + controllerIp);
     });
 
     it("should call the callback mockOnSyncStep with a text if the connection to the controller could not be opened, if all mediaApps have been synced", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -348,16 +325,13 @@ describe("sync() ", () => {
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
-        //method to test
         let answer: boolean = await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(answer).toBe(false);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(18, "Controller-App nicht erreichbar!");
     });
 
     it("should call the callback mockOnSyncStep with a text if the connection to the controller could be opened, if all mediaApps have been synced", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -366,16 +340,13 @@ describe("sync() ", () => {
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
-        //method to test
         let answer: boolean = await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(answer).toBe(true)
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(18, "Verbindung mit Controller-App hergestellt. Sende Registrierungs-Anfrage...");
     });
 
     it("should call the callback mockOnSyncStep with a text if the connection to the controller could be opened but the registration failed", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -388,17 +359,13 @@ describe("sync() ", () => {
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
-
-        //method to test
         let answer: boolean = await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(answer).toBe(false)
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(19, "Controller-App ist erreichbar, aber von einer anderen App blockiert.");
     });
 
     it("should call the callback mockOnSyncStep with a text if the connection to the controller could be opened but the registration failed as USER-app", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -411,17 +378,13 @@ describe("sync() ", () => {
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
-
-        //method to test
         let answer: boolean = await service.sync(0, mockOnSyncStep, "user");
 
-        //tests
         expect(answer).toBe(false)
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(19, "Controller-App ist erreichbar, aber von einer anderen App blockiert.");
     });
 
     it("should throw an error if a wrong role is passed", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -430,12 +393,10 @@ describe("sync() ", () => {
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
-        //method to test
         await expect(service.sync(0, mockOnSyncStep, "wrongRole")).rejects.toThrowError("Role not valid: wrongRole");
     });
 
     it("should pass the json-string and the controller-ip from the mediaStation object to the network-service, if controller is reachable and , if all mediaApps have been synced", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -444,16 +405,13 @@ describe("sync() ", () => {
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
-        //method to test
         await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(mockNetworkService.sendContentFileTo).toHaveBeenCalledTimes(1);
         expect(mockNetworkService.sendContentFileTo).toHaveBeenCalledWith(controllerIp, mockJSON);
     });
 
     it("saving the JSON should have been done after every time a media-app has succesfully been synced", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -462,16 +420,13 @@ describe("sync() ", () => {
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
-        //method to test
         await service.sync(0, mockOnSyncStep);
 
-        //tests
         expect(mockMediaStationRepo.cacheMediaStation).toHaveBeenCalledTimes(2);
         expect(mockMediaStationRepo.cacheMediaStation).toHaveBeenCalledWith(0);
     });
 
     it("deleting the cached mediastation-file should be the last thing to do in the method, if everything else passed", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
@@ -480,10 +435,8 @@ describe("sync() ", () => {
         mockNetworkService.sendMediaFileToIp = jest.fn();
         mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
 
-        //method to test
         await service.sync(0, mockOnSyncStep);
 
-        //tests
         console.log("mock calls: ", mocksCalled)
         expect(mockMediaStationRepo.removeCachedMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.removeCachedMediaStation).toHaveBeenCalledWith(0);
@@ -491,7 +444,7 @@ describe("sync() ", () => {
     });
 
     it("deleting the cached mediastation-file should not be done, if one media-app could not be synced", async () => {
-        //method to test
+
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
         mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
@@ -499,7 +452,6 @@ describe("sync() ", () => {
 
         let answer: boolean = await service.sync(0, mockOnSyncStep);
 
-        //tests
         console.log("mock calls: ", mocksCalled)
         expect(answer).toBe(false);
         expect(mockMediaStationRepo.removeCachedMediaStation).toHaveBeenCalledTimes(0);

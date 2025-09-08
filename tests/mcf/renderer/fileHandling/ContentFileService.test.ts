@@ -39,14 +39,11 @@ afterEach(() => {
 
 describe("init() and saveFile() ", () => {
     it("should call saveFile from the backend with the correct parameters", () => {
-        //setup
         let pathToSave: string = "\\0\\0.json";
 
-        //method to test
         contentFileService.init(pathToFolder);
         contentFileService.saveFile(0, jsonToSaveStr);
 
-        //tests
         expect(mockBackendFileService.saveFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.saveFile).toHaveBeenCalledWith(pathToFolder + pathToSave, fileData);
     });
@@ -54,27 +51,21 @@ describe("init() and saveFile() ", () => {
 
 describe("init() and deleteFile() ", () => {
     it("should call deleteFile from the backend with the correct parameters", () => {
-        //setup
         let pathToSave: string = "\\0\\0.json";
 
-        //method to test
         contentFileService.init(pathToFolder);
         contentFileService.deleteFile(0)
 
-        //tests
         expect(mockBackendFileService.deleteFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.deleteFile).toHaveBeenCalledWith(pathToFolder + pathToSave);
     });
 
     it("should call deleteFile from the backend with the correct parameters (others than in test 1)", () => {
-        //setup
         let pathToSave: string = "\\1\\1.json";
 
-        //method to test
         contentFileService.init(pathToFolder);
         contentFileService.deleteFile(1)
 
-        //tests
         expect(mockBackendFileService.deleteFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.deleteFile).toHaveBeenCalledWith(pathToFolder + pathToSave);
     });
@@ -82,7 +73,6 @@ describe("init() and deleteFile() ", () => {
 
 describe("init() and load() ", () => {
     it("should call loadFile from the backend with the correct parameters ", async () => {
-        //setup
         let pathToLoad: string = "\\0\\0.json";
         let returnedJSON:any;
         mockBackendFileService.loadFile.mockImplementationOnce(()=>{
@@ -91,18 +81,15 @@ describe("init() and load() ", () => {
             })
         });
 
-        //method to test
         contentFileService.init(pathToFolder);
         returnedJSON = await contentFileService.loadFile(0);
 
-        //tests
         expect(mockBackendFileService.loadFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.loadFile).toHaveBeenCalledWith(pathToFolder + pathToLoad);
         expect(returnedJSON).toEqual(jsonToSave);
     });
 
     it("should return an empty JSON if the backend returned null (the file does not exist)", async () => {
-        //setup
         let returnedJSON:any;
         mockBackendFileService.loadFile.mockImplementationOnce(()=>{
             return new Promise((resolve,reject)=>{
@@ -110,18 +97,15 @@ describe("init() and load() ", () => {
             })
         });
 
-        //method to test
         contentFileService.init(pathToFolder);
         returnedJSON = await contentFileService.loadFile(0);
 
-        //tests
         expect(returnedJSON).toEqual({});
     });
 });
 
 describe("init () and fileExists() ", () => {
     it("should return true if backendFileService.fileExists returns true", async () => {
-        //setup
         let answer: boolean;
         let pathToLoad: string = "\\0\\0.json";
 
@@ -135,16 +119,13 @@ describe("init () and fileExists() ", () => {
             });
         });
 
-        //method to test
         contentFileService.init(pathToFolder);
         answer = await contentFileService.fileExists(0);
 
-        //tests
         expect(answer).toBe(true);
     });
 
     it("should return false if backendFileService.fileExists returns false", async () => {
-        //setup
         let answer: boolean;
         let pathToLoad: string = "\\1\\1.json";
 
@@ -157,11 +138,9 @@ describe("init () and fileExists() ", () => {
             });
         });
 
-        //method to test
         contentFileService.init(pathToFolder);
         answer = await contentFileService.fileExists(2)
 
-        //tests
         expect(answer).toBe(false);
     });
 });

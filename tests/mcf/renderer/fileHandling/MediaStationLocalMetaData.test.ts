@@ -50,13 +50,9 @@ afterEach(() => {
 describe("init() and save() ", () => {
 
     it("should call saveFile from the backend with the correct parameters", () => {
-        //setup
-
-        //method to test
         mediaStationLocalMetaData.init(pathToSave);
         mediaStationLocalMetaData.save(data);
 
-        //tests
         expect(mockBackendFileService.saveFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.saveFile).toHaveBeenCalledWith(pathToSave, fileData);
     });
@@ -64,7 +60,6 @@ describe("init() and save() ", () => {
 
 describe("init() and load() ", () => {
     it("should call loadFile from the backend with the correct parameters ", async () => {
-        //setup
         let returnedMap:Map<string, string>;
         mockBackendFileService.loadFile.mockImplementationOnce(()=>{
            return new Promise((resolve,reject)=>{
@@ -72,18 +67,15 @@ describe("init() and load() ", () => {
            })
         });
 
-        //method to test
         mediaStationLocalMetaData.init(pathToSave);
         returnedMap = await mediaStationLocalMetaData.load();
 
-        //tests
         expect(mockBackendFileService.loadFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.loadFile).toHaveBeenCalledWith(pathToSave);
         expect(returnedMap).toEqual(data);
     });
 
     it("should return an empty map if the backend returned null (the file does not exist)", async () => {
-        //setup
         let returnedMap:Map<string, string>;
         let expectedMap:Map<string, string> = new Map();
         mockBackendFileService.loadFile.mockImplementationOnce(()=>{
@@ -92,11 +84,9 @@ describe("init() and load() ", () => {
             })
         });
 
-        //method to test
         mediaStationLocalMetaData.init(pathToSave);
         returnedMap = await mediaStationLocalMetaData.load();
 
-        //tests
         expect(returnedMap).toEqual(expectedMap);
     });
 });

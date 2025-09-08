@@ -39,10 +39,8 @@ describe("createFolder() ", ()=>{
 
         mockMediaStation.getNextContentId.mockReturnValueOnce(uniqueID);
 
-        //method to test
         newFolder = folderManager.createFolder(mockMediaStation, name,parentFolderId);
 
-        //tests
         expect(newFolder.name).toEqual(name);
         expect(newFolder.id).toEqual(uniqueID);
         expect(newFolder.parentFolder).toEqual(mockFolder);
@@ -51,10 +49,8 @@ describe("createFolder() ", ()=>{
     it("should add the created folder to the parent-folder with the passed ID", ()=>{
         setup();
 
-        //method to test
         newFolder = folderManager.createFolder(mockMediaStation, name,parentFolderId);
 
-        //tests
         expect(mockFolder.addSubFolder).toHaveBeenCalledTimes(1);
         expect(mockFolder.addSubFolder).toHaveBeenCalledWith(newFolder);
     });
@@ -62,7 +58,6 @@ describe("createFolder() ", ()=>{
     it("should throw an error if the parent-folder does not exist", ()=>{
         setup();
 
-        //tests
         expect(()=> folderManager.createFolder(mockMediaStation, name,parentFolderId + 1)).toThrow(Error);
     });
 });
@@ -83,20 +78,16 @@ describe("getFolder() ", ()=>{
     it("should create return the folder if it exists", ()=>{
         setup();
 
-        //method to test
         let answer = folderManager.getFolder(mockMediaStation, folderID);
 
-        //tests
         expect(answer).toEqual(folder);
     });
 
     it("should return null if the folder could not be found", ()=>{
         setup();
 
-        //method to test
         let answer = folderManager.getFolder(mockMediaStation, folderID + 1);
 
-        //tests
         expect(answer).toEqual(null);
     });
 });
@@ -119,17 +110,14 @@ describe("changeName() ", ()=>{
     it("should change the name of the passed folder to the passed new name", ()=>{
         setup();
 
-        //method to test
         folderManager.changeName(mockMediaStation, folderID, newName);
 
-        //tests
         expect(folder.name).toEqual(newName);
     });
 
     it("should throw an error if the folder could not be found", ()=>{
         setup();
 
-        //tests
         expect(()=> folderManager.changeName(mockMediaStation, folderID + 1, newName)).toThrow(Error("Folder with ID does not exist: " + (folderID + 1).toString()));
     });
 });
@@ -160,10 +148,8 @@ describe("changeParentFolder() ", ()=>{
     it("should remove the passed folder from its actual parent", ()=>{
         setup();
 
-        //method to test
         folderManager.changeParentFolder(mockMediaStation, folderID, newParentFolderId);
 
-        //tests
         expect(mockOldParentFolder.removeSubFolder).toHaveBeenCalledTimes(1);
         expect(mockOldParentFolder.removeSubFolder).toHaveBeenCalledWith(folderID);
     });
@@ -171,10 +157,8 @@ describe("changeParentFolder() ", ()=>{
     it("should add the passed folder to its new parent", ()=>{
         setup();
 
-        //method to test
         folderManager.changeParentFolder(mockMediaStation, folderID, newParentFolderId);
 
-        //tests
         expect(mockNewParentFolder.addSubFolder).toHaveBeenCalledTimes(1);
         expect(mockNewParentFolder.addSubFolder).toHaveBeenCalledWith(folder);
     });
@@ -182,24 +166,20 @@ describe("changeParentFolder() ", ()=>{
     it("should set the new parentFolder in the changed folder", ()=>{
         setup();
 
-        //method to test
         folderManager.changeParentFolder(mockMediaStation, folderID, newParentFolderId);
 
-        //tests
         expect(folder.parentFolder).toEqual(mockNewParentFolder);
     });
 
     it("should throw an error if the folder could not be found", ()=>{
         setup();
 
-        //tests
         expect(()=> folderManager.changeParentFolder(mockMediaStation, folderID + 99, newParentFolderId)).toThrow(Error("Folder with ID does not exist: " + (folderID + 99).toString()));
     });
 
     it("should throw an error if the new parent-folder could not be found", ()=>{
         setup();
 
-        //tests
         expect(()=> folderManager.changeParentFolder(mockMediaStation, folderID, newParentFolderId +99)).toThrow(Error("Parent-Folder with ID does not exist: " + (newParentFolderId +99).toString()));
     });
 });
@@ -226,10 +206,8 @@ describe("deleteFolder() ", ()=>{
     it("should remove the folder from the parent-folder it was attached to", ()=>{
         setup();
 
-        //method to test
         folderManager.deleteFolder(mockMediaStation, folderId, parentFodlerId);
 
-        //tests
         expect(mockFolder.removeSubFolder).toHaveBeenCalledTimes(1);
         expect(mockFolder.removeSubFolder).toHaveBeenCalledWith(folderId);
     });
@@ -237,7 +215,6 @@ describe("deleteFolder() ", ()=>{
     it("should throw an error if the parent-folder does not exist", ()=>{
         setup();
 
-        //tests
         expect(()=> folderManager.deleteFolder(mockMediaStation, parentFodlerId + 1, folderId)).toThrow(Error);
     });
 
@@ -247,7 +224,6 @@ describe("deleteFolder() ", ()=>{
         mockFolder.removeSubFolder = jest.fn();
         mockFolder.removeSubFolder.mockReturnValue(false)
 
-        //tests
         expect(()=> folderManager.deleteFolder(mockMediaStation, folderId, parentFodlerId)).toThrow(Error("Folder with ID: " + folderId + " is not inside folder: "+ parentFodlerId));
     });
 });

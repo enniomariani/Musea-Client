@@ -23,7 +23,6 @@ const createdID:number = 5;
 
 describe("loadMediaStations() ", ()=>{
     it("should return the map it got from the repo", async () =>{
-        //setup
         let returnedMetaData:Map<string, string> = new Map();
         let key1:string = "mediaStation1";
         let key2:string = "mediaStation2";
@@ -37,10 +36,8 @@ describe("loadMediaStations() ", ()=>{
             return returnedMetaData;
         });
 
-        //method to test
         answer = await mediaStationDataService.loadMediaStations();
 
-        //tests
         expect(answer).toStrictEqual(returnedMetaData);
     });
 });
@@ -55,10 +52,8 @@ describe("createMediaStation() ", ()=>{
                 return createdID;
         });
 
-        //method to test
         returnedValue = mediaStationDataService.createMediaStation(name);
 
-        //tests
         expect(returnedValue).toBe(createdID)
     });
 });
@@ -75,10 +70,8 @@ describe("renameMediaStation() ", ()=>{
                 return createdMediaStation;
         });
 
-        //method to test
         mediaStationDataService.changeName(createdID, newName);
 
-        //tests
         expect(mockMediaStationRepository.requireMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepository.requireMediaStation).toHaveBeenCalledWith(createdID);
         expect(mockMediaStationRepository.updateAndSaveMediaStation).toHaveBeenCalledTimes(1);
@@ -99,10 +92,8 @@ describe("getName() ", ()=>{
                 return createdMediaStation;
         });
 
-        //method to test
         nameReturned = mediaStationDataService.getName(createdID);
 
-        //tests
         expect(nameReturned).toBe(newName);
     });
 });
@@ -119,10 +110,8 @@ describe("getControllerIp() ", ()=>{
                 return createdMediaStation;
         });
 
-        //method to test
         ipReturned = mediaStationDataService.getControllerIp(createdID);
 
-        //tests
         expect(ipReturned).toBe(controllerIp);
     });
 });
@@ -136,10 +125,8 @@ describe("deleteMediaStation() ", ()=>{
                 return createdMediaStation;
         });
 
-        //method to test
         await mediaStationDataService.deleteMediaStation(createdID);
 
-        //tests
         expect(mockMediaStationRepository.deleteMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepository.deleteMediaStation).toHaveBeenCalledWith(createdID);
     });

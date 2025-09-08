@@ -19,53 +19,44 @@ afterEach(() => {
 
 describe("addTag() and getTag()", () => {
     it("getTag should return the tag that was created with addTag()", () => {
-        //setup
         let receivedTag: Tag;
         let tag:Tag = new Tag(200, "testName");
 
-        //method to test
         tagRegistry.add(mockMediaStation, tag.name);
         receivedTag = tagRegistry.get(200);
 
-        //tests
         expect(receivedTag).toStrictEqual(tag);
     });
 
     it("getTag() should throw an error if the tag-id does not exist", () => {
-        //tests
+
         expect(() => tagRegistry.get(20)).toThrow(new Error("Tag with the following ID does not exist: 20"))
     });
 });
 
 describe("addTag(), removeTag() and getTag()", () => {
     it("when a tag is added and removed againg, getTag should throw an error", () => {
-        //setup
         let tag:Tag = new Tag(200, "testName");
 
-        //method to test
         tagRegistry.add(mockMediaStation, tag.name);
         tagRegistry.remove(tag.id);
 
-        //tests
         expect(() => tagRegistry.get(200)).toThrow(new Error("Tag with the following ID does not exist: 200"))
     });
 });
 
 describe("addTag(), reset(), getAllTags()", () => {
     it("adding 2 tags should return them with getAllTags, resetting should return an empty map", () => {
-        //setup
         let receivedTags: Map<number, Tag>;
         let tag1:Tag = new Tag(200, "testName1");
         let tag2:Tag = new Tag(201, "testName2");
 
-        //method to test
         mockMediaStation.getNextTagId.mockReturnValueOnce(200);
         tagRegistry.add(mockMediaStation, tag1.name);
         mockMediaStation.getNextTagId.mockReturnValueOnce(201);
         tagRegistry.add(mockMediaStation, tag2.name);
         receivedTags = tagRegistry.getAll();
 
-        //tests
         expect(receivedTags.get(200)).toStrictEqual(tag1);
         expect(receivedTags.get(201)).toStrictEqual(tag2);
 

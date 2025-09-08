@@ -69,15 +69,12 @@ describe("connectAndRegisterToMediaApp() ", () => {
 
     describe("check connection to admin-app: ", () => {
         it("should call networkService.openConnection and sendRegistrationAdminApp if appType is admin", async () => {
-            //setup
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
             setupMediaAppWithName();
 
-            //method to test
             await service.connectAndRegisterToMediaApp(0, mediaAppId, "admin");
 
-            //tests
             expect(mockNetworkService.openConnection).toHaveBeenCalledTimes(1);
             expect(mockNetworkService.openConnection).toHaveBeenCalledWith(ip1);
 
@@ -86,59 +83,47 @@ describe("connectAndRegisterToMediaApp() ", () => {
         });
 
         it("should return true if the connection could be established and the registration was accepted", async () => {
-            //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
             setupMediaAppWithName();
 
-            //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "admin");
 
-            //tests
             expect(answer).toBe(true);
         });
 
         it("should return false if the connection could not been established", async () => {
-            //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(false);
             mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
             setupMediaAppWithName();
 
-            //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "admin");
 
-            //tests
             expect(answer).toBe(false);
         });
 
         it("should return false if the connection could be established but the registration was rejected", async () => {
-            //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("no");
             setupMediaAppWithName();
 
-            //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "admin");
 
-            //tests
             expect(answer).toBe(false);
         });
     });
 
     describe("check connection to user-app: ", () => {
         it("should call networkService.openConnection and sendRegistrationUserApp if appType is user", async () => {
-            //setup
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
             setupMediaAppWithName();
 
-            //method to test
             await service.connectAndRegisterToMediaApp(0, mediaAppId, "user");
 
-            //tests
             expect(mockNetworkService.openConnection).toHaveBeenCalledTimes(1);
             expect(mockNetworkService.openConnection).toHaveBeenCalledWith(ip1);
 
@@ -147,77 +132,61 @@ describe("connectAndRegisterToMediaApp() ", () => {
         });
 
         it("should return true if the connection could be established and the registration was accepted", async () => {
-            //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
             setupMediaAppWithName();
 
-            //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "user");
 
-            //tests
             expect(answer).toBe(true);
         });
 
         it("should return true if the connection could be established and the registration was accepted, but blocked", async () => {
-            //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes_block");
             setupMediaAppWithName();
 
-            //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "user");
 
-            //tests
             expect(answer).toBe(true);
         });
 
         it("should return false if the connection could not been established", async () => {
-            //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(false);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
             setupMediaAppWithName();
 
-            //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "user");
 
-            //tests
             expect(answer).toBe(false);
         });
 
         it("should return false if the connection could be established but the registration was rejected", async () => {
-            //setup
             let answer: boolean;
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("no");
             setupMediaAppWithName();
 
-            //method to test
             answer = await service.connectAndRegisterToMediaApp(0, mediaAppId, "user");
 
-            //tests
             expect(answer).toBe(false);
         });
     });
 
     it("should throw an error if the app-type is not valid", async () => {
-        //setup
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("no");
         setupMediaAppWithName();
 
-        //method to test
         await expect(service.connectAndRegisterToMediaApp(0, mediaAppId, "not-valid")).rejects.toThrow(Error("App-Type is not valid: not-valid"));
     });
 
     it("should throw an error if the MediaApp ID could not be found", async () => {
-        //setup
         setupMediaAppWithName( false);
 
-        //tests
         await expect(service.connectAndRegisterToMediaApp(0, mediaAppId, "admin")).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
@@ -225,23 +194,18 @@ describe("connectAndRegisterToMediaApp() ", () => {
 describe("unregisterAndCloseMediaApp() ", () => {
 
     it("should call networkService.openConnection and sendRegistration", async () => {
-        //setup
         mockNetworkService.unregisterAndCloseConnection.mockReturnValueOnce(true);
         setupMediaAppWithName();
 
-        //method to test
         await service.unregisterAndCloseMediaApp(0, mediaAppId);
 
-        //tests
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(ip1);
     });
 
     it("should throw an error if the MediaApp ID could not be found", async () => {
-        //setup
         setupMediaAppWithName(false);
 
-        //tests
         expect(service.unregisterAndCloseMediaApp(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
@@ -249,70 +213,56 @@ describe("unregisterAndCloseMediaApp() ", () => {
 describe("isOnline() ", () => {
 
     it("should call networkService.openConnection", async () => {
-        //setup
         let returnValue: boolean;
         setupMediaAppWithName();
 
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
 
-        //method to test
         await service.isOnline(0, mediaAppId);
 
-        //tests
         expect(mockNetworkService.openConnection).toHaveBeenCalledTimes(1);
     });
 
     it("should return false if networkService.openConnection returns false", async () => {
-        //setup
         let returnValue: boolean;
         setupMediaAppWithName();
 
         mockNetworkService.openConnection.mockReturnValueOnce(false);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
 
-        //method to test
         returnValue = await service.isOnline(0, mediaAppId);
 
-        //tests
         expect(returnValue).toBe(false);
     });
 
     it("should return true if networkService.isMediaAppOnline returns true", async () => {
-        //setup
         let returnValue: boolean;
         setupMediaAppWithName();
 
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
 
-        //method to test
         returnValue = await service.isOnline(0, mediaAppId);
 
-        //tests
         expect(returnValue).toBe(true);
     });
 
     it("should return false if networkService.isMediaAppOnline returns false", async () => {
-        //setup
         let returnValue: boolean;
         setupMediaAppWithName();
 
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
 
-        //method to test
         returnValue = await service.isOnline(0, mediaAppId);
 
-        //tests
         expect(returnValue).toBe(false);
     });
 
     it("should throw an error if the MediaApp ID could not be found", async () => {
-        //setup
         setupMediaAppWithName(false);
 
-        //tests
         expect(service.isOnline(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
@@ -320,38 +270,30 @@ describe("isOnline() ", () => {
 describe("pcRespondsToPing() ", () => {
 
     it("should return true if networkService.pcRespondsToPing returns true", async () => {
-        //setup
         let returnValue: boolean;
         setupMediaAppWithName();
 
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
 
-        //method to test
         returnValue = await service.pcRespondsToPing(0, mediaAppId);
 
-        //tests
         expect(returnValue).toBe(true);
     });
 
     it("should return true if networkService.pcRespondsToPing returns false", async () => {
-        //setup
         let returnValue: boolean;
         setupMediaAppWithName();
 
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
 
-        //method to test
         returnValue = await service.pcRespondsToPing(0, mediaAppId);
 
-        //tests
         expect(returnValue).toBe(false);
     });
 
     it("should throw an error if the MediaApp ID could not be found", async () => {
-        //setup
         setupMediaAppWithName( false);
 
-        //tests
         expect(service.pcRespondsToPing(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });
@@ -424,94 +366,72 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
     });
 
     it("should return false if the controller is not reachable with ping", async () => {
-        //setup
         mockNetworkService.pcRespondsToPing = jest.fn();
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("should return false if the connection to the controller could not be opened", async () => {
-        //setup
         mockNetworkService.openConnection = jest.fn();
         mockNetworkService.openConnection.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("should false if the controller-app is not responding", async () => {
-        //setup
         mockNetworkService.isMediaAppOnline = jest.fn();
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("should return false if the controller-app is not reachable within the timeout set in NetworkService", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(null);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("should return false if the controller-app has already another app registered to it", async () => {
-        //setup
         mockNetworkService.sendCheckRegistration = jest.fn();
         mockNetworkService.sendCheckRegistration.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("with two media-apps (controller + 1 media-app): should return true if everything is reachable", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(true);
     });
 
     it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc is not reachable with ping", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
         mockNetworkService.pcRespondsToPing = jest.fn();
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("with two media-apps (controller + 1 media-app): should return false if the connection to the second mediaApp-pc is not possible", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
 
@@ -519,15 +439,12 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.openConnection.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc is not responding", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
 
@@ -535,42 +452,33 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc has already an admin-app registered", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
         mockNetworkService.sendCheckRegistration = jest.fn();
         mockNetworkService.sendCheckRegistration.mockReturnValueOnce(true);
         mockNetworkService.sendCheckRegistration.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("with three media-apps (controller + 2 media-apps): should return true if everything is reachable", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(true);
     });
 
     it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc is not reachable with ping", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
         mockNetworkService.pcRespondsToPing = jest.fn();
@@ -578,15 +486,12 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
         mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("with three media-apps (controller + 2 media-apps): should return false if the connection to the third mediaApp-pc is not possible", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
 
@@ -595,15 +500,12 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         mockNetworkService.openConnection.mockReturnValueOnce(true);
         mockNetworkService.openConnection.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc is not responding", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
 
@@ -611,15 +513,12 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
         mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc has already another admin-app registered", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
 
@@ -627,39 +526,32 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         mockNetworkService.sendCheckRegistration.mockReturnValueOnce(true);
         mockNetworkService.sendCheckRegistration.mockReturnValueOnce(false);
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(false);
     });
 
     it("should return true if the controller-app returned an empty JSON (which means there wasn't saved anything before, so no other media-apps)", async () => {
-        //setup
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce("{}");
 
-        //method to test
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(answer).toBe(true);
     });
 
     it("should disconnect from the controller and close the connection after it received the data", async () => {
-        //method to test
+
         await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(controllerIp);
     });
 
     it("should call unregisterAndCloseConnection() at the end", async () => {
-        //method to test
+
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
-        //tests
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledTimes(1);
         expect(mockNetworkService.unregisterAndCloseConnection).toHaveBeenCalledWith(controllerIp);
     });

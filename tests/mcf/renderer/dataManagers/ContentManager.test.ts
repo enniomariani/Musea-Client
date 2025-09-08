@@ -39,10 +39,8 @@ describe("createContent() ", ()=>{
 
         mockMediaStation.getNextContentId.mockReturnValueOnce(uniqueID);
 
-        //method to test
         content = contentManager.createContent(mockMediaStation, name,folderId);
 
-        //tests
         expect(content.name).toEqual(name);
         expect(content.id).toEqual(uniqueID);
         expect(content.lightIntensity).toEqual(0);
@@ -52,10 +50,8 @@ describe("createContent() ", ()=>{
     it("should add the created content to the folder with the passed ID", ()=>{
         setup();
 
-        //method to test
         content = contentManager.createContent(mockMediaStation, name,folderId);
 
-        //tests
         expect(mockFolder.addContent).toHaveBeenCalledTimes(1);
         expect(mockFolder.addContent).toHaveBeenCalledWith(content);
     });
@@ -63,7 +59,6 @@ describe("createContent() ", ()=>{
     it("should throw an error if the folder does not exist", ()=>{
         setup();
 
-        //tests
         expect(()=> contentManager.createContent(mockMediaStation, name,folderId + 1)).toThrow(Error);
     });
 });
@@ -85,20 +80,16 @@ describe("getContent() ", ()=>{
     it("should create return the content if it exists", ()=>{
         setup();
 
-        //method to test
         let answer = contentManager.getContent(mockMediaStation, contentID);
 
-        //tests
         expect(answer).toEqual(content);
     });
 
     it("should return null if the content could not be found", ()=>{
         setup();
 
-        //method to test
         let answer = contentManager.getContent(mockMediaStation, contentID + 1);
 
-        //tests
         expect(answer).toEqual(null);
     });
 });
@@ -122,17 +113,14 @@ describe("changeName() ", ()=>{
     it("should change the name of the passed content to the passed new name", ()=>{
         setup();
 
-        //method to test
         contentManager.changeName(mockMediaStation, contentID, newName);
 
-        //tests
         expect(content.name).toEqual(newName);
     });
 
     it("should throw an error if the content could not be found", ()=>{
         setup();
 
-        //tests
         expect(()=> contentManager.changeName(mockMediaStation, contentID + 1, newName)).toThrow(Error);
     });
 });
@@ -167,10 +155,8 @@ describe("changeFolder() ", ()=>{
     it("should remove the passed content from its actual folder", ()=>{
         setup();
 
-        //method to test
         contentManager.changeFolder(mockMediaStation, contentID, newFolderId);
 
-        //tests
         expect(mockOldFolder.removeContent).toHaveBeenCalledTimes(1);
         expect(mockOldFolder.removeContent).toHaveBeenCalledWith(contentID);
     });
@@ -178,10 +164,8 @@ describe("changeFolder() ", ()=>{
     it("should add the passed content to its new folder", ()=>{
         setup();
 
-        //method to test
         contentManager.changeFolder(mockMediaStation, contentID, newFolderId);
 
-        //tests
         expect(mockNewFolder.addContent).toHaveBeenCalledTimes(1);
         expect(mockNewFolder.addContent).toHaveBeenCalledWith(content);
     });
@@ -189,24 +173,20 @@ describe("changeFolder() ", ()=>{
     it("should set the folder-id of the content to the new folder", ()=>{
         setup();
 
-        //method to test
         contentManager.changeFolder(mockMediaStation, contentID, newFolderId);
 
-        //tests
         expect(content.folderId).toBe(newFolderId);
     });
 
     it("should throw an error if the content could not be found", ()=>{
         setup();
 
-        //tests
         expect(()=> contentManager.changeFolder(mockMediaStation, contentID + 99, newFolderId)).toThrow(Error("Content with ID does not exist: " + (contentID + 99).toString()));
     });
 
     it("should throw an error if the new folder could not be found", ()=>{
         setup();
 
-        //tests
         expect(()=> contentManager.changeFolder(mockMediaStation, contentID, newFolderId + 99)).toThrow(Error("Folder with ID does not exist: " + (newFolderId +99).toString()));
     });
 });
@@ -230,17 +210,14 @@ describe("changeLightIntensity() ", ()=>{
     it("should change the lightIntensity of the passed content to the passed new intensity", ()=>{
         setup();
 
-        //method to test
         contentManager.changeLightIntensity(mockMediaStation, contentID, newIntensity);
 
-        //tests
         expect(content.lightIntensity).toEqual(newIntensity);
     });
 
     it("should throw an error if the content could not be found", ()=>{
         setup();
 
-        //tests
         expect(()=> contentManager.changeLightIntensity(mockMediaStation, contentID + 1, newIntensity)).toThrow(Error);
     });
 });
@@ -269,10 +246,8 @@ describe("deleteContent() ", ()=>{
 
         mockMediaStation.getNextContentId.mockReturnValueOnce(contentId);
 
-        //method to test
         contentManager.deleteContent(mockMediaStation, folderId, contentId);
 
-        //tests
         expect(mockFolder.removeContent).toHaveBeenCalledTimes(1);
         expect(mockFolder.removeContent).toHaveBeenCalledWith(contentId);
     });
@@ -280,7 +255,6 @@ describe("deleteContent() ", ()=>{
     it("should throw an error if the folder does not exist", ()=>{
         setup();
 
-        //tests
         expect(()=> contentManager.deleteContent(mockMediaStation, folderId + 1, contentId)).toThrow(Error);
     });
 
@@ -290,7 +264,6 @@ describe("deleteContent() ", ()=>{
         mockFolder.removeContent = jest.fn();
         mockFolder.removeContent.mockReturnValue(false)
 
-        //tests
         expect(()=> contentManager.deleteContent(mockMediaStation, folderId, contentId)).toThrow(Error("Content with ID: " + contentId + " is not inside folder: "+ folderId));
     });
 });

@@ -333,14 +333,12 @@ describe("sendDataToServer() ", ()=>{
 
 describe("closeConnection() ", ()=>{
     test("should close the connection to the server", async () =>{
-        //setup
         let eventHandler = jest.fn();
 
         networkInterface.addEventListener(NetworkInterface.CLOSED, eventHandler);
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
-        //method to test
         networkInterface.closeConnection();
 
         await server.closed; //wait until client closed the connection to server, otherwise the events would not have been fired
