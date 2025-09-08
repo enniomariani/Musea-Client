@@ -3,12 +3,6 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp} from "../dataStructure/MediaApp";
 import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 
-export interface IMediaAppData {
-    ip: string
-    name: string
-    isController: boolean
-}
-
 export class MediaAppConnectionService {
     private _mediaStationRepository: MediaStationRepository;
     private _networkService: NetworkService;
@@ -47,6 +41,9 @@ export class MediaAppConnectionService {
     async connectAndRegisterToMediaApp(mediaStationId: number, mediaAppId: number, appType: string = "admin"): Promise<boolean> {
         let ip: string = this._getMediaApp(mediaStationId, mediaAppId).ip;
 
+        if(appType !== "admin" && appType !== "user")
+            throw new Error("App-Type is not valid: " + appType);
+
         if (!await this._networkService.openConnection(ip))
             return false;
 
@@ -56,8 +53,7 @@ export class MediaAppConnectionService {
         } else if (appType === "user") {
             if (await this._networkService.sendRegistrationUserApp(ip) === "no")
                 return false;
-        } else
-            throw new Error("App-Type is not valid: " + appType);
+        }
 
         return true;
     }

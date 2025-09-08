@@ -52,6 +52,9 @@ export class MediaStationSyncService {
 
         let registration: string;
 
+        if(role !== "admin" && role !== "user")
+            throw new Error("Role not valid: " + role);
+
         //send all media to the media-apps
         cachedMediaOfAllMediaStations = this._mediaStationRepo.mediaCacheHandler.getAllCachedMedia();
         allCachedMedia = cachedMediaOfAllMediaStations.get(mediaStationId);
@@ -96,8 +99,6 @@ export class MediaStationSyncService {
                 registration = await this._networkService.sendRegistrationAdminApp(mediaApp.ip);
             else if(role === "user")
                 registration = await this._networkService.sendRegistrationUserApp(mediaApp.ip);
-            else
-                throw new Error("Role not valid: " + role);
 
             console.log("got registration back: ", registration)
 
