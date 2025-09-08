@@ -109,9 +109,7 @@ export class MediaStationRepository{
     }
 
     updateMediaStation(mediaStation:MediaStation):void {
-        if(!this._allMediaStations.get(mediaStation.id))
-            throw new Error(String("MediaStationRepository: update MediaStation not possible, because ID does not exist in the repo: "+ mediaStation.id));
-
+        this.requireMediaStation(mediaStation.id);
         this._allMediaStations.set(mediaStation.id, mediaStation);
     }
 
@@ -122,53 +120,38 @@ export class MediaStationRepository{
      */
     updateAndSaveMediaStation(mediaStation:MediaStation):void {
         this.updateMediaStation(mediaStation);
-
         this._mediaStationMetaData.save(this._getNameControllerMap());
     }
 
     cacheMediaStation(id:number):void{
+        this.requireMediaStation(id);
         let mediaStation:MediaStation = this._allMediaStations.get(id);
-        if(!mediaStation)
-            throw new Error(String("Caching MediaStation not possible, because ID does not exist in the repo: "+ id));
 
         this._contentFileService.saveFile(id,mediaStation.exportToJSON() );
     }
 
     removeCachedMediaStation(id:number):void{
-        let mediaStation:MediaStation = this._allMediaStations.get(id);
-        if(!mediaStation)
-            throw new Error(String("Deleting MediaStation-Cache not possible, because ID does not exist in the repo: "+ id));
-
+        this.requireMediaStation(id);
         this._contentFileService.deleteFile(id);
     }
 
     async isMediaStationCached(id:number):Promise<boolean>{
-        let mediaStation:MediaStation = this._allMediaStations.get(id);
-        if(!mediaStation)
-            throw new Error(String("Checking MediaStation-Cache not possible, because ID does not exist in the repo: "+ id));
-
+        this.requireMediaStation(id);
         return await this._contentFileService.fileExists(id);
     }
 
     async markMediaIDtoDelete(mediaStationId:number,mediaAppId:number, id:number):Promise<void>{
-
-        if(!this.findMediaStation(mediaStationId))
-            throw new Error("Adding media-id to ids which should be deleted not possible, because the mediaStation does not exist: " + mediaStationId);
-
+        this.requireMediaStation(mediaStationId);
         await this._mediaFilesMarkedToDeleteService.addID(mediaStationId,mediaAppId, id);
     }
 
     async deleteStoredMediaID(mediaStationId:number, mediaAppId:number, id:number):Promise<void>{
-        if(!this.findMediaStation(mediaStationId))
-            throw new Error("Deleting a media-id is not possible, because the mediaStation does not exist: "+ mediaStationId);
-
+        this.requireMediaStation(mediaStationId);
         await this._mediaFilesMarkedToDeleteService.removeID(mediaStationId, mediaAppId, id);
     }
 
     async getAllMediaIDsToDelete(mediaStationId:number):Promise<Map<number, number[]>>{
-        if(!this.findMediaStation(mediaStationId))
-            throw new Error("Getting the media-IDs marked for deletion for mediastation does not work, because the mediastation does not exist: "+ mediaStationId);
-
+        this.requireMediaStation(mediaStationId);
         return await this._mediaFilesMarkedToDeleteService.getAllIDS(mediaStationId);
     }
 

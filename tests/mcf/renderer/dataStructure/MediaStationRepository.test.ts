@@ -451,7 +451,7 @@ describe("cacheMediaStation() ", () => {
     it("throw an error if mediastation id does not exist", () => {
         let spy = jest.spyOn(mediaStationRepo, 'findMediaStation').mockReturnValue(null);
 
-        expect(() => mediaStationRepo.cacheMediaStation(0)).toThrow(Error("Caching MediaStation not possible, because ID does not exist in the repo: 0"));
+        expect(() => mediaStationRepo.cacheMediaStation(0)).toThrow(Error("Mediastation with this ID does not exist: 0"));
     })
 });
 
@@ -468,7 +468,7 @@ describe("removeCachedMediaStation() ", () => {
 
     it("throw an error if mediastation id does not exist", () => {
 
-        expect(() => mediaStationRepo.removeCachedMediaStation(0)).toThrow(Error("Deleting MediaStation-Cache not possible, because ID does not exist in the repo: 0"));
+        expect(() => mediaStationRepo.removeCachedMediaStation(0)).toThrow(Error("Mediastation with this ID does not exist: 0"));
     })
 });
 
@@ -489,13 +489,13 @@ describe("isMediaStationCached() ", () => {
 
     it("throw an error if mediastation id does not exist", async () => {
 
-        await expect(mediaStationRepo.isMediaStationCached(0)).rejects.toThrow(Error("Checking MediaStation-Cache not possible, because ID does not exist in the repo: 0"));
+        await expect(mediaStationRepo.isMediaStationCached(0)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
     })
 });
 
 describe("markMediaIDtoDelete() ", () => {
     it("should call MediaFilesMarkedToDeleteService.saveID with the correct ID", async () => {
-        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "findMediaStation");
+        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "requireMediaStation");
 
         spyFindMediaStation.mockReturnValue(new MockMediaStation(0));
 
@@ -506,17 +506,13 @@ describe("markMediaIDtoDelete() ", () => {
     })
 
     it("throw an error if mediastation id does not exist", async () => {
-        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "findMediaStation");
-
-        spyFindMediaStation.mockReturnValue(null);
-
-        await expect(mediaStationRepo.markMediaIDtoDelete(0, 1, 5)).rejects.toThrow(Error("Adding media-id to ids which should be deleted not possible, because the mediaStation does not exist: 0"));
+        await expect(mediaStationRepo.markMediaIDtoDelete(0, 1, 5)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
     })
 });
 
 describe("deleteStoredMediaID() ", () => {
     it("should call MediaFilesMarkedToDeleteService.saveID with the correct ID", async () => {
-        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "findMediaStation");
+        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "requireMediaStation");
 
         spyFindMediaStation.mockReturnValue(new MockMediaStation(0));
 
@@ -527,17 +523,13 @@ describe("deleteStoredMediaID() ", () => {
     })
 
     it("throw an error if mediastation id does not exist", async () => {
-        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "findMediaStation");
-
-        spyFindMediaStation.mockReturnValue(null);
-
-        await expect(mediaStationRepo.deleteStoredMediaID(0, 0, 5)).rejects.toThrow(Error("Deleting a media-id is not possible, because the mediaStation does not exist: 0"));
+        await expect(mediaStationRepo.deleteStoredMediaID(0, 0, 5)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
     })
 });
 
 describe("getAllMediaIDsToDelete() ", () => {
     it("should return the numbers of MediaFilesMarkedToDeleteService.getAllIds", async () => {
-        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "findMediaStation");
+        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "requireMediaStation");
         const mediaIdsToDelete: number[] = [10, 4, 5];
         let result: Map<number, number[]>;
 
@@ -553,7 +545,7 @@ describe("getAllMediaIDsToDelete() ", () => {
     })
 
     it("should return an empty array if MediaFilesMarkedToDeleteService.getAllIds returns an empty array", async () => {
-        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "findMediaStation");
+        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "requireMediaStation");
         const mediaIdsToDelete: number[] = [];
         let result: Map<number, number[]>;
 
@@ -569,10 +561,6 @@ describe("getAllMediaIDsToDelete() ", () => {
     })
 
     it("throw an error if mediastation id does not exist", async () => {
-        const spyFindMediaStation = jest.spyOn(mediaStationRepo, "findMediaStation");
-
-        spyFindMediaStation.mockReturnValue(null);
-
-        await expect(mediaStationRepo.getAllMediaIDsToDelete(0)).rejects.toThrow(Error("Getting the media-IDs marked for deletion for mediastation does not work, because the mediastation does not exist: 0"));
+        await expect(mediaStationRepo.getAllMediaIDsToDelete(0)).rejects.toThrow(Error("Mediastation with this ID does not exist: 0"));
     })
 });
