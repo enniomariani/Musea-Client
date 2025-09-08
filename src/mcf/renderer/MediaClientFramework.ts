@@ -5,7 +5,7 @@ import {MediaAppDataService} from "src/mcf/renderer/services/MediaAppDataService
 import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 import {NetworkConnectionHandler} from "./network/NetworkConnectionHandler";
 import {ContentDataService} from "src/mcf/renderer/services/ContentDataService";
-import {ContentNetworkService} from "src/mcf/renderer/network/ContentNetworkService";
+import {MediaAppCommandService} from "src/mcf/renderer/network/MediaAppCommandService";
 import {FolderDataService} from "src/mcf/renderer/services/FolderDataService";
 import {MediaService} from "./services/MediaService";
 import {MediaStationCacheService} from "src/mcf/renderer/services/mediastation/MediaStationCacheService";
@@ -28,7 +28,7 @@ export class MediaClientFramework implements IMediaClientFramework {
 
     protected _networkConnectionHandler: NetworkConnectionHandler;
     protected _networkService: NetworkService;
-    protected _contentNetworkService: ContentNetworkService;
+    protected _contentNetworkService: MediaAppCommandService;
 
     protected _mediaStationService: MediaStationService;
 
@@ -45,7 +45,7 @@ export class MediaClientFramework implements IMediaClientFramework {
 
         this._networkConnectionHandler = new NetworkConnectionHandler();
         this._networkService = new NetworkService(this._networkConnectionHandler);
-        this._contentNetworkService = new ContentNetworkService(this._networkService);
+        this._contentNetworkService = new MediaAppCommandService(this._networkService);
 
         this._mediaStationService = new MediaStationService(this._mediaStationRepository, this._networkService);
         this._mediaAppService = new MediaAppDataService(this._mediaStationRepository);

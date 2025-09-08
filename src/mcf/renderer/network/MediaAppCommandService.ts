@@ -2,7 +2,7 @@ import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 
 
-export class ContentNetworkService{
+export class MediaAppCommandService {
 
     static COMMAND_PLAY:string = "play";
     static COMMAND_STOP:string = "stop";
@@ -14,6 +14,10 @@ export class ContentNetworkService{
 
     static COMMAND_LIGHT:string= "preset";
 
+    static COMMAND_MUTE:string = "mute";
+    static COMMAND_UNMUTE:string = "unmute";
+    static COMMAND_SET_VOLUME:string = "set";
+
     private _networkService:NetworkService;
 
     constructor(networkService:NetworkService) {
@@ -21,7 +25,7 @@ export class ContentNetworkService{
     }
 
     async sendCommandPlay(mediaApp:MediaApp, mediaId:number|null):Promise<void>{
-        let command:string[] =  [ContentNetworkService.COMMAND_PLAY];
+        let command:string[] =  [MediaAppCommandService.COMMAND_PLAY];
 
         if(mediaApp.ip === "")
             console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
@@ -37,19 +41,19 @@ export class ContentNetworkService{
         if(mediaApp.ip === "")
             console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
         else
-            await this._networkService.sendMediaControlTo(mediaApp.ip, [ContentNetworkService.COMMAND_STOP]);
+            await this._networkService.sendMediaControlTo(mediaApp.ip, [MediaAppCommandService.COMMAND_STOP]);
     }
 
     async sendCommandPause(mediaApps:Map<number, MediaApp>):Promise<void>{
-        await this._sendToAll(mediaApps.values(),(ip) => this._networkService.sendMediaControlTo(ip, [ContentNetworkService.COMMAND_PAUSE]));
+        await this._sendToAll(mediaApps.values(),(ip) => this._networkService.sendMediaControlTo(ip, [MediaAppCommandService.COMMAND_PAUSE]));
     }
 
     async sendCommandFwd(mediaApps:Map<number, MediaApp>):Promise<void>{
-        await this._sendToAll(mediaApps.values(),(ip) => this._networkService.sendMediaControlTo(ip, [ContentNetworkService.COMMAND_FWD]));
+        await this._sendToAll(mediaApps.values(),(ip) => this._networkService.sendMediaControlTo(ip, [MediaAppCommandService.COMMAND_FWD]));
     }
 
     async sendCommandRew(mediaApps:Map<number, MediaApp>):Promise<void>{
-        await this._sendToAll(mediaApps.values(),(ip) => this._networkService.sendMediaControlTo(ip, [ContentNetworkService.COMMAND_REW]));
+        await this._sendToAll(mediaApps.values(),(ip) => this._networkService.sendMediaControlTo(ip, [MediaAppCommandService.COMMAND_REW]));
     }
 
     async sendCommandSync(mediaApp:MediaApp, posInSec:number):Promise<void>{
@@ -60,11 +64,11 @@ export class ContentNetworkService{
         if(mediaApp.ip === "")
             console.error("Media-App with id " + mediaApp.id + " does not have set an ip: " + mediaApp.ip);
         else
-            await this._networkService.sendMediaControlTo(mediaApp.ip, [ContentNetworkService.COMMAND_SYNC, posInSec.toString()]);
+            await this._networkService.sendMediaControlTo(mediaApp.ip, [MediaAppCommandService.COMMAND_SYNC, posInSec.toString()]);
     }
 
     async sendCommandSeek(mediaApps:Map<number, MediaApp>, posInSec:number):Promise<void>{
-        let command:string[] =  [ContentNetworkService.COMMAND_SEEK];
+        let command:string[] =  [MediaAppCommandService.COMMAND_SEEK];
 
         if(posInSec < 0){
             console.error("Seek position is below 0, command is not sent: ", posInSec);
@@ -77,9 +81,26 @@ export class ContentNetworkService{
     }
 
     async sendCommandLight(mediaApps:Map<number, MediaApp>, presetId:number):Promise<void>{
-        let command:string[] = [ContentNetworkService.COMMAND_LIGHT, presetId.toString()];
+        let command:string[] = [MediaAppCommandService.COMMAND_LIGHT, presetId.toString()];
 
         await this._sendToAll(mediaApps.values(),(ip) => this._networkService.sendLightCommandTo(ip, command));
+    }
+
+    async sendCommandMute(mediaApps:Map<number, MediaApp>):Promise<void>{
+        await this._sendAudioCommandToAll(mediaApps.values(),[MediaAppCommandService.COMMAND_MUTE]);
+    }
+
+    async sendCommandUnmute(mediaApps:Map<number, MediaApp>):Promise<void>{
+        await this._sendAudioCommandToAll(mediaApps.values(),[MediaAppCommandService.COMMAND_UNMUTE]);
+    }
+
+    async sendCommandSetVolume(mediaApps:Map<number, MediaApp>, volume:number):Promise<void>{
+        await this._sendAudioCommandToAll(mediaApps.values(),[MediaAppCommandService.COMMAND_SET_VOLUME, volume.toString()]);
+    }
+
+    private async _sendAudioCommandToAll(apps: Iterable<MediaApp>, command:string[]): Promise<void> {
+        const commands:string[] = ["volume", ...command];
+        await this._sendToAll(apps,(ip) => this._networkService.sendSystemCommandTo(ip, commands));
     }
 
     private async _sendToAll(apps: Iterable<MediaApp>, sendOne: (ip: string) => Promise<void>): Promise<void> {
@@ -91,5 +112,4 @@ export class ContentNetworkService{
             await sendOne(app.ip);
         }
     }
-
 }

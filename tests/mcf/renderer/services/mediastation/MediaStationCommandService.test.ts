@@ -7,8 +7,8 @@ import {MockContentManager} from "__mocks__/mcf/renderer/dataManagers/MockConten
 import {MockContent} from "__mocks__/mcf/renderer/dataStructure/MockContent";
 import {MediaApp} from "@app/mcf/renderer/dataStructure/MediaApp";
 import {
-    MockContentNetworkService
-} from "__mocks__/mcf/renderer/network/MockContentNetworkService";
+    MockMediaAppCommandService
+} from "__mocks__/mcf/renderer/network/MockMediaAppCommandService";
 import {Image, Video} from "@app/mcf/renderer/dataStructure/Media";
 import {MediaStationCommandService} from "@app/mcf/renderer/services/mediastation/MediaStationCommandService";
 import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
@@ -17,7 +17,7 @@ let service:MediaStationCommandService;
 let mockMediaStationRepo:MockMediaStationRepository;
 let mockNetworkService:MockNetworkService;
 let mockContentManager:MockContentManager;
-let mockContentNetworkService:MockContentNetworkService;
+let mockMediaAppCommandService:MockMediaAppCommandService;
 
 const mediaStationId:number = 0;
 const folderId:number = 10;
@@ -26,8 +26,8 @@ beforeEach(() => {
     mockMediaStationRepo = new MockMediaStationRepository();
     mockNetworkService = new MockNetworkService();
     mockContentManager = new MockContentManager();
-    mockContentNetworkService = new MockContentNetworkService();
-    service = new MediaStationCommandService(mockMediaStationRepo,mockNetworkService, mockContentNetworkService, mockContentManager);
+    mockMediaAppCommandService = new MockMediaAppCommandService();
+    service = new MediaStationCommandService(mockMediaStationRepo,mockNetworkService, mockMediaAppCommandService, mockContentManager);
 });
 
 afterEach(() => {
@@ -76,8 +76,8 @@ describe("sendCommandPlay() ", ()=> {
         await service.sendCommandPlay(mediaStationId,contentId);
 
         //tests
-        expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledWith(mediaApp2, image2.idOnMediaApp);
+        expect(mockMediaAppCommandService.sendCommandPlay).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandPlay).toHaveBeenCalledWith(mediaApp2, image2.idOnMediaApp);
     });
 
     it("should call contentNetworkService.sendCommandPlay with null if no contentId was passed", async () => {
@@ -90,9 +90,9 @@ describe("sendCommandPlay() ", ()=> {
         await service.sendCommandPlay(mediaStationId,null);
 
         //tests
-        expect(mockContentNetworkService.sendCommandPlay).toHaveBeenCalledTimes(2);
-        expect(mockContentNetworkService.sendCommandPlay).toHaveBeenNthCalledWith(1, mediaApp1, null);
-        expect(mockContentNetworkService.sendCommandPlay).toHaveBeenNthCalledWith(2, mediaApp2, null);
+        expect(mockMediaAppCommandService.sendCommandPlay).toHaveBeenCalledTimes(2);
+        expect(mockMediaAppCommandService.sendCommandPlay).toHaveBeenNthCalledWith(1, mediaApp1, null);
+        expect(mockMediaAppCommandService.sendCommandPlay).toHaveBeenNthCalledWith(2, mediaApp2, null);
     });
 
     it("should call contentNetworkService.sendCommandStop for all media with an id EQUAL -1", async () => {
@@ -105,8 +105,8 @@ describe("sendCommandPlay() ", ()=> {
         await service.sendCommandPlay(mediaStationId,contentId);
 
         //tests
-        expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledWith(mediaApp1);
+        expect(mockMediaAppCommandService.sendCommandStop).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandStop).toHaveBeenCalledWith(mediaApp1);
     });
 
     it("should call contentNetworkService.sendCommandStop for all mediaApps where no media was defined", async () => {
@@ -120,8 +120,8 @@ describe("sendCommandPlay() ", ()=> {
         await service.sendCommandPlay(mediaStationId,contentId);
 
         //tests
-        expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledTimes(2);
-        expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledWith(mediaApp1);
+        expect(mockMediaAppCommandService.sendCommandStop).toHaveBeenCalledTimes(2);
+        expect(mockMediaAppCommandService.sendCommandStop).toHaveBeenCalledWith(mediaApp1);
     });
 
     it("should call contentNetworkService.sendCommandLight with correct arguments", async () => {
@@ -134,8 +134,8 @@ describe("sendCommandPlay() ", ()=> {
         await service.sendCommandPlay(mediaStationId,contentId);
 
         //tests
-        expect(mockContentNetworkService.sendCommandLight).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandLight).toHaveBeenCalledWith(answerMap, 2);
+        expect(mockMediaAppCommandService.sendCommandLight).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandLight).toHaveBeenCalledWith(answerMap, 2);
     });
 });
 
@@ -157,9 +157,9 @@ describe("sendCommandStop() ", ()=> {
         await service.sendCommandStop(mediaStationId);
 
         //tests
-        expect(mockContentNetworkService.sendCommandStop).toHaveBeenCalledTimes(2);
-        expect(mockContentNetworkService.sendCommandStop).toHaveBeenNthCalledWith(1, mediaApp1);
-        expect(mockContentNetworkService.sendCommandStop).toHaveBeenNthCalledWith(2, mediaApp2);
+        expect(mockMediaAppCommandService.sendCommandStop).toHaveBeenCalledTimes(2);
+        expect(mockMediaAppCommandService.sendCommandStop).toHaveBeenNthCalledWith(1, mediaApp1);
+        expect(mockMediaAppCommandService.sendCommandStop).toHaveBeenNthCalledWith(2, mediaApp2);
     });
 
     it("should call contentNetworkService.sendCommandLight with correct arguments", async () => {
@@ -170,8 +170,8 @@ describe("sendCommandStop() ", ()=> {
         await service.sendCommandStop(mediaStationId);
 
         //tests
-        expect(mockContentNetworkService.sendCommandLight).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandLight).toHaveBeenCalledWith(answerMap, 2);
+        expect(mockMediaAppCommandService.sendCommandLight).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandLight).toHaveBeenCalledWith(answerMap, 2);
     });
 });
 
@@ -191,8 +191,8 @@ describe("sendCommandPause() ", ()=> {
         await service.sendCommandPause(mediaStationId);
 
         //tests
-        expect(mockContentNetworkService.sendCommandPause).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandPause).toHaveBeenCalledWith(answerMap);
+        expect(mockMediaAppCommandService.sendCommandPause).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandPause).toHaveBeenCalledWith(answerMap);
     });
 });
 
@@ -212,8 +212,8 @@ describe("sendCommandFwd() ", ()=> {
         await service.sendCommandFwd(mediaStationId);
 
         //tests
-        expect(mockContentNetworkService.sendCommandFwd).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandFwd).toHaveBeenCalledWith(answerMap);
+        expect(mockMediaAppCommandService.sendCommandFwd).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandFwd).toHaveBeenCalledWith(answerMap);
     });
 });
 
@@ -233,8 +233,8 @@ describe("sendCommandRew() ", ()=> {
         await service.sendCommandRew(mediaStationId);
 
         //tests
-        expect(mockContentNetworkService.sendCommandRew).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandRew).toHaveBeenCalledWith(answerMap);
+        expect(mockMediaAppCommandService.sendCommandRew).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandRew).toHaveBeenCalledWith(answerMap);
     });
 });
 
@@ -280,8 +280,8 @@ describe("sendCommandSync() ", ()=> {
         await service.sendCommandSync(mediaStationId, 34,seekPos);
 
         //tests
-        expect(mockContentNetworkService.sendCommandSync).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandSync).toHaveBeenCalledWith( mediaApp1, seekPos);
+        expect(mockMediaAppCommandService.sendCommandSync).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandSync).toHaveBeenCalledWith( mediaApp1, seekPos);
     });
 });
 
@@ -302,11 +302,10 @@ describe("sendCommandSeek() ", ()=> {
         await service.sendCommandSeek(mediaStationId, seekPos);
 
         //tests
-        expect(mockContentNetworkService.sendCommandSeek).toHaveBeenCalledTimes(1);
-        expect(mockContentNetworkService.sendCommandSeek).toHaveBeenCalledWith(answerMap,seekPos);
+        expect(mockMediaAppCommandService.sendCommandSeek).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandSeek).toHaveBeenCalledWith(answerMap,seekPos);
     });
 });
-
 
 describe("sendCommandSetVolume() ", () => {
     let mediaApp1: MediaApp = new MediaApp(0);
@@ -320,7 +319,7 @@ describe("sendCommandSetVolume() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(0);
     mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(mediaAppMap);
 
-    it("should call networkService.sendMediaControlTo for the mediaApp with the correct mute-command", async () => {
+    it("should call sendCommandSetVolume for the mediaApp with the correct parameter", async () => {
         //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
 
@@ -328,23 +327,8 @@ describe("sendCommandSetVolume() ", () => {
         await service.sendCommandSetVolume(0, 0.3);
 
         //tests
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(2);
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, ["volume", "set", "0.3"]);
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(2, mediaApp2.ip, ["volume", "set", "0.3"]);
-    });
-
-    it("should print an error if the media-App has no IP set", async () => {
-        //setup
-        mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
-        mediaApp2.ip = "";
-        let logSpy: any = jest.spyOn(global.console, 'error');
-
-        //method to test
-        await service.sendCommandSetVolume(0, 0.3);
-
-        //tests
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(1);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandSetVolume).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandSetVolume).toHaveBeenNthCalledWith(1, mediaAppMap, 0.3);
     });
 });
 
@@ -360,7 +344,7 @@ describe("sendCommandMute() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(0);
     mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(mediaAppMap);
 
-    it("should call networkService.sendMediaControlTo for the mediaApp with the correct mute-command", async () => {
+    it("should call sendCommandMute for the mediaApp with the correct parameter", async () => {
         //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
 
@@ -368,26 +352,10 @@ describe("sendCommandMute() ", () => {
         await service.sendCommandMute(0);
 
         //tests
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(2);
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, ["volume", "mute"]);
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(2, mediaApp2.ip, ["volume", "mute"]);
-    });
-
-    it("should print an error if the media-App has no IP set", async () => {
-        //setup
-        mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
-        mediaApp2.ip = "";
-        let logSpy: any = jest.spyOn(global.console, 'error');
-
-        //method to test
-        await service.sendCommandMute(0);
-
-        //tests
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(1);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandMute).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandMute).toHaveBeenNthCalledWith(1, mediaAppMap);
     });
 });
-
 describe("sendCommandUnmute() ", () => {
     let mediaApp1: MediaApp = new MediaApp(0);
     mediaApp1.ip = "127.0.0.1"
@@ -400,7 +368,7 @@ describe("sendCommandUnmute() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(0);
     mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(mediaAppMap);
 
-    it("should call networkService.sendMediaControlTo for the mediaApp with the correct unmute-command", async () => {
+    it("should call sendCommandUnmute for the mediaApp with the correct parameter", async () => {
         //setup
         mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
 
@@ -408,22 +376,7 @@ describe("sendCommandUnmute() ", () => {
         await service.sendCommandUnmute(0);
 
         //tests
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(2);
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(1, mediaApp1.ip, ["volume", "unmute"]);
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenNthCalledWith(2, mediaApp2.ip, ["volume", "unmute"]);
-    });
-
-    it("should print an error if the media-App has no IP set", async () => {
-        //setup
-        mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
-        mediaApp2.ip = "";
-        let logSpy: any = jest.spyOn(global.console, 'error');
-
-        //method to test
-        await service.sendCommandUnmute(0);
-
-        //tests
-        expect(mockNetworkService.sendSystemCommandTo).toHaveBeenCalledTimes(1);
-        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandUnmute).toHaveBeenCalledTimes(1);
+        expect(mockMediaAppCommandService.sendCommandUnmute).toHaveBeenNthCalledWith(1, mediaAppMap);
     });
 });
