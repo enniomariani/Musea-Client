@@ -1,7 +1,7 @@
 import {MockMediaStationRepository} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
-import {MockContentNetworkService} from "tests/__mocks__/mcf/renderer/services/MockContentNetworkService";
+import {MockContentNetworkService} from "tests/__mocks__/mcf/renderer/network/MockContentNetworkService";
 import {MediaStationCommandService} from "@app/mcf/renderer/services/mediastation/MediaStationCommandService";
-import {MockNetworkService} from "tests/__mocks__/mcf/renderer/services/MockNetworkService";
+import {MockNetworkService} from "tests/__mocks__/mcf/renderer/network/MockNetworkService";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
 const mockContentNetworkService:MockContentNetworkService = new MockContentNetworkService();

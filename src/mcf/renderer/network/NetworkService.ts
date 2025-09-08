@@ -1,5 +1,5 @@
-import {NetworkConnectionHandler} from "../network/NetworkConnectionHandler";
-import {ConvertNetworkData} from "../network/ConvertNetworkData";
+import {NetworkConnectionHandler} from "src/mcf/renderer/network/NetworkConnectionHandler";
+import {ConvertNetworkData} from "src/mcf/renderer/network/ConvertNetworkData";
 
 
 export class NetworkService {

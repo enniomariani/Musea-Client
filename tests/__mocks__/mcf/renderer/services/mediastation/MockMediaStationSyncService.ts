@@ -1,4 +1,4 @@
-import {MockNetworkService} from "tests/__mocks__/mcf/renderer/services/MockNetworkService";
+import {MockNetworkService} from "tests/__mocks__/mcf/renderer/network/MockNetworkService";
 import {MockMediaStationRepository} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {MediaStationSyncService} from "@app/mcf/renderer/services/mediastation/MediaStationSyncService";
 

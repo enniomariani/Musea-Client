@@ -1,9 +1,9 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {
     ContentNetworkService
-} from "../../../../src/mcf/renderer/services/ContentNetworkService";
-import {MockNetworkService} from "../../../__mocks__/mcf/renderer/services/MockNetworkService";
-import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
+} from "@app/mcf/renderer/network/ContentNetworkService";
+import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
+import {MediaApp} from "@app/mcf/renderer/dataStructure/MediaApp";
 
 let contentNetworkService:ContentNetworkService;
 let mockNetworkService:MockNetworkService;

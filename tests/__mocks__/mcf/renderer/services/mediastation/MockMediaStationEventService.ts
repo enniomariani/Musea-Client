@@ -1,4 +1,4 @@
-import {MockNetworkService} from "tests/__mocks__/mcf/renderer/services/MockNetworkService";
+import {MockNetworkService} from "tests/__mocks__/mcf/renderer/network/MockNetworkService";
 import {MediaStationEventService} from "@app/mcf/renderer/services/mediastation/MediaStationEventService";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();

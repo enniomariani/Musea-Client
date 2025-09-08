@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MockNetworkService} from "__mocks__/mcf/renderer/services/MockNetworkService";
+import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
 import {
     MockMediaStationRepository
 } from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";

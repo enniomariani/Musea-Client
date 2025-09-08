@@ -1,7 +1,7 @@
 import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp} from "../dataStructure/MediaApp";
-import {NetworkService} from "./NetworkService";
+import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 
 export interface IMediaAppData {
     ip: string

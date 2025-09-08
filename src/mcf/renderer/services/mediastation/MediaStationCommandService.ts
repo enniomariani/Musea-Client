@@ -2,10 +2,10 @@ import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStatio
 import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 import {Content} from "src/mcf/renderer/dataStructure/Content";
 import {ContentManager} from "src/mcf/renderer/dataManagers/ContentManager";
-import {ContentNetworkService} from "src/mcf/renderer/services/ContentNetworkService";
+import {ContentNetworkService} from "src/mcf/renderer/network/ContentNetworkService";
 import {IMedia, Video} from "src/mcf/renderer/dataStructure/Media";
 import {ContentDataService} from "src/mcf/renderer/services/ContentDataService";
-import {NetworkService} from "src/mcf/renderer/services/NetworkService";
+import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 
 export class MediaStationCommandService  {
     private _mediaStationRepository: MediaStationRepository;
@@ -43,6 +43,7 @@ export class MediaStationCommandService  {
             await this._contentNetworkService.sendCommandLight(ms.mediaAppRegistry.getAll(), content.lightIntensity);
     }
 
+    //TO DO: an alle senden -> auch dann im contentNetwService
     async sendCommandStop(mediaStationId: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         for (const [key, item] of ms.mediaAppRegistry.getAll())
@@ -87,6 +88,7 @@ export class MediaStationCommandService  {
         await this._contentNetworkService.sendCommandSeek(ms.mediaAppRegistry.getAll(), pos);
     }
 
+    //TO DO: auslagern in contentNetwork-service (der eigentliche Befehl) + contententNetw-Service umbenennen
     async sendCommandMute(mediaStationId: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 

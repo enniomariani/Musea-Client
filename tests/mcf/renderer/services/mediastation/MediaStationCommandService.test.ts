@@ -8,10 +8,10 @@ import {MockContent} from "__mocks__/mcf/renderer/dataStructure/MockContent";
 import {MediaApp} from "@app/mcf/renderer/dataStructure/MediaApp";
 import {
     MockContentNetworkService
-} from "__mocks__/mcf/renderer/services/MockContentNetworkService";
+} from "__mocks__/mcf/renderer/network/MockContentNetworkService";
 import {Image, Video} from "@app/mcf/renderer/dataStructure/Media";
 import {MediaStationCommandService} from "@app/mcf/renderer/services/mediastation/MediaStationCommandService";
-import {MockNetworkService} from "__mocks__/mcf/renderer/services/MockNetworkService";
+import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
 
 let service:MediaStationCommandService;
 let mockMediaStationRepo:MockMediaStationRepository;

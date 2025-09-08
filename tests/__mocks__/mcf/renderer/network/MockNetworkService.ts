@@ -1,5 +1,5 @@
-import {NetworkService} from "../../../../../src/mcf/renderer/services/NetworkService";
-import {MockNetworkConnectionHandler} from "../network/MockNetworkConnectionHandler";
+import {NetworkService} from "@app/mcf/renderer/network/NetworkService";
+import {MockNetworkConnectionHandler} from "tests/__mocks__/mcf/renderer/network/MockNetworkConnectionHandler";
 
 const mockNetworkConnectionHandler:MockNetworkConnectionHandler = new MockNetworkConnectionHandler();
 

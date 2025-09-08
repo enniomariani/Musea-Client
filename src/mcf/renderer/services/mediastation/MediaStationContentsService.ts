@@ -1,4 +1,4 @@
-import {NetworkService} from "src/mcf/renderer/services/NetworkService";
+import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
 import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 
