@@ -15,16 +15,15 @@
     },
 
     "outDir": "build",
-
-    "noEmit": true
+    "noEmit": false
   },
   "include": [
     "src",
     "src/renderer/global.d.ts",
-    "src/**/*.d.ts",
-    "tests"
+    "src/**/*.d.ts"
   ],
   "exclude": [
+    "tests",
     "build"
   ]
 }

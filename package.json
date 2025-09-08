@@ -15,7 +15,7 @@
     "clean": "rimraf build/",
     "postbuild": "node fix-imports.js",
     "copy-files": "copyfiles -u 1 src/**/* build/ -e **/*.ts",
-    "build": "npm run clean && tsc -p ./tsconfig.json --rootDir src --outDir build --noEmit false && npm run copy-files"
+    "build": "npm run clean && tsc -p ./tsconfig.json && npm run copy-files"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.4.0",

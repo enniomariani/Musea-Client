@@ -28,7 +28,7 @@ export class MockMediaClientFramework implements  IMediaClientFramework{
         return this._mockMediaStationNetworkService;
     }
 
-    get mediaAppService(): MockMediaAppDataService {
+    get mediaAppDataService(): MockMediaAppDataService {
         return this._mockMediaAppService;
     }
 
