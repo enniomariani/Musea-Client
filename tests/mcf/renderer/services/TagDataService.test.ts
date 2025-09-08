@@ -4,7 +4,7 @@ import {
     MockMediaStationRepository
 } from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {Tag} from "@app/mcf/renderer/dataStructure/Tag";
+import {Tag} from "src/mcf/renderer/dataStructure/Tag";
 import {MockContentManager} from "../../../__mocks__/mcf/renderer/dataManagers/MockContentManager";
 import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
 import {TagDataService} from "../../../../src/mcf/renderer/services/TagDataService";

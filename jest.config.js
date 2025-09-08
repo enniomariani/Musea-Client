@@ -11,7 +11,7 @@ const hasPaths = compilerOptions.paths && Object.keys(compilerOptions.paths).len
 const moduleNameMapper = hasPaths
     ? pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' })
     : {
-        '^@app/(.*)$': '<rootDir>/src/$1',
+        '^src/(.*)$': '<rootDir>/src/$1',
         '^__mocks__/(.*)$': '<rootDir>/tests/__mocks__/$1',
     };
 

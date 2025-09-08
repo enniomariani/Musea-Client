@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {
     MediaStationDataService
-} from "@app/mcf/renderer/services/mediastation/MediaStationDataService";
+} from "src/mcf/renderer/services/mediastation/MediaStationDataService";
 import {
     MockMediaStationRepository
 } from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";

@@ -1,4 +1,4 @@
-import {MediaAppRegistry} from "@app/mcf/renderer/registries/MediaAppRegistry";
+import {MediaAppRegistry} from "src/mcf/renderer/registries/MediaAppRegistry";
 
 export class MockMediaAppRegistry extends MediaAppRegistry{
 

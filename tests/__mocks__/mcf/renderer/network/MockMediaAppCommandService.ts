@@ -1,6 +1,6 @@
 import {
     MediaAppCommandService
-} from "@app/mcf/renderer/network/MediaAppCommandService";
+} from "src/mcf/renderer/network/MediaAppCommandService";
 import {MockNetworkService} from "tests/__mocks__/mcf/renderer/network/MockNetworkService";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();

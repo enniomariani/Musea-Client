@@ -10,7 +10,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@app/*": ["src/*"],
+      "src/*": ["src/*"],
       "__mocks__/*": ["tests/__mocks__/*"]
     },
 

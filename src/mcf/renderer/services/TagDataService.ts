@@ -1,9 +1,8 @@
 import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
 import {Tag} from "../dataStructure/Tag";
-import {ContentManager} from "../dataManagers/ContentManager";
 import {Content} from "../dataStructure/Content";
-import {TagRegistry} from "src/mcf/renderer/registries/TagRegistry";
+import {ContentManager} from "src/mcf/renderer/dataManagers/ContentManager";
 
 
 export class TagDataService {

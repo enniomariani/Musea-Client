@@ -15,7 +15,7 @@
     "clean": "rimraf build/",
     "postbuild": "node fix-imports.js",
     "copy-files": "copyfiles -u 1 src/**/* build/ -e **/*.ts",
-    "build": "npm run clean && tsc -p ./tsconfig.json && npm run copy-files"
+    "build": "npm run clean && tsc -p ./tsconfig.json && tsc-alias -p ./tsconfig.json && npm run copy-files"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.4.0",
@@ -37,6 +37,7 @@
     "ts-jest": "^29.1.5",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.5.2"
   },
   "dependencies": {

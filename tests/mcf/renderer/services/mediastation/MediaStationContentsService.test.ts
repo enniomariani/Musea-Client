@@ -4,7 +4,7 @@ import {
     MockMediaStationRepository
 } from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {MediaStationContentsService} from "@app/mcf/renderer/services/mediastation/MediaStationContentsService";
+import {MediaStationContentsService} from "src/mcf/renderer/services/mediastation/MediaStationContentsService";
 
 let service: MediaStationContentsService;
 let mockMediaStationRepo: MockMediaStationRepository;

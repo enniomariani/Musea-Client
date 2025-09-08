@@ -5,12 +5,12 @@ import {
 import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {MockContentManager} from "__mocks__/mcf/renderer/dataManagers/MockContentManager";
 import {MockContent} from "__mocks__/mcf/renderer/dataStructure/MockContent";
-import {MediaApp} from "@app/mcf/renderer/dataStructure/MediaApp";
+import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 import {
     MockMediaAppCommandService
 } from "__mocks__/mcf/renderer/network/MockMediaAppCommandService";
-import {Image, Video} from "@app/mcf/renderer/dataStructure/Media";
-import {MediaStationCommandService} from "@app/mcf/renderer/services/mediastation/MediaStationCommandService";
+import {Image, Video} from "src/mcf/renderer/dataStructure/Media";
+import {MediaStationCommandService} from "src/mcf/renderer/services/mediastation/MediaStationCommandService";
 import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
 
 let service:MediaStationCommandService;

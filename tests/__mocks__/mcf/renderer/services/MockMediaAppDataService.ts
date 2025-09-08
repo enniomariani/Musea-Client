@@ -1,4 +1,4 @@
-import {MediaAppDataService} from "@app/mcf/renderer/services/MediaAppDataService";
+import {MediaAppDataService} from "src/mcf/renderer/services/MediaAppDataService";
 import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();

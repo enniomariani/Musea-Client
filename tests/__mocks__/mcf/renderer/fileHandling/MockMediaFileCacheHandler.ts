@@ -1,4 +1,4 @@
-import {MediaFileCacheHandler} from "@app/mcf/renderer/fileHandling/MediaFileCacheHandler";
+import {MediaFileCacheHandler} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 import {MockMediaFileService} from "tests/__mocks__/mcf/renderer/fileHandling/MockMediaFileService";
 
 const mockMediaFileService:MockMediaFileService = new MockMediaFileService();

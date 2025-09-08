@@ -1,4 +1,4 @@
-import {TagRegistry} from "@app/mcf/renderer/registries/TagRegistry";
+import {TagRegistry} from "src/mcf/renderer/registries/TagRegistry";
 
 export class MockTagRegistry extends TagRegistry{
 

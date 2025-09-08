@@ -4,12 +4,12 @@ import {
     MockMediaStationRepository
 } from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {MediaApp} from "@app/mcf/renderer/dataStructure/MediaApp";
+import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 import {MockFolder} from "__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {MockContent} from "__mocks__/mcf/renderer/dataStructure/MockContent";
-import {Image} from "@app/mcf/renderer/dataStructure/Media";
-import {IOnSyncStep, MediaStationSyncService} from "@app/mcf/renderer/services/mediastation/MediaStationSyncService";
-import {ICachedMedia} from "@app/mcf/renderer/fileHandling/MediaFileCacheHandler";
+import {Image} from "src/mcf/renderer/dataStructure/Media";
+import {IOnSyncStep, MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
+import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 
 let service: MediaStationSyncService;
 let mockMediaStationRepo: MockMediaStationRepository;
