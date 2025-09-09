@@ -4,6 +4,7 @@ import {MediaStationCacheService} from "src/mcf/renderer/services/mediastation/M
 import {MediaStationCommandService} from "src/mcf/renderer/services/mediastation/MediaStationCommandService";
 import {MediaStationContentsService} from "src/mcf/renderer/services/mediastation/MediaStationContentsService";
 import {MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
+import {ProgressReporter} from "src/mcf/renderer/services/mediastation/SyncEvents";
 
 export class MediaStationService {
     private _data: MediaStationDataService;
@@ -93,7 +94,7 @@ export class MediaStationService {
     }
 
     // Sync
-    async runSync(mediaStationId: number, onSyncStep: (info: string) => void): Promise<boolean> {
-        return this._sync.sync(mediaStationId, onSyncStep);
+    async runSync(mediaStationId: number, progressReporter: ProgressReporter): Promise<boolean> {
+        return this._sync.sync(mediaStationId, progressReporter);
     }
 }

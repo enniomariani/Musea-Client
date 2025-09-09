@@ -76,12 +76,12 @@ describe("checkConnection()", () => {
         setupMediaAppWithName();
         const mockedRunPipeline = runPipeline as jest.MockedFunction<typeof runPipeline>;
 
-        mockedRunPipeline.mockResolvedValueOnce(Steps.ConnectionStatus.Online);
+        mockedRunPipeline.mockResolvedValueOnce(Steps.MediaAppConnectionStatus.Online);
 
         const onProgress = jest.fn();
-        const result:Steps.ConnectionStatus = await service.checkConnection(0, mediaAppId, { role: "user", onProgress });
+        const result:Steps.MediaAppConnectionStatus = await service.checkConnection(0, mediaAppId, { role: "user", onProgress });
 
-        expect(result).toBe(Steps.ConnectionStatus.Online);
+        expect(result).toBe(Steps.MediaAppConnectionStatus.Online);
         expect(runPipeline).toHaveBeenCalledTimes(1);
 
         const [ipArg, stepsArg, optsArg] = mockedRunPipeline.mock.calls[0] as Parameters<typeof runPipeline>;
@@ -97,9 +97,9 @@ describe("checkConnection()", () => {
         expect(stepsArg[2].step).toBe(Steps.ConnectionStep.WsPing);
 
         // Fail statuses aligned
-        expect(stepsArg[0].failStatus).toBe(Steps.ConnectionStatus.IcmpPingFailed);
-        expect(stepsArg[1].failStatus).toBe(Steps.ConnectionStatus.TcpConnectionFailed);
-        expect(stepsArg[2].failStatus).toBe(Steps.ConnectionStatus.WebSocketPingFailed);
+        expect(stepsArg[0].failStatus).toBe(Steps.MediaAppConnectionStatus.IcmpPingFailed);
+        expect(stepsArg[1].failStatus).toBe(Steps.MediaAppConnectionStatus.TcpConnectionFailed);
+        expect(stepsArg[2].failStatus).toBe(Steps.MediaAppConnectionStatus.WebSocketPingFailed);
 
         // Functions bound as provided by NetworkService (identity is fine to check)
         expect(typeof stepsArg[0].run).toBe("function");
@@ -115,12 +115,12 @@ describe("checkConnection()", () => {
         setupMediaAppWithName();
         const mockedRunPipeline = runPipeline as jest.MockedFunction<typeof runPipeline>;
 
-        mockedRunPipeline.mockResolvedValueOnce(Steps.ConnectionStatus.RegistrationFailed);
+        mockedRunPipeline.mockResolvedValueOnce(Steps.MediaAppConnectionStatus.RegistrationFailed);
 
         const onProgress = jest.fn();
         const result = await service.checkConnection(0, mediaAppId, { role: "admin", onProgress });
 
-        expect(result).toBe(Steps.ConnectionStatus.RegistrationFailed);
+        expect(result).toBe(Steps.MediaAppConnectionStatus.RegistrationFailed);
         expect(runPipeline).toHaveBeenCalledTimes(1);
 
         const [ipArg, stepsArg, optsArg] = mockedRunPipeline.mock.calls[0] as Parameters<typeof runPipeline>;
@@ -133,7 +133,7 @@ describe("checkConnection()", () => {
         expect(stepsArg[1].step).toBe(Steps.ConnectionStep.TcpConnect);
         expect(stepsArg[2].step).toBe(Steps.ConnectionStep.WsPing);
         expect(stepsArg[3].step).toBe(Steps.ConnectionStep.Register);
-        expect(stepsArg[3].failStatus).toBe(Steps.ConnectionStatus.RegistrationFailed);
+        expect(stepsArg[3].failStatus).toBe(Steps.MediaAppConnectionStatus.RegistrationFailed);
         expect(typeof stepsArg[3].run).toBe("function");
 
         expect(optsArg.role).toBe("admin");
@@ -329,13 +329,13 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
         mockMediaStation.mediaAppRegistry.get.mockReturnValue(controllerApp);
 
-        jest.spyOn(service, "checkConnection").mockResolvedValue(Steps.ConnectionStatus.Online);
+        jest.spyOn(service, "checkConnection").mockResolvedValue(Steps.MediaAppConnectionStatus.Online);
 
         mockNetworkService.getContentFileFrom.mockReturnValue(JSON.stringify(correctJSON));
     });
 
     it("should return false if the controller is not reachable", async () => {
-        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.RegistrationFailed);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.MediaAppConnectionStatus.RegistrationFailed);
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
         expect(answer).toBe(false);
     });
@@ -361,8 +361,8 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
     it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc is not reachable", async () => {
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
-        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.Online);
-        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.RegistrationFailed);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.MediaAppConnectionStatus.Online);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.MediaAppConnectionStatus.RegistrationFailed);
 
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
@@ -381,9 +381,9 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
     it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc is not reachable", async () => {
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
-        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.Online);
-        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.Online);
-        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.RegistrationFailed);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.MediaAppConnectionStatus.Online);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.MediaAppConnectionStatus.Online);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.MediaAppConnectionStatus.RegistrationFailed);
 
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
