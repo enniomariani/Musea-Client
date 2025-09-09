@@ -210,37 +210,6 @@ describe("unregisterAndCloseMediaApp() ", () => {
     });
 });
 
-describe("pcRespondsToPing() ", () => {
-
-    it("should return true if networkService.pcRespondsToPing returns true", async () => {
-        let returnValue: boolean;
-        setupMediaAppWithName();
-
-        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
-
-        returnValue = await service.pcRespondsToPing(0, mediaAppId);
-
-        expect(returnValue).toBe(true);
-    });
-
-    it("should return true if networkService.pcRespondsToPing returns false", async () => {
-        let returnValue: boolean;
-        setupMediaAppWithName();
-
-        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
-
-        returnValue = await service.pcRespondsToPing(0, mediaAppId);
-
-        expect(returnValue).toBe(false);
-    });
-
-    it("should throw an error if the MediaApp ID could not be found", async () => {
-        setupMediaAppWithName(false);
-
-        expect(service.pcRespondsToPing(0, mediaAppId)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
-    });
-});
-
 describe("checkOnlineStatusOfAllMediaApps() ", () => {
     let mockMediaStation: MockMediaStation;
     let answer: boolean;

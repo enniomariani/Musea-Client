@@ -113,11 +113,6 @@ export class MediaAppConnectionService {
         return stepState;
     }
 
-    async pcRespondsToPing(mediaStationId: number, mediaAppId: number): Promise<boolean> {
-        let ip: string = this._getMediaApp(mediaStationId, mediaAppId).ip;
-        return await this._networkService.pcRespondsToPing(ip);
-    }
-
     /**
      * opens the connection to the passed media-app and registers to it
      *
