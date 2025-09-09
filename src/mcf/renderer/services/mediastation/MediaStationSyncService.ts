@@ -34,7 +34,6 @@ export class MediaStationSyncService {
      * @returns {Promise<void>}
      */
     async sync(mediaStationId: number, onSyncStep: IOnSyncStep): Promise<boolean> {
-        console.log("SYNC MEDIA STATION: ", mediaStationId)
         const mediaStation: MediaStation = this._mediaStationRepo.requireMediaStation(mediaStationId);
         let json: string;
         let connectionIsOpen: boolean;

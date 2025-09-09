@@ -93,7 +93,7 @@ export class MediaStationService {
     }
 
     // Sync
-    async runSync(mediaStationId: number, onSyncStep: (info: string) => void, role: "admin" | "user" = "admin"): Promise<boolean> {
-        return this._sync.sync(mediaStationId, onSyncStep, role);
+    async runSync(mediaStationId: number, onSyncStep: (info: string) => void): Promise<boolean> {
+        return this._sync.sync(mediaStationId, onSyncStep);
     }
 }

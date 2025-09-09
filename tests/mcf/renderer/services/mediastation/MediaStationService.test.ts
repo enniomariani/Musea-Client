@@ -172,9 +172,9 @@ describe("MediaStationService", () => {
             const cb = jest.fn();
             sync.sync.mockResolvedValueOnce(true);
 
-            const result = await facade.runSync(5, cb, "user");
+            const result = await facade.runSync(5, cb);
 
-            expect(sync.sync).toHaveBeenCalledWith(5, cb, "user");
+            expect(sync.sync).toHaveBeenCalledWith(5, cb);
             expect(result).toBe(true);
         });
     });
