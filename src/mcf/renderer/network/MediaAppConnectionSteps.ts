@@ -5,7 +5,7 @@ export enum ConnectionStep {
     Register = "register",
 }
 
-export enum ConnectionStatus {
+export enum MediaAppConnectionStatus {
     IcmpPingFailed = "icmpPingFailed",
     TcpConnectionFailed = "tcpConnectionFailed",
     WebSocketPingFailed = "webSocketPingFailed",
@@ -26,7 +26,7 @@ export interface IConnectionProgress {
 export interface StepDef {
     step: ConnectionStep;
     run: (ip: string) => Promise<boolean>;
-    failStatus: ConnectionStatus;
+    failStatus: MediaAppConnectionStatus;
 }
 
 export interface CheckOptions {
@@ -34,12 +34,12 @@ export interface CheckOptions {
     onProgress?: (p: IConnectionProgress) => void;
 }
 
-export async function runPipeline(ip: string, steps: StepDef[], opts: CheckOptions): Promise<ConnectionStatus> {
+export async function runPipeline(ip: string, steps: StepDef[], opts: CheckOptions): Promise<MediaAppConnectionStatus> {
     for (const s of steps) {
         opts.onProgress?.({ step: s.step, state: StepState.Started });
         const ok:boolean = await s.run(ip);
         opts.onProgress?.({ step: s.step, state: ok ? StepState.Succeeded : StepState.Failed });
         if (!ok) return s.failStatus;
     }
-    return ConnectionStatus.Online;
+    return MediaAppConnectionStatus.Online;
 }

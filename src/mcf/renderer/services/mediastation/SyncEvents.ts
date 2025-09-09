@@ -4,9 +4,17 @@ export enum SyncScope {
     MediaStation = "MediaStation"
 }
 
+export enum ConnectionStatus {
+    IcmpPingFailed = "icmpPingFailed",
+    TcpConnectionFailed = "tcpConnectionFailed",
+    WebSocketPingFailed = "webSocketPingFailed",
+    RegistrationFailed = "registrationFailed",
+    Online = "online",
+}
+
 export type SyncEvent =
     | { scope: SyncScope.MediaApp; type: "Connecting"; appName: string; ip: string }
-    | { scope: SyncScope.MediaApp; type: "ConnectionStatus"; status: "Online" | "Offline" | "TcpConnectionFailed" | "RegistrationFailed" }
+    | { scope: SyncScope.MediaApp; type: "ConnectionStatus"; status: ConnectionStatus }
     | { scope: SyncScope.MediaApp; type: "MediaSendStart"; ext: string }
     | { scope: SyncScope.MediaApp; type: "MediaSendSuccess"; contentId: number; mediaAppId: number; newId: number }
     | { scope: SyncScope.MediaApp; type: "MediaSendFailed"; contentId: number; mediaAppId: number }

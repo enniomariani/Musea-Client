@@ -4,9 +4,9 @@ import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 import {MediaAppConnectionService} from "src/mcf/renderer/services/MediaAppConnectionService";
-import {ConnectionStatus} from "src/mcf/renderer/network/MediaAppConnectionSteps";
-import {IMediaAppSyncEvent, MediaAppSyncService} from "src/mcf/renderer/network/MediaAppSyncService";
-import {ProgressReporter, SyncEvent, SyncScope} from "src/mcf/renderer/services/mediastation/SyncEvents";
+import {MediaAppConnectionStatus} from "src/mcf/renderer/network/MediaAppConnectionSteps";
+import {MediaAppSyncService} from "src/mcf/renderer/network/MediaAppSyncService";
+import {ConnectionStatus, ProgressReporter, SyncScope} from "src/mcf/renderer/services/mediastation/SyncEvents";
 
 export class MediaStationSyncService {
 
@@ -15,7 +15,7 @@ export class MediaStationSyncService {
     private _mediaAppConnectionService: MediaAppConnectionService;
     private _mediaAppSyncService: MediaAppSyncService;
 
-    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository, mediaAppConnectionService:MediaAppConnectionService, mediaAppSyncService:MediaAppSyncService   ) {
+    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository, mediaAppConnectionService: MediaAppConnectionService, mediaAppSyncService: MediaAppSyncService) {
         this._networkService = networkService;
         this._mediaStationRepo = mediaStationRepo;
         this._mediaAppConnectionService = mediaAppConnectionService;
@@ -81,12 +81,12 @@ export class MediaStationSyncService {
 
         //loop through all existing media apps in the mediastation and try to connect to them and register
         for (const mediaApp of allMediaAppsWithChanges) {
-            progressReporter({scope: SyncScope.MediaApp,type: "Connecting", appName: mediaApp.name, ip:mediaApp.ip})
+            progressReporter({scope: SyncScope.MediaApp, type: "Connecting", appName: mediaApp.name, ip: mediaApp.ip})
 
-            const answer:ConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role:"admin"});
-            onSyncStep(answer);
+            const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role: "admin"});
+            progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
 
-            if(answer !== ConnectionStatus.Online){
+            if (answer !== MediaAppConnectionStatus.Online) {
                 allMediaAppsWereSynced = false;
                 continue;
             }
@@ -109,16 +109,17 @@ export class MediaStationSyncService {
             // send content-file (last step in synchronisation)
             controller = mediaStation.mediaAppRegistry.getController();
 
-            progressReporter({scope: SyncScope.Controller,type: "Connecting", ip:controller.ip});
+            progressReporter({scope: SyncScope.Controller, type: "Connecting", ip: controller.ip});
 
-            const answer:ConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role:"admin"});
-            onSyncStep(answer);
+            const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role: "admin"});
+            progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
+
             console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?", answer);
 
-            if (answer === ConnectionStatus.Online) {
+            if (answer === MediaAppConnectionStatus.Online) {
                 await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
 
-                progressReporter({scope: SyncScope.Controller,type: "SendingContents"});
+                progressReporter({scope: SyncScope.Controller, type: "SendingContents"});
                 json = mediaStation.exportToJSON();
 
                 console.log("SEND CONTENTS-FILE: ", json);
@@ -126,24 +127,31 @@ export class MediaStationSyncService {
                 await this._networkService.sendContentFileTo(controller.ip, json);
                 this._mediaStationRepo.removeCachedMediaStation(mediaStationId);
 
-                progressReporter({scope: SyncScope.Controller,type: "Sent"});
-                progressReporter({scope: SyncScope.MediaStation,type: "Done"});
+                progressReporter({scope: SyncScope.Controller, type: "Sent"});
+                progressReporter({scope: SyncScope.MediaStation, type: "Done"});
 
                 return true;
             }
         }
 
-        progressReporter({scope: SyncScope.MediaStation,type: "Done"});
+        progressReporter({scope: SyncScope.MediaStation, type: "Done"});
         return false;
     }
 
-    private _mapAppEventToStationEvent(appEvt: IMediaAppSyncEvent): SyncEvent {
-        switch (appEvt.type) {
-            case MediaAppSyncEvents.MediaSendStart:
-                return { scope: "Connecting", type: "MediaSendStart", ext: String(appEvt.data.ext) };
-            // map rest...
+    private _mapConnectionStatusToProgress(status: MediaAppConnectionStatus): ConnectionStatus {
+        switch (status) {
+            case MediaAppConnectionStatus.IcmpPingFailed:
+                return ConnectionStatus.IcmpPingFailed;
+            case MediaAppConnectionStatus.TcpConnectionFailed:
+                return ConnectionStatus.TcpConnectionFailed;
+            case MediaAppConnectionStatus.WebSocketPingFailed:
+                return ConnectionStatus.WebSocketPingFailed;
+            case MediaAppConnectionStatus.RegistrationFailed:
+                return ConnectionStatus.RegistrationFailed;
+            case MediaAppConnectionStatus.Online:
+                return ConnectionStatus.Online;
             default:
-                return { scope: "Station", type: "Done", success: false }; // fallback or exhaustive
+                throw Error("ConnectionStatus not valid: " + status);
         }
     }
 

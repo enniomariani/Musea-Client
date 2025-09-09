@@ -2,7 +2,7 @@ import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp} from "../dataStructure/MediaApp";
 import {NetworkService} from "src/mcf/renderer/network/NetworkService";
-import {CheckOptions, ConnectionStatus, ConnectionStep, runPipeline, StepDef
+import {CheckOptions, MediaAppConnectionStatus, ConnectionStep, runPipeline, StepDef
 } from "src/mcf/renderer/network/MediaAppConnectionSteps";
 
 export class MediaAppConnectionService {
@@ -27,19 +27,19 @@ export class MediaAppConnectionService {
      * @param {number} mediaStationId
      * @param {number} mediaAppId
      * @param {CheckOptions} options
-     * @returns {Promise<ConnectionStatus>}
+     * @returns {Promise<MediaAppConnectionStatus>}
      */
-    async checkConnection(mediaStationId: number, mediaAppId: number, options: CheckOptions): Promise<ConnectionStatus> {
+    async checkConnection(mediaStationId: number, mediaAppId: number, options: CheckOptions): Promise<MediaAppConnectionStatus> {
         const ip = this._getMediaApp(mediaStationId, mediaAppId).ip;
 
         const baseSteps: StepDef[] = [
-            { step: ConnectionStep.IcmpPing, run: this._networkService.pcRespondsToPing, failStatus: ConnectionStatus.IcmpPingFailed },
-            { step: ConnectionStep.TcpConnect, run: this._networkService.openConnection, failStatus: ConnectionStatus.TcpConnectionFailed },
-            { step: ConnectionStep.WsPing, run: this._networkService.isMediaAppOnline, failStatus: ConnectionStatus.WebSocketPingFailed },
+            { step: ConnectionStep.IcmpPing, run: this._networkService.pcRespondsToPing, failStatus: MediaAppConnectionStatus.IcmpPingFailed },
+            { step: ConnectionStep.TcpConnect, run: this._networkService.openConnection, failStatus: MediaAppConnectionStatus.TcpConnectionFailed },
+            { step: ConnectionStep.WsPing, run: this._networkService.isMediaAppOnline, failStatus: MediaAppConnectionStatus.WebSocketPingFailed },
         ];
 
         const steps = options.role === "admin"
-            ? [...baseSteps, { step: ConnectionStep.Register, run: this._networkService.sendCheckRegistration, failStatus: ConnectionStatus.RegistrationFailed }]
+            ? [...baseSteps, { step: ConnectionStep.Register, run: this._networkService.sendCheckRegistration, failStatus: MediaAppConnectionStatus.RegistrationFailed }]
             : baseSteps;
 
         return runPipeline(ip, steps, options);
@@ -97,7 +97,7 @@ export class MediaAppConnectionService {
         if (!controller.ip)
             return false;
 
-        if (await this.checkConnection(id, controller.id, {role:"admin"}) !== ConnectionStatus.Online)
+        if (await this.checkConnection(id, controller.id, {role:"admin"}) !== MediaAppConnectionStatus.Online)
             return false;
 
         contentsJSONstr = await this._networkService.getContentFileFrom(controller.ip);
@@ -112,7 +112,7 @@ export class MediaAppConnectionService {
             if (contentsJSON.mediaApps) {
                 for (let i: number = 0; i < contentsJSON.mediaApps.length; i++) {
                     if (contentsJSON.mediaApps[i].role !== MediaApp.ROLE_CONTROLLER)
-                        if (await this.checkConnection(id, contentsJSON.mediaApps[i].ip, {role:"admin"}) !== ConnectionStatus.Online)
+                        if (await this.checkConnection(id, contentsJSON.mediaApps[i].ip, {role:"admin"}) !== MediaAppConnectionStatus.Online)
                             return false;
                 }
             }
