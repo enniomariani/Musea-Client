@@ -11,7 +11,7 @@ export class NetworkService {
     private _onBlockReceivedCallback: Function;
     private _onUnBlockReceivedCallback: Function;
 
-    constructor(networkConnectionHandler: NetworkConnectionHandler = new NetworkConnectionHandler()) {
+    constructor(networkConnectionHandler: NetworkConnectionHandler) {
         this._networkConnectionHandler = networkConnectionHandler;
         this._dataReceivedPromises = new Map();
         this._onConnectionClosedPromises = new Map();
@@ -64,7 +64,7 @@ export class NetworkService {
      * @returns {Promise<boolean>}
      */
     async pcRespondsToPing(ip: string, timeout: number = 3000): Promise<boolean> {
-        console.log("net-service: ping icmp")
+        console.log("net-service: ping icmp: ", this._networkConnectionHandler)
         return new Promise((resolve, reject) => {
             const timer = setTimeout(() => {
                 resolve(false);

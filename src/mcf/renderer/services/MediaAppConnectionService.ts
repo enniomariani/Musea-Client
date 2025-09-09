@@ -33,13 +33,13 @@ export class MediaAppConnectionService {
         const ip = this._getMediaApp(mediaStationId, mediaAppId).ip;
 
         const baseSteps: StepDef[] = [
-            { step: ConnectionStep.IcmpPing, run: this._networkService.pcRespondsToPing, failStatus: MediaAppConnectionStatus.IcmpPingFailed },
-            { step: ConnectionStep.TcpConnect, run: this._networkService.openConnection, failStatus: MediaAppConnectionStatus.TcpConnectionFailed },
-            { step: ConnectionStep.WsPing, run: this._networkService.isMediaAppOnline, failStatus: MediaAppConnectionStatus.WebSocketPingFailed },
+            { step: ConnectionStep.IcmpPing, run: this._networkService.pcRespondsToPing.bind(this._networkService), failStatus: MediaAppConnectionStatus.IcmpPingFailed },
+            { step: ConnectionStep.TcpConnect, run: this._networkService.openConnection.bind(this._networkService), failStatus: MediaAppConnectionStatus.TcpConnectionFailed },
+            { step: ConnectionStep.WsPing, run: this._networkService.isMediaAppOnline.bind(this._networkService), failStatus: MediaAppConnectionStatus.WebSocketPingFailed },
         ];
 
         const steps = options.role === "admin"
-            ? [...baseSteps, { step: ConnectionStep.Register, run: this._networkService.sendCheckRegistration, failStatus: MediaAppConnectionStatus.RegistrationFailed }]
+            ? [...baseSteps, { step: ConnectionStep.Register, run: this._networkService.sendCheckRegistration.bind(this._networkService), failStatus: MediaAppConnectionStatus.RegistrationFailed }]
             : baseSteps;
 
         return runPipeline(ip, steps, options);

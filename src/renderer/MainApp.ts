@@ -1,4 +1,6 @@
 import {MediaClientFramework} from "src/mcf/renderer/MediaClientFramework";
+import {SyncEvent} from "src/mcf/renderer/services/mediastation/SyncEvents";
+import {IConnectionProgress} from "src/mcf/renderer/network/MediaAppConnectionSteps";
 
 export class MainApp extends EventTarget {
     private _backend:IBackend;
@@ -18,12 +20,12 @@ export class MainApp extends EventTarget {
         let firstMediaStationId:number = mcf.mediaStationService.createMediaStation("111");
         console.log("FIRST MEDIA-STATIONID: ", firstMediaStationId)
 
-        console.log("ADD MEDIA-APP WITH ID: ", mcf.mediaAppDataService.createMediaApp(firstMediaStationId, "localhost", "myControllerApp"));
-        console.log("ADD MEDIA-APP WITH ID: ", mcf.mediaAppDataService.createMediaApp(firstMediaStationId, "127.0.0.2", "media-app2"));
+        console.log("ADD MEDIA-APP WITH ID: ", mcf.mediaAppDataService.createMediaApp(firstMediaStationId,  "myControllerApp", "localhost"));
+        console.log("ADD MEDIA-APP WITH ID: ", mcf.mediaAppDataService.createMediaApp(firstMediaStationId,  "media-app2", "127.0.0.1"));
 
-        console.log("IS MEDIA-APP PC REACHABLE?" , await mcf.mediaAppConnectionService.pcRespondsToPing(0,0))
-        mediaAppReachable = await mcf.mediaAppConnectionService.isOnline(0,0);
-        console.log("IS MEDIA-APP APP ONLINE?" , mediaAppReachable);
+        console.log("IS MEDIA-APP PC REACHABLE?" , await mcf.mediaAppConnectionService
+            .checkConnection(0,0, {role: "admin",
+                onProgress:(p: IConnectionProgress)=>{console.log("connection-step: "+ p.step+ p.state);}}))
 
         if(mediaAppReachable){
             await mcf.mediaAppConnectionService.connectAndRegisterToMediaApp(0,0);
@@ -34,7 +36,7 @@ export class MainApp extends EventTarget {
             console.log("GET NAME OF CONTENTS: ", mcf.folderService.getAllContentsInFolder(0,0));
 
             //sync
-            await mcf.mediaStationService.runSync(0, (message:string) =>{console.log("SYNC-MESSAGE: ", message)});
+            await mcf.mediaStationService.runSync(0, (evt:SyncEvent) =>{console.log("SYNC-MESSAGE: ", evt.scope, evt.type, evt)});
         }
     }
 }

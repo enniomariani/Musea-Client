@@ -103,7 +103,8 @@ export class MediaStationSyncService {
             await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
 
             //if the connection could be established to a media-app, send all cached media-files
-            if (await this._mediaAppSyncService.sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, (event: IMediaAppSyncEvent) => this._mapMediaAppSyncToProgress(event)) === false)
+            if (await this._mediaAppSyncService.sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip,
+                (event: IMediaAppSyncEvent) => this._mapMediaAppSyncToProgress(event)) === false)
                 allMediaWereSentSuccesfully = false;
 
             if (allMediaIdsToDelete.has(mediaApp.id))

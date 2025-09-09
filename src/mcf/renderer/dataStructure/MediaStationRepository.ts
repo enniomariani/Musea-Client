@@ -163,8 +163,6 @@ export class MediaStationRepository{
             map.set(mediaStation.name, controllerIp);
         });
 
-        console.log("create map: ", map);
-
         return map;
     }
 

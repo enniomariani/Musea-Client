@@ -15,6 +15,7 @@ import {MediaStationCacheService} from "src/mcf/renderer/services/mediastation/M
 import {MediaStationCommandService} from "src/mcf/renderer/services/mediastation/MediaStationCommandService";
 import {MediaStationContentsService} from "src/mcf/renderer/services/mediastation/MediaStationContentsService";
 import {MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
+import {MediaAppSyncService} from "src/mcf/renderer/network/MediaAppSyncService";
 
 export interface IMediaClientFramework {
     get mediaAppDataService(): MediaAppDataService
@@ -38,6 +39,7 @@ export class MediaClientFramework implements IMediaClientFramework {
     protected _mediaStationService: MediaStationService;
 
     protected _mediaAppDataService: MediaAppDataService;
+    protected _mediaAppSyncService:MediaAppSyncService;
     private _mediaAppConnectionService: MediaAppConnectionService;
 
     protected _folderService: FolderDataService;
@@ -54,13 +56,14 @@ export class MediaClientFramework implements IMediaClientFramework {
         this._networkService = new NetworkService(this._networkConnectionHandler);
         this._contentNetworkService = new MediaAppCommandService(this._networkService);
         this._mediaAppConnectionService = new MediaAppConnectionService(this._mediaStationRepository, this._networkService);
+        this._mediaAppSyncService = new MediaAppSyncService(this._networkService, this._mediaStationRepository);
 
         //media-station facade
         this._mediaStationService = new MediaStationService(new MediaStationDataService(this._mediaStationRepository),
             new MediaStationCacheService(this._mediaStationRepository),
             new MediaStationCommandService(this._mediaStationRepository, this._networkService, this._contentNetworkService),
             new MediaStationContentsService(this._networkService, this._mediaStationRepository),
-            new MediaStationSyncService(this._networkService, this._mediaStationRepository));
+            new MediaStationSyncService(this._networkService, this._mediaStationRepository, this._mediaAppConnectionService, this._mediaAppSyncService));
         this._mediaAppDataService = new MediaAppDataService(this._mediaStationRepository);
 
         this._mediaService = new MediaService(this._mediaStationRepository);
