@@ -10,7 +10,6 @@
     "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js ./tests --maxWorkers=50% --coverage --reporters jest-silent-reporter",
     "dev": "cross-env NODE_ENV=development npm start",
     "start": "electron-forge start",
-    "prepackage": "node clean-build.js",
     "package": "npm run build && electron-forge package",
     "clean": "rimraf build/",
     "postbuild": "node fix-imports.js",

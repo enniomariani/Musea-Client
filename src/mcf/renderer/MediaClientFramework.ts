@@ -16,6 +16,7 @@ import {MediaStationCommandService} from "src/mcf/renderer/services/mediastation
 import {MediaStationContentsService} from "src/mcf/renderer/services/mediastation/MediaStationContentsService";
 import {MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
 import {MediaAppSyncService} from "src/mcf/renderer/network/MediaAppSyncService";
+import {MediaStationEventService} from "src/mcf/renderer/services/mediastation/MediaStationEventService";
 
 export interface IMediaClientFramework {
     get mediaAppDataService(): MediaAppDataService
@@ -63,7 +64,8 @@ export class MediaClientFramework implements IMediaClientFramework {
             new MediaStationCacheService(this._mediaStationRepository),
             new MediaStationCommandService(this._mediaStationRepository, this._networkService, this._contentNetworkService),
             new MediaStationContentsService(this._networkService, this._mediaStationRepository),
-            new MediaStationSyncService(this._networkService, this._mediaStationRepository, this._mediaAppConnectionService, this._mediaAppSyncService));
+            new MediaStationSyncService(this._networkService, this._mediaStationRepository, this._mediaAppConnectionService, this._mediaAppSyncService),
+            new MediaStationEventService(this._networkService));
         this._mediaAppDataService = new MediaAppDataService(this._mediaStationRepository);
 
         this._mediaService = new MediaService(this._mediaStationRepository);
