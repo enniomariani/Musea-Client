@@ -44,7 +44,7 @@ export class MediaStationSyncService {
         let allMediaAppsWereSynced: boolean = true;
         let areAllMediaSentSuccesfully: boolean = true;
 
-        let ip: string;
+        let controller: MediaApp;
         let cachedMediaOfAllMediaStations: Map<number, ICachedMedia[]>;
         let allCachedMedia: ICachedMedia[];
         let allMediaIdsToDelete: Map<number, number[]>
@@ -52,8 +52,6 @@ export class MediaStationSyncService {
         let allMediaToDelete: Map<MediaApp, number[]> = new Map();
 
         let allMediaAppsWithChanges: MediaApp[] = [];
-
-        let registration: string;
 
         //send all media to the media-apps
         cachedMediaOfAllMediaStations = this._mediaStationRepo.mediaCacheHandler.getAllCachedMedia();
@@ -111,9 +109,9 @@ export class MediaStationSyncService {
 
         if (allMediaAppsWereSynced && areAllMediaSentSuccesfully) {
             // send content-file (last step in synchronisation)
-            ip = mediaStation.mediaAppRegistry.getControllerIp();
+            controller = mediaStation.mediaAppRegistry.getController();
 
-            onSyncStep("Sende contents.json an Controller-App: " + ip);
+            onSyncStep("Sende contents.json an Controller-App: " + controller.ip);
 
             const answer:ConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role:"admin"});
             onSyncStep(answer);
@@ -127,7 +125,7 @@ export class MediaStationSyncService {
 
                 console.log("SEND CONTENTS-FILE: ", json);
 
-                await this._networkService.sendContentFileTo(ip, json);
+                await this._networkService.sendContentFileTo(controller.ip, json);
 
                 this._mediaStationRepo.removeCachedMediaStation(mediaStationId);
 

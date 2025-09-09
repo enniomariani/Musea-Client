@@ -155,7 +155,9 @@ describe("sync() ", () => {
         });
 
         mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
-        mockMediaStation.mediaAppRegistry.getControllerIp.mockReturnValueOnce(controllerIp);
+        mockMediaStation.mediaAppRegistry.getController.mockReturnValueOnce(mediaApp1);
+        mockMediaAppConnectionService.checkConnection.mockResolvedValue(ConnectionStatus.Online);
+
     });
 
     it("should call the callback mockOnSyncStep with the text, that the connection is opening and if it succeeded or not", async () => {
