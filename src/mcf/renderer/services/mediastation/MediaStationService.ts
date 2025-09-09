@@ -1,10 +1,10 @@
-// TypeScript
 import {MediaStationDataService} from "src/mcf/renderer/services/mediastation/MediaStationDataService";
 import {MediaStationCacheService} from "src/mcf/renderer/services/mediastation/MediaStationCacheService";
 import {MediaStationCommandService} from "src/mcf/renderer/services/mediastation/MediaStationCommandService";
 import {MediaStationContentsService} from "src/mcf/renderer/services/mediastation/MediaStationContentsService";
 import {MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
 import {ProgressReporter} from "src/mcf/renderer/services/mediastation/SyncEvents";
+import {MediaStationEventService} from "src/mcf/renderer/services/mediastation/MediaStationEventService";
 
 export class MediaStationService {
     private _data: MediaStationDataService;
@@ -12,19 +12,22 @@ export class MediaStationService {
     private _command: MediaStationCommandService;
     private _contents: MediaStationContentsService;
     private _sync: MediaStationSyncService;
+    private _events:MediaStationEventService;
 
     constructor(
         dataService: MediaStationDataService,
         cacheService: MediaStationCacheService,
         commandService: MediaStationCommandService,
         contentsService: MediaStationContentsService,
-        syncService: MediaStationSyncService
+        syncService: MediaStationSyncService,
+        eventService: MediaStationEventService
     ) {
         this._data = dataService;
         this._cache = cacheService;
         this._command = commandService;
         this._contents = contentsService;
         this._sync = syncService;
+        this._events = eventService
     }
 
     // Data
@@ -96,5 +99,14 @@ export class MediaStationService {
     // Sync
     async runSync(mediaStationId: number, progressReporter: ProgressReporter): Promise<boolean> {
         return this._sync.sync(mediaStationId, progressReporter);
+    }
+
+    // Events
+    onBlockReceived(callback:Function): void {
+        this._events.onBlockReceived(callback);
+    }
+
+    onUnBlockReceived(callback:Function): void {
+        this._events.onUnBlockReceived(callback);
     }
 }

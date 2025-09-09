@@ -29,7 +29,7 @@ export class MediaFilesMarkedToDeleteService {
         if (await this._backendFileService.fileExists(filePath))
             allIDs = await this._loadIDsFromFile(filePath);
 
-        if(!allIDs.has(mediaAppId))
+        if (!allIDs.has(mediaAppId))
             allIDs.set(mediaAppId, []);
 
         IDsOfMediaApp = allIDs.get(mediaAppId);
@@ -48,7 +48,7 @@ export class MediaFilesMarkedToDeleteService {
      * @param {number} idToDelete
      * @returns {Promise<void>}
      */
-    async removeID(mediaStationId: number, mediaAppId:number, idToDelete: number): Promise<void> {
+    async removeID(mediaStationId: number, mediaAppId: number, idToDelete: number): Promise<void> {
         let allIDs: Map<number, number[]>;
         let idsOfMediaApp: number[];
         let indexOfIdToDelete: number;
@@ -84,8 +84,6 @@ export class MediaFilesMarkedToDeleteService {
             jsonStr = textDecoder.decode(uint8Array);
             json = JSON.parse(jsonStr);
 
-            console.log("LOAD FILE: ", json)
-
             for (let i = 0; i < json.allIds.length; i++)
                 map.set(json.allIds[i].mediaAppId, json.allIds[i].ids);
         }
@@ -99,9 +97,7 @@ export class MediaFilesMarkedToDeleteService {
         let jsonStr: string;
         let uint8Array: Uint8Array;
 
-        json = {
-            allIds: []
-        }
+        json = {allIds: []}
 
         for (let [key, ids] of allIDs) {
             json.allIds.push(
@@ -111,7 +107,6 @@ export class MediaFilesMarkedToDeleteService {
 
         jsonStr = JSON.stringify(json);
 
-        console.log("SAVE JSON: ", jsonStr)
         uint8Array = textEncoder.encode(jsonStr);
         this._backendFileService.saveFile(filePath, uint8Array);
     }

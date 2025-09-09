@@ -21,9 +21,6 @@ export class MainFileService {
      * @returns {string}
      */
     async saveFile(filePath:string, fileData:Buffer, overrideExistingFile:boolean = true, createDirectory:boolean = true):Promise<string>{
-
-        console.log("MainFileService: save File to: ", filePath)
-
         //this conversion is necessary because ArrayBufferView is a class from the web-context
         const directory:string = path.dirname(filePath);
 
@@ -69,11 +66,8 @@ export class MainFileService {
     }
 
     async loadFile(filePath: string): Promise<Buffer | null> {
-        console.log("Attempting to load file: ", filePath);
-
         try {
             let loadedFile:Buffer = await fs.promises.readFile(filePath);
-            console.log("MainFileService: File loaded successfully!");
             return loadedFile;
         } catch (error) {
             console.error("MainFileService: Failed to load file:", filePath, "Error:", error.message);
@@ -91,7 +85,6 @@ export class MainFileService {
                 return stats.isFile();
             });
 
-            console.log("Files found in folder: ", files)
             return files;
         } else
             return [];

@@ -16,21 +16,17 @@ export class ContentFileService {
         let textEncoder: TextEncoder = new TextEncoder();
         let fileData: Uint8Array = textEncoder.encode(contentJSONstr);
 
-        console.log("Save contents-File: ", pathToFile, contentJSONstr);
         this._backendFileService.saveFile(pathToFile, fileData);
     }
 
     deleteFile(mediaStationId: number): void {
         let pathToFile: string = this._createFilePath(mediaStationId);
-
-        console.log("Delete contents-File: ", pathToFile);
         this._backendFileService.deleteFile(pathToFile);
     }
 
     async fileExists(mediaStationId: number): Promise<boolean> {
         let pathToFile: string = this._createFilePath(mediaStationId);
         let fileExists:boolean = await this._backendFileService.fileExists(pathToFile);
-        console.log("FILE EXISTS? ", fileExists)
         return fileExists;
     }
 
@@ -47,7 +43,6 @@ export class ContentFileService {
         jsonStr = textDecoder.decode(uint8Array);
         json = JSON.parse(jsonStr);
 
-        console.log("Load Media-File: ", json);
         return json;
     }
 

@@ -1,4 +1,3 @@
-// TypeScript
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MediaStationService} from "src/mcf/renderer/services/mediastation/MediaStationService";
 
@@ -8,6 +7,7 @@ describe("MediaStationService", () => {
     let command: any;
     let contents: any;
     let sync: any;
+    let events: any;
     let facade: MediaStationService;
 
     beforeEach(() => {
@@ -42,8 +42,12 @@ describe("MediaStationService", () => {
         sync = {
             sync: jest.fn(),
         };
+        events = {
+            onBlockReceived: jest.fn(),
+            onUnBlockReceived: jest.fn(),
+        };
 
-        facade = new MediaStationService(data, cache, command, contents, sync);
+        facade = new MediaStationService(data, cache, command, contents, sync, events);
     });
 
     afterEach(() => {
@@ -176,6 +180,20 @@ describe("MediaStationService", () => {
 
             expect(sync.sync).toHaveBeenCalledWith(5, cb);
             expect(result).toBe(true);
+        });
+    });
+
+    describe("events", () => {
+        it("onBlockReceived forwards", async () => {
+            const cb = jest.fn();
+            facade.onBlockReceived(cb);
+            expect(events.onBlockReceived).toHaveBeenCalledWith( cb);
+        });
+
+        it("onUnBlockReceived forwards", async () => {
+            const cb = jest.fn();
+            facade.onUnBlockReceived(cb);
+            expect(events.onUnBlockReceived).toHaveBeenCalledWith( cb);
         });
     });
 });

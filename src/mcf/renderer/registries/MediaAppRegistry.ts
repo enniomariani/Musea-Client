@@ -65,7 +65,6 @@ export class MediaAppRegistry {
 
         if (json) {
             for (let i: number = 0; i < json.length; i++) {
-                console.log("FOUND MEDIA-APP IN JSON: ", json[i], json[i].id, json[i].name)
                 if (this._jsonPropertyExists(json[i], "id"))
                     mediaApp = new MediaApp(json[i].id);
                 if (this._jsonPropertyExists(json[i], "name"))

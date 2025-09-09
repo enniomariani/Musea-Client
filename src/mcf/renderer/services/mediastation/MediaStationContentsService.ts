@@ -47,10 +47,8 @@ export class MediaStationContentsService {
 
         let connection: boolean = await this._networkService.openConnection(controllerIP);
 
-        if (!connection) {
-            console.log("NO CONNECTION")
+        if (!connection)
             return MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
-        }
 
         let appIsOnline: boolean = await this._networkService.isMediaAppOnline(controllerIP);
 

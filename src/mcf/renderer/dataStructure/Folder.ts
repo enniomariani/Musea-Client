@@ -28,7 +28,6 @@ export class Folder {
 
         if (this._jsonPropertyExists(json, "subFolders")) {
             for (let i: number = 0; i < json.subFolders.length; i++) {
-                console.log("FOUND SUB-FOLDER: ", json.subFolders[i]);
 
                 if (this._jsonPropertyExists(json.subFolders[i], "id"))
                     subFolder = new Folder(json.subFolders[i].id);
@@ -42,7 +41,6 @@ export class Folder {
 
         if (this._jsonPropertyExists(json, "contents")) {
             for (let i: number = 0; i < json.contents.length; i++) {
-                console.log("FOUND CONTENTS: ", json.contents[i]);
 
                 if (this._jsonPropertyExists(json.contents[i], "id"))
                     content = this._createContent(json.contents[i].id, this._id);
@@ -189,8 +187,6 @@ export class Folder {
         let content: Content;
         let folder: Folder;
 
-        console.log("GET ALL CONTENTS OF FOLDER (and its subfolders): ", this._id)
-
         for (folder of this._subFolders)
             allContents = new Map([...allContents, ...folder.getAllContentIDsInFolderAndSubFolders()])
 
@@ -220,8 +216,6 @@ export class Folder {
         for (const [folderId, contentIds] of allContentIds){
             for (const contentId of contentIds){
                 content = this.findContent(contentId);
-
-                console.log("found content: ", content);
 
                 if(!content)
                     throw new Error("Content with this ID could not be found: " + contentId);

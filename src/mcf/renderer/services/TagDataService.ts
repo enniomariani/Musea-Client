@@ -34,11 +34,8 @@ export class TagDataService {
         for (const [key, contentIdsInFolder] of allContentIds) {
             for (let i: number = 0; i < contentIdsInFolder.length; i++) {
                 content = this._contentManager.getContent(mediaStation, contentIdsInFolder[i]);
-                console.log("CHECK CONTENT FOR TAG-DELETION: ", content.tagIds, content.tagIds.indexOf(id) , id)
                 if (content.tagIds.indexOf(id) !== -1)
                     content.tagIds.splice(content.tagIds.indexOf(id), 1);
-
-                console.log("tag-ids after deletion: ", content.tagIds);
             }
         }
     }

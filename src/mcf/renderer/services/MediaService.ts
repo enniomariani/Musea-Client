@@ -81,7 +81,6 @@ export class MediaService {
      */
     getFileName(mediaStationId:number, contentId:number, mediaAppId:number): string{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-
         return this._mediaManager.getFileName(mediaStation, contentId, mediaAppId);
     }
 
@@ -95,7 +94,6 @@ export class MediaService {
      */
     getMediaType(mediaStationId:number, contentId:number, mediaAppId:number): string{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-
         return this._mediaManager.getMediaType(mediaStation, contentId, mediaAppId);
     }
 

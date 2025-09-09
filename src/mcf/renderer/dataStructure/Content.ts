@@ -31,7 +31,6 @@ export class Content {
 
         if (this._jsonPropertyExists(json, "media")) {
             for (let i: number = 0; i < json.media.length; i++) {
-                console.log("MEDIA found: ", json.media[i]);
 
                 if (this._jsonPropertyExists(json.media[i], "type")) {
                     switch (json.media[i].type) {

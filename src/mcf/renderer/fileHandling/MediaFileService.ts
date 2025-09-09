@@ -26,7 +26,6 @@ export class MediaFileService {
     async saveFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string, payload:Uint8Array):Promise<void>{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
 
-        console.log("Save Media-File: ", this._pathToFolder + pathToFile);
         await this._backendFileService.saveFile(this._pathToFolder + pathToFile, payload);
     }
 
@@ -43,7 +42,6 @@ export class MediaFileService {
     async saveFileByPath(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string, fileInstance:File):Promise<void>{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
 
-        console.log("Save Media-File: ", this._pathToFolder + pathToFile);
         await this._backendFileService.saveFileByPath(this._pathToFolder + pathToFile, fileInstance);
 
         fileInstance = null;
@@ -51,8 +49,6 @@ export class MediaFileService {
 
     deleteFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):void{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
-
-        console.log("Delete Media-File: ",  this._pathToFolder + pathToFile);
         this._backendFileService.deleteFile(this._pathToFolder + pathToFile);
     }
 
@@ -63,7 +59,6 @@ export class MediaFileService {
 
     async loadFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):Promise<Uint8Array | null>{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
-        console.log("Load Media-File: ",  this._pathToFolder + pathToFile);
         return this._backendFileService.loadFile(this._pathToFolder + pathToFile);
     }
 
@@ -74,7 +69,6 @@ export class MediaFileService {
         let allCachedMedia:ICachedMedia[] = [];
 
         for(fileName of fileNames){
-            console.log("FILENAME: ", fileName)
             splittedName = fileName.split(".");
 
             if(splittedName.length !== 3)
