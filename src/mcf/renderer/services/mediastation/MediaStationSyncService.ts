@@ -5,8 +5,17 @@ import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 import {MediaAppConnectionService} from "src/mcf/renderer/services/MediaAppConnectionService";
 import {MediaAppConnectionStatus} from "src/mcf/renderer/network/MediaAppConnectionSteps";
-import {MediaAppSyncService} from "src/mcf/renderer/network/MediaAppSyncService";
-import {ConnectionStatus, ProgressReporter, SyncScope} from "src/mcf/renderer/services/mediastation/SyncEvents";
+import {
+    IMediaAppSyncEvent,
+    MediaAppSyncEventType,
+    MediaAppSyncService
+} from "src/mcf/renderer/network/MediaAppSyncService";
+import {
+    ConnectionStatus,
+    ProgressReporter,
+    SyncEvent,
+    SyncScope
+} from "src/mcf/renderer/services/mediastation/SyncEvents";
 
 export class MediaStationSyncService {
 
@@ -40,7 +49,7 @@ export class MediaStationSyncService {
         let json: string;
         let mediaApp: MediaApp;
         let allMediaAppsWereSynced: boolean = true;
-        let areAllMediaSentSuccesfully: boolean = true;
+        let allMediaWereSentSuccesfully: boolean = true;
 
         let controller: MediaApp;
         let cachedMediaOfAllMediaStations: Map<number, ICachedMedia[]>;
@@ -94,35 +103,29 @@ export class MediaStationSyncService {
             await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
 
             //if the connection could be established to a media-app, send all cached media-files
-            // if (await this._mediaAppSyncService.sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, onSyncStep) === false)
-            //     areAllMediaSentSuccesfully = false;
+            if (await this._mediaAppSyncService.sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, (event: IMediaAppSyncEvent) => this._mapMediaAppSyncToProgress(event)) === false)
+                allMediaWereSentSuccesfully = false;
 
-            // if (allMediaIdsToDelete.has(mediaApp.id))
-            //     await this._mediaAppSyncService.sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id, allMediaIdsToDelete.get(mediaApp.id), mediaApp.ip, onSyncStep);
+            if (allMediaIdsToDelete.has(mediaApp.id))
+                await this._mediaAppSyncService.sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id, allMediaIdsToDelete.get(mediaApp.id), mediaApp.ip, (event: IMediaAppSyncEvent) => this._mapMediaAppSyncToProgress(event));
 
             this._mediaStationRepo.cacheMediaStation(mediaStationId);
         }
 
-        console.log("CHECK IF CONTENTS.JSON WILL BE SENT: ", allMediaAppsWereSynced, areAllMediaSentSuccesfully)
-
-        if (allMediaAppsWereSynced && areAllMediaSentSuccesfully) {
+        if (allMediaAppsWereSynced && allMediaWereSentSuccesfully) {
             // send content-file (last step in synchronisation)
             controller = mediaStation.mediaAppRegistry.getController();
 
             progressReporter({scope: SyncScope.Controller, type: "Connecting", ip: controller.ip});
 
-            const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role: "admin"});
+            const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, controller.id, {role: "admin"});
             progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
 
-            console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?", answer);
-
             if (answer === MediaAppConnectionStatus.Online) {
-                await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
+                await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, controller.id, "admin");
 
                 progressReporter({scope: SyncScope.Controller, type: "SendingContents"});
                 json = mediaStation.exportToJSON();
-
-                console.log("SEND CONTENTS-FILE: ", json);
 
                 await this._networkService.sendContentFileTo(controller.ip, json);
                 this._mediaStationRepo.removeCachedMediaStation(mediaStationId);
@@ -151,8 +154,26 @@ export class MediaStationSyncService {
             case MediaAppConnectionStatus.Online:
                 return ConnectionStatus.Online;
             default:
-                throw Error("ConnectionStatus not valid: " + status);
+                throw new Error("ConnectionStatus not valid: " + status);
         }
     }
 
+    private _mapMediaAppSyncToProgress(event: IMediaAppSyncEvent): SyncEvent {
+        switch (event.type) {
+            case MediaAppSyncEventType.LoadMediaStart:
+                return {scope: SyncScope.MediaApp, type: "LoadMediaStart", ext: event.data.fileExt as string};
+            case MediaAppSyncEventType.MediaSendStart:
+                return { scope: SyncScope.MediaApp, type: "MediaSendStart" };
+            case MediaAppSyncEventType.MediaSending:
+                return { scope: SyncScope.MediaApp, type: "MediaSendingProgress", progressPoint:event.data.progress as string }
+            case MediaAppSyncEventType.MediaSendSuccess:
+                return { scope: SyncScope.MediaApp, type: "MediaSendSuccess" };
+            case MediaAppSyncEventType.MediaSendFailed:
+                return { scope: SyncScope.MediaApp, type: "MediaSendFailed" };
+            case MediaAppSyncEventType.DeleteStart:
+                return { scope: SyncScope.MediaApp, type: "DeleteStart", mediaAppId: event.data.mediaAppid as number, id: event.data.id as number };
+            default:
+                throw new Error("Event not valid: ", event.type );
+        }
+    }
 }

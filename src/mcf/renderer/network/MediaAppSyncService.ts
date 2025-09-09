@@ -5,7 +5,7 @@ import {IMedia} from "src/mcf/renderer/dataStructure/Media";
 import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
 
-enum MediaAppSyncEvents {
+export enum MediaAppSyncEventType {
     LoadMediaStart = "LoadMediaStart",
     MediaSendStart = "MediaSendStart",
     MediaSending = "MediaSending",
@@ -15,7 +15,7 @@ enum MediaAppSyncEvents {
 }
 
 export interface IMediaAppSyncEvent {
-    type: MediaAppSyncEvents;
+    type: MediaAppSyncEventType;
     data?: Record<string, unknown>;
 }
 export interface IMediaAppProgress {
@@ -42,18 +42,18 @@ export class MediaAppSyncService {
             return true;
 
         for (const cachedMedia of allCachedMedia) {
-            reporter({ type: MediaAppSyncEvents.LoadMediaStart, data: { fileExt: cachedMedia.fileExtension } });
+            reporter({ type: MediaAppSyncEventType.LoadMediaStart, data: { fileExt: cachedMedia.fileExtension } });
 
             fileData = await this._mediaStationRepo.mediaCacheHandler.getCachedMediaFile(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId, cachedMedia.fileExtension);
 
-            reporter({ type: MediaAppSyncEvents.MediaSendStart });
+            reporter({ type: MediaAppSyncEventType.MediaSendStart });
             idOnMediaApp = await this._networkService.sendMediaFileToIp(ipMediaApp, cachedMedia.fileExtension, fileData,240000,
-                (msg:string) => {console.log("send progress: ", msg); reporter({type:MediaAppSyncEvents.MediaSending, data: {progress: msg}});});
+                (msg:string) => {console.log("send progress: ", msg); reporter({type:MediaAppSyncEventType.MediaSending, data: {progress: msg}});});
 
             fileData = null;    //to avoid memory leaks
 
             if (idOnMediaApp !== null && idOnMediaApp !== undefined && idOnMediaApp >= 0) {
-                reporter({ type: MediaAppSyncEvents.MediaSendSuccess });
+                reporter({ type: MediaAppSyncEventType.MediaSendSuccess });
 
                 content = mediaStation.rootFolder.findContent(cachedMedia.contentId);
                 media = content.media.get(cachedMedia.mediaAppId);
@@ -66,7 +66,7 @@ export class MediaAppSyncService {
             } else {
                 areAllMediaSentSuccesfully = false;
                 console.log("MEDIUM KONNTE NICHT GESENDET ODER EMPFANGEN WERDEN!")
-                reporter({ type: MediaAppSyncEvents.MediaSendFailed });
+                reporter({ type: MediaAppSyncEventType.MediaSendFailed });
             }
         }
         return areAllMediaSentSuccesfully;
@@ -74,7 +74,7 @@ export class MediaAppSyncService {
 
     async sendCommandDeleteMediaToMediaApps(mediaStationId: number, mediaAppId: number, allMediaIdsToDelete: number[], ipMediaApp: string, reporter: IMediaAppProgress): Promise<void> {
         for (const id of allMediaIdsToDelete) {
-            reporter({ type: MediaAppSyncEvents.DeleteStart, data: { id: id, mediaAppId: mediaAppId.toString() } });
+            reporter({ type: MediaAppSyncEventType.DeleteStart, data: { id: id, mediaAppId: mediaAppId.toString() } });
 
             await this._networkService.sendDeleteMediaTo(ipMediaApp, id);
             await this._mediaStationRepo.deleteStoredMediaID(mediaStationId, mediaAppId, id);
