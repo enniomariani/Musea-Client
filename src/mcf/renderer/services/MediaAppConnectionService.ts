@@ -2,32 +2,8 @@ import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp} from "../dataStructure/MediaApp";
 import {NetworkService} from "src/mcf/renderer/network/NetworkService";
-
-export enum ConnectionStep {
-    IcmpPing = "icmpPing",
-    TcpConnect = "tcpConnect",
-    WsPing = "wsPing",
-    Register = "register",
-}
-
-export enum ConnectionStatus {
-    IcmpPingFailed = "icmpPingFailed",
-    TcpConnectionFailed = "tcpConnectionFailed",
-    WebSocketPingFailed = "webSocketPingFailed",
-    RegistrationFailed = "registrationFailed",
-    Online = "online",
-}
-
-export enum StepState {
-    Started = "started",
-    Succeeded = "succeeded",
-    Failed = "failed"
-}
-
-export interface IConnectionProgress {
-    step: ConnectionStep;
-    state: StepState;
-}
+import {CheckOptions, ConnectionStatus, ConnectionStep, runPipeline, StepDef
+} from "src/mcf/renderer/network/MediaAppConnectionSteps";
 
 export class MediaAppConnectionService {
     private _mediaStationRepository: MediaStationRepository;
@@ -39,78 +15,29 @@ export class MediaAppConnectionService {
     }
 
     /**
-     * Check connection to media-app in 3 Steps:
+     * Check connection to media-app in 4 Steps:
      *
      * 1) ICMP echo (host reachability), fails if client pc is not reachable or ICMP-port is blocked.
      *      Note: ICMP can be blocked even when the service is reachable. However here it is mandatory.
      * 2) TCP connection to the ws-port, fails if client pc is not reachable or TCP-port is blocked.
      * 3) Send ping-signal per WebSocket and wait for pong
+     * 4) Send registration-signal and wait for response (ONLY FOR ADMIN-ROLE)
      * -> if everything passes, the app is considered online
      */
-    async checkConnectionAsUserApp(mediaStationId: number, mediaAppId: number, onProgress?: (p: IConnectionProgress) => void): Promise<ConnectionStatus> {
-        let ip: string = this._getMediaApp(mediaStationId, mediaAppId).ip;
-        return await this._checkConnectionAsUserApp(ip, onProgress);
-    }
+    async checkConnection(mediaStationId: number, mediaAppId: number, opts: CheckOptions): Promise<ConnectionStatus> {
+        const ip = this._getMediaApp(mediaStationId, mediaAppId).ip;
 
-    /**
-     * Check connection to media-app in 4 Steps:
-     *
-     * 1 -3) see checkConnectionAsUserApp()
-     * 4) Send registration-signal and wait for response
-     * -> if everything passes, the app is considered online
-     */
-    async checkConnectionAsAdminApp(mediaStationId: number, mediaAppId: number, onProgress?: (p: IConnectionProgress) => void): Promise<ConnectionStatus> {
-        let ip: string = this._getMediaApp(mediaStationId, mediaAppId).ip;
-        return await this._checkConnectionAsAdminApp(ip, onProgress);
-    }
+        const baseSteps: StepDef[] = [
+            { step: ConnectionStep.IcmpPing, run: this._networkService.pcRespondsToPing, failStatus: ConnectionStatus.IcmpPingFailed },
+            { step: ConnectionStep.TcpConnect, run: this._networkService.openConnection, failStatus: ConnectionStatus.TcpConnectionFailed },
+            { step: ConnectionStep.WsPing, run: this._networkService.isMediaAppOnline, failStatus: ConnectionStatus.WebSocketPingFailed },
+        ];
 
-    private async _checkConnectionAsAdminApp(ip: string, onProgress?: (p: IConnectionProgress) => void): Promise<ConnectionStatus> {
-        let stepState: StepState;
-        let result: ConnectionStatus = await this._checkConnectionAsUserApp(ip, onProgress);
+        const steps = opts.role === "admin"
+            ? [...baseSteps, { step: ConnectionStep.Register, run: this._networkService.sendCheckRegistration, failStatus: ConnectionStatus.RegistrationFailed }]
+            : baseSteps;
 
-        if (result !== ConnectionStatus.Online)
-            return result;
-
-        stepState = await this._checkConnectionStep(ip, this._networkService.sendCheckRegistration, ConnectionStep.Register, onProgress);
-
-        if (stepState === StepState.Failed)
-            return ConnectionStatus.RegistrationFailed;
-        else
-            return ConnectionStatus.Online;
-    }
-
-    private async _checkConnectionAsUserApp(ip: string, onProgress?: (p: IConnectionProgress) => void): Promise<ConnectionStatus> {
-        let stepState: StepState;
-
-        stepState = await this._checkConnectionStep(ip, this._networkService.pcRespondsToPing, ConnectionStep.IcmpPing, onProgress);
-
-        if (stepState === StepState.Failed)
-            return ConnectionStatus.IcmpPingFailed;
-
-        stepState = await this._checkConnectionStep(ip, this._networkService.openConnection, ConnectionStep.TcpConnect, onProgress);
-
-        if (stepState === StepState.Failed)
-            return ConnectionStatus.TcpConnectionFailed;
-
-        stepState = await this._checkConnectionStep(ip, this._networkService.isMediaAppOnline, ConnectionStep.WsPing, onProgress);
-
-        if (stepState === StepState.Failed)
-            return ConnectionStatus.WebSocketPingFailed;
-
-        return ConnectionStatus.Online;
-    }
-
-    private async _checkConnectionStep(ip: string, stepFunc: (ip: string) => Promise<boolean>, step: ConnectionStep, onProgress?: (p: IConnectionProgress) => void): Promise<StepState> {
-        if (onProgress)
-            onProgress({step: step, state: StepState.Started});
-
-        const wasSuccesful: boolean = await stepFunc(ip);
-        const stepState: StepState = wasSuccesful ? StepState.Succeeded : StepState.Failed;
-
-        if (onProgress)
-            onProgress({step: step, state: stepState});
-
-        return stepState;
+        return runPipeline(ip, steps, opts);
     }
 
     /**
@@ -158,17 +85,17 @@ export class MediaAppConnectionService {
      */
     async checkOnlineStatusOfAllMediaApps(id: number): Promise<boolean> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(id);
-        const controllerIP: string = mediaStation.mediaAppRegistry.getControllerIp();
+        const controller:MediaApp = mediaStation.mediaAppRegistry.get(0);
         let contentsJSONstr: string;
         let contentsJSON: any;
 
-        if (!controllerIP)
+        if (!controller.ip)
             return false;
 
-        if (await this._checkConnectionAsAdminApp(controllerIP) !== ConnectionStatus.Online)
+        if (await this.checkConnection(id, controller.id, {role:"admin"}) !== ConnectionStatus.Online)
             return false;
 
-        contentsJSONstr = await this._networkService.getContentFileFrom(controllerIP);
+        contentsJSONstr = await this._networkService.getContentFileFrom(controller.ip);
 
         if (contentsJSONstr === null)
             return false;
@@ -180,12 +107,12 @@ export class MediaAppConnectionService {
             if (contentsJSON.mediaApps) {
                 for (let i: number = 0; i < contentsJSON.mediaApps.length; i++) {
                     if (contentsJSON.mediaApps[i].role !== MediaApp.ROLE_CONTROLLER)
-                        if (await this._checkConnectionAsAdminApp(contentsJSON.mediaApps[i].ip) !== ConnectionStatus.Online)
+                        if (await this.checkConnection(id, contentsJSON.mediaApps[i].ip, {role:"admin"}) !== ConnectionStatus.Online)
                             return false;
                 }
             }
 
-            await this._networkService.unregisterAndCloseConnection(controllerIP);
+            await this._networkService.unregisterAndCloseConnection(controller.ip);
         }
         return true;
     }

@@ -253,11 +253,13 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
     };
 
     beforeEach(() => {
+        let controllerApp:MediaApp = new MediaApp(0);
+        controllerApp.ip = controllerIp;
         answer = null;
         mockMediaStation = new MockMediaStation(0);
 
         mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
-        mockMediaStation.mediaAppRegistry.getControllerIp.mockReturnValue(controllerIp);
+        mockMediaStation.mediaAppRegistry.get.mockReturnValue(controllerApp);
         mockNetworkService.openConnection.mockImplementation((ip: string) => {
             if (ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
                 return true;
