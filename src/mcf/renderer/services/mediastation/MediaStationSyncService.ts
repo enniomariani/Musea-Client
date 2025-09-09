@@ -7,6 +7,7 @@ import {IMedia} from "src/mcf/renderer/dataStructure/Media";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 import {MediaAppConnectionService} from "src/mcf/renderer/services/MediaAppConnectionService";
 import {ConnectionStatus} from "src/mcf/renderer/network/MediaAppConnectionSteps";
+import {MediaAppSyncService} from "src/mcf/renderer/network/MediaAppSyncService";
 
 export interface IOnSyncStep {
     (message: string): void
@@ -17,11 +18,13 @@ export class MediaStationSyncService {
     private _networkService: NetworkService;
     private _mediaStationRepo: MediaStationRepository;
     private _mediaAppConnectionService: MediaAppConnectionService;
+    private _mediaAppSyncService: MediaAppSyncService;
 
-    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository, mediaAppConnectionService:MediaAppConnectionService) {
+    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository, mediaAppConnectionService:MediaAppConnectionService, mediaAppSyncService:MediaAppSyncService   ) {
         this._networkService = networkService;
         this._mediaStationRepo = mediaStationRepo;
         this._mediaAppConnectionService = mediaAppConnectionService;
+        this._mediaAppSyncService = mediaAppSyncService;
     }
 
     /**
@@ -96,11 +99,11 @@ export class MediaStationSyncService {
             await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
 
             //if the connection could be established to a media-app, send all cached media-files
-            if (await this._sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, onSyncStep) === false)
-                areAllMediaSentSuccesfully = false;
+            // if (await this._mediaAppSyncService.sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, onSyncStep) === false)
+            //     areAllMediaSentSuccesfully = false;
 
-            if (allMediaIdsToDelete.has(mediaApp.id))
-                await this._sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id, allMediaIdsToDelete.get(mediaApp.id), mediaApp.ip, onSyncStep);
+            // if (allMediaIdsToDelete.has(mediaApp.id))
+            //     await this._mediaAppSyncService.sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id, allMediaIdsToDelete.get(mediaApp.id), mediaApp.ip, onSyncStep);
 
             this._mediaStationRepo.cacheMediaStation(mediaStationId);
         }
@@ -135,57 +138,5 @@ export class MediaStationSyncService {
         }
 
         return false;
-    }
-
-    private async _sendMediaFilesToMediaApp(mediaStation: MediaStation, allCachedMedia: ICachedMedia[], ipMediaApp: string, onSyncStep: IOnSyncStep): Promise<boolean> {
-        let fileData: Uint8Array;
-        let idOnMediaApp: number;
-        let content: Content;
-        let media: IMedia;
-        let areAllMediaSentSuccesfully: boolean = true;
-
-        if (!allCachedMedia)
-            return true;
-
-        for (const cachedMedia of allCachedMedia) {
-            onSyncStep("Lade Medium: " + cachedMedia.fileExtension);
-            console.log("SEND MEDIA: ", cachedMedia);
-            fileData = await this._mediaStationRepo.mediaCacheHandler.getCachedMediaFile(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId, cachedMedia.fileExtension);
-
-            onSyncStep("Medium geladen, sende...");
-            idOnMediaApp = await this._networkService.sendMediaFileToIp(ipMediaApp, cachedMedia.fileExtension, fileData,240000,
-                onSyncStep);
-            console.log("RECEIVED ID FROM MEDIA-APP: ", idOnMediaApp);
-
-            fileData = null;
-
-            if (idOnMediaApp !== null && idOnMediaApp !== undefined && idOnMediaApp >= 0) {
-                onSyncStep("Medium erfolgreich gesendet.");
-
-                content = mediaStation.rootFolder.findContent(cachedMedia.contentId);
-                media = content.media.get(cachedMedia.mediaAppId);
-
-                media.idOnMediaApp = idOnMediaApp;
-
-                console.log("SET NEW ID FOR MEDIA: ", content.id, media.idOnMediaApp, idOnMediaApp)
-
-                this._mediaStationRepo.mediaCacheHandler.deleteCachedMedia(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId);
-            } else {
-                areAllMediaSentSuccesfully = false;
-                console.log("MEDIUM KONNTE NICHT GESENDET ODER EMPFANGEN WERDEN!")
-                onSyncStep("Medium konnte nicht gesendet oder empfangen werden!");
-            }
-        }
-        return areAllMediaSentSuccesfully;
-    }
-
-    private async _sendCommandDeleteMediaToMediaApps(mediaStationId: number, mediaAppId: number, allMediaIdsToDelete: number[], ipMediaApp: string, onSyncStep: IOnSyncStep): Promise<void> {
-        for (const id of allMediaIdsToDelete) {
-            onSyncStep("Lösche ID: " + id + " in der Medien-App: " + mediaAppId.toString());
-            console.log("DELETE MEDIA: ", id);
-
-            await this._networkService.sendDeleteMediaTo(ipMediaApp, id);
-            await this._mediaStationRepo.deleteStoredMediaID(mediaStationId, mediaAppId, id);
-        }
     }
 }

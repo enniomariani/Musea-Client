@@ -10,20 +10,21 @@ import {MockContent} from "__mocks__/mcf/renderer/dataStructure/MockContent";
 import {Image} from "src/mcf/renderer/dataStructure/Media";
 import {IOnSyncStep, MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
-import {MediaAppConnectionService} from "src/mcf/renderer/services/MediaAppConnectionService";
 import {MockMediaAppConnectionService} from "__mocks__/mcf/renderer/network/MockMediaAppConnectionService";
 import {ConnectionStatus} from "src/mcf/renderer/network/MediaAppConnectionSteps";
+import {MockMediaAppSyncService} from "__mocks__/mcf/renderer/network/MockMediaAppSyncService";
 
 let service: MediaStationSyncService;
 let mockMediaStationRepo: MockMediaStationRepository;
 let mockNetworkService: MockNetworkService;
 let mockMediaAppConnectionService: MockMediaAppConnectionService;
+let mockMediaAppSyncService: MockMediaAppSyncService;
 
 beforeEach(() => {
     mockNetworkService = new MockNetworkService();
     mockMediaStationRepo = new MockMediaStationRepository();
     mockMediaAppConnectionService = new MockMediaAppConnectionService();
-    service = new MediaStationSyncService(mockNetworkService, mockMediaStationRepo, mockMediaAppConnectionService);
+    service = new MediaStationSyncService(mockNetworkService, mockMediaStationRepo, mockMediaAppConnectionService, mockMediaAppSyncService);
 });
 
 afterEach(() => {
