@@ -158,10 +158,6 @@ describe("sync() ", () => {
         mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
         mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
 
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
-
         mockMediaStation.mediaAppRegistry.getControllerIp.mockReturnValueOnce(controllerIp);
     });
 
@@ -227,22 +223,6 @@ describe("sync() ", () => {
         mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
 
         let answer: boolean = await service.sync(0, mockOnSyncStep);
-
-        expect(answer).toBe(false);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, "Medien-App ist erreichbar, aber von einer anderen App blockiert.");
-    });
-
-    it("should call the callback mockOnSyncStep with a text that the registration failed, if it failed for a media-app as USER-app", async () => {
-        mockNetworkService.openConnection = jest.fn();
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationUserApp = jest.fn();
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("no")));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
-
-        let answer: boolean = await service.sync(0, mockOnSyncStep, "user");
 
         expect(answer).toBe(false);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, "Medien-App ist erreichbar, aber von einer anderen App blockiert.");
@@ -363,37 +343,6 @@ describe("sync() ", () => {
 
         expect(answer).toBe(false)
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(19, "Controller-App ist erreichbar, aber von einer anderen App blockiert.");
-    });
-
-    it("should call the callback mockOnSyncStep with a text if the connection to the controller could be opened but the registration failed as USER-app", async () => {
-        mockNetworkService.openConnection = jest.fn();
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.sendRegistrationUserApp = jest.fn();
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce(new Promise((resolve) => resolve("no")));
-
-        mockNetworkService.sendMediaFileToIp = jest.fn();
-        mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
-
-        let answer: boolean = await service.sync(0, mockOnSyncStep, "user");
-
-        expect(answer).toBe(false)
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(19, "Controller-App ist erreichbar, aber von einer anderen App blockiert.");
-    });
-
-    it("should throw an error if a wrong role is passed", async () => {
-        mockNetworkService.openConnection = jest.fn();
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-
-        mockNetworkService.sendMediaFileToIp = jest.fn();
-        mockNetworkService.sendMediaFileToIp.mockReturnValue(44);
-
-        await expect(service.sync(0, mockOnSyncStep, "wrongRole")).rejects.toThrowError("Role not valid: wrongRole");
     });
 
     it("should pass the json-string and the controller-ip from the mediaStation object to the network-service, if controller is reachable and , if all mediaApps have been synced", async () => {

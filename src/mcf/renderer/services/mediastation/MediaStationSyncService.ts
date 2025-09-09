@@ -27,12 +27,13 @@ export class MediaStationSyncService {
      *
      * After that it sends the contents-json with the actualized IDs to the controller-app
      *
+     * Attention: always registers as admin-app, never as user-app!
+     *
      * @param {number} mediaStationId
      * @param {IOnSyncStep} onSyncStep  Is called after every new network-operation and receives a string with info about what is going on
-     * @param {string} role either "admin" or "user": determines if the app registers as admin- or user-app on the media-apps
      * @returns {Promise<void>}
      */
-    async sync(mediaStationId: number, onSyncStep: IOnSyncStep, role:string  = "admin"): Promise<boolean> {
+    async sync(mediaStationId: number, onSyncStep: IOnSyncStep): Promise<boolean> {
         console.log("SYNC MEDIA STATION: ", mediaStationId)
         const mediaStation: MediaStation = this._mediaStationRepo.requireMediaStation(mediaStationId);
         let json: string;
@@ -51,9 +52,6 @@ export class MediaStationSyncService {
         let allMediaAppsWithChanges: MediaApp[] = [];
 
         let registration: string;
-
-        if(role !== "admin" && role !== "user")
-            throw new Error("Role not valid: " + role);
 
         //send all media to the media-apps
         cachedMediaOfAllMediaStations = this._mediaStationRepo.mediaCacheHandler.getAllCachedMedia();
@@ -95,10 +93,7 @@ export class MediaStationSyncService {
                 continue;
             }
 
-            if(role === "admin")
-                registration = await this._networkService.sendRegistrationAdminApp(mediaApp.ip);
-            else if(role === "user")
-                registration = await this._networkService.sendRegistrationUserApp(mediaApp.ip);
+            registration = await this._networkService.sendRegistrationAdminApp(mediaApp.ip);
 
             console.log("got registration back: ", registration)
 
@@ -132,12 +127,7 @@ export class MediaStationSyncService {
             if (connectionIsOpen) {
                 onSyncStep("Verbindung mit Controller-App hergestellt. Sende Registrierungs-Anfrage...");
 
-                if(role === "admin")
-                    registration = await this._networkService.sendRegistrationAdminApp(ip);
-                else if(role === "user")
-                    registration = await this._networkService.sendRegistrationUserApp(ip);
-                else
-                    throw new Error("Role not valid: " + role);
+                registration = await this._networkService.sendRegistrationAdminApp(ip);
 
                 console.log("beim controller registriert? ", registration)
 
