@@ -170,8 +170,8 @@ describe("sync() ", () => {
         expect(answer).toBe(false)
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(1, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp1.name + "/" + mediaApp1.ip);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(2, ConnectionStatus.Online);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(9, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp2.name + "/" + mediaApp2.ip);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, ConnectionStatus.TcpConnectionFailed);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(3, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp2.name + "/" + mediaApp2.ip);
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(4, ConnectionStatus.TcpConnectionFailed);
     });
 
     it("should send the file-data to the media-app if the connection is open", async () => {

@@ -2,16 +2,11 @@ import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
 import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
-import {Content} from "src/mcf/renderer/dataStructure/Content";
-import {IMedia} from "src/mcf/renderer/dataStructure/Media";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 import {MediaAppConnectionService} from "src/mcf/renderer/services/MediaAppConnectionService";
 import {ConnectionStatus} from "src/mcf/renderer/network/MediaAppConnectionSteps";
-import {MediaAppSyncService} from "src/mcf/renderer/network/MediaAppSyncService";
-
-export interface IOnSyncStep {
-    (message: string): void
-}
+import {IMediaAppSyncEvent, MediaAppSyncService} from "src/mcf/renderer/network/MediaAppSyncService";
+import {ProgressReporter, SyncEvent, SyncScope} from "src/mcf/renderer/services/mediastation/SyncEvents";
 
 export class MediaStationSyncService {
 
@@ -37,10 +32,10 @@ export class MediaStationSyncService {
      * Attention: always registers as admin-app, never as user-app!
      *
      * @param {number} mediaStationId
-     * @param {IOnSyncStep} onSyncStep  Is called after every new network-operation and receives a string with info about what is going on
+     * @param {ProgressReporter} progressReporter  Is called after every new network-operation an event with info about what is going on
      * @returns {Promise<void>}
      */
-    async sync(mediaStationId: number, onSyncStep: IOnSyncStep): Promise<boolean> {
+    async sync(mediaStationId: number, progressReporter: ProgressReporter): Promise<boolean> {
         const mediaStation: MediaStation = this._mediaStationRepo.requireMediaStation(mediaStationId);
         let json: string;
         let mediaApp: MediaApp;
@@ -86,7 +81,7 @@ export class MediaStationSyncService {
 
         //loop through all existing media apps in the mediastation and try to connect to them and register
         for (const mediaApp of allMediaAppsWithChanges) {
-            onSyncStep("Verbindung mit Medien-App wird aufgebaut: " + mediaApp.name + "/" + mediaApp.ip);
+            progressReporter({scope: SyncScope.MediaApp,type: "Connecting", appName: mediaApp.name, ip:mediaApp.ip})
 
             const answer:ConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role:"admin"});
             onSyncStep(answer);
@@ -114,7 +109,7 @@ export class MediaStationSyncService {
             // send content-file (last step in synchronisation)
             controller = mediaStation.mediaAppRegistry.getController();
 
-            onSyncStep("Sende contents.json an Controller-App: " + controller.ip);
+            progressReporter({scope: SyncScope.Controller,type: "Connecting", ip:controller.ip});
 
             const answer:ConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role:"admin"});
             onSyncStep(answer);
@@ -123,20 +118,33 @@ export class MediaStationSyncService {
             if (answer === ConnectionStatus.Online) {
                 await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
 
-                onSyncStep("Verbindung mit Controller-App hergestellt. Sende Daten...");
+                progressReporter({scope: SyncScope.Controller,type: "SendingContents"});
                 json = mediaStation.exportToJSON();
 
                 console.log("SEND CONTENTS-FILE: ", json);
 
                 await this._networkService.sendContentFileTo(controller.ip, json);
-
                 this._mediaStationRepo.removeCachedMediaStation(mediaStationId);
 
-                onSyncStep("Daten übermittelt.");
+                progressReporter({scope: SyncScope.Controller,type: "Sent"});
+                progressReporter({scope: SyncScope.MediaStation,type: "Done"});
+
                 return true;
             }
         }
 
+        progressReporter({scope: SyncScope.MediaStation,type: "Done"});
         return false;
     }
+
+    private _mapAppEventToStationEvent(appEvt: IMediaAppSyncEvent): SyncEvent {
+        switch (appEvt.type) {
+            case MediaAppSyncEvents.MediaSendStart:
+                return { scope: "Connecting", type: "MediaSendStart", ext: String(appEvt.data.ext) };
+            // map rest...
+            default:
+                return { scope: "Station", type: "Done", success: false }; // fallback or exhaustive
+        }
+    }
+
 }
