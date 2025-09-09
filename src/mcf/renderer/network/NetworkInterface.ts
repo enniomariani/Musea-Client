@@ -47,7 +47,7 @@ export class NetworkInterface extends EventTarget {
 
         //abort if the Websocket exists and is connecting (state 0), opening (state 1) or closing (state 2)
         if (this._connection !== null && this._connection.readyState !== 3) {
-            console.log("WebSocketConnection: connection already exists and is not closed!");
+            console.info("WebSocketConnection: connection already exists and is not closed!");
             return;
         }
 
@@ -57,7 +57,6 @@ export class NetworkInterface extends EventTarget {
         this._onDataReceivedCallBack = onDataReceived;
 
         try {
-            console.log("create new connection: ", url);
             this._connection = new WebSocket(url);
 
             // Close WebSocket connection if it could not be established after a certain time
@@ -84,7 +83,6 @@ export class NetworkInterface extends EventTarget {
     }
 
     private _onConnectionOpen(): void {
-        console.log("WebSocketConnection: WebSocket open to: ", this._connection.url);
         this._connected = true;
 
         clearTimeout(this._connectionTimeoutTimer);
@@ -96,7 +94,6 @@ export class NetworkInterface extends EventTarget {
     }
 
     private _onConnectionClosed(): void {
-        console.log("WebSocketConnection: WebSocket CLOSED");
         this._connected = false;
 
         clearTimeout(this._connectionTimeoutTimer);
@@ -114,7 +111,6 @@ export class NetworkInterface extends EventTarget {
     }
 
     private _onConnectionError(): void {
-        console.log("WebSocketConnection: WebSocket error");
         this._connected = false;
 
         clearTimeout(this._connectionTimeoutTimer);
@@ -126,8 +122,6 @@ export class NetworkInterface extends EventTarget {
     }
 
     private _onDataReceived(e): void {
-        console.log("WebSocketConnection: Data received: ", e.data);
-
         let dataAsArray: Uint8Array;
 
         //if the received data is a string, convert it to a Uint8Array (I always send data as Uint8Array, however in the test-
@@ -157,12 +151,9 @@ export class NetworkInterface extends EventTarget {
         let offset:number = 0;
 
         if (this._connection === null || this._connection.readyState !== 1) {
-            console.error("WebSocketConnection: sending of data not possible, because connection not ready");
+            console.error("WebSocketConnection: sending data not possible, because connection not ready");
             return false;
         } else {
-            console.log("network interface: send data length: ", buffer.length)
-            console.log("network interface: amount of chunks: ", Math.ceil((buffer.length + 2) / chunkSizeInBytes))
-
             //buffer.length + 2 because the 2 bytes with the information about the amount of chunks are added after the calculation
             //on how many chunks are sent
             dataViewChunks.setUint16(0, Math.ceil((buffer.length + 2) / chunkSizeInBytes), true);
