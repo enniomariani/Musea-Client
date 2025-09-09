@@ -5,6 +5,7 @@ export class MockMediaAppRegistry extends MediaAppRegistry{
     add: jest.Mock;
     get: jest.Mock;
     getAll: jest.Mock;
+    getController: jest.Mock;
     getControllerIp: jest.Mock;
 
     importFromJSON: jest.Mock;
@@ -15,6 +16,7 @@ export class MockMediaAppRegistry extends MediaAppRegistry{
         this.add = jest.fn();
         this.get = jest.fn();
         this.getAll = jest.fn();
+        this.getController = jest.fn();
         this.getControllerIp = jest.fn();
 
         this.importFromJSON = jest.fn();

@@ -5,6 +5,8 @@ import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 import {Content} from "src/mcf/renderer/dataStructure/Content";
 import {IMedia} from "src/mcf/renderer/dataStructure/Media";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
+import {MediaAppConnectionService} from "src/mcf/renderer/services/MediaAppConnectionService";
+import {ConnectionStatus} from "src/mcf/renderer/network/MediaAppConnectionSteps";
 
 export interface IOnSyncStep {
     (message: string): void
@@ -14,10 +16,12 @@ export class MediaStationSyncService {
 
     private _networkService: NetworkService;
     private _mediaStationRepo: MediaStationRepository;
+    private _mediaAppConnectionService: MediaAppConnectionService;
 
-    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository) {
+    constructor(networkService: NetworkService, mediaStationRepo: MediaStationRepository, mediaAppConnectionService:MediaAppConnectionService) {
         this._networkService = networkService;
         this._mediaStationRepo = mediaStationRepo;
+        this._mediaAppConnectionService = mediaAppConnectionService;
     }
 
     /**
@@ -36,7 +40,6 @@ export class MediaStationSyncService {
     async sync(mediaStationId: number, onSyncStep: IOnSyncStep): Promise<boolean> {
         const mediaStation: MediaStation = this._mediaStationRepo.requireMediaStation(mediaStationId);
         let json: string;
-        let connectionIsOpen: boolean;
         let mediaApp: MediaApp;
         let allMediaAppsWereSynced: boolean = true;
         let areAllMediaSentSuccesfully: boolean = true;
@@ -84,32 +87,24 @@ export class MediaStationSyncService {
         for (const mediaApp of allMediaAppsWithChanges) {
             onSyncStep("Verbindung mit Medien-App wird aufgebaut: " + mediaApp.name + "/" + mediaApp.ip);
 
-            connectionIsOpen = await this._networkService.openConnection(mediaApp.ip);
+            const answer:ConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role:"admin"});
+            onSyncStep(answer);
 
-            if (!connectionIsOpen) {
-                onSyncStep("Verbindung mit Medien-App konnte nicht hergestellt werden!");
+            if(answer !== ConnectionStatus.Online){
                 allMediaAppsWereSynced = false;
                 continue;
             }
 
-            registration = await this._networkService.sendRegistrationAdminApp(mediaApp.ip);
+            await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
 
-            console.log("got registration back: ", registration)
+            //if the connection could be established to a media-app, send all cached media-files
+            if (await this._sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, onSyncStep) === false)
+                areAllMediaSentSuccesfully = false;
 
-            //if the connection could be established to a media-app, send it all media that are cached
-            if (registration === "yes") {
-                onSyncStep("Verbindung mit Medien-App hergestellt.");
-                if (await this._sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip, onSyncStep) === false)
-                    areAllMediaSentSuccesfully = false;
+            if (allMediaIdsToDelete.has(mediaApp.id))
+                await this._sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id, allMediaIdsToDelete.get(mediaApp.id), mediaApp.ip, onSyncStep);
 
-                if (allMediaIdsToDelete.has(mediaApp.id))
-                    await this._sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id, allMediaIdsToDelete.get(mediaApp.id), mediaApp.ip, onSyncStep);
-
-                this._mediaStationRepo.cacheMediaStation(mediaStationId);
-            } else {
-                allMediaAppsWereSynced = false;
-                onSyncStep("Medien-App ist erreichbar, aber von einer anderen App blockiert.");
-            }
+            this._mediaStationRepo.cacheMediaStation(mediaStationId);
         }
 
         console.log("CHECK IF CONTENTS.JSON WILL BE SENT: ", allMediaAppsWereSynced, areAllMediaSentSuccesfully)
@@ -120,33 +115,25 @@ export class MediaStationSyncService {
 
             onSyncStep("Sende contents.json an Controller-App: " + ip);
 
-            connectionIsOpen = await this._networkService.openConnection(ip);
-            console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?", connectionIsOpen);
+            const answer:ConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role:"admin"});
+            onSyncStep(answer);
+            console.log("CONNECTION CREATED FOR SENDING CONTENT-FILE?", answer);
 
-            if (connectionIsOpen) {
-                onSyncStep("Verbindung mit Controller-App hergestellt. Sende Registrierungs-Anfrage...");
+            if (answer === ConnectionStatus.Online) {
+                await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
 
-                registration = await this._networkService.sendRegistrationAdminApp(ip);
+                onSyncStep("Verbindung mit Controller-App hergestellt. Sende Daten...");
+                json = mediaStation.exportToJSON();
 
-                console.log("beim controller registriert? ", registration)
+                console.log("SEND CONTENTS-FILE: ", json);
 
-                if (registration === "yes") {
-                    onSyncStep("Verbindung mit Controller-App hergestellt. Sende Daten...");
-                    json = mediaStation.exportToJSON();
+                await this._networkService.sendContentFileTo(ip, json);
 
-                    console.log("SEND CONTENTS-FILE: ", json);
+                this._mediaStationRepo.removeCachedMediaStation(mediaStationId);
 
-                    await this._networkService.sendContentFileTo(ip, json);
-
-                    this._mediaStationRepo.removeCachedMediaStation(mediaStationId);
-
-                    onSyncStep("Daten übermittelt.");
-                    return true;
-                } else
-                    onSyncStep("Controller-App ist erreichbar, aber von einer anderen App blockiert.");
-
-            } else
-                onSyncStep("Controller-App nicht erreichbar!");
+                onSyncStep("Daten übermittelt.");
+                return true;
+            }
         }
 
         return false;

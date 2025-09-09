@@ -10,15 +10,20 @@ import {MockContent} from "__mocks__/mcf/renderer/dataStructure/MockContent";
 import {Image} from "src/mcf/renderer/dataStructure/Media";
 import {IOnSyncStep, MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
+import {MediaAppConnectionService} from "src/mcf/renderer/services/MediaAppConnectionService";
+import {MockMediaAppConnectionService} from "__mocks__/mcf/renderer/network/MockMediaAppConnectionService";
+import {ConnectionStatus} from "src/mcf/renderer/network/MediaAppConnectionSteps";
 
 let service: MediaStationSyncService;
 let mockMediaStationRepo: MockMediaStationRepository;
 let mockNetworkService: MockNetworkService;
+let mockMediaAppConnectionService: MockMediaAppConnectionService;
 
 beforeEach(() => {
     mockNetworkService = new MockNetworkService();
     mockMediaStationRepo = new MockMediaStationRepository();
-    service = new MediaStationSyncService(mockNetworkService, mockMediaStationRepo);
+    mockMediaAppConnectionService = new MockMediaAppConnectionService();
+    service = new MediaStationSyncService(mockNetworkService, mockMediaStationRepo, mockMediaAppConnectionService);
 });
 
 afterEach(() => {
@@ -150,26 +155,20 @@ describe("sync() ", () => {
         });
 
         mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(false)));
-        mockNetworkService.openConnection.mockReturnValueOnce(new Promise((resolve) => resolve(true)));
-
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
-        mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce(new Promise((resolve) => resolve("yes")));
-
         mockMediaStation.mediaAppRegistry.getControllerIp.mockReturnValueOnce(controllerIp);
     });
 
     it("should call the callback mockOnSyncStep with the text, that the connection is opening and if it succeeded or not", async () => {
+        mockMediaAppConnectionService.checkConnection.mockResolvedValueOnce(ConnectionStatus.Online);
+        mockMediaAppConnectionService.checkConnection.mockResolvedValueOnce(ConnectionStatus.TcpConnectionFailed);
 
-        let answer: boolean = await service.sync(0, mockOnSyncStep);
+        const answer: boolean = await service.sync(0, mockOnSyncStep);
 
         expect(answer).toBe(false)
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(1, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp1.name + "/" + mediaApp1.ip);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(2, "Verbindung mit Medien-App hergestellt.");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(2, ConnectionStatus.Online);
         expect(mockOnSyncStep).toHaveBeenNthCalledWith(9, "Verbindung mit Medien-App wird aufgebaut: " + mediaApp2.name + "/" + mediaApp2.ip);
-        expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, "Verbindung mit Medien-App konnte nicht hergestellt werden!");
+        expect(mockOnSyncStep).toHaveBeenNthCalledWith(10, ConnectionStatus.TcpConnectionFailed);
     });
 
     it("should send the file-data to the media-app if the connection is open", async () => {

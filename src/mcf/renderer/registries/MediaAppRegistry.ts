@@ -28,22 +28,34 @@ export class MediaAppRegistry {
     /**
      * returns null and prints an error  if there is no controller-app defined
      *
-     * @returns {string | null}
+     * @returns {MediaApp | null}
      */
-    getControllerIp(): string | null {
-        let result: string;
+    getController(): MediaApp | null {
+        let controller: MediaApp;
 
         this._mediaApps.forEach((mediaApp: MediaApp) => {
-            if (mediaApp.role === MediaApp.ROLE_CONTROLLER)
-                result = mediaApp.ip;
+            if (mediaApp.role === MediaApp.ROLE_CONTROLLER){
+                controller = mediaApp;
+                return;
+            }
         });
 
-        if (!result){
+        if (!controller){
             console.error("No controller-app is set!");
             return null;
         }
 
-        return result;
+        return controller;
+    }
+
+    /**
+     * returns null and prints an error  if there is no controller-app defined
+     *
+     * @returns {string | null}
+     */
+    getControllerIp(): string | null {
+        let controller: MediaApp | null = this.getController();
+        return controller === null? null:controller.ip;
     }
 
     importFromJSON(json: any): void {

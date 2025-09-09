@@ -62,6 +62,43 @@ describe("add(), reset(), getAll()", () => {
     });
 });
 
+describe("add(), getController()", () => {
+    it("add a media-app with the role controller, getController() should return it", () => {
+        let controllerReceived: MediaApp;
+
+        mockMediaStation.getNextTagId.mockReturnValueOnce(0);
+        registry.add(mediaAppController.id, mediaAppController.name, mediaAppController.ip, mediaAppController.role);
+
+        controllerReceived = registry.getController();
+
+        expect(controllerReceived).toStrictEqual(mediaAppController);
+    });
+
+    it("add 2 media-app where one has the role controller should return it when calling getController()", () => {
+        let controllerReceived: MediaApp;
+
+        mockMediaStation.getNextTagId.mockReturnValueOnce(0);
+        registry.add(mediaAppController.id, mediaAppController.name, mediaAppController.ip, mediaAppController.role);
+        mockMediaStation.getNextTagId.mockReturnValueOnce(1);
+        registry.add(mediaAppDefault.id, mediaAppDefault.name, mediaAppDefault.ip, mediaAppDefault.role);
+
+        controllerReceived = registry.getController();
+
+        expect(controllerReceived).toEqual(mediaAppController);
+    });
+
+    it("add a media-app without the role controller should return null when calling getController()", () => {
+        let controllerReceived: MediaApp | null;
+
+        mockMediaStation.getNextTagId.mockReturnValueOnce(0);
+        registry.add(mediaAppDefault.id, mediaAppDefault.name, mediaAppDefault.ip, mediaAppDefault.role);
+
+        controllerReceived = registry.getController();
+
+        expect(controllerReceived).toEqual(null);
+    });
+});
+
 describe("add(), getControllerIp()", () => {
     it("add a media-app with the role controller should return it's ip when calling getControllerIp()", () => {
         let controllerIpReceived: string;
