@@ -22,10 +22,11 @@ export interface IMediaClientFramework {
     get mediaAppDataService(): MediaAppDataService
     get mediaAppConnectionService(): MediaAppConnectionService
 
+    get mediaStationService(): MediaStationService
+
     get folderService(): FolderDataService
     get contentService(): ContentDataService
     get mediaService(): MediaService
-    get mediaStationService(): MediaStationService
     get tagService(): TagDataService
 }
 
