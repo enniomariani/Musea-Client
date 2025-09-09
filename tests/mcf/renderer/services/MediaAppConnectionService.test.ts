@@ -6,6 +6,9 @@ import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
 import {MediaAppConnectionService} from "src/mcf/renderer/services/MediaAppConnectionService";
+import {runPipeline} from "src/mcf/renderer/network/MediaAppConnectionSteps";
+import * as Steps from "src/mcf/renderer/network/MediaAppConnectionSteps";
+
 
 let service: MediaAppConnectionService;
 let mockMediaStationRepo: MockMediaStationRepository;
@@ -18,7 +21,6 @@ let role1: string = MediaApp.ROLE_CONTROLLER;
 let ip2: string = "127.0.0.2";
 let name2: string = "media-App 2";
 let role2: string = MediaApp.ROLE_DEFAULT;
-
 
 let mediaAppId: number = 0;
 let mediaStation: MockMediaStation;
@@ -54,20 +56,106 @@ function setupMediaAppWithName(addMediaStation: boolean = true, mediaStationId: 
     return mediaApp1;
 }
 
+let runPipelineSpy: jest.SpiedFunction<typeof Steps.runPipeline>;
+
 beforeEach(() => {
     mockNetworkService = new MockNetworkService()
     mockMediaStationRepo = new MockMediaStationRepository()
     service = new MediaAppConnectionService(mockMediaStationRepo, mockNetworkService);
     mediaAppId = 0;
+    runPipelineSpy = jest.spyOn(Steps, "runPipeline");
+    runPipelineSpy.mockReset();
 });
 
 afterEach(() => {
     jest.clearAllMocks();
 });
 
+describe("checkConnection()", () => {
+    it("calls runPipeline with 3 steps for user role and returns its result", async () => {
+        setupMediaAppWithName();
+        const mockedRunPipeline = runPipeline as jest.MockedFunction<typeof runPipeline>;
+
+        mockedRunPipeline.mockResolvedValueOnce(Steps.ConnectionStatus.Online);
+
+        const onProgress = jest.fn();
+        const result:Steps.ConnectionStatus = await service.checkConnection(0, mediaAppId, { role: "user", onProgress });
+
+        expect(result).toBe(Steps.ConnectionStatus.Online);
+        expect(runPipeline).toHaveBeenCalledTimes(1);
+
+        const [ipArg, stepsArg, optsArg] = mockedRunPipeline.mock.calls[0] as Parameters<typeof runPipeline>;
+
+        // IP resolved from repository
+        expect(ipArg).toBe(ip1);
+
+        // 3 steps: ICMP -> TCP -> WS
+        expect(Array.isArray(stepsArg)).toBe(true);
+        expect(stepsArg).toHaveLength(3);
+        expect(stepsArg[0].step).toBe(Steps.ConnectionStep.IcmpPing);
+        expect(stepsArg[1].step).toBe(Steps.ConnectionStep.TcpConnect);
+        expect(stepsArg[2].step).toBe(Steps.ConnectionStep.WsPing);
+
+        // Fail statuses aligned
+        expect(stepsArg[0].failStatus).toBe(Steps.ConnectionStatus.IcmpPingFailed);
+        expect(stepsArg[1].failStatus).toBe(Steps.ConnectionStatus.TcpConnectionFailed);
+        expect(stepsArg[2].failStatus).toBe(Steps.ConnectionStatus.WebSocketPingFailed);
+
+        // Functions bound as provided by NetworkService (identity is fine to check)
+        expect(typeof stepsArg[0].run).toBe("function");
+        expect(typeof stepsArg[1].run).toBe("function");
+        expect(typeof stepsArg[2].run).toBe("function");
+
+        // Options forwarded (including onProgress)
+        expect(optsArg.role).toBe("user");
+        expect(optsArg.onProgress).toBe(onProgress);
+    });
+
+    it("calls runPipeline with 4 steps for admin role (including Register) and returns its result", async () => {
+        setupMediaAppWithName();
+        const mockedRunPipeline = runPipeline as jest.MockedFunction<typeof runPipeline>;
+
+        mockedRunPipeline.mockResolvedValueOnce(Steps.ConnectionStatus.RegistrationFailed);
+
+        const onProgress = jest.fn();
+        const result = await service.checkConnection(0, mediaAppId, { role: "admin", onProgress });
+
+        expect(result).toBe(Steps.ConnectionStatus.RegistrationFailed);
+        expect(runPipeline).toHaveBeenCalledTimes(1);
+
+        const [ipArg, stepsArg, optsArg] = mockedRunPipeline.mock.calls[0] as Parameters<typeof runPipeline>;
+
+        expect(ipArg).toBe(ip1);
+
+        // 4 steps: ICMP -> TCP -> WS -> REGISTER
+        expect(stepsArg).toHaveLength(4);
+        expect(stepsArg[0].step).toBe(Steps.ConnectionStep.IcmpPing);
+        expect(stepsArg[1].step).toBe(Steps.ConnectionStep.TcpConnect);
+        expect(stepsArg[2].step).toBe(Steps.ConnectionStep.WsPing);
+        expect(stepsArg[3].step).toBe(Steps.ConnectionStep.Register);
+        expect(stepsArg[3].failStatus).toBe(Steps.ConnectionStatus.RegistrationFailed);
+        expect(typeof stepsArg[3].run).toBe("function");
+
+        expect(optsArg.role).toBe("admin");
+        expect(optsArg.onProgress).toBe(onProgress);
+    });
+
+    it("throws if media app cannot be found", async () => {
+        setupMediaAppWithName(false);
+
+        await expect(service.checkConnection(0, mediaAppId, { role: "user" }))
+            .rejects
+            .toThrow(Error("Media-App with this ID does not exist: 0"));
+
+        // runPipeline should not be called
+        expect(runPipeline).not.toHaveBeenCalled();
+    });
+});
+
+
 describe("connectAndRegisterToMediaApp() ", () => {
 
-    describe("check connection to admin-app: ", () => {
+    describe("check register admin-app: ", () => {
         it("should call networkService.openConnection and sendRegistrationAdminApp if appType is admin", async () => {
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationAdminApp.mockReturnValueOnce("yes");
@@ -116,7 +204,7 @@ describe("connectAndRegisterToMediaApp() ", () => {
         });
     });
 
-    describe("check connection to user-app: ", () => {
+    describe("check register user-app: ", () => {
         it("should call networkService.openConnection and sendRegistrationUserApp if appType is user", async () => {
             mockNetworkService.openConnection.mockReturnValueOnce(true);
             mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("yes");
@@ -218,37 +306,17 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
     const correctJSONwithTwoMediaApps = {
         name: "mediaStationX",
         mediaApps: [
-            {
-                id: 0,
-                ip: "127.0.0.1",
-                role: MediaApp.ROLE_CONTROLLER
-            },
-            {
-                id: 1,
-                ip: "127.0.0.1",
-                role: MediaApp.ROLE_DEFAULT
-            }
+            {id: 0, ip: "127.0.0.1", role: MediaApp.ROLE_CONTROLLER},
+            {id: 1, ip: "127.0.0.1", role: MediaApp.ROLE_DEFAULT}
         ]
     };
 
     const correctJSONwithThreeMediaApps = {
         name: "mediaStationX",
         mediaApps: [
-            {
-                id: 0,
-                ip: "127.0.0.1",
-                role: MediaApp.ROLE_CONTROLLER
-            },
-            {
-                id: 1,
-                ip: "127.0.0.2",
-                role: MediaApp.ROLE_DEFAULT
-            },
-            {
-                id: 2,
-                ip: "127.0.0.3",
-                role: MediaApp.ROLE_DEFAULT
-            }
+            {id: 0, ip: "127.0.0.1", role: MediaApp.ROLE_CONTROLLER},
+            {id: 1, ip: "127.0.0.2", role: MediaApp.ROLE_DEFAULT},
+            {id: 2, ip: "127.0.0.3", role: MediaApp.ROLE_DEFAULT}
         ]
     };
 
@@ -260,64 +328,21 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
 
         mockMediaStationRepo.requireMediaStation.mockReturnValue(mockMediaStation);
         mockMediaStation.mediaAppRegistry.get.mockReturnValue(controllerApp);
-        mockNetworkService.openConnection.mockImplementation((ip: string) => {
-            if (ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
-                return true;
-        });
-        mockNetworkService.pcRespondsToPing.mockImplementation((ip: string) => {
-            if (ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
-                return true;
-        });
-        mockNetworkService.isMediaAppOnline.mockImplementation((ip: string) => {
-            if (ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
-                return true;
-        });
-        mockNetworkService.sendCheckRegistration.mockImplementation((ip: string) => {
-            if (ip === controllerIp || ip === correctJSONwithThreeMediaApps.mediaApps[1].ip || ip === correctJSONwithThreeMediaApps.mediaApps[2].ip)
-                return true;
-        });
+
+        jest.spyOn(service, "checkConnection").mockResolvedValue(Steps.ConnectionStatus.Online);
+
         mockNetworkService.getContentFileFrom.mockReturnValue(JSON.stringify(correctJSON));
     });
 
-    it("should return false if the controller is not reachable with ping", async () => {
-        mockNetworkService.pcRespondsToPing = jest.fn();
-        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
-
+    it("should return false if the controller is not reachable", async () => {
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.RegistrationFailed);
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
-
         expect(answer).toBe(false);
     });
 
-    it("should return false if the connection to the controller could not be opened", async () => {
-        mockNetworkService.openConnection = jest.fn();
-        mockNetworkService.openConnection.mockReturnValueOnce(false);
-
-        answer = await service.checkOnlineStatusOfAllMediaApps(0);
-
-        expect(answer).toBe(false);
-    });
-
-    it("should false if the controller-app is not responding", async () => {
-        mockNetworkService.isMediaAppOnline = jest.fn();
-        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
-
-        answer = await service.checkOnlineStatusOfAllMediaApps(0);
-
-        expect(answer).toBe(false);
-    });
-
-    it("should return false if the controller-app is not reachable within the timeout set in NetworkService", async () => {
+    it("should return false if the controller-app returns no contents.json-file", async () => {
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(null);
-
-        answer = await service.checkOnlineStatusOfAllMediaApps(0);
-
-        expect(answer).toBe(false);
-    });
-
-    it("should return false if the controller-app has already another app registered to it", async () => {
-        mockNetworkService.sendCheckRegistration = jest.fn();
-        mockNetworkService.sendCheckRegistration.mockReturnValueOnce(false);
 
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
@@ -333,50 +358,11 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         expect(answer).toBe(true);
     });
 
-    it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc is not reachable with ping", async () => {
+    it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc is not reachable", async () => {
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
-        mockNetworkService.pcRespondsToPing = jest.fn();
-        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
-        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
-
-        answer = await service.checkOnlineStatusOfAllMediaApps(0);
-
-        expect(answer).toBe(false);
-    });
-
-    it("with two media-apps (controller + 1 media-app): should return false if the connection to the second mediaApp-pc is not possible", async () => {
-        mockNetworkService.getContentFileFrom = jest.fn();
-        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
-
-        mockNetworkService.openConnection = jest.fn();
-        mockNetworkService.openConnection.mockReturnValueOnce(true);
-        mockNetworkService.openConnection.mockReturnValueOnce(false);
-
-        answer = await service.checkOnlineStatusOfAllMediaApps(0);
-
-        expect(answer).toBe(false);
-    });
-
-    it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc is not responding", async () => {
-        mockNetworkService.getContentFileFrom = jest.fn();
-        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
-
-        mockNetworkService.isMediaAppOnline = jest.fn();
-        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
-        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
-
-        answer = await service.checkOnlineStatusOfAllMediaApps(0);
-
-        expect(answer).toBe(false);
-    });
-
-    it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc has already an admin-app registered", async () => {
-        mockNetworkService.getContentFileFrom = jest.fn();
-        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
-        mockNetworkService.sendCheckRegistration = jest.fn();
-        mockNetworkService.sendCheckRegistration.mockReturnValueOnce(true);
-        mockNetworkService.sendCheckRegistration.mockReturnValueOnce(false);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.Online);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.RegistrationFailed);
 
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
@@ -392,53 +378,12 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         expect(answer).toBe(true);
     });
 
-    it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc is not reachable with ping", async () => {
+    it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc is not reachable", async () => {
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
-        mockNetworkService.pcRespondsToPing = jest.fn();
-        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
-        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(true);
-        mockNetworkService.pcRespondsToPing.mockReturnValueOnce(false);
-
-        answer = await service.checkOnlineStatusOfAllMediaApps(0);
-
-        expect(answer).toBe(false);
-    });
-
-    it("with three media-apps (controller + 2 media-apps): should return false if the connection to the third mediaApp-pc is not possible", async () => {
-        mockNetworkService.getContentFileFrom = jest.fn();
-        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
-
-        mockNetworkService.openConnection = jest.fn();
-        mockNetworkService.openConnection.mockReturnValueOnce(true);
-        mockNetworkService.openConnection.mockReturnValueOnce(true);
-        mockNetworkService.openConnection.mockReturnValueOnce(false);
-
-        answer = await service.checkOnlineStatusOfAllMediaApps(0);
-
-        expect(answer).toBe(false);
-    });
-
-    it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc is not responding", async () => {
-        mockNetworkService.getContentFileFrom = jest.fn();
-        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
-
-        mockNetworkService.isMediaAppOnline = jest.fn();
-        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(true);
-        mockNetworkService.isMediaAppOnline.mockReturnValueOnce(false);
-
-        answer = await service.checkOnlineStatusOfAllMediaApps(0);
-
-        expect(answer).toBe(false);
-    });
-
-    it("with three media-apps (controller + 2 media-apps): should return false if the third mediaApp-pc has already another admin-app registered", async () => {
-        mockNetworkService.getContentFileFrom = jest.fn();
-        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithThreeMediaApps));
-
-        mockNetworkService.sendCheckRegistration = jest.fn();
-        mockNetworkService.sendCheckRegistration.mockReturnValueOnce(true);
-        mockNetworkService.sendCheckRegistration.mockReturnValueOnce(false);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.Online);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.Online);
+        jest.spyOn(service, "checkConnection").mockResolvedValueOnce(Steps.ConnectionStatus.RegistrationFailed);
 
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 

@@ -23,8 +23,13 @@ export class MediaAppConnectionService {
      * 3) Send ping-signal per WebSocket and wait for pong
      * 4) Send registration-signal and wait for response (ONLY FOR ADMIN-ROLE)
      * -> if everything passes, the app is considered online
+     *
+     * @param {number} mediaStationId
+     * @param {number} mediaAppId
+     * @param {CheckOptions} options
+     * @returns {Promise<ConnectionStatus>}
      */
-    async checkConnection(mediaStationId: number, mediaAppId: number, opts: CheckOptions): Promise<ConnectionStatus> {
+    async checkConnection(mediaStationId: number, mediaAppId: number, options: CheckOptions): Promise<ConnectionStatus> {
         const ip = this._getMediaApp(mediaStationId, mediaAppId).ip;
 
         const baseSteps: StepDef[] = [
@@ -33,11 +38,11 @@ export class MediaAppConnectionService {
             { step: ConnectionStep.WsPing, run: this._networkService.isMediaAppOnline, failStatus: ConnectionStatus.WebSocketPingFailed },
         ];
 
-        const steps = opts.role === "admin"
+        const steps = options.role === "admin"
             ? [...baseSteps, { step: ConnectionStep.Register, run: this._networkService.sendCheckRegistration, failStatus: ConnectionStatus.RegistrationFailed }]
             : baseSteps;
 
-        return runPipeline(ip, steps, opts);
+        return runPipeline(ip, steps, options);
     }
 
     /**
