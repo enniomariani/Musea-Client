@@ -19,11 +19,9 @@
   },
   "include": [
     "src",
-    "src/renderer/global.d.ts",
     "src/**/*.d.ts"
   ],
   "exclude": [
-    "tests",
     "build"
   ]
 }
