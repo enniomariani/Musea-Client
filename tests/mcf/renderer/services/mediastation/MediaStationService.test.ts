@@ -101,6 +101,11 @@ describe("MediaStationService", () => {
             expect(data.getName).toHaveBeenCalledWith(9);
             expect(name).toBe("StationX");
         });
+
+        it("changeMediaStationName forwards", () => {
+            facade.changeMediaStationName(9, "newName");
+            expect(data.changeName).toHaveBeenCalledWith(9, "newName");
+        });
     });
 
     describe("cache", () => {
