@@ -5,7 +5,7 @@ declare global {
     interface Window {
         backend:IBackend;
         backendFileService:IBackendFileService;
-        backendNetworkService:IBackenNetworkService;
+        backendNetworkService:IBackendNetworkService;
     }
 
     interface IBackend {
@@ -25,7 +25,7 @@ declare global {
         getAllFileNamesInFolder(path:string):Promise<string[]>;
     }
 
-    interface IBackenNetworkService{
+    interface IBackendNetworkService{
         ping(ip:string):boolean;
     }
 }
