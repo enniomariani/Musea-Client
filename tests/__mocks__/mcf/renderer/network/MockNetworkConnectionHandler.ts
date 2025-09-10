@@ -2,7 +2,7 @@ import {
     NetworkConnectionHandler
 } from "../../../../../src/mcf/renderer/network/NetworkConnectionHandler";
 
-const mockBackendNetworkService:jest.Mocked<IBackenNetworkService> = {
+const mockBackendNetworkService:jest.Mocked<IBackendNetworkService> = {
     ping: jest.fn(),
 }
 

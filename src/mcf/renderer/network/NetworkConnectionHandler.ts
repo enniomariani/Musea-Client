@@ -11,9 +11,9 @@ export interface IOnClosedConnection{
 export  class NetworkConnectionHandler{
 
     private _connections: Map<string, NetworkInterface>;
-    private _backenNetworkService:IBackenNetworkService;
+    private _backenNetworkService:IBackendNetworkService;
 
-    constructor( backenNetworkService:IBackenNetworkService = window.backendNetworkService) {
+    constructor( backenNetworkService:IBackendNetworkService = window.backendNetworkService) {
         this._connections = new Map();
         this._backenNetworkService = backenNetworkService;
     }
