@@ -3,7 +3,7 @@ import {MediaStationSyncService} from "src/mcf/renderer/services/mediastation/Me
 import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
 import {MockMediaStationRepository} from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {MockMediaAppConnectionService} from "__mocks__/mcf/renderer/network/MockMediaAppConnectionService";
+import {MockMediaAppConnectionService} from "__mocks__/mcf/renderer/services/MockMediaAppConnectionService";
 import {MockMediaAppSyncService} from "__mocks__/mcf/renderer/network/MockMediaAppSyncService";
 import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";

@@ -4,7 +4,7 @@ import {MockContentDataService} from "__mocks__/mcf/renderer/services/MockConten
 import {MockMediaService} from "./services/MockMediaService";
 import {IMediaClientFramework} from "src/mcf/renderer/MediaClientFramework";
 import {MockTagService} from "./services/MockTagService";
-import {MockMediaAppConnectionService} from "__mocks__/mcf/renderer/network/MockMediaAppConnectionService";
+import {MockMediaAppConnectionService} from "tests/__mocks__/mcf/renderer/services/MockMediaAppConnectionService";
 import {MockMediaStationService} from "__mocks__/mcf/renderer/services/mediastation/MockMediaStationService";
 
 export class MockMediaClientFramework implements  IMediaClientFramework{
