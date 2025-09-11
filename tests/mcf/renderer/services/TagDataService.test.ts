@@ -34,12 +34,12 @@ afterEach(() => {
 
 describe("addTag() ", () => {
 
-    it("should call addTag of the tagmanager with the correct parameters", () => {
+    it("should call addTag of the tagRegistry with the correct parameters", () => {
 
         tagService.createTag(0, "newTag")
 
         expect(mockMediaStation.tagRegistry.add).toHaveBeenCalledTimes(1);
-        expect(mockMediaStation.tagRegistry.add).toHaveBeenCalledWith(mockMediaStation, "newTag");
+        expect(mockMediaStation.tagRegistry.add).toHaveBeenCalledWith(333, "newTag");
     });
 
     it("should return the id of the newly created tag", () => {

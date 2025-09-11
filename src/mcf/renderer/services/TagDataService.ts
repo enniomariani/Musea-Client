@@ -19,7 +19,7 @@ export class TagDataService {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let tagId: number = mediaStation.getNextTagId();
 
-        mediaStation.tagRegistry.add(mediaStation, name);
+        mediaStation.tagRegistry.add(tagId, name);
 
         return tagId;
     }

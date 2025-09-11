@@ -28,7 +28,7 @@ afterEach(() => {
 });
 
 describe("add() and get()", () => {
-    it("getTag should return the tag that was created with addTag()", () => {
+    it("get should return the mediaApp that was created with add()", () => {
         let receivedMediaApp: MediaApp;
 
         registry.add(0, mediaAppController.name, mediaAppController.ip, mediaAppController.role);
@@ -37,9 +37,13 @@ describe("add() and get()", () => {
         expect(receivedMediaApp).toStrictEqual(mediaAppController);
     });
 
-    it("getMediaApp() should throw an error if the tag-id does not exist", () => {
+    it("get() should return null if mediaApp does not exist", () => {
+        let receivedMediaApp: MediaApp;
 
-        expect(() => registry.get(20)).toThrow(new Error("Media App with the following ID does not exist: 20"))
+        registry.add(0, mediaAppController.name, mediaAppController.ip, mediaAppController.role);
+        receivedMediaApp = registry.get(200);
+
+        expect(receivedMediaApp).toEqual(null);
     });
 });
 

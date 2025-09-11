@@ -90,11 +90,11 @@ export class MediaAppConnectionService {
      */
     async checkOnlineStatusOfAllMediaApps(id: number): Promise<boolean> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(id);
-        const controller:MediaApp = mediaStation.mediaAppRegistry.get(0);
+        const controller:MediaApp | null = mediaStation.mediaAppRegistry.get(0);
         let contentsJSONstr: string;
         let contentsJSON: any;
 
-        if (!controller.ip)
+        if (controller === null || !controller.ip)
             return false;
 
         if (await this.checkConnection(id, controller.id, {role:"admin"}) !== MediaAppConnectionStatus.Online)

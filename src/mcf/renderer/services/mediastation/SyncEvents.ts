@@ -23,6 +23,7 @@ export type SyncEvent =
     | { scope: SyncScope.MediaApp; type: "DeleteStart"; mediaAppId: number; id: number }
     | { scope: SyncScope.Controller; type: "Connecting"; ip: string }
     | { scope: SyncScope.Controller; type: "SendingContents" }
+    | { scope: SyncScope.Controller; type: "Connected" }
     | { scope: SyncScope.Controller; type: "Sent" }
     | { scope: SyncScope.MediaStation; type: "Done" };
 

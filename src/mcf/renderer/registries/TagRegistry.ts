@@ -6,8 +6,7 @@ export class TagRegistry {
 
     constructor(){}
 
-    add(ms:MediaStation, name: string): void {
-        const id:number = ms.getNextTagId();
+    add(id:number, name: string): void {
         let tag: Tag = new Tag(id, name);
 
         this._tags.set(id, tag);
@@ -20,13 +19,11 @@ export class TagRegistry {
             throw new Error("Tag with the following ID does not exist: " + id);
     }
 
-    get(id: number): Tag {
-        let tag: Tag = this._tags.get(id);
+    get(id: number): Tag | null {
+        if (!this._tags.has(id))
+            return null;
 
-        if (tag)
-            return tag;
-        else
-            throw new Error("Tag with the following ID does not exist: " + id);
+        return this._tags.get(id);
     }
 
     getAll(): Map<number, Tag> {

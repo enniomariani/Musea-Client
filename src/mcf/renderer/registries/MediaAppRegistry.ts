@@ -3,7 +3,8 @@ import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 export class MediaAppRegistry {
     private _mediaApps: Map<number, MediaApp> = new Map();
 
-    constructor(){}
+    constructor() {
+    }
 
     add(id: number, name: string, ip: string, role: string): void {
         let mediaApp: MediaApp = new MediaApp(id);
@@ -14,11 +15,11 @@ export class MediaAppRegistry {
         this._mediaApps.set(id, mediaApp);
     }
 
-    get(id: number): MediaApp {
-        if (this._mediaApps.has(id))
-            return this._mediaApps.get(id);
-        else
-            throw new Error("Media App with the following ID does not exist: " + id);
+    get(id: number): MediaApp | null {
+        if (!this._mediaApps.has(id))
+            return null;
+
+        return this._mediaApps.get(id);
     }
 
     getAll(): Map<number, MediaApp> {
@@ -34,13 +35,13 @@ export class MediaAppRegistry {
         let controller: MediaApp;
 
         this._mediaApps.forEach((mediaApp: MediaApp) => {
-            if (mediaApp.role === MediaApp.ROLE_CONTROLLER){
+            if (mediaApp.role === MediaApp.ROLE_CONTROLLER) {
                 controller = mediaApp;
                 return;
             }
         });
 
-        if (!controller){
+        if (!controller) {
             console.error("No controller-app is set!");
             return null;
         }
@@ -55,7 +56,7 @@ export class MediaAppRegistry {
      */
     getControllerIp(): string | null {
         let controller: MediaApp | null = this.getController();
-        return controller === null? null:controller.ip;
+        return controller === null ? null : controller.ip;
     }
 
     importFromJSON(json: any): void {
@@ -79,7 +80,7 @@ export class MediaAppRegistry {
         }
     }
 
-    reset():void{
+    reset(): void {
         this._mediaApps = new Map<number, MediaApp>();
     }
 
