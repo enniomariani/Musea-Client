@@ -38,7 +38,7 @@ export class MockMediaStationService extends MediaStationService {
     downloadContents: jest.Mock<Promise<string>, [mediaStationId: number, preserveName: boolean, role?: "admin" | "user"]>;
 
     // Sync
-    runSync: jest.Mock<Promise<boolean>, [mediaStationId: number, progressReporter: ProgressReporter]>;
+    syncMediaStation: jest.Mock<Promise<boolean>, [mediaStationId: number, progressReporter: ProgressReporter]>;
 
     // Events
     onBlockReceived: jest.Mock<void, [callback: Function]>;
@@ -83,7 +83,7 @@ export class MockMediaStationService extends MediaStationService {
         this.downloadContents = jest.fn();
 
         // Sync
-        this.runSync = jest.fn();
+        this.syncMediaStation = jest.fn();
 
         // Events
         this.onBlockReceived = jest.fn();

@@ -100,7 +100,7 @@ export class MediaStationService {
     }
 
     // Sync
-    async runSync(mediaStationId: number, progressReporter: ProgressReporter): Promise<boolean> {
+    async syncMediaStation(mediaStationId: number, progressReporter: ProgressReporter): Promise<boolean> {
         return this._sync.sync(mediaStationId, progressReporter);
     }
 

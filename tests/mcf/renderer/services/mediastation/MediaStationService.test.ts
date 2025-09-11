@@ -176,12 +176,12 @@ describe("MediaStationService", () => {
         });
     });
 
-    describe("sync", () => {
-        it("runSync forwards and returns", async () => {
+    describe("syncMediaStation", () => {
+        it("syncMediaStation forwards and returns", async () => {
             const cb = jest.fn();
             sync.sync.mockResolvedValueOnce(true);
 
-            const result = await facade.runSync(5, cb);
+            const result = await facade.syncMediaStation(5, cb);
 
             expect(sync.sync).toHaveBeenCalledWith(5, cb);
             expect(result).toBe(true);
