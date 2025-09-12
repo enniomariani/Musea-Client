@@ -79,7 +79,7 @@ describe("checkConnection()", () => {
         mockedRunPipeline.mockResolvedValueOnce(Steps.MediaAppConnectionStatus.Online);
 
         const onProgress = jest.fn();
-        const result:Steps.MediaAppConnectionStatus = await service.checkConnection(0, mediaAppId, { role: "user", onProgress });
+        const result:Steps.MediaAppConnectionStatus = await service.checkConnection(ip1, { role: "user", onProgress });
 
         expect(result).toBe(Steps.MediaAppConnectionStatus.Online);
         expect(runPipeline).toHaveBeenCalledTimes(1);
@@ -118,7 +118,7 @@ describe("checkConnection()", () => {
         mockedRunPipeline.mockResolvedValueOnce(Steps.MediaAppConnectionStatus.RegistrationFailed);
 
         const onProgress = jest.fn();
-        const result = await service.checkConnection(0, mediaAppId, { role: "admin", onProgress });
+        const result = await service.checkConnection(ip1,{ role: "admin", onProgress });
 
         expect(result).toBe(Steps.MediaAppConnectionStatus.RegistrationFailed);
         expect(runPipeline).toHaveBeenCalledTimes(1);
@@ -138,17 +138,6 @@ describe("checkConnection()", () => {
 
         expect(optsArg.role).toBe("admin");
         expect(optsArg.onProgress).toBe(onProgress);
-    });
-
-    it("throws if media app cannot be found", async () => {
-        setupMediaAppWithName(false);
-
-        await expect(service.checkConnection(0, mediaAppId, { role: "user" }))
-            .rejects
-            .toThrow(Error("Media-App with this ID does not exist: 0"));
-
-        // runPipeline should not be called
-        expect(runPipeline).not.toHaveBeenCalled();
     });
 });
 
@@ -367,8 +356,8 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
         expect(checkConnSpy).toHaveBeenCalledTimes(2);
-        expect(checkConnSpy).toHaveBeenNthCalledWith(1, 0, 0, { role: "admin" });
-        expect(checkConnSpy).toHaveBeenNthCalledWith(2, 0, 1, { role: "admin" });
+        expect(checkConnSpy).toHaveBeenNthCalledWith(1, ip1, { role: "admin" });
+        expect(checkConnSpy).toHaveBeenNthCalledWith(2, ip2, { role: "admin" });
     });
 
     it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc is not reachable", async () => {

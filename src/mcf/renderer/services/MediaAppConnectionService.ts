@@ -24,14 +24,11 @@ export class MediaAppConnectionService {
      * 4) Send registration-signal and wait for response (ONLY FOR ADMIN-ROLE)
      * -> if everything passes, the app is considered online
      *
-     * @param {number} mediaStationId
-     * @param {number} mediaAppId
+     * @param {string} ip
      * @param {CheckOptions} options
      * @returns {Promise<MediaAppConnectionStatus>}
      */
-    async checkConnection(mediaStationId: number, mediaAppId: number, options: CheckOptions): Promise<MediaAppConnectionStatus> {
-        const ip = this._getMediaApp(mediaStationId, mediaAppId).ip;
-
+    async checkConnection(ip: string, options: CheckOptions): Promise<MediaAppConnectionStatus> {
         const baseSteps: StepDef[] = [
             { step: ConnectionStep.IcmpPing, run: this._networkService.pcRespondsToPing.bind(this._networkService), failStatus: MediaAppConnectionStatus.IcmpPingFailed },
             { step: ConnectionStep.TcpConnect, run: this._networkService.openConnection.bind(this._networkService), failStatus: MediaAppConnectionStatus.TcpConnectionFailed },
@@ -97,7 +94,7 @@ export class MediaAppConnectionService {
         if (controller === null || !controller.ip)
             return false;
 
-        if (await this.checkConnection(id, controller.id, {role:"admin"}) !== MediaAppConnectionStatus.Online)
+        if (await this.checkConnection(controller.ip, {role:"admin"}) !== MediaAppConnectionStatus.Online)
             return false;
 
         contentsJSONstr = await this._networkService.getContentFileFrom(controller.ip);
@@ -112,7 +109,7 @@ export class MediaAppConnectionService {
             if (contentsJSON.mediaApps) {
                 for (let i: number = 0; i < contentsJSON.mediaApps.length; i++) {
                     if (contentsJSON.mediaApps[i].role !== MediaApp.ROLE_CONTROLLER)
-                        if (await this.checkConnection(id, contentsJSON.mediaApps[i].id, {role:"admin"}) !== MediaAppConnectionStatus.Online)
+                        if (await this.checkConnection(contentsJSON.mediaApps[i].ip, {role:"admin"}) !== MediaAppConnectionStatus.Online)
                             return false;
                 }
             }

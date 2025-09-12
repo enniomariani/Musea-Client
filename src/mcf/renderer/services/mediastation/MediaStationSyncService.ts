@@ -92,7 +92,7 @@ export class MediaStationSyncService {
         for (const mediaApp of allMediaAppsWithChanges) {
             progressReporter({scope: SyncScope.MediaApp, type: "Connecting", appName: mediaApp.name, ip: mediaApp.ip})
 
-            const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, mediaApp.id, {role: "admin"});
+            const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaApp.ip, {role: "admin"});
             progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
 
             if (answer !== MediaAppConnectionStatus.Online) {
@@ -119,7 +119,7 @@ export class MediaStationSyncService {
 
             progressReporter({scope: SyncScope.Controller, type: "Connecting", ip: controller.ip});
 
-            const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaStationId, controller.id, {role: "admin"});
+            const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(controller.ip, {role: "admin"});
             progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
 
             if (answer === MediaAppConnectionStatus.Online) {

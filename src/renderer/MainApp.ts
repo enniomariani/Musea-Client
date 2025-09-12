@@ -24,7 +24,7 @@ export class MainApp extends EventTarget {
         console.log("ADD MEDIA-APP WITH ID: ", mcf.mediaAppDataService.createMediaApp(firstMediaStationId,  "media-app2", "127.0.0.1"));
 
         console.log("IS MEDIA-APP PC REACHABLE?" , await mcf.mediaAppConnectionService
-            .checkConnection(0,0, {role: "admin",
+            .checkConnection("localhost", {role: "admin",
                 onProgress:(p: IConnectionProgress)=>{console.log("connection-step: "+ p.step+ p.state);}}))
 
         if(mediaAppReachable){
@@ -36,7 +36,7 @@ export class MainApp extends EventTarget {
             console.log("GET NAME OF CONTENTS: ", mcf.folderService.getAllContentsInFolder(0,0));
 
             //sync
-            await mcf.mediaStationService.runSync(0, (evt:SyncEvent) =>{console.log("SYNC-MESSAGE: ", evt.scope, evt.type, evt)});
+            await mcf.mediaStationService.syncMediaStation(0, (evt:SyncEvent) =>{console.log("SYNC-MESSAGE: ", evt.scope, evt.type, evt)});
         }
     }
 }
