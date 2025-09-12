@@ -112,7 +112,7 @@ export class MediaAppConnectionService {
             if (contentsJSON.mediaApps) {
                 for (let i: number = 0; i < contentsJSON.mediaApps.length; i++) {
                     if (contentsJSON.mediaApps[i].role !== MediaApp.ROLE_CONTROLLER)
-                        if (await this.checkConnection(id, contentsJSON.mediaApps[i].ip, {role:"admin"}) !== MediaAppConnectionStatus.Online)
+                        if (await this.checkConnection(id, contentsJSON.mediaApps[i].id, {role:"admin"}) !== MediaAppConnectionStatus.Online)
                             return false;
                 }
             }

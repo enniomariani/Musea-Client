@@ -307,7 +307,7 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         name: "mediaStationX",
         mediaApps: [
             {id: 0, ip: "127.0.0.1", role: MediaApp.ROLE_CONTROLLER},
-            {id: 1, ip: "127.0.0.1", role: MediaApp.ROLE_DEFAULT}
+            {id: 1, ip: "127.0.0.2", role: MediaApp.ROLE_DEFAULT}
         ]
     };
 
@@ -356,6 +356,19 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
         answer = await service.checkOnlineStatusOfAllMediaApps(0);
 
         expect(answer).toBe(true);
+    });
+
+    it("with two media-apps (controller + 1 media-app): should call checkConnection for both with the correct parameter", async () => {
+        const checkConnSpy = jest.spyOn(service, "checkConnection");
+
+        mockNetworkService.getContentFileFrom = jest.fn();
+        mockNetworkService.getContentFileFrom.mockReturnValueOnce(JSON.stringify(correctJSONwithTwoMediaApps));
+
+        answer = await service.checkOnlineStatusOfAllMediaApps(0);
+
+        expect(checkConnSpy).toHaveBeenCalledTimes(2);
+        expect(checkConnSpy).toHaveBeenNthCalledWith(1, 0, 0, { role: "admin" });
+        expect(checkConnSpy).toHaveBeenNthCalledWith(2, 0, 1, { role: "admin" });
     });
 
     it("with two media-apps (controller + 1 media-app): should return false if the second mediaApp-pc is not reachable", async () => {
