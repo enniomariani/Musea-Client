@@ -42,7 +42,7 @@ export class MediaStationSyncService {
      *
      * @param {number} mediaStationId
      * @param {ProgressReporter} progressReporter  Is called after every new network-operation an event with info about what is going on
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean>}
      */
     async sync(mediaStationId: number, progressReporter: ProgressReporter): Promise<boolean> {
         const mediaStation: MediaStation = this._mediaStationRepo.requireMediaStation(mediaStationId);
@@ -100,7 +100,12 @@ export class MediaStationSyncService {
                 continue;
             }
 
-            await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
+            const registrationSuccess:boolean = await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
+
+            if (!registrationSuccess) {
+                allMediaAppsWereSynced = false;
+                continue;
+            }
 
             //if the connection could be established to a media-app, send all cached media-files
             if (await this._mediaAppSyncService.sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip,
@@ -122,9 +127,14 @@ export class MediaStationSyncService {
             const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(controller.ip, {role: "admin"});
             progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
 
-            if (answer === MediaAppConnectionStatus.Online) {
-                await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, controller.id, "admin");
+            if(answer !== MediaAppConnectionStatus.Online){
+                progressReporter({scope: SyncScope.MediaStation, type: "Done"});
+                return false;
+            }
 
+            const answerControllerReg:boolean = await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, controller.id, "admin");
+
+            if (answerControllerReg) {
                 progressReporter({scope: SyncScope.Controller, type: "SendingContents"});
                 json = mediaStation.exportToJSON();
 

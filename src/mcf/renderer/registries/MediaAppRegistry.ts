@@ -3,8 +3,7 @@ import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 export class MediaAppRegistry {
     private _mediaApps: Map<number, MediaApp> = new Map();
 
-    constructor() {
-    }
+    constructor() {}
 
     add(id: number, name: string, ip: string, role: string): void {
         let mediaApp: MediaApp = new MediaApp(id);
