@@ -49,9 +49,6 @@ export class MediaStationService {
     getMediaStationName(id: number): string {
         return this._data.getName(id);
     }
-    changeMediaStationName(id: number, newName:string): void {
-        this._data.changeName(id, newName);
-    }
 
     // Cache
     cacheMediaStation(id: number): void {

@@ -16,7 +16,6 @@ export class MockMediaStationService extends MediaStationService {
     renameMediaStation: jest.Mock<void, [id: number, newName: string]>;
     getControllerIp: jest.Mock<string | null, [id: number]>;
     getMediaStationName: jest.Mock<string, [id: number]>;
-    changeMediaStationName: jest.Mock<string, [id: number]>;
 
     // Cache
     cacheMediaStation: jest.Mock<void, [id: number]>;
@@ -61,7 +60,6 @@ export class MockMediaStationService extends MediaStationService {
         this.renameMediaStation = jest.fn();
         this.getControllerIp = jest.fn();
         this.getMediaStationName = jest.fn();
-        this.changeMediaStationName = jest.fn();
 
         // Cache
         this.cacheMediaStation = jest.fn();
