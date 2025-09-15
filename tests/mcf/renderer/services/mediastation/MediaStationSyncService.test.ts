@@ -149,10 +149,13 @@ describe("sync() when an app is offline", () => {
         );
         mockRepo.getAllMediaIDsToDelete.mockResolvedValue(new Map<number, number[]>());
 
-        // First app online, second app fails connection
+        // First app online, second app fails registration
         mockConn.checkConnection
             .mockResolvedValueOnce(MediaAppConnectionStatus.Online)
-            .mockResolvedValueOnce(MediaAppConnectionStatus.TcpConnectionFailed);
+            .mockResolvedValueOnce(MediaAppConnectionStatus.Online);
+        mockConn.connectAndRegisterToMediaApp
+            .mockResolvedValueOnce(true)
+            .mockResolvedValueOnce(false);
 
         const result = await service.sync(station.id, reporter);
 
@@ -170,7 +173,7 @@ describe("sync() when an app is offline", () => {
         const statusEvents = (reporter as jest.Mock).mock.calls
             .map((c) => c[0] as SyncEvent)
             .filter((e) => e.scope === SyncScope.MediaApp && e.type === "ConnectionStatus");
-        expect(statusEvents.some((e: any) => e.status === UiConnectionStatus.TcpConnectionFailed)).toBe(true);
+        expect(statusEvents.some((e: any) => e.status === UiConnectionStatus.RegistrationFailed)).toBe(true);
     });
 });
 

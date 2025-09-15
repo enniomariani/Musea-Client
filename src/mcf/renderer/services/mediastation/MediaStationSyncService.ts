@@ -93,10 +93,10 @@ export class MediaStationSyncService {
             progressReporter({scope: SyncScope.MediaApp, type: "Connecting", appName: mediaApp.name, ip: mediaApp.ip})
 
             const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(mediaApp.ip, {role: "admin"});
-            progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
 
             if (answer !== MediaAppConnectionStatus.Online) {
                 allMediaAppsWereSynced = false;
+                progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
                 continue;
             }
 
@@ -104,8 +104,11 @@ export class MediaStationSyncService {
 
             if (!registrationSuccess) {
                 allMediaAppsWereSynced = false;
+                progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: ConnectionStatus.RegistrationFailed });
                 continue;
             }
+
+            progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: ConnectionStatus.Online });
 
             //if the connection could be established to a media-app, send all cached media-files
             if (await this._mediaAppSyncService.sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip,
@@ -125,9 +128,9 @@ export class MediaStationSyncService {
             progressReporter({scope: SyncScope.Controller, type: "Connecting", ip: controller.ip});
 
             const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(controller.ip, {role: "admin"});
-            progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
 
             if(answer !== MediaAppConnectionStatus.Online){
+                progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
                 progressReporter({scope: SyncScope.MediaStation, type: "Done"});
                 return false;
             }
@@ -135,6 +138,8 @@ export class MediaStationSyncService {
             const answerControllerReg:boolean = await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, controller.id, "admin");
 
             if (answerControllerReg) {
+                progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: ConnectionStatus.Online });
+
                 progressReporter({scope: SyncScope.Controller, type: "SendingContents"});
                 json = mediaStation.exportToJSON();
 
@@ -145,7 +150,8 @@ export class MediaStationSyncService {
                 progressReporter({scope: SyncScope.MediaStation, type: "Done"});
 
                 return true;
-            }
+            }else
+                progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: ConnectionStatus.RegistrationFailed });
         }
 
         progressReporter({scope: SyncScope.MediaStation, type: "Done"});
