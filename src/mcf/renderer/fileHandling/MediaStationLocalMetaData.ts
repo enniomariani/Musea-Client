@@ -31,7 +31,9 @@ export class MediaStationLocalMetaData {
         uint8Array = await this._backendFileService.loadFile(this._pathToFile);
 
         if(uint8Array){
+            console.log("MediaStationLocalMetaData: file exists");
             jsonStr = textDecoder.decode(uint8Array);
+            console.log("Loaded json-string: ", jsonStr);
             json = JSON.parse(jsonStr);
 
             for(i = 0; i < json.mediaStations.length; i++)
@@ -46,7 +48,7 @@ export class MediaStationLocalMetaData {
      *
      * @param {Map<string, string>} mediaStationsAndControllers
      */
-    save(mediaStationsAndControllers:Map<string, string>):void{
+    async save(mediaStationsAndControllers:Map<string, string>):Promise<void>{
         let textEncoder:TextEncoder = new TextEncoder();
         let allMediaStations:any[] = [];
         let json:any = {mediaStations: allMediaStations};
@@ -57,8 +59,12 @@ export class MediaStationLocalMetaData {
             allMediaStations.push({name: mediaStationName, ip: controllerIp});
         });
 
+        console.log("MSMEtadata: save: ", json);
+
         jsonStr = JSON.stringify(json);
+
+        console.log("MSMEtadata: save JSON: ", jsonStr);
         uint8Array = textEncoder.encode(jsonStr);
-        this._backendFileService.saveFile(this._pathToFile,uint8Array);
+        console.log("Save metadata-file, resul: ", await this._backendFileService.saveFile(this._pathToFile,uint8Array));
     }
 }

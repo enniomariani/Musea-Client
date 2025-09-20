@@ -43,16 +43,16 @@ describe("loadMediaStations() ", ()=>{
 });
 
 describe("createMediaStation() ", ()=>{
-    it("should return the ID of the mediastation created by the repository", ()=>{
+    it("should return the ID of the mediastation created by the repository", async ()=>{
         let name:string = "mediaStationName";
         let returnedValue:number;
 
-        mockMediaStationRepository.addMediaStation.mockImplementationOnce((nameArg)=>{
+        mockMediaStationRepository.addMediaStation.mockImplementationOnce(async (nameArg)=>{
             if(nameArg === name)
                 return createdID;
         });
 
-        returnedValue = mediaStationDataService.createMediaStation(name);
+        returnedValue = await mediaStationDataService.createMediaStation(name);
 
         expect(returnedValue).toBe(createdID)
     });

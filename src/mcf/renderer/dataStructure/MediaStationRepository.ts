@@ -41,9 +41,14 @@ export class MediaStationRepository{
 
         loadedMetaData = await this._mediaStationMetaData.load();
 
+        console.log("loadedMetaData: ",loadedMetaData);
+
+        this._allMediaStations.clear();     //TO DO: add to tests
+        this._mediaStationIdCounter = 0;
+
         if(loadedMetaData){
             for (let [key, controllerIp] of loadedMetaData) {
-                id = this.addMediaStation(key, false);
+                id = await this.addMediaStation(key, false);
                 mediaStation = this.findMediaStation(id);
 
                 await this._mediaCacheHandler.hydrate(id);
@@ -58,7 +63,7 @@ export class MediaStationRepository{
         return loadedMetaData;
     }
 
-    addMediaStation(name:string, save:boolean = true):number{
+    async addMediaStation(name:string, save:boolean = true):Promise<number>{
         let newMediaStation:MediaStation = this._mediaStationFactory(this._mediaStationIdCounter);
 
         newMediaStation.name = name;
@@ -67,7 +72,7 @@ export class MediaStationRepository{
         this._mediaStationIdCounter++;
 
         if(save)
-            this._mediaStationMetaData.save(this._getNameControllerMap());
+            await this._mediaStationMetaData.save(this._getNameControllerMap());
 
         return newMediaStation.id;
     }
@@ -102,11 +107,12 @@ export class MediaStationRepository{
             this.removeCachedMediaStation(id);
 
         this._allMediaStations.delete(id);
-        this._mediaStationMetaData.save(this._getNameControllerMap());
+        await this._mediaStationMetaData.save(this._getNameControllerMap());
 
         this._mediaCacheHandler.deleteAllCachedMedia(id);
     }
 
+    //TO DO: adjust in whole MCF: this is really not necesary! But before that: test with e2e-tests in admin-app!
     updateMediaStation(mediaStation:MediaStation):void {
         this.requireMediaStation(mediaStation.id);
         this._allMediaStations.set(mediaStation.id, mediaStation);
@@ -117,9 +123,9 @@ export class MediaStationRepository{
      *
      * @param {MediaStation} mediaStation
      */
-    updateAndSaveMediaStation(mediaStation:MediaStation):void {
+    async updateAndSaveMediaStation(mediaStation:MediaStation):Promise<void> {
         this.updateMediaStation(mediaStation);
-        this._mediaStationMetaData.save(this._getNameControllerMap());
+        await this._mediaStationMetaData.save(this._getNameControllerMap());
     }
 
     cacheMediaStation(id:number):void{

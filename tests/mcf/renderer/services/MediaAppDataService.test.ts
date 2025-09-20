@@ -114,7 +114,7 @@ describe("createMediaApp() ", () => {
         expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledWith(mediaAppId, name1, ip1, MediaApp.ROLE_DEFAULT);
     });
 
-    it("should return the ID of the newly created mediaApp", () => {
+    it("should return the ID of the newly created mediaApp", async () => {
         let mediaStation: MockMediaStation = new MockMediaStation(0);
         let result: number;
         mediaStation.getNextMediaAppId.mockReturnValueOnce(mediaAppId);
@@ -123,7 +123,7 @@ describe("createMediaApp() ", () => {
                 return mediaStation;
         });
 
-        result = mediaAppService.createMediaApp(0, ip1, name1);
+        result = await mediaAppService.createMediaApp(0, ip1, name1);
 
         expect(result).toBe(mediaAppId);
     });
@@ -239,9 +239,9 @@ describe("changeIp() ", () => {
         expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mediaStation);
     });
 
-    it("should throw an error if the MediaApp ID could not be found", () => {
+    it("should throw an error if the MediaApp ID could not be found", async () => {
         setupMediaAppWithName(false);
 
-        expect(() => mediaAppService.changeIp(0, mediaAppId, newIp)).toThrow(Error("Media-App with this ID does not exist: 0"));
+        await expect(mediaAppService.changeIp(0, mediaAppId, newIp)).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });

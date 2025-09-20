@@ -11,9 +11,9 @@ import {MockMediaStationEventService} from "tests/__mocks__/mcf/renderer/service
 export class MockMediaStationService extends MediaStationService {
     // Data
     loadMediaStations: jest.Mock<Promise<Map<string, string>>, []>;
-    createMediaStation: jest.Mock<number, [name: string]>;
+    createMediaStation: jest.Mock<Promise<number>, [name: string]>;
     deleteMediaStation: jest.Mock<Promise<void>, [id: number]>;
-    renameMediaStation: jest.Mock<void, [id: number, newName: string]>;
+    renameMediaStation: jest.Mock<Promise<void>, [id: number, newName: string]>;
     getControllerIp: jest.Mock<string | null, [id: number]>;
     getMediaStationName: jest.Mock<string, [id: number]>;
 

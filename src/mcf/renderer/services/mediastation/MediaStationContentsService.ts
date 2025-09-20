@@ -86,7 +86,7 @@ export class MediaStationContentsService {
         } else {
             mediaStation.importFromJSON(JSON.parse(contentsJSON), preserveMSname);
 
-            this._mediaStationRepo.updateAndSaveMediaStation(mediaStation);
+            await this._mediaStationRepo.updateAndSaveMediaStation(mediaStation);
 
             return MediaStationContentsService.CONTENT_DOWNLOAD_SUCCESS + mediaStation.id;
         }

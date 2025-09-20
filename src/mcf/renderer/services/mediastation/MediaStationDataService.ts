@@ -13,8 +13,11 @@ export class MediaStationDataService{
         return this._mediaStationRepository.loadMediaStations();
     }
 
-    createMediaStation(name:string):number{
-        return this._mediaStationRepository.addMediaStation(name);
+    async createMediaStation(name:string):Promise<number>{
+        const id:number =  await this._mediaStationRepository.addMediaStation(name);
+        this._mediaStationRepository.requireMediaStation(id);
+
+        return id;
     }
 
     async deleteMediaStation(id:number):Promise<void>{
@@ -22,12 +25,12 @@ export class MediaStationDataService{
         await this._mediaStationRepository.deleteMediaStation(id);
     }
 
-    changeName(id:number, newName:string):void{
+    async changeName(id:number, newName:string):Promise<void>{
         const ms:MediaStation = this._mediaStationRepository.requireMediaStation(id);
 
         ms.name = newName;
 
-        this._mediaStationRepository.updateAndSaveMediaStation(ms);
+        await this._mediaStationRepository.updateAndSaveMediaStation(ms);
     }
 
     //TO DO: extract into mediaAppService?

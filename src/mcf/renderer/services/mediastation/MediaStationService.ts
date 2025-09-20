@@ -31,17 +31,24 @@ export class MediaStationService {
     }
 
     // Data
+    /**
+     * (re)-loads all media-stations from the saved JSON-file
+     *
+     * returns a map of media-station-names and controller-ips
+     *
+     * @returns {Promise<Map<string, string>>}
+     */
     async loadMediaStations(): Promise<Map<string, string>> {
         return this._data.loadMediaStations();
     }
-    createMediaStation(name: string): number {
-        return this._data.createMediaStation(name);
+    async createMediaStation(name: string): Promise<number> {
+        return await this._data.createMediaStation(name);
     }
     async deleteMediaStation(id: number): Promise<void> {
         return this._data.deleteMediaStation(id);
     }
-    renameMediaStation(id: number, newName: string): void {
-        this._data.changeName(id, newName);
+    async renameMediaStation(id: number, newName: string): Promise<void> {
+        await this._data.changeName(id, newName);
     }
     getControllerIp(id: number): string | null {
         return this._data.getControllerIp(id);

@@ -15,7 +15,7 @@ export class MediaAppDataService {
         this._mediaStationRepository = mediaStationRepository;
     }
 
-    createMediaApp(mediaStationId: number, name: string, ip: string): number {
+    async createMediaApp(mediaStationId: number, name: string, ip: string): Promise<number> {
         let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let mediaAppId: number;
 
@@ -27,7 +27,7 @@ export class MediaAppDataService {
         mediaStation.mediaAppRegistry.add(mediaAppId, name, ip, mediaAppId === 0 ? MediaApp.ROLE_CONTROLLER : MediaApp.ROLE_DEFAULT);
 
         if (mediaAppId === 0)
-            this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
+            await this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
         else
             this._mediaStationRepository.updateMediaStation(mediaStation);
 
@@ -71,13 +71,13 @@ export class MediaAppDataService {
         return this._getMediaApp(mediaStationId, mediaAppId).ip;
     }
 
-    changeIp(mediaStationId: number, mediaAppId: number, ip: string): void {
+    async changeIp(mediaStationId: number, mediaAppId: number, ip: string): Promise<void> {
         let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
 
         this._getMediaApp(mediaStationId, mediaAppId).ip = ip;
 
         if (mediaAppId === 0)
-            this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
+            await this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
         else
             this._mediaStationRepository.updateMediaStation(mediaStation);
     }

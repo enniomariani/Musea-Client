@@ -88,7 +88,7 @@ describe("loadMediaStations() ", () => {
         mediaStation3.getNextMediaAppId.mockReturnValueOnce(idREturnedFrom3);
         const addMediaStationSpy = jest.spyOn(mediaStationRepo, 'addMediaStation');
 
-        addMediaStationSpy.mockImplementation((id: string) => {
+        addMediaStationSpy.mockImplementation(async (id: string) => {
             if (id === key1)
                 return 0;
             else if (id === key2)
@@ -143,7 +143,8 @@ describe("loadMediaStations() ", () => {
             });
         });
 
-        const addMediaStationSpy = jest.spyOn(mediaStationRepo, 'addMediaStation').mockImplementation((name: string) => {
+        const addMediaStationSpy = jest.spyOn(mediaStationRepo, 'addMediaStation')
+            .mockImplementation(async(name: string) => {
             if (name === key1)
                 return 0;
             else if (name === key2)
@@ -152,7 +153,8 @@ describe("loadMediaStations() ", () => {
                 return 2;
         })
 
-        const findMediaStationSpy = jest.spyOn(mediaStationRepo, 'findMediaStation').mockImplementation((id: number) => {
+        const findMediaStationSpy = jest.spyOn(mediaStationRepo, 'findMediaStation')
+            .mockImplementation((id: number) => {
             if (id === 0)
                 return mockMediaStation1;
             else if (id === 1)
@@ -179,34 +181,35 @@ describe("loadMediaStations() ", () => {
 });
 
 describe("addMediaStation() ", () => {
-    it("should return the ID of the created mediaStation", () => {
+    it("should return the ID of the created mediaStation", async  () => {
         let expectedId: number = 0;
-        let receivedId: number = mediaStationRepo.addMediaStation("myNewMediaStationName");
+        let receivedId: number = await mediaStationRepo.addMediaStation("myNewMediaStationName");
         expect(receivedId).toEqual(expectedId);
     });
 
-    it("should call mediaMetaDataService.save() with the mediastation-names and controller-ips if save = true", () => {
+    it("should call mediaMetaDataService.save() with the mediastation-names and controller-ips if save = true", async () => {
         let testName: string = "testNameXY";
 
-        mediaStationRepo.addMediaStation(testName, true);
+        await mediaStationRepo.addMediaStation(testName, true);
 
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(1)
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledWith(new Map([["testNameXY", defaultControllerIp]]))
     });
 
-    it("should NOT call mediaMetaDataService.save() if save = false", () => {
+    it("should NOT call mediaMetaDataService.save() if save = false", async () => {
         let testName: string = "testNameXY";
-        mediaStationRepo.addMediaStation(testName, false);
+        await mediaStationRepo.addMediaStation(testName, false);
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(0)
     });
 });
 
 describe("findMediaStation() ", () => {
-    it("should return the mediaStation object with the passed ID", () => {        let receivedId: number;
+    it("should return the mediaStation object with the passed ID", async () => {
+        let receivedId: number;
         let nameMediaStation: string = "testName";
         let foundMediaStation: MediaStation;
 
-        receivedId = mediaStationRepo.addMediaStation(nameMediaStation);
+        receivedId = await mediaStationRepo.addMediaStation(nameMediaStation);
         mediaStationRepo.addMediaStation("testName2");
 
         foundMediaStation = mediaStationRepo.findMediaStation(receivedId);
@@ -216,12 +219,12 @@ describe("findMediaStation() ", () => {
 
     });
 
-    it("should return null if the mediastation can not be found", () => {
+    it("should return null if the mediastation can not be found", async () => {
         let nameMediaStation: string = "testName";
         let foundMediaStation: MediaStation;
 
-        mediaStationRepo.addMediaStation(nameMediaStation);
-        mediaStationRepo.addMediaStation("testName2");
+        await mediaStationRepo.addMediaStation(nameMediaStation);
+        await mediaStationRepo.addMediaStation("testName2");
 
         foundMediaStation = mediaStationRepo.findMediaStation(20);
 
@@ -231,12 +234,12 @@ describe("findMediaStation() ", () => {
 });
 
 describe("requireMediaStation() ", () => {
-    it("should return the mediaStation object with the passed ID", () => {
+    it("should return the mediaStation object with the passed ID", async () => {
         let receivedId: number;
         let nameMediaStation: string = "testName";
         let foundMediaStation: MediaStation;
 
-        receivedId = mediaStationRepo.addMediaStation(nameMediaStation);
+        receivedId = await mediaStationRepo.addMediaStation(nameMediaStation);
         mediaStationRepo.addMediaStation("testName2");
 
         foundMediaStation = mediaStationRepo.requireMediaStation(receivedId);
@@ -246,11 +249,11 @@ describe("requireMediaStation() ", () => {
 
     });
 
-    it("should trhow if the mediastation can not be found", () => {
+    it("should trhow if the mediastation can not be found", async () => {
         let nameMediaStation: string = "testName";
 
-        mediaStationRepo.addMediaStation(nameMediaStation);
-        mediaStationRepo.addMediaStation("testName2");
+        await mediaStationRepo.addMediaStation(nameMediaStation);
+        await mediaStationRepo.addMediaStation("testName2");
 
         expect(() => mediaStationRepo.requireMediaStation(20)).toThrow(new Error("Mediastation with this ID does not exist: 20"));
     });
@@ -262,7 +265,7 @@ describe("deleteMediaStation() ", () => {
         let nameMediaStation: string = "testName";
         let foundMediaStation: MediaStation;
 
-        receivedId = mediaStationRepo.addMediaStation(nameMediaStation);
+        receivedId = await mediaStationRepo.addMediaStation(nameMediaStation);
         mediaStationRepo.addMediaStation("testName2");
         await mediaStationRepo.deleteMediaStation(receivedId);
         foundMediaStation = mediaStationRepo.findMediaStation(receivedId);
@@ -275,7 +278,7 @@ describe("deleteMediaStation() ", () => {
         let nameMediaStation: string = "testName";
         let mapToSave: Map<string, string> = new Map();
 
-        receivedId = mediaStationRepo.addMediaStation(nameMediaStation);
+        receivedId = await mediaStationRepo.addMediaStation(nameMediaStation);
         await mediaStationRepo.deleteMediaStation(receivedId);
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(2)
         expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(2, mapToSave)
@@ -284,8 +287,8 @@ describe("deleteMediaStation() ", () => {
     it("should call mediaMetaDataService.save() with a map with 1 entry if there were 2 mediastations", async () => {
         let receivedId: number;
 
-        mediaStationRepo.addMediaStation("testName1");
-        receivedId = mediaStationRepo.addMediaStation("testName2");
+        await mediaStationRepo.addMediaStation("testName1");
+        receivedId = await mediaStationRepo.addMediaStation("testName2");
 
         await mediaStationRepo.deleteMediaStation(receivedId);
 
@@ -299,9 +302,9 @@ describe("deleteMediaStation() ", () => {
         let mapToSave: Map<string, string> = new Map();
         mapToSave.set("testName1", "")
 
-        mediaStationRepo.addMediaStation("testName1");
+        await mediaStationRepo.addMediaStation("testName1");
 
-        receivedId = mediaStationRepo.addMediaStation("testName2");
+        receivedId = await mediaStationRepo.addMediaStation("testName2");
         await mediaStationRepo.deleteMediaStation(receivedId);
 
         expect(mediaStationRepo.mediaCacheHandler.deleteAllCachedMedia).toHaveBeenCalledTimes(1);
@@ -313,8 +316,8 @@ describe("deleteMediaStation() ", () => {
         let mapToSave: Map<string, string> = new Map();
         mapToSave.set("testName1", "")
 
-        mediaStationRepo.addMediaStation("testName1");
-        receivedId = mediaStationRepo.addMediaStation("testName2");
+        await mediaStationRepo.addMediaStation("testName1");
+        receivedId = await mediaStationRepo.addMediaStation("testName2");
 
         let spy = jest.spyOn(mediaStationRepo, 'isMediaStationCached').mockImplementation(async (id) => {
             return new Promise(resolve => {
@@ -336,13 +339,13 @@ describe("deleteMediaStation() ", () => {
 });
 
 describe("updateMediaStation() ", () => {
-    it("should replace the mediastation object by the new one", () => {
+    it("should replace the mediastation object by the new one", async () => {
         let receivedId: number;
         let nameMediaStation: string = "testName";
         let foundMediaStation: MediaStation, foundMediaStation2: MediaStation;
 
-        mediaStationRepo.addMediaStation("testNameXYYYZZ");
-        receivedId = mediaStationRepo.addMediaStation(nameMediaStation);
+        await mediaStationRepo.addMediaStation("testNameXYYYZZ");
+        receivedId = await mediaStationRepo.addMediaStation(nameMediaStation);
         mediaStationRepo.addMediaStation("testName2");
 
         foundMediaStation = mediaStationRepo.findMediaStation(receivedId);
@@ -380,18 +383,18 @@ describe("updateAndSaveMediaStation() ", () => {
         expect(mediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mediaStation);
     });
 
-    it("should call mediaMetaDataService.save() with a map with an actualised controller-ip", () => {
+    it("should call mediaMetaDataService.save() with a map with an actualised controller-ip",async  () => {
         let receivedId: number;
         let mediaStation: MockMediaStation;
         let newIp: string = "222.222.222.20";
         let mapToSave: Map<string, string> = new Map();
         mapToSave.set("testName1", newIp);
 
-        receivedId = mediaStationRepo.addMediaStation("testName1");
+        receivedId = await mediaStationRepo.addMediaStation("testName1");
 
         mediaStation = mediaStationRepo.findMediaStation(receivedId) as MockMediaStation;
         mediaStation.mediaAppRegistry.getControllerIp.mockReturnValue(newIp)
-        mediaStationRepo.updateAndSaveMediaStation(mediaStation);
+        await mediaStationRepo.updateAndSaveMediaStation(mediaStation);
 
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(2)
         expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(2, mapToSave)
@@ -404,11 +407,11 @@ describe("cacheMediaStation() ", () => {
             test: "teststring",
             testBoolean: false
         }
-        let receivedId: number = mediaStationRepo.addMediaStation("testName1");
+        let receivedId: number = await mediaStationRepo.addMediaStation("testName1");
         let mediaStation: MockMediaStation = mediaStationRepo.findMediaStation(receivedId) as MockMediaStation;
         mediaStation.exportToJSON.mockReturnValue(mockJSON);
 
-        await mediaStationRepo.cacheMediaStation(0);
+        mediaStationRepo.cacheMediaStation(0);
 
         expect(mockContentFileService.saveFile).toHaveBeenCalledTimes(1);
         expect(mockContentFileService.saveFile).toHaveBeenCalledWith(0, mockJSON);
@@ -423,25 +426,23 @@ describe("cacheMediaStation() ", () => {
 
 describe("removeCachedMediaStation() ", () => {
     it("should call contentFileService.deleteFile with the correct ID", async () => {
-        let receivedId: number = mediaStationRepo.addMediaStation("testName1");
-        let mediaStation: MockMediaStation = mediaStationRepo.findMediaStation(receivedId) as MockMediaStation;
+        await mediaStationRepo.addMediaStation("testName1");
 
-        await mediaStationRepo.removeCachedMediaStation(0);
+        mediaStationRepo.removeCachedMediaStation(0);
 
         expect(mockContentFileService.deleteFile).toHaveBeenCalledTimes(1);
         expect(mockContentFileService.deleteFile).toHaveBeenCalledWith(0);
     })
 
     it("throw an error if mediastation id does not exist", () => {
-
         expect(() => mediaStationRepo.removeCachedMediaStation(0)).toThrow(Error("Mediastation with this ID does not exist: 0"));
     })
 });
 
 describe("isMediaStationCached() ", () => {
     it("should call contentFileService.deleteFile with the correct ID", async () => {
-        let receivedId: number = mediaStationRepo.addMediaStation("testName1");
-        let mediaStation: MockMediaStation = mediaStationRepo.findMediaStation(receivedId) as MockMediaStation;
+        await mediaStationRepo.addMediaStation("testName1");
+
         mockContentFileService.fileExists.mockImplementationOnce((id) => {
             if (id === 0)
                 return true;

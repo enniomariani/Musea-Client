@@ -65,10 +65,10 @@ describe("MediaStationService", () => {
             expect(result).toBe(map);
         });
 
-        it("createMediaStation forwards and returns id", () => {
-            data.createMediaStation.mockReturnValueOnce(42);
+        it("createMediaStation forwards and returns id", async () => {
+            data.createMediaStation.mockResolvedValueOnce(42);
 
-            const id = facade.createMediaStation("MS");
+            const id:number = await facade.createMediaStation("MS");
 
             expect(data.createMediaStation).toHaveBeenCalledWith("MS");
             expect(id).toBe(42);
