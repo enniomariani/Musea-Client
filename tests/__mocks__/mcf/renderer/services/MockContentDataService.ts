@@ -9,6 +9,7 @@ const mockMediaService:MockMediaService = new MockMediaService();
 export class MockContentDataService extends ContentDataService {
     createContent: jest.Mock;
     changeName: jest.Mock;
+    getName: jest.Mock;
     deleteContent: jest.Mock;
     changeFolder: jest.Mock;
 
@@ -23,6 +24,7 @@ export class MockContentDataService extends ContentDataService {
         super(mockMediaStationRepo, mockMediaService);
         this.createContent = jest.fn();
         this.changeName = jest.fn();
+        this.getName = jest.fn();
         this.deleteContent = jest.fn();
         this.changeFolder = jest.fn();
 

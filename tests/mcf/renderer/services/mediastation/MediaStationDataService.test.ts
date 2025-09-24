@@ -59,10 +59,8 @@ describe("createMediaStation() ", ()=>{
 });
 
 describe("renameMediaStation() ", ()=>{
-
     it("should call findMediaStation and updateAndSaveMediaStation from the repo", ()=>{
         let newName:string = "mediaStationNameNeu";
-
         let createdMediaStation:MockMediaStation = new MockMediaStation(createdID);
 
         mockMediaStationRepository.requireMediaStation.mockImplementation((idArg)=>{
@@ -74,8 +72,7 @@ describe("renameMediaStation() ", ()=>{
 
         expect(mockMediaStationRepository.requireMediaStation).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepository.requireMediaStation).toHaveBeenCalledWith(createdID);
-        expect(mockMediaStationRepository.updateAndSaveMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepository.updateAndSaveMediaStation).toHaveBeenCalledWith(createdMediaStation);
+        expect(mockMediaStationRepository.saveMediaStations).toHaveBeenCalledTimes(1);
     });
 });
 

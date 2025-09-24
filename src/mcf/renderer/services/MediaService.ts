@@ -37,9 +37,6 @@ export class MediaService {
             throw new Error("Non-valid file-extension passed: " +  fileExtension);
 
         this._mediaManager.createImage(mediaStation, contentId, mediaAppId, fileName);
-
-        this._mediaStationRepository.updateMediaStation(mediaStation);
-
         await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
     }
 
@@ -65,9 +62,6 @@ export class MediaService {
             throw new Error("Non-valid file-extension passed: " +  fileExtension);
 
         this._mediaManager.createVideo(mediaStation, contentId, mediaAppId, duration, fileName);
-
-        this._mediaStationRepository.updateMediaStation(mediaStation);
-
         await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
     }
 
@@ -118,6 +112,5 @@ export class MediaService {
             await this._mediaStationRepository.markMediaIDtoDelete(mediaStationId,mediaAppId,  idOnMediaApp);
 
         this._mediaManager.deleteMedia(mediaStation, contentId, mediaAppId);
-        this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 }

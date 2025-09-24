@@ -23,13 +23,10 @@ export class MediaAppDataService {
             throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
 
         mediaAppId = mediaStation.getNextMediaAppId();
-
         mediaStation.mediaAppRegistry.add(mediaAppId, name, ip, mediaAppId === 0 ? MediaApp.ROLE_CONTROLLER : MediaApp.ROLE_DEFAULT);
 
         if (mediaAppId === 0)
-            await this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
-        else
-            this._mediaStationRepository.updateMediaStation(mediaStation);
+            await this._mediaStationRepository.saveMediaStations();
 
         return mediaAppId;
     }
@@ -59,12 +56,9 @@ export class MediaAppDataService {
     }
 
     changeName(mediaStationId: number, mediaAppId: number, name: string): void {
-        let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let mediaApp: MediaApp = this._getMediaApp(mediaStationId, mediaAppId);
-
+        this._mediaStationRepository.requireMediaStation(mediaStationId);
+        const mediaApp: MediaApp = this._getMediaApp(mediaStationId, mediaAppId);
         mediaApp.name = name;
-
-        this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
     getIp(mediaStationId: number, mediaAppId: number): string {
@@ -72,14 +66,11 @@ export class MediaAppDataService {
     }
 
     async changeIp(mediaStationId: number, mediaAppId: number, ip: string): Promise<void> {
-        let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-
+        this._mediaStationRepository.requireMediaStation(mediaStationId);
         this._getMediaApp(mediaStationId, mediaAppId).ip = ip;
 
         if (mediaAppId === 0)
-            await this._mediaStationRepository.updateAndSaveMediaStation(mediaStation);
-        else
-            this._mediaStationRepository.updateMediaStation(mediaStation);
+            await this._mediaStationRepository.saveMediaStations();
     }
 
     private _getMediaApp(mediaStationId: number, mediaAppId: number): MediaApp {

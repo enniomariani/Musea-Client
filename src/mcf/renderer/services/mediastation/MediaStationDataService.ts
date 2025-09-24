@@ -16,7 +16,6 @@ export class MediaStationDataService{
     async createMediaStation(name:string):Promise<number>{
         const id:number =  await this._mediaStationRepository.addMediaStation(name);
         this._mediaStationRepository.requireMediaStation(id);
-
         return id;
     }
 
@@ -27,22 +26,18 @@ export class MediaStationDataService{
 
     async changeName(id:number, newName:string):Promise<void>{
         const ms:MediaStation = this._mediaStationRepository.requireMediaStation(id);
-
         ms.name = newName;
-
-        await this._mediaStationRepository.updateAndSaveMediaStation(ms);
+        await this._mediaStationRepository.saveMediaStations();
     }
 
     //TO DO: extract into mediaAppService?
     getControllerIp(id:number):string|null{
         const ms:MediaStation = this._mediaStationRepository.requireMediaStation(id);
-
         return ms.mediaAppRegistry.getControllerIp();
     }
 
     getName(id:number):string{
         const ms:MediaStation = this._mediaStationRepository.requireMediaStation(id);
-
         return ms.name;
     }
 }

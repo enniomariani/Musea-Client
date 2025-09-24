@@ -19,13 +19,8 @@ export class FolderDataService {
     }
 
     createFolder(mediaStationId: number, parentFolderId: number, name: string): number {
-        let folder: Folder;
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-
-        folder = this._folderManager.createFolder(mediaStation, name, parentFolderId);
-
-        this._mediaStationRepository.updateMediaStation(mediaStation);
-
+        const folder:Folder = this._folderManager.createFolder(mediaStation, name, parentFolderId);
         return folder.id;
     }
 
@@ -41,18 +36,12 @@ export class FolderDataService {
 
     changeName(mediaStationId: number, folderId: number, name: string): void {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-
         this._folderManager.changeName(mediaStation, folderId, name);
-
-        this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
     changeParentFolder(mediaStationId:number, folderId:number, newParentId:number):void{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-
         this._folderManager.changeParentFolder(mediaStation, folderId, newParentId);
-
-        this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
     getIdOfParentFolder(mediaStationId: number, folderId: number): number {
@@ -122,8 +111,6 @@ export class FolderDataService {
                 await this._contentService.deleteContent(mediaStationId, folderId, contentId)
 
         this._folderManager.deleteFolder(mediaStation, folderId, folder.parentFolder.id);
-
-        this._mediaStationRepository.updateMediaStation(mediaStation);
     }
 
     /**

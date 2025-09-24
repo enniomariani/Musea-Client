@@ -112,19 +112,10 @@ export class MediaStationRepository{
         this._mediaCacheHandler.deleteAllCachedMedia(id);
     }
 
-    //TO DO: adjust in whole MCF: this is really not necesary! But before that: test with e2e-tests in admin-app!
-    updateMediaStation(mediaStation:MediaStation):void {
-        this.requireMediaStation(mediaStation.id);
-        this._allMediaStations.set(mediaStation.id, mediaStation);
-    }
-
     /**
-     * updates the mediastation and saves the name of it and the ip of the controller in a json-file
-     *
-     * @param {MediaStation} mediaStation
+     * saves the name of all mediastations and the ip of the controllers in a json-file
      */
-    async updateAndSaveMediaStation(mediaStation:MediaStation):Promise<void> {
-        this.updateMediaStation(mediaStation);
+    async saveMediaStations():Promise<void> {
         await this._mediaStationMetaData.save(this._getNameControllerMap());
     }
 

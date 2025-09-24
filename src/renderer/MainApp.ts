@@ -13,11 +13,11 @@ export class MainApp extends EventTarget {
     async initFrameWork(){
         let backendData:BackendData = await this._backend.loadSettings();
 
-        //for TEST-PURPOSES!!
+        //for TEST-PURPOSES
         let mcf:MediaClientFramework = new MediaClientFramework(backendData.pathToDataFolder);
         let mediaAppReachable:boolean;
 
-        let firstMediaStationId:number = mcf.mediaStationService.createMediaStation("111");
+        let firstMediaStationId:number = await mcf.mediaStationService.createMediaStation("111");
         console.log("FIRST MEDIA-STATIONID: ", firstMediaStationId)
 
         console.log("ADD MEDIA-APP WITH ID: ", mcf.mediaAppDataService.createMediaApp(firstMediaStationId,  "myControllerApp", "localhost"));

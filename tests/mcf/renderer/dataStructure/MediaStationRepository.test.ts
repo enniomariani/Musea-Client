@@ -338,50 +338,7 @@ describe("deleteMediaStation() ", () => {
     });
 });
 
-describe("updateMediaStation() ", () => {
-    it("should replace the mediastation object by the new one", async () => {
-        let receivedId: number;
-        let nameMediaStation: string = "testName";
-        let foundMediaStation: MediaStation, foundMediaStation2: MediaStation;
-
-        await mediaStationRepo.addMediaStation("testNameXYYYZZ");
-        receivedId = await mediaStationRepo.addMediaStation(nameMediaStation);
-        mediaStationRepo.addMediaStation("testName2");
-
-        foundMediaStation = mediaStationRepo.findMediaStation(receivedId);
-
-        foundMediaStation.name = "newName";
-        mediaStationRepo.updateMediaStation(foundMediaStation);
-
-        foundMediaStation2 = mediaStationRepo.findMediaStation(receivedId);
-
-        expect(foundMediaStation2.name).toEqual("newName");
-    });
-
-    it("should throw an error if the passed mediastation is not in the repo", () => {
-        let newMediaStation: MockMediaStation = new MockMediaStation(100);
-        let error: boolean = false;
-
-        try {
-            mediaStationRepo.updateMediaStation(newMediaStation);
-        } catch (e) {
-            error = true;
-        }
-
-        expect(error).toEqual(true);
-    });
-});
-
-describe("updateAndSaveMediaStation() ", () => {
-    it("should call updateMediaStation", () => {
-        let mediaStation: MockMediaStation = new MockMediaStation(0);
-        mediaStationRepo.updateMediaStation = jest.fn();
-
-        mediaStationRepo.updateAndSaveMediaStation(mediaStation);
-
-        expect(mediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mediaStation);
-    });
+describe("saveMediaStations() ", () => {
 
     it("should call mediaMetaDataService.save() with a map with an actualised controller-ip",async  () => {
         let receivedId: number;
@@ -394,7 +351,7 @@ describe("updateAndSaveMediaStation() ", () => {
 
         mediaStation = mediaStationRepo.findMediaStation(receivedId) as MockMediaStation;
         mediaStation.mediaAppRegistry.getControllerIp.mockReturnValue(newIp)
-        await mediaStationRepo.updateAndSaveMediaStation(mediaStation);
+        await mediaStationRepo.saveMediaStations();
 
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(2)
         expect(mockMediaStationLocalMetaData.save).toHaveBeenNthCalledWith(2, mapToSave)

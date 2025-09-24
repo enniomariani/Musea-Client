@@ -54,16 +54,6 @@ describe("createFolder() ", () => {
 
         expect(returnValue).toBe(folderId);
     });
-
-    it("should call mediaStationRepository.updateMediaStation", () => {
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockFolderManager.createFolder.mockReturnValueOnce(mockFolder);
-
-        folderService.createFolder(mediaStationId, folderId, "testName")
-
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
-    });
 });
 
 describe("getIdOfParentFolder() ", () => {
@@ -146,16 +136,6 @@ describe("changeName() ", () => {
         expect(mockFolderManager.changeName).toHaveBeenCalledTimes(1);
         expect(mockFolderManager.changeName).toHaveBeenCalledWith(mockMediaStation, folderId, newName);
     });
-
-    it("should call mediaStationRepository.updateMediaStation", () => {
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockFolderManager.createFolder.mockReturnValueOnce(mockFolder);
-
-        folderService.changeName(mediaStationId, folderId, newName);
-
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
-    });
 });
 
 describe("changeParentFolder() ", () => {
@@ -170,16 +150,6 @@ describe("changeParentFolder() ", () => {
 
         expect(mockFolderManager.changeParentFolder).toHaveBeenCalledTimes(1);
         expect(mockFolderManager.changeParentFolder).toHaveBeenCalledWith(mockMediaStation, folderId, newParentId);
-    });
-
-    it("should call mediaStationRepository.updateMediaStation", () => {
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockFolderManager.createFolder.mockReturnValueOnce(mockFolder);
-
-        folderService.changeParentFolder(mediaStationId, folderId, newParentId);
-
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });
 });
 
@@ -283,16 +253,6 @@ describe("deleteFolder() ", () => {
 
         expect(mockFolderManager.deleteFolder).toHaveBeenCalledTimes(1);
         expect(mockFolderManager.deleteFolder).toHaveBeenCalledWith(mockMediaStation, folderId, mockFolder.parentFolder.id);
-    });
-
-    it("should call mediaStationRepository.updateMediaStation", async () => {
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockFolderManager.getFolder.mockReturnValueOnce(mockFolder);
-
-        await folderService.deleteFolder(mediaStationId, folderId);
-
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });
 
     it("should throw an error if the folderId could not be found", async () => {

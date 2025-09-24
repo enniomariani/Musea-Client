@@ -53,16 +53,6 @@ describe("createContent() ", ()=> {
         expect(returnValue).toBe(contentId);
 
     });
-
-    it("should call mediaStationRepository.updateMediaStation", ()=>{
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.createContent.mockReturnValueOnce(mockContent);
-
-        contentService.createContent(mediaStationId,folderId,"testName")
-
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
-    });
 });
 
 describe("changeName() ", ()=> {
@@ -79,15 +69,29 @@ describe("changeName() ", ()=> {
         expect(mockContentManager.changeName).toHaveBeenCalledTimes(1);
         expect(mockContentManager.changeName).toHaveBeenCalledWith(mockMediaStation, folderId, newName);
     });
+});
 
-    it("should call mediaStationRepository.updateMediaStation", ()=>{
+describe("getName() ", ()=> {
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+
+    it("should return the folderId of the content", () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.createContent.mockReturnValueOnce(mockContent);
+        mockContentManager.getContent.mockImplementation(( mediaStation, id)=>{
+            if(mediaStation === mockMediaStation && id === contentId)
+                return mockContent;
+        });
+        mockContent.name = "testName";
 
-        contentService.changeName(mediaStationId,folderId,newName);
+        let answer:string = contentService.getName(mediaStationId,contentId);
 
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
+        expect(answer).toEqual("testName");
+    });
+
+    it("should throw an error if the contentId could not be found", ()=>{
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockContentManager.getContent.mockReturnValue(null);
+
+        expect(()=> contentService.getName(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
     });
 });
 
@@ -103,15 +107,6 @@ describe("changeParentFolder() ", () => {
 
         expect(mockContentManager.changeFolder).toHaveBeenCalledTimes(1);
         expect(mockContentManager.changeFolder).toHaveBeenCalledWith(mockMediaStation, contentId, newFolderId);
-    });
-
-    it("should call mediaStationRepository.updateMediaStation", () => {
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-
-        contentService.changeFolder(mediaStationId, contentId, newFolderId);
-
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });
 });
 
@@ -203,16 +198,6 @@ describe("changeLightIntensity() ", ()=> {
         expect(mockContentManager.changeLightIntensity).toHaveBeenCalledTimes(1);
         expect(mockContentManager.changeLightIntensity).toHaveBeenCalledWith(mockMediaStation, contentId, newIntensity);
     });
-
-    it("should call mediaStationRepository.updateMediaStation", ()=>{
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.createContent.mockReturnValueOnce(mockContent);
-
-        contentService.changeLightIntensity(mediaStationId,contentId,newIntensity);
-
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
-    });
 });
 
 describe("deleteContent() ", ()=> {
@@ -251,16 +236,5 @@ describe("deleteContent() ", ()=> {
         await contentService.deleteContent(mediaStationId,folderId, contentId);
 
         expect(mockMediaService.deleteMedia).toHaveBeenCalledTimes(0);
-    });
-
-    it("should call mediaStationRepository.updateMediaStation", async ()=>{
-        mockMediaService.getMediaType.mockReturnValue("image");
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.createContent.mockReturnValueOnce(mockContent);
-
-        await contentService.deleteContent(mediaStationId,folderId, contentId);
-
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.updateMediaStation).toHaveBeenCalledWith(mockMediaStation);
     });
 });

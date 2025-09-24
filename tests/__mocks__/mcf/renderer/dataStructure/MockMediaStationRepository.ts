@@ -17,8 +17,7 @@ export class MockMediaStationRepository extends MediaStationRepository{
     findMediaStation: jest.Mock;
     requireMediaStation: jest.Mock;
     deleteMediaStation: jest.Mock;
-    updateMediaStation: jest.Mock;
-    updateAndSaveMediaStation: jest.Mock;
+    saveMediaStations: jest.Mock;
 
     private _mockMediaCacheHandler:MockMediaFileCacheHandler = new MockMediaFileCacheHandler("fakePathToMediaFolder");
 
@@ -38,8 +37,7 @@ export class MockMediaStationRepository extends MediaStationRepository{
         this.findMediaStation = jest.fn();
         this.requireMediaStation = jest.fn();
         this.deleteMediaStation = jest.fn();
-        this.updateMediaStation = jest.fn();
-        this.updateAndSaveMediaStation = jest.fn();
+        this.saveMediaStations = jest.fn();
 
         this.cacheMediaStation = jest.fn();
         this.removeCachedMediaStation = jest.fn();
