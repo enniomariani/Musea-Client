@@ -124,6 +124,18 @@ export class Content {
     }
 
     /**
+     * Returns the Media or returns null if it does not exist.
+     */
+    getMedia(mediaAppId:number):IMedia | null {
+        const media:IMedia | undefined = this._media.get(mediaAppId);
+
+        if (!media)
+            return null;
+
+        return media;
+    }
+
+    /**
      * Returns the Media or throws if it does not exist.
      */
     requireMedia(mediaAppId:number):IMedia {

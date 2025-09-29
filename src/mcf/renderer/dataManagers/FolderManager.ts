@@ -47,7 +47,7 @@ export class FolderManager{
         const folder:Folder = this.requireFolder(mediaStation, folderId);
         const newParentFolder:Folder = this.requireFolder(mediaStation, newParentId);
 
-        folder.parentFolder.removeSubFolder(folderId);
+        folder.parentFolder?.removeSubFolder(folderId);
         newParentFolder.addSubFolder(folder);
         folder.parentFolder = newParentFolder;
     }

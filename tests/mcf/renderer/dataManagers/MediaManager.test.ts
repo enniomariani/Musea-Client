@@ -23,7 +23,7 @@ describe("createImage() ", ()=>{
     it("should return a new image with the correct parameters set", ()=>{
         let answerImage:Image;
 
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
 
         answerImage = mediaManager.createImage(mockMediaStation, 0, 0, fileName);
 
@@ -35,11 +35,8 @@ describe("createImage() ", ()=>{
     });
 
     it("should add the newly created image to the content", ()=>{
-        let answerImage:Image;
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
-
-        answerImage = mediaManager.createImage(mockMediaStation, 0, 0, fileName);
-
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
+        const answerImage:Image = mediaManager.createImage(mockMediaStation, 0, 0, fileName);
         expect(mockContent.media.get(0)).toEqual(answerImage);
     });
 
@@ -49,7 +46,7 @@ describe("createImage() ", ()=>{
         existingImage.mediaAppId = 0;
         existingImage.idOnMediaApp = 200;
         existingImage.fileName = "existingName"
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, existingImage);
 
         answerImage = mediaManager.createImage(mockMediaStation, 0, 0, fileName);
@@ -63,7 +60,7 @@ describe("createVideo() ", ()=>{
 
     it("should return a new video with the correct parameters set", ()=>{
         let answerVideo:Video;
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
 
         answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200, fileName);
 
@@ -77,7 +74,7 @@ describe("createVideo() ", ()=>{
 
     it("should add the newly created video to the content", ()=>{
         let answerVideo:Video;
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
 
         answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200, fileName);
 
@@ -90,7 +87,7 @@ describe("createVideo() ", ()=>{
         existingImage.mediaAppId = 0;
         existingImage.idOnMediaApp = 200;
         existingImage.fileName = "oldName";
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, existingImage);
 
         answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200, fileName);
@@ -104,7 +101,7 @@ describe("getFileName() ", ()=>{
         let fileName:string | null;
         let image:Image = new Image();
         image.fileName = "testName"
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, image);
 
         fileName = mediaManager.getFileName(mockMediaStation, 0, 0);
@@ -114,7 +111,7 @@ describe("getFileName() ", ()=>{
 
 
     it("should return null if there is no media set for the mediaAppId", ()=>{
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         const fileName:string | null = mediaManager.getFileName(mockMediaStation, 0, 0);
         expect(fileName).toBe(null);
     });
@@ -122,7 +119,7 @@ describe("getFileName() ", ()=>{
 
 describe("getMediaType() ", ()=>{
     it("should return a string with type image if the asked for media is  an image", ()=>{
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, new Image());
 
         const  mediaType:string | null = mediaManager.getMediaType(mockMediaStation, 0, 0);
@@ -131,7 +128,7 @@ describe("getMediaType() ", ()=>{
     });
 
     it("should return a string with type video if the asked for media is  an video", ()=>{
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, new Video());
 
         const  mediaType:string | null = mediaManager.getMediaType(mockMediaStation, 0, 0);
@@ -140,7 +137,7 @@ describe("getMediaType() ", ()=>{
     });
 
     it("should return null if there is no media set for the mediaAppId", ()=>{
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         const  mediaType:string | null = mediaManager.getMediaType(mockMediaStation, 0, 0);
         expect(mediaType).toBe(null);
     });
@@ -151,7 +148,7 @@ describe("getIdOnMediaApp() ", ()=>{
         let idOnMediaApp:number;
         let image:Image = new Image();
         image.idOnMediaApp = 33;
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, image);
 
         idOnMediaApp = mediaManager.getIdOnMediaApp(mockMediaStation, 0, 0);
@@ -161,10 +158,10 @@ describe("getIdOnMediaApp() ", ()=>{
 
     it("should return -1 if there is no media set for the mediaAppId", ()=>{
         let idOnMediaApp:number;
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         let image:Image = new Image();
         image.idOnMediaApp = -1;
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, image);
 
         idOnMediaApp = mediaManager.getIdOnMediaApp(mockMediaStation, 0, 0);
@@ -179,7 +176,7 @@ describe("deleteMedia() ", ()=>{
         image.idOnMediaApp = 2;
         image.mediaAppId = 0;
 
-        mockMediaStation.rootFolder.findContent.mockReturnValueOnce(mockContent);
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, image);
 
         mediaManager.deleteMedia(mockMediaStation, 0, 0);

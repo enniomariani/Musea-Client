@@ -82,19 +82,17 @@ export class MediaManager{
 
     getFileName(mediaStation:MediaStation, contentId:number, mediaAppId:number):string|null{
         const content:Content = mediaStation.rootFolder.requireContent(contentId);
+        const media:IMedia | null = content.getMedia(mediaAppId);
 
-        if(content.media.get(mediaAppId) !== null && content.media.get(mediaAppId) !== undefined)
-            return content.media.get(mediaAppId).fileName;
+        if(media)
+            return media.fileName;
         else
             return null;
     }
 
     getIdOnMediaApp(mediaStation:MediaStation, contentId:number, mediaAppId:number):number{
         const content:Content = mediaStation.rootFolder.requireContent(contentId);
-        let media:IMedia;
-
-        media = content.media.get(mediaAppId);
-
+        const media:IMedia = content.requireMedia(mediaAppId);
         return media.idOnMediaApp;
     }
 

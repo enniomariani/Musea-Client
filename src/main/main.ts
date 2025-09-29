@@ -14,7 +14,7 @@ const __dirname:string = dirname(filename);
 
 //the NODE_ENV-variable is set before starting the app to "development", if the app is running on
 //the development-system
-const environment:string = process.env.NODE_ENV;
+const environment:string | undefined = process.env.NODE_ENV;
 
 let mainWindow:BrowserWindow;
 let mainMediaServerFramework:MainMediaClientFramework;

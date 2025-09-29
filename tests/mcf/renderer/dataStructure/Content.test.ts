@@ -112,6 +112,22 @@ describe("getMaxDuration() ", () => {
     });
 });
 
+describe("getMedia() ", () => {
+    it("should find the media if it is in one of the subfolders of the folder", () => {
+        const image = new Image();
+        image.mediaAppId = 3;
+        content.media.set(3, image);
+        const media: IMedia | null = content.getMedia(3);
+        expect(media).toBe(image);
+    });
+
+    it("should return null if there is no media for the mediaAppId", () => {
+        const media: IMedia | null = content.getMedia(333);
+        expect(media).toBe(null);
+    });
+
+});
+
 describe("requireMedia() ", () => {
     it("should find the media if it is in one of the subfolders of the folder", () => {
         const image = new Image();
