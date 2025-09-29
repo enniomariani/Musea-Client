@@ -26,11 +26,7 @@ export class FolderDataService {
 
     getName(mediaStationId: number, id: number): string {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let folder: Folder = this._folderManager.getFolder(mediaStation, id);
-
-        if (!folder)
-            throw new Error("Folder with this ID does not exist: " + id);
-
+        const folder: Folder = this._folderManager.requireFolder(mediaStation, id);
         return folder.name;
     }
 
@@ -46,10 +42,7 @@ export class FolderDataService {
 
     getIdOfParentFolder(mediaStationId: number, folderId: number): number {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let folder: Folder = this._folderManager.getFolder(mediaStation, folderId);
-
-        if (!folder)
-            throw new Error("Folder with this ID does not exist: " + folderId);
+        const folder: Folder = this._folderManager.requireFolder(mediaStation, folderId);
 
         if (!folder.parentFolder)
             throw new Error("Folder with this ID does not have a parent-folder: " + folderId);
@@ -66,8 +59,8 @@ export class FolderDataService {
      */
     getAllSubFoldersInFolder(mediaStationId: number, folderId: number): Map<number, string> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let folder: Folder = this._findFolder(mediaStation.rootFolder, folderId);
-        let allSubFolders: Map<number, Folder> = folder.getAllSubFolders();
+        const folder: Folder = this._findFolder(mediaStation.rootFolder, folderId);
+        const allSubFolders: Map<number, Folder> = folder.getAllSubFolders();
         let returnMap: Map<number, string> = new Map();
 
         allSubFolders.forEach((content, key) => {
@@ -79,8 +72,8 @@ export class FolderDataService {
 
     getAllContentsInFolder(mediaStationId: number, folderId: number): Map<number, string> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let folder: Folder = this._findFolder(mediaStation.rootFolder, folderId);
-        let allContents: Map<number, Content> = folder.getAllContents();
+        const folder: Folder = this._findFolder(mediaStation.rootFolder, folderId);
+        const allContents: Map<number, Content> = folder.getAllContents();
         let returnMap: Map<number, string> = new Map();
 
         allContents.forEach((content, key) => {
@@ -99,12 +92,8 @@ export class FolderDataService {
      */
     async deleteFolder(mediaStationId: number, folderId: number): Promise<void> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let folder: Folder = this._folderManager.getFolder(mediaStation, folderId);
-
-        if (!folder)
-            throw new Error("Folder with this ID does not exist: " + folderId);
-
-        let allContentIds: Map<number, number[]> = folder.getAllContentIDsInFolderAndSubFolders();
+        const folder: Folder = this._folderManager.requireFolder(mediaStation, folderId);
+        const allContentIds: Map<number, number[]> = folder.getAllContentIDsInFolderAndSubFolders();
 
         for (const [folderId, contentIds] of allContentIds)
             for (const contentId of contentIds)
@@ -125,8 +114,8 @@ export class FolderDataService {
      */
     findContentsByNamePart(mediaStationId: number, folderId: number, namePart: string): Map<number, string> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let folder: Folder = this._findFolder(mediaStation.rootFolder, folderId);
-        let allContents: Content[] = folder.findContentsByNamePart(namePart);
+        const folder: Folder = this._findFolder(mediaStation.rootFolder, folderId);
+        const allContents: Content[] = folder.findContentsByNamePart(namePart);
         let returnMap: Map<number, string> = new Map();
 
         for(let i:number = 0; i < allContents.length; i++)
@@ -136,7 +125,7 @@ export class FolderDataService {
     }
 
     private _findFolder(rootFolder: Folder, id: number): Folder {
-        let folder: Folder = rootFolder.findFolder(id);
+        const folder: Folder | null = rootFolder.findFolder(id);
 
         if (!folder)
             throw new Error("Folder with this ID does not exist: " + id);

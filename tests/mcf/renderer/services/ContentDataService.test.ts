@@ -76,7 +76,7 @@ describe("getName() ", ()=> {
 
     it("should return the folderId of the content", () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.getContent.mockImplementation(( mediaStation, id)=>{
+        mockContentManager.requireContent.mockImplementation(( mediaStation, id)=>{
             if(mediaStation === mockMediaStation && id === contentId)
                 return mockContent;
         });
@@ -86,17 +86,9 @@ describe("getName() ", ()=> {
 
         expect(answer).toEqual("testName");
     });
-
-    it("should throw an error if the contentId could not be found", ()=>{
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.getContent.mockReturnValue(null);
-
-        expect(()=> contentService.getName(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
-    });
 });
 
 describe("changeParentFolder() ", () => {
-
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     let newFolderId: number = 28;
 
@@ -111,13 +103,12 @@ describe("changeParentFolder() ", () => {
 });
 
 describe("getLightIntensity() ", ()=> {
-
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
 
     it("should return the lightIntensity of the content", () => {
         mockContent.lightIntensity = 33;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.getContent.mockImplementation(( mediaStation, id)=>{
+        mockContentManager.requireContent.mockImplementation(( mediaStation, id)=>{
             if(mediaStation === mockMediaStation && id === contentId)
                 return mockContent;
         });
@@ -126,22 +117,14 @@ describe("getLightIntensity() ", ()=> {
 
         expect(answer).toEqual(mockContent.lightIntensity);
     });
-
-    it("should throw an error if the contentId could not be found", ()=>{
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.getContent.mockReturnValue(null);
-
-        expect(()=> contentService.getLightIntensity(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
-    });
 });
 
 describe("getFolderId() ", ()=> {
-
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
 
     it("should return the folderId of the content", () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.getContent.mockImplementation(( mediaStation, id)=>{
+        mockContentManager.requireContent.mockImplementation(( mediaStation, id)=>{
             if(mediaStation === mockMediaStation && id === contentId)
                 return mockContent;
         });
@@ -149,13 +132,6 @@ describe("getFolderId() ", ()=> {
         let answer:number = contentService.getFolderId(mediaStationId,contentId);
 
         expect(answer).toEqual(folderId);
-    });
-
-    it("should throw an error if the contentId could not be found", ()=>{
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.getContent.mockReturnValue(null);
-
-        expect(()=> contentService.getFolderId(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
     });
 });
 
@@ -166,7 +142,7 @@ describe("getDuration() ", ()=> {
     it("should return the lightIntensity of the content", () => {
         mockContent.getMaxDuration.mockReturnValue( 221);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.getContent.mockImplementation(( mediaStation, id)=>{
+        mockContentManager.requireContent.mockImplementation(( mediaStation, id)=>{
             if(mediaStation === mockMediaStation && id === contentId)
                 return mockContent;
         });
@@ -174,13 +150,6 @@ describe("getDuration() ", ()=> {
         let answer:number = contentService.getMaxDuration(mediaStationId,contentId);
 
         expect(answer).toEqual(221);
-    });
-
-    it("should throw an error if the contentId could not be found", ()=>{
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContentManager.getContent.mockReturnValue(null);
-
-        expect(()=> contentService.getMaxDuration(mediaStationId,contentId)).toThrow(new Error("Content with this ID does not exist: " + contentId));
     });
 });
 
@@ -201,7 +170,6 @@ describe("changeLightIntensity() ", ()=> {
 });
 
 describe("deleteContent() ", ()=> {
-
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
     const allMediaApps:Map<number, MediaApp> = new Map();
     allMediaApps.set(0, new MediaApp(0));

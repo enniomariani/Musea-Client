@@ -187,7 +187,7 @@ describe("changeFolder() ", ()=>{
 
     it("should throw an error if the content could not be found", ()=>{
         setup();
-        expect(()=> contentManager.changeFolder(mockMediaStation, contentID + 99, newFolderId)).toThrow(Error("Content with ID does not exist: " + (contentID + 99).toString()));
+        expect(()=> contentManager.changeFolder(mockMediaStation, contentID + 99, newFolderId)).toThrow(Error("Content with this ID does not exist: " + (contentID + 99).toString()));
     });
 
     it("should throw an error if the new folder could not be found", ()=>{

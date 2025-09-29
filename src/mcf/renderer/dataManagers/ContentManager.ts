@@ -48,21 +48,14 @@ export class ContentManager{
     }
 
     changeName(mediaStation:MediaStation,id:number, name:string):void{
-        let content:Content = this.getContent(mediaStation, id);
-
-        if(!content)
-            throw new Error("Content with ID does not exist: "+ id);
-
+        const content:Content = this.requireContent(mediaStation, id);
         content.name = name;
     }
 
     changeFolder(mediaStation:MediaStation, contentId:number, newFolderId:number):void{
-        let content:Content = this.getContent(mediaStation, contentId);
+        const content:Content = this.requireContent(mediaStation, contentId);
+        const newFolder:Folder|null = mediaStation.rootFolder.findFolder(newFolderId);
         let oldFolder:Folder|null;
-        let newFolder:Folder|null = mediaStation.rootFolder.findFolder(newFolderId);
-
-        if(!content)
-            throw new Error("Content with ID does not exist: "+ contentId);
 
         if(!newFolder)
             throw new Error("Folder with ID does not exist: "+ newFolderId);
@@ -76,14 +69,9 @@ export class ContentManager{
     }
 
     changeLightIntensity(mediaStation:MediaStation, id:number, intensity:number):void{
-        let content:Content = this.getContent(mediaStation, id);
-
-        if(!content)
-            throw new Error("Content with ID does not exist: "+ id);
-
+        const content:Content = this.requireContent(mediaStation, id);
         content.lightIntensity = intensity;
     }
-
 
     deleteContent(mediaStation:MediaStation,folderId:number, id:number):void{
         let folder:Folder|null = mediaStation.rootFolder.findFolder(folderId);

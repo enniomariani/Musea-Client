@@ -32,11 +32,7 @@ export class ContentDataService  {
 
     getName(mediaStationId:number, id:number):string{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        const content:Content = this._contentManager.getContent(mediaStation,id);
-
-        if (!content)
-            throw new Error("Content with this ID does not exist: " + id)
-
+        const content:Content = this._contentManager.requireContent(mediaStation,id);
         return content.name;
     }
 
@@ -47,21 +43,13 @@ export class ContentDataService  {
 
     getLightIntensity(mediaStationId:number, id:number):number{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let content:Content = this._contentManager.getContent(mediaStation,id);
-
-        if (!content)
-            throw new Error("Content with this ID does not exist: " + id)
-
+        let content:Content = this._contentManager.requireContent(mediaStation,id);
         return content.lightIntensity;
     }
 
     getFolderId(mediaStationId:number, id:number):number{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let content:Content = this._contentManager.getContent(mediaStation,id);
-
-        if (!content)
-            throw new Error("Content with this ID does not exist: " + id)
-
+        const content:Content = this._contentManager.requireContent(mediaStation,id);
         return content.folderId;
     }
 
@@ -72,11 +60,7 @@ export class ContentDataService  {
 
     getMaxDuration(mediaStationId:number, contentId:number):number{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let content:Content = this._contentManager.getContent(mediaStation,contentId);
-
-        if (!content)
-            throw new Error("Content with this ID does not exist: " + contentId)
-
+        const content:Content = this._contentManager.requireContent(mediaStation,contentId);
         return content.getMaxDuration();
     }
 
@@ -85,7 +69,7 @@ export class ContentDataService  {
      */
     async deleteContent(mediaStationId:number, folderId:number, contentId:number):Promise<void>{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let allMediaApps: Map<number, MediaApp> = mediaStation.mediaAppRegistry.getAll();
+        const allMediaApps: Map<number, MediaApp> = mediaStation.mediaAppRegistry.getAll();
 
         for(const [key, mediaApp] of allMediaApps)
             if(this._mediaService.getMediaType(mediaStationId, contentId, mediaApp.id) !== null)

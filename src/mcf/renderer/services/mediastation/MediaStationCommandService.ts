@@ -22,12 +22,10 @@ export class MediaStationCommandService  {
 
     async sendCommandPlay(mediaStationId: number, contentId: number | null): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
+        const content:Content | null = this._contentManager.getContent(ms, contentId);
         let media:IMedia;
 
-        let content:Content = this._contentManager.getContent(ms, contentId);
-
         for (const [key, item] of ms.mediaAppRegistry.getAll()){
-
             if(content)
                 media = content.media.get(item.id);
 
@@ -49,7 +47,6 @@ export class MediaStationCommandService  {
             await this._contentNetworkService.sendCommandStop(item);
 
         await this._contentNetworkService.sendCommandPause(ms.mediaAppRegistry.getAll());
-
         await this._contentNetworkService.sendCommandLight(ms.mediaAppRegistry.getAll(), ContentDataService.DEFAULT_DMX_PRESET);
     }
 
@@ -70,9 +67,8 @@ export class MediaStationCommandService  {
 
     async sendCommandSync(mediaStationId: number, contentId:number, pos: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
+        const content:Content = this._contentManager.getContent(ms, contentId);
         let media:IMedia;
-
-        let content:Content = this._contentManager.getContent(ms, contentId);
 
         for (const [key, item] of ms.mediaAppRegistry.getAll()){
 

@@ -4,6 +4,7 @@ export class MockContentManager extends ContentManager{
 
     createContent: jest.Mock;
     getContent: jest.Mock;
+    requireContent: jest.Mock;
     changeName: jest.Mock;
     changeFolder: jest.Mock;
     deleteContent: jest.Mock;
@@ -17,6 +18,7 @@ export class MockContentManager extends ContentManager{
         super();
         this.createContent = jest.fn();
         this.getContent = jest.fn();
+        this.requireContent = jest.fn();
         this.changeName = jest.fn();
         this.changeFolder = jest.fn();
         this.deleteContent = jest.fn();

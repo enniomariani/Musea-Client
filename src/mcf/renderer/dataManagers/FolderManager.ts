@@ -47,20 +47,13 @@ export class FolderManager{
     }
 
     changeName(mediaStation:MediaStation,id:number, name:string):void{
-        let folder:Folder = this.getFolder(mediaStation, id);
-
-        if(!folder)
-            throw new Error("Folder with ID does not exist: "+ id);
-
+        const folder:Folder = this.requireFolder(mediaStation, id);
         folder.name = name;
     }
 
     changeParentFolder(mediaStation:MediaStation, folderId:number, newParentId:number):void{
-        let folder:Folder = this.getFolder(mediaStation, folderId);
+        let folder:Folder = this.requireFolder(mediaStation, folderId);
         let newParentFolder:Folder = this.getFolder(mediaStation, newParentId);
-
-        if(!folder)
-            throw new Error("Folder with ID does not exist: "+ folderId);
 
         if(!newParentFolder)
             throw new Error("Parent-Folder with ID does not exist: "+ newParentId);
