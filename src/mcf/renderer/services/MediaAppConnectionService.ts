@@ -88,7 +88,7 @@ export class MediaAppConnectionService {
     async checkOnlineStatusOfAllMediaApps(id: number): Promise<boolean> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(id);
         const controller:MediaApp | null = mediaStation.mediaAppRegistry.get(0);
-        let contentsJSONstr: string;
+        let contentsJSONstr: string | null;
         let contentsJSON: any;
 
         if (controller === null || !controller.ip)
@@ -121,7 +121,7 @@ export class MediaAppConnectionService {
 
     private _getMediaApp(mediaStationId: number, mediaAppId: number): MediaApp {
         let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let mediaApp: MediaApp;
+        let mediaApp: MediaApp | null;
 
         mediaApp = mediaStation.mediaAppRegistry.get(mediaAppId);
 

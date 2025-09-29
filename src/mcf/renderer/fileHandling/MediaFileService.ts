@@ -3,7 +3,7 @@ import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler"
 export class MediaFileService {
 
     private _backendFileService:IBackendFileService;
-    private _pathToFolder:string;
+    private _pathToFolder:string = "";
 
     constructor( backendFileService:IBackendFileService = window.backendFileService) {
         this._backendFileService = backendFileService;
@@ -41,10 +41,7 @@ export class MediaFileService {
      */
     async saveFileByPath(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string, fileInstance:File):Promise<void>{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
-
         await this._backendFileService.saveFileByPath(this._pathToFolder + pathToFile, fileInstance);
-
-        fileInstance = null;
     }
 
     deleteFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):void{

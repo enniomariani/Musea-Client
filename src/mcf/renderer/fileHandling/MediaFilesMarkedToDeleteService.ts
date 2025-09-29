@@ -3,7 +3,7 @@ export class MediaFilesMarkedToDeleteService {
     private _fileName: string = "ids_to_delete.json"
 
     private _backendFileService: IBackendFileService;
-    private _pathToDataFolder: string;
+    private _pathToDataFolder: string = "";
 
     constructor(backendFileService: IBackendFileService = window.backendFileService) {
         this._backendFileService = backendFileService;

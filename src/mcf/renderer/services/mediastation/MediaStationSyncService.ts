@@ -178,17 +178,17 @@ export class MediaStationSyncService {
     private _mapMediaAppSyncToProgress(event: IMediaAppSyncEvent): SyncEvent {
         switch (event.type) {
             case MediaAppSyncEventType.LoadMediaStart:
-                return {scope: SyncScope.MediaApp, type: "LoadMediaStart", ext: event.data.fileExt as string};
+                return {scope: SyncScope.MediaApp, type: "LoadMediaStart", ext: event.data?.fileExt as string};
             case MediaAppSyncEventType.MediaSendStart:
                 return { scope: SyncScope.MediaApp, type: "MediaSendStart" };
             case MediaAppSyncEventType.MediaSending:
-                return { scope: SyncScope.MediaApp, type: "MediaSendingProgress", progressPoint:event.data.progress as string }
+                return { scope: SyncScope.MediaApp, type: "MediaSendingProgress", progressPoint:event.data?.progress as string }
             case MediaAppSyncEventType.MediaSendSuccess:
                 return { scope: SyncScope.MediaApp, type: "MediaSendSuccess" };
             case MediaAppSyncEventType.MediaSendFailed:
                 return { scope: SyncScope.MediaApp, type: "MediaSendFailed" };
             case MediaAppSyncEventType.DeleteStart:
-                return { scope: SyncScope.MediaApp, type: "DeleteStart", mediaAppId: event.data.mediaAppid as number, id: event.data.id as number };
+                return { scope: SyncScope.MediaApp, type: "DeleteStart", mediaAppId: event.data?.mediaAppid as number, id: event.data?.id as number };
             default:
                 throw new Error("Event not valid: ", event.type );
         }

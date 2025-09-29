@@ -123,6 +123,18 @@ export class Content {
         return highestDuration;
     }
 
+    /**
+     * Returns the Media or throws if it does not exist.
+     */
+    requireMedia(mediaAppId:number):IMedia {
+        const media:IMedia | undefined = this._media.get(mediaAppId);
+
+        if (!media)
+            throw new Error("Media with mediaApp-ID " + mediaAppId + " does not exist in Content: " + this._id);
+
+        return media;
+    }
+
     get id(): number {
         return this._id;
     }

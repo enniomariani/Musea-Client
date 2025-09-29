@@ -16,7 +16,7 @@ const __dirname:string = dirname(filename);
 //the development-system
 const environment:string = process.env.NODE_ENV;
 
-let mainWindow:BrowserWindow = null;
+let mainWindow:BrowserWindow;
 let mainMediaServerFramework:MainMediaClientFramework;
 
 app.whenReady().then(async () => {

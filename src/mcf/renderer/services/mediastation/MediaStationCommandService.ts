@@ -22,8 +22,8 @@ export class MediaStationCommandService  {
 
     async sendCommandPlay(mediaStationId: number, contentId: number | null): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        const content:Content | null = this._contentManager.getContent(ms, contentId);
-        let media:IMedia;
+        const content:Content | null = contentId === null? null: this._contentManager.getContent(ms, contentId);
+        let media:IMedia | undefined;
 
         for (const [key, item] of ms.mediaAppRegistry.getAll()){
             if(content)
@@ -67,8 +67,8 @@ export class MediaStationCommandService  {
 
     async sendCommandSync(mediaStationId: number, contentId:number, pos: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        const content:Content = this._contentManager.getContent(ms, contentId);
-        let media:IMedia;
+        const content:Content = this._contentManager.requireContent(ms, contentId);
+        let media:IMedia | undefined;
 
         for (const [key, item] of ms.mediaAppRegistry.getAll()){
 

@@ -67,13 +67,8 @@ export class MediaService {
 
     /**
      * returns the fileName of the media or null if there was no media set
-     *
-     * @param {number} mediaStationId
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @returns {string}
      */
-    getFileName(mediaStationId:number, contentId:number, mediaAppId:number): string{
+    getFileName(mediaStationId:number, contentId:number, mediaAppId:number): string | null{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         return this._mediaManager.getFileName(mediaStation, contentId, mediaAppId);
     }
@@ -81,12 +76,8 @@ export class MediaService {
     /**
      * returns one of the types (static vars) in MediaManager or null if there was no media set
      *
-     * @param {number} mediaStationId
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @returns {string}
      */
-    getMediaType(mediaStationId:number, contentId:number, mediaAppId:number): string{
+    getMediaType(mediaStationId:number, contentId:number, mediaAppId:number): string | null{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         return this._mediaManager.getMediaType(mediaStation, contentId, mediaAppId);
     }

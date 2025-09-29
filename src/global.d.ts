@@ -17,7 +17,7 @@ declare global {
     }
 
     interface IBackendFileService{
-        saveFile(path:string, data:Uint8Array):string;
+        saveFile(path:string, data:Uint8Array):Promise<string>;
         saveFileByPath(path:string, fileInstance:File):Promise<string>;
         deleteFile(path:string):string;
         loadFile(path:string):Promise<Uint8Array|null>;

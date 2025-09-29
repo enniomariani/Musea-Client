@@ -42,8 +42,6 @@ export class MainFileService {
             });
         });
 
-        fileData = null;
-
         return MainFileService.FILE_SAVED_SUCCESSFULLY;
     }
 
@@ -69,7 +67,7 @@ export class MainFileService {
         try {
             let loadedFile:Buffer = await fs.promises.readFile(filePath);
             return loadedFile;
-        } catch (error) {
+        } catch (error:any) {
             console.error("MainFileService: Failed to load file:", filePath, "Error:", error.message);
             return null;
         }

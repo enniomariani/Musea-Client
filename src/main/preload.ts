@@ -16,8 +16,6 @@ contextBridge.exposeInMainWorld("backendFileService", {
     saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('mediaClientFramework:saveFile', path, data),
     saveFileByPath: (path: string, fileInstance:File) =>{
         let pathToLoad:string = webUtils.getPathForFile(fileInstance);
-        fileInstance = null;
-
         console.log("preload: path for file to save: ", pathToLoad);
         ipcRenderer.invoke('mediaClientFramework:saveFileByPath', path, pathToLoad)
     },

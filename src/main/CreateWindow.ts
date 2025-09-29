@@ -2,11 +2,7 @@ import {BrowserWindow} from "electron";
 
 export class CreateWindow{
 
-    _win = null;
-
-    //eventlistener-functions
-    _onShowWindowFunc = this._onShowWindow.bind(this);
-    _onBlurFunc = this._onBlur.bind(this);
+    private _win:BrowserWindow | null = null;
 
     constructor() {}
 
@@ -27,22 +23,12 @@ export class CreateWindow{
         if (openDevTools) this._win.webContents.openDevTools();
 
         //initially sets the focus to the created electron-window
-        this._win.on('show', this._onShowWindowFunc);
         this._win.show();
 
         return this._win;
     }
 
-    _onBlur(){
-        this._win.focus();
-    }
-
-    _onShowWindow(){
-        this._win.focus();
-    }
-
     close(){
-        this._win.off('blur', this._onBlurFunc);
-        this._win.off('show', this._onShowWindowFunc);
+
     }
 }

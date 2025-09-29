@@ -8,8 +8,8 @@ export class NetworkService {
     private _dataReceivedPromises: Map<string, { resolve: (value: any) => void, reject: (error: any) => void }>;
     private _onConnectionClosedPromises: Map<string, { resolve: () => void, reject: () => void }>;
 
-    private _onBlockReceivedCallback: Function;
-    private _onUnBlockReceivedCallback: Function;
+    private _onBlockReceivedCallback: Function | null = null;
+    private _onUnBlockReceivedCallback: Function | null = null;
 
     constructor(networkConnectionHandler: NetworkConnectionHandler) {
         this._networkConnectionHandler = networkConnectionHandler;
@@ -181,7 +181,7 @@ export class NetworkService {
         //if the app is waiting for a response of a client, but during that, the connection was closed, resolve the
         //promise with null
         if (this._dataReceivedPromises.has(ip)) {
-            this._dataReceivedPromises.get(ip).resolve(null);
+            this._dataReceivedPromises.get(ip)?.resolve(null);
             this._dataReceivedPromises.delete(ip);
         }
     }
@@ -211,14 +211,12 @@ export class NetworkService {
         });
     }
 
-    private async _createNetworkPromise(ip: string, command: Uint8Array, timeout: number, rejectValue: any, onSendChunk: Function = null): Promise<any> {
+    private async _createNetworkPromise(ip: string, command: Uint8Array, timeout: number, rejectValue: any, onSendChunk: Function | null = null): Promise<any> {
 
         return new Promise(async (resolve, reject) => {
 
             console.log("sending data to: ", ip);
-            let answer:boolean = await this._networkConnectionHandler.sendData(ip, command, onSendChunk);
-
-            command = null;
+            let answer: boolean = await this._networkConnectionHandler.sendData(ip, command, onSendChunk);
 
             //if the connection was closed during the sending-process, resolve with reject-value
             if (!answer) {

@@ -45,7 +45,7 @@ export class MediaFileCacheHandler {
      * @returns {boolean}
      */
     isMediaCached(mediaStationId: number, contentId: number, mediaAppId: number): boolean {
-        let cachedArr: ICachedMedia[] = this._cachedMedia.get(mediaStationId);
+        let cachedArr: ICachedMedia[] | undefined = this._cachedMedia.get(mediaStationId);
 
         if (!cachedArr)
             return false;
@@ -67,7 +67,7 @@ export class MediaFileCacheHandler {
      * @returns {boolean}
      */
     deleteCachedMedia(mediaStationId: number, contentId: number, mediaAppId: number): void {
-        let cachedArr: ICachedMedia[] = this._cachedMedia.get(mediaStationId);
+        let cachedArr: ICachedMedia[] | undefined = this._cachedMedia.get(mediaStationId);
 
         if (!cachedArr)
             throw new Error("No media cached for mediastation with ID: " + mediaStationId);
@@ -88,12 +88,12 @@ export class MediaFileCacheHandler {
     }
 
     deleteAllCachedMedia(mediaStationId: number): void {
-        let mediaArr: ICachedMedia[];
-
-        if(!this._cachedMedia.has(mediaStationId))
-            throw new Error("No media cached for mediastation with ID: " + mediaStationId);
+        let mediaArr: ICachedMedia[]| undefined;
 
         mediaArr = this._cachedMedia.get(mediaStationId);
+
+        if(!mediaArr)
+            throw new Error("No media cached for mediastation with ID: " + mediaStationId);
 
         for (let i: number = 0; i < mediaArr.length; i++)
             this._mediaFileService.deleteFile(mediaStationId, mediaArr[i].contentId, mediaArr[i].mediaAppId, mediaArr[i].fileExtension);

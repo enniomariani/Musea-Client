@@ -3,7 +3,7 @@
 export class MediaStationLocalMetaData {
 
     private _backendFileService:IBackendFileService;
-    private _pathToFile:string;
+    private _pathToFile:string = "";
 
     constructor(backendFileService:IBackendFileService = window.backendFileService) {
         this._backendFileService = backendFileService;
@@ -59,12 +59,8 @@ export class MediaStationLocalMetaData {
             allMediaStations.push({name: mediaStationName, ip: controllerIp});
         });
 
-        console.log("MSMEtadata: save: ", json);
-
         jsonStr = JSON.stringify(json);
-
-        console.log("MSMEtadata: save JSON: ", jsonStr);
         uint8Array = textEncoder.encode(jsonStr);
-        console.log("Save metadata-file, resul: ", await this._backendFileService.saveFile(this._pathToFile,uint8Array));
+        await this._backendFileService.saveFile(this._pathToFile,uint8Array);
     }
 }

@@ -90,7 +90,7 @@ export class MediaManager{
     }
 
     getIdOnMediaApp(mediaStation:MediaStation, contentId:number, mediaAppId:number):number{
-        const content:Content | null = mediaStation.rootFolder.requireContent(contentId);
+        const content:Content = mediaStation.rootFolder.requireContent(contentId);
         let media:IMedia;
 
         media = content.media.get(mediaAppId);
