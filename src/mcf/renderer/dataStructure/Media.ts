@@ -7,9 +7,9 @@ export interface IMedia{
 
 export class BaseMedia implements IMedia{
 
-    protected _idOnMediaApp:number;
-    protected _mediaAppId:number;
-    private _fileName:string;
+    protected _idOnMediaApp:number = -1;
+    protected _mediaAppId:number = -1;
+    private _fileName:string = "";
 
     constructor() {}
 
@@ -52,7 +52,7 @@ export class Image extends BaseMedia implements IMedia{
 }
 
 export class Video extends BaseMedia implements IMedia{
-    private _duration:number;
+    private _duration:number = -1;
 
     constructor() {
         super();

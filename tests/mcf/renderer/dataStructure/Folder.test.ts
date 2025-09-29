@@ -29,8 +29,8 @@ const expectedJSON:any = {
     subFolders: [{id:1, name: subFolder1.name, subFolders: [], contents:[]}, {id:2, name: subFolder2.name, subFolders: [{id:3, name: subFolder3.name, subFolders:[], contents: []}], contents:[]}]
 };
 
-let id;
-let createContentMock = jest.fn(id).mockReturnValue(content4);
+let id:number;
+let createContentMock = jest.fn(()=> content4);
 
 beforeEach(() => {
     folder = new Folder(0, createContentMock);
@@ -85,7 +85,7 @@ describe("importFromJSON() ", () => {
     });
 
     it("should pass all properties it got for its content to content.importFromJSON", () => {
-        let createContentMock = jest.fn(id).mockReturnValue(content4);
+        let createContentMock = jest.fn(() => content4);
         folder = new Folder(0, createContentMock);
 
         folder.importFromJSON(expectedJSON);
@@ -123,9 +123,7 @@ describe("addContent(), removeContent() and containsContent() ", ()=>{
 
     it("removing a content which was NOT added before should return false", ()=>{
         let answer:boolean;
-
         answer = folder.removeContent(0);
-
         expect(answer).toBe(false);
     });
 });
@@ -147,9 +145,7 @@ describe("addContent(), getAllContents()", ()=>{
     it("adding no contents should give an empty Map back", ()=>{
         folder = new Folder(0);
         let allContents:Map<number, Content>;
-
         allContents = folder.getAllContents();
-
         expect(allContents.size).toBe(0);
     });
 });
@@ -199,9 +195,7 @@ describe("addSubFolder(), getAllSubFolders()", ()=>{
     it("adding no subfolders should give an empty Map back", ()=>{
         folder = new Folder(0);
         let allSubFolders:Map<number, Folder>;
-
         allSubFolders = folder.getAllSubFolders();
-
         expect(allSubFolders.size).toBe(0);
     });
 });
@@ -242,6 +236,17 @@ describe("findFolder() ", ()=>{
     });
 });
 
+describe("requireFolder() ", ()=>{
+    it("should find the folder if it is in one of the subfolders of the folder", ()=>{
+        const result:Folder = folder.requireFolder(subFolder3.id);
+        expect(result).toBe(subFolder3);
+    });
+
+    it("should throw an error if folder-id is not one of the sub-folders", ()=>{
+        expect(()=>folder.requireFolder(100)).toThrow(new Error("Folder with ID 100 could not be found as sub-Folder of folder: 0"));
+    });
+});
+
 describe("findContent() ", ()=>{
     it("should find the content if it is in the folder itself", ()=>{
         let result = folder.findContent(content4.id);
@@ -256,6 +261,17 @@ describe("findContent() ", ()=>{
     it("should return null if the content is not actual a subfolder of this one", ()=>{
         let result = folder.findContent(100);
         expect(result).toBe(null);
+    });
+});
+
+describe("requireContent() ", ()=>{
+    it("should find the content if it is in one of the subfolders of the folder", ()=>{
+        const result:Content = folder.requireContent(content4.id);
+        expect(result).toBe(content4);
+    });
+
+    it("should throw an error if content-id is not one of the sub-folders", ()=>{
+        expect(()=>folder.requireContent(100)).toThrow("Content with ID 100 could not be found as sub-Folder of folder: 0")
     });
 });
 
@@ -282,7 +298,7 @@ describe("findContentsByNamePart() ", ()=>{
 
         const allContents:Content[] = [content1, content2, content3, content4, content5, content6]
 
-        jest.spyOn(folder, 'findContent').mockImplementation((id:number) => {return allContents[id]});
+        jest.spyOn(folder, 'requireContent').mockImplementation((id:number) => {return allContents[id]});
         jest.spyOn(folder, 'getAllContentIDsInFolderAndSubFolders').mockReturnValue(allContentIds);
 
         let result:Content[] = folder.findContentsByNamePart("teST");
@@ -316,7 +332,7 @@ describe("findContentsByNamePart() ", ()=>{
 
         const allContents:Content[] = [content1, content2, content3, content4, content5, content6]
 
-        jest.spyOn(folder, 'findContent').mockImplementation((id:number) => {return allContents[id]});
+        jest.spyOn(folder, 'requireContent').mockImplementation((id:number) => {return allContents[id]});
         jest.spyOn(folder, 'getAllContentIDsInFolderAndSubFolders').mockReturnValue(allContentIds);
 
         let result:Content[] = folder.findContentsByNamePart("tessst");

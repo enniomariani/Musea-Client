@@ -5,11 +5,11 @@ export class Folder {
 
     private _id: number;
     private _name: string = "";
-    private _parentFolder: Folder|null = null;
+    private _parentFolder: Folder | null = null;
     private _subFolders: Folder[] = [];
     private _contents: Content[] = [];
 
-    constructor(id: number, private _createContent: (id: number, folderId:number) => Content = (id, folderId) => new Content(id, folderId)) {
+    constructor(id: number, private _createContent: (id: number, folderId: number) => Content = (id, folderId) => new Content(id, folderId)) {
         this._id = id;
     }
 
@@ -28,7 +28,7 @@ export class Folder {
 
         if (this._jsonPropertyExists(json, "subFolders")) {
             for (let i: number = 0; i < json.subFolders.length; i++) {
-                if (this._jsonPropertyExists(json.subFolders[i], "id")){
+                if (this._jsonPropertyExists(json.subFolders[i], "id")) {
                     subFolder = new Folder(json.subFolders[i].id);
                     this.addSubFolder(subFolder);
                     subFolder.parentFolder = this;
@@ -39,7 +39,7 @@ export class Folder {
 
         if (this._jsonPropertyExists(json, "contents")) {
             for (let i: number = 0; i < json.contents.length; i++) {
-                if (this._jsonPropertyExists(json.contents[i], "id")){
+                if (this._jsonPropertyExists(json.contents[i], "id")) {
                     content = this._createContent(json.contents[i].id, this._id);
                     content.importFromJSON(json.contents[i]);
                     this.addContent(content);
@@ -77,7 +77,7 @@ export class Folder {
         return json;
     }
 
-    addContent(content: Content):void {
+    addContent(content: Content): void {
         this._contents.push(content);
     }
 
@@ -133,9 +133,6 @@ export class Folder {
 
     /**
      * looks for the folder in this folder and in all sub-folders
-     *
-     * @param {number} id
-     * @returns {Folder | null}
      */
     findFolder(id: number): Folder | null {
         if (this._id === id)
@@ -150,10 +147,22 @@ export class Folder {
     }
 
     /**
+     * looks for the folder in this folder and in all sub-folders, throws an error if not found
+     */
+    requireFolder(id: number): Folder {
+        if (this._id === id)
+            return this;
+
+        for (const subFolder of this._subFolders) {
+            const foundFolder: Folder | null = subFolder.findFolder(id);
+            if (foundFolder)
+                return foundFolder;
+        }
+        throw new Error("Folder with ID " + id + " could not be found as sub-Folder of folder: " + this._id);
+    }
+
+    /**
      * looks for the content in this folder and in all sub-folders
-     *
-     * @param {number} contentId
-     * @returns {Content | null}
      */
     findContent(contentId: number): Content | null {
         // Check if the content is in the current folder
@@ -170,6 +179,26 @@ export class Folder {
 
         // Content not found
         return null;
+    }
+
+    /**
+     * looks for the folder in this folder and in all sub-folders, throws an error if not found
+     */
+    requireContent(id: number): Content {
+        // Check if the content is in the current folder
+        const foundContent: Content | undefined = this._contents.find(content => content.id === id);
+        if (foundContent)
+            return foundContent;
+
+        // Recursively search in subfolders
+        for (const subFolder of this._subFolders) {
+            const foundInSubFolder = subFolder.findContent(id);
+            if (foundInSubFolder)
+                return foundInSubFolder;
+        }
+
+        // Content not found
+        throw new Error("Content with ID " + id + " could not be found as sub-Folder of folder: " + this._id);
     }
 
     /**
@@ -204,19 +233,16 @@ export class Folder {
      * @returns {Content[]}
      */
     findContentsByNamePart(namePart: string): Content[] {
-        let allContentIds:Map<number, number[]> = this.getAllContentIDsInFolderAndSubFolders();
-        let results:Content[] = [];
-        let content:Content;
-        let namePartLowerCase:string = namePart.toLowerCase();
+        let allContentIds: Map<number, number[]> = this.getAllContentIDsInFolderAndSubFolders();
+        let results: Content[] = [];
+        let content: Content;
+        let namePartLowerCase: string = namePart.toLowerCase();
 
-        for (const [folderId, contentIds] of allContentIds){
-            for (const contentId of contentIds){
-                content = this.findContent(contentId);
+        for (const [folderId, contentIds] of allContentIds) {
+            for (const contentId of contentIds) {
+                content = this.requireContent(contentId);
 
-                if(!content)
-                    throw new Error("Content with this ID could not be found: " + contentId);
-
-                if(content.name.toLowerCase().includes(namePartLowerCase))
+                if (content.name.toLowerCase().includes(namePartLowerCase))
                     results.push(content);
             }
         }
@@ -236,7 +262,7 @@ export class Folder {
         this._name = value;
     }
 
-    get parentFolder(): Folder {
+    get parentFolder(): Folder | null {
         return this._parentFolder;
     }
 

@@ -2,10 +2,10 @@ import {Image, IMedia, Video} from "./Media";
 
 export class Content {
     private _id: number;
-    private _name: string;
+    private _name: string = "";
     private _media: Map<number, IMedia> = new Map();
     private _tagIds: number[] = [];
-    private _lightIntensity: number;
+    private _lightIntensity: number = -1;
 
     private _folderId:number;
 
@@ -15,7 +15,7 @@ export class Content {
     }
 
     importFromJSON(json: any): void {
-        let media: IMedia;
+        let media: IMedia | null = null;
 
         if (this._jsonPropertyExists(json, "id"))
             this._id = json.id;
@@ -48,17 +48,18 @@ export class Content {
                     }
                 }
 
-                if (this._jsonPropertyExists(json.media[i], "idOnMediaApp") && media)
-                    media.idOnMediaApp = json.media[i].idOnMediaApp;
+                if(media){
+                    if (this._jsonPropertyExists(json.media[i], "idOnMediaApp"))
+                        media.idOnMediaApp = json.media[i].idOnMediaApp;
 
-                if (this._jsonPropertyExists(json.media[i], "mediaAppId") && media)
-                    media.mediaAppId = json.media[i].mediaAppId;
+                    if (this._jsonPropertyExists(json.media[i], "mediaAppId"))
+                        media.mediaAppId = json.media[i].mediaAppId;
 
-                if (this._jsonPropertyExists(json.media[i], "fileName") && media)
-                    media.fileName = json.media[i].fileName;
+                    if (this._jsonPropertyExists(json.media[i], "fileName"))
+                        media.fileName = json.media[i].fileName;
 
-                if (media)
                     this._media.set(media.mediaAppId, media);
+                }
             }
         }
     }

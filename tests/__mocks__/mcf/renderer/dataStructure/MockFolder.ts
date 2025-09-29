@@ -21,7 +21,7 @@ export class MockFolder extends Folder{
 
     findContentsByNamePart: jest.Mock;
 
-    constructor(id) {
+    constructor(id:number) {
         super(id);
         this.addContent = jest.fn();
         this.removeContent = jest.fn();

@@ -15,43 +15,42 @@ export class MainMediaClientFramework {
 
     init(): void {
         //load/save/delete files
-        ipcMain.handle('mediaClientFramework:saveFile', async (event:Electron.IpcMainEvent, path: string, data: Uint8Array) => {
+        ipcMain.handle('mediaClientFramework:saveFile', async (event:Electron.IpcMainInvokeEvent, path: string, data: Uint8Array) => {
             const dataAsNodeBuffer:Buffer = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
             return await   this.mainFileService.saveFile(path, dataAsNodeBuffer);
         });
 
-        ipcMain.handle('mediaClientFramework:saveFileByPath', async (event:Electron.IpcMainEvent, path: string, pathToLoad: string) => {
+        ipcMain.handle('mediaClientFramework:saveFileByPath', async (event:Electron.IpcMainInvokeEvent, path: string, pathToLoad: string) => {
 
             console.log("load file from path: ", pathToLoad)
 
             try {
-                // Read the file directly in the main process
-                let dataAsNodeBuffer = await fs.promises.readFile(pathToLoad);
+                let dataAsNodeBuffer:Buffer = await fs.promises.readFile(pathToLoad);
                 return await this.mainFileService.saveFile(path, dataAsNodeBuffer);
-            } catch (err) {
+            } catch (err:any) {
                 console.error("Error saving file:", err);
                 return "Error: " + err.message;
             }
         });
 
-        ipcMain.handle('mediaClientFramework:deleteFile', (event:Electron.IpcMainEvent, path: string) => {
+        ipcMain.handle('mediaClientFramework:deleteFile', (event:Electron.IpcMainInvokeEvent, path: string) => {
             return this.mainFileService.delete(path);
         });
 
-        ipcMain.handle('mediaClientFramework:fileExists', (event:Electron.IpcMainEvent, path: string) => {
+        ipcMain.handle('mediaClientFramework:fileExists', (event:Electron.IpcMainInvokeEvent, path: string) => {
             return this.mainFileService.fileExists(path);
         });
 
-        ipcMain.handle('mediaClientFramework:getAllFileNamesInFolder', (event:Electron.IpcMainEvent, path: string) => {
+        ipcMain.handle('mediaClientFramework:getAllFileNamesInFolder', (event:Electron.IpcMainInvokeEvent, path: string) => {
             return this.mainFileService.getAllFileNamesInFolder(path);
         });
 
-        ipcMain.handle('mediaClientFramework:loadFile', async (event:Electron.IpcMainEvent, path: string) => {
+        ipcMain.handle('mediaClientFramework:loadFile', async (event:Electron.IpcMainInvokeEvent, path: string) => {
             return await this.mainFileService.loadFile(path);
         });
 
         //ping
-        ipcMain.handle('backendNetworkService:ping', async (event:Electron.IpcMainEvent, ip: string):Promise<boolean> => {
+        ipcMain.handle('backendNetworkService:ping', async (event:Electron.IpcMainInvokeEvent, ip: string):Promise<boolean> => {
             let answer = await ping.promise.probe(ip);
 
             console.log("MainMediaClientFramework, ping-answer: ", ip, answer);
