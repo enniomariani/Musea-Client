@@ -46,17 +46,20 @@ export class MediaAppSyncService {
 
             fileData = await this._mediaStationRepo.mediaCacheHandler.getCachedMediaFile(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId, cachedMedia.fileExtension);
 
+            if(!fileData)
+                continue;
+
             reporter({ type: MediaAppSyncEventType.MediaSendStart });
             idOnMediaApp = await this._networkService.sendMediaFileToIp(ipMediaApp, cachedMedia.fileExtension, fileData,240000,
                 (msg:string) => {console.log("send progress: ", msg); reporter({type:MediaAppSyncEventType.MediaSending, data: {progress: msg}});});
 
-            fileData = null;    //to avoid memory leaks
+            fileData = null;    //to free memory as fast as possible when transferring large files
 
             if (idOnMediaApp !== null && idOnMediaApp !== undefined && idOnMediaApp >= 0) {
                 reporter({ type: MediaAppSyncEventType.MediaSendSuccess });
 
-                content = mediaStation.rootFolder.findContent(cachedMedia.contentId);
-                media = content.media.get(cachedMedia.mediaAppId);
+                content = mediaStation.rootFolder.requireContent(cachedMedia.contentId);
+                media = content.requireMedia(cachedMedia.mediaAppId);
 
                 media.idOnMediaApp = idOnMediaApp;
 

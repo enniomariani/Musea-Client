@@ -30,14 +30,14 @@ export class MediaStationCommandService  {
                 media = content.media.get(item.id);
 
             if(media && media.idOnMediaApp !== -1)
-                await this._contentNetworkService.sendCommandPlay(ms.mediaAppRegistry.get(item.id), media.idOnMediaApp);
+                await this._contentNetworkService.sendCommandPlay(item, media.idOnMediaApp);
             else if(!content)
-                await this._contentNetworkService.sendCommandPlay(ms.mediaAppRegistry.get(item.id), null);
+                await this._contentNetworkService.sendCommandPlay(item, null);
             else
-                await this._contentNetworkService.sendCommandStop(ms.mediaAppRegistry.get(item.id));
+                await this._contentNetworkService.sendCommandStop(item);
         }
 
-        if(contentId !== null)
+        if(content)
             await this._contentNetworkService.sendCommandLight(ms.mediaAppRegistry.getAll(), content.lightIntensity);
     }
 
@@ -76,7 +76,7 @@ export class MediaStationCommandService  {
                 media = content.media.get(item.id);
 
             if(media && media instanceof Video)
-                await this._contentNetworkService.sendCommandSync(ms.mediaAppRegistry.get(item.id), pos);
+                await this._contentNetworkService.sendCommandSync(item, pos);
         }
     }
 

@@ -16,28 +16,15 @@ export class MediaFileService {
     /**
      * creates a file-name out of content-id and mediaAppId and the fileExtension and saves it in the folder with mediaStationId as
      * folder-name
-     *
-     * @param {number} mediaStationId
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @param {string} fileExtension
-     * @param {Uint8Array} payload
      */
     async saveFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string, payload:Uint8Array):Promise<void>{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
-
         await this._backendFileService.saveFile(this._pathToFolder + pathToFile, payload);
     }
 
     /**
      * creates a file-name out of content-id and mediaAppId and the fileExtension and saves it in the folder with mediaStationId as
      * folder-name
-     *
-     * @param {number} mediaStationId
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @param {string} fileExtension
-     * @param {File} fileInstance
      */
     async saveFileByPath(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string, fileInstance:File):Promise<void>{
         let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);

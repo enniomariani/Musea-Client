@@ -51,7 +51,7 @@ export class MediaStationSyncService {
         let allMediaAppsWereSynced: boolean = true;
         let allMediaWereSentSuccesfully: boolean = true;
 
-        let controller: MediaApp;
+        let controller: MediaApp | null;
         let cachedMediaOfAllMediaStations: Map<number, ICachedMedia[]>;
         let allCachedMedia: ICachedMedia[];
         let allMediaIdsToDelete: Map<number, number[]>
@@ -62,26 +62,26 @@ export class MediaStationSyncService {
 
         //send all media to the media-apps
         cachedMediaOfAllMediaStations = this._mediaStationRepo.mediaCacheHandler.getAllCachedMedia();
-        allCachedMedia = cachedMediaOfAllMediaStations.get(mediaStationId);
+        allCachedMedia = cachedMediaOfAllMediaStations.get(mediaStationId) as ICachedMedia[];
         allMediaIdsToDelete = await this._mediaStationRepo.getAllMediaIDsToDelete(mediaStationId);
 
         //save all cachedMedia by their mediaApp, because all media-operations are executed per media-app (all actions for media-app 1 first,
         //then for media app 2, etc.
         if (allCachedMedia) {
             for (const cachedMedia of allCachedMedia) {
-                mediaApp = mediaStation.mediaAppRegistry.get(cachedMedia.mediaAppId);
+                mediaApp = mediaStation.mediaAppRegistry.require(cachedMedia.mediaAppId);
 
                 if (!allMediaToAdd.has(mediaApp)) {
                     allMediaToAdd.set(mediaApp, []);
                     allMediaAppsWithChanges.push(mediaApp);
                 }
 
-                allMediaToAdd.get(mediaApp).push(cachedMedia);
+                allMediaToAdd.get(mediaApp)?.push(cachedMedia);
             }
         }
 
         for (const [mediaAppId, idsToDelete] of allMediaIdsToDelete) {
-            mediaApp = mediaStation.mediaAppRegistry.get(mediaAppId);
+            mediaApp = mediaStation.mediaAppRegistry.require(mediaAppId);
             allMediaToDelete.set(mediaApp, idsToDelete);
 
             if (allMediaAppsWithChanges.indexOf(mediaApp) === -1)
@@ -96,27 +96,35 @@ export class MediaStationSyncService {
 
             if (answer !== MediaAppConnectionStatus.Online) {
                 allMediaAppsWereSynced = false;
-                progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
+                progressReporter({
+                    scope: SyncScope.MediaApp,
+                    type: "ConnectionStatus",
+                    status: this._mapConnectionStatusToProgress(answer)
+                });
                 continue;
             }
 
-            const registrationSuccess:boolean = await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
+            const registrationSuccess: boolean = await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, mediaApp.id, "admin");
 
             if (!registrationSuccess) {
                 allMediaAppsWereSynced = false;
-                progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: ConnectionStatus.RegistrationFailed });
+                progressReporter({
+                    scope: SyncScope.MediaApp,
+                    type: "ConnectionStatus",
+                    status: ConnectionStatus.RegistrationFailed
+                });
                 continue;
             }
 
-            progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: ConnectionStatus.Online });
+            progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: ConnectionStatus.Online});
 
             //if the connection could be established to a media-app, send all cached media-files
-            if (await this._mediaAppSyncService.sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp), mediaApp.ip,
-                (event: IMediaAppSyncEvent) => this._mapMediaAppSyncToProgress(event)) === false)
+            if (!await this._mediaAppSyncService.sendMediaFilesToMediaApp(mediaStation, allMediaToAdd.get(mediaApp) as ICachedMedia[]
+                , mediaApp.ip, (event: IMediaAppSyncEvent) => this._mapMediaAppSyncToProgress(event)))
                 allMediaWereSentSuccesfully = false;
 
             if (allMediaIdsToDelete.has(mediaApp.id))
-                await this._mediaAppSyncService.sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id, allMediaIdsToDelete.get(mediaApp.id), mediaApp.ip, (event: IMediaAppSyncEvent) => this._mapMediaAppSyncToProgress(event));
+                await this._mediaAppSyncService.sendCommandDeleteMediaToMediaApps(mediaStationId, mediaApp.id, allMediaIdsToDelete.get(mediaApp.id) as number[], mediaApp.ip, (event: IMediaAppSyncEvent) => this._mapMediaAppSyncToProgress(event));
 
             this._mediaStationRepo.cacheMediaStation(mediaStationId);
         }
@@ -125,20 +133,34 @@ export class MediaStationSyncService {
             // send content-file (last step in synchronisation)
             controller = mediaStation.mediaAppRegistry.getController();
 
-            progressReporter({scope: SyncScope.Controller, type: "Connecting", ip: controller.ip});
-
-            const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(controller.ip, {role: "admin"});
-
-            if(answer !== MediaAppConnectionStatus.Online){
-                progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: this._mapConnectionStatusToProgress(answer) });
+            if (!controller) {
+                progressReporter({scope: SyncScope.Controller, type: "NoControllerDefined"});
                 progressReporter({scope: SyncScope.MediaStation, type: "Done"});
                 return false;
             }
 
-            const answerControllerReg:boolean = await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, controller.id, "admin");
+            progressReporter({scope: SyncScope.Controller, type: "Connecting", ip: controller.ip});
+
+            const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(controller.ip, {role: "admin"});
+
+            if (answer !== MediaAppConnectionStatus.Online) {
+                progressReporter({
+                    scope: SyncScope.MediaApp,
+                    type: "ConnectionStatus",
+                    status: this._mapConnectionStatusToProgress(answer)
+                });
+                progressReporter({scope: SyncScope.MediaStation, type: "Done"});
+                return false;
+            }
+
+            const answerControllerReg: boolean = await this._mediaAppConnectionService.connectAndRegisterToMediaApp(mediaStationId, controller.id, "admin");
 
             if (answerControllerReg) {
-                progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: ConnectionStatus.Online });
+                progressReporter({
+                    scope: SyncScope.MediaApp,
+                    type: "ConnectionStatus",
+                    status: ConnectionStatus.Online
+                });
 
                 progressReporter({scope: SyncScope.Controller, type: "SendingContents"});
                 json = mediaStation.exportToJSON();
@@ -150,8 +172,12 @@ export class MediaStationSyncService {
                 progressReporter({scope: SyncScope.MediaStation, type: "Done"});
 
                 return true;
-            }else
-                progressReporter({scope: SyncScope.MediaApp, type: "ConnectionStatus", status: ConnectionStatus.RegistrationFailed });
+            } else
+                progressReporter({
+                    scope: SyncScope.MediaApp,
+                    type: "ConnectionStatus",
+                    status: ConnectionStatus.RegistrationFailed
+                });
         }
 
         progressReporter({scope: SyncScope.MediaStation, type: "Done"});
@@ -180,17 +206,26 @@ export class MediaStationSyncService {
             case MediaAppSyncEventType.LoadMediaStart:
                 return {scope: SyncScope.MediaApp, type: "LoadMediaStart", ext: event.data?.fileExt as string};
             case MediaAppSyncEventType.MediaSendStart:
-                return { scope: SyncScope.MediaApp, type: "MediaSendStart" };
+                return {scope: SyncScope.MediaApp, type: "MediaSendStart"};
             case MediaAppSyncEventType.MediaSending:
-                return { scope: SyncScope.MediaApp, type: "MediaSendingProgress", progressPoint:event.data?.progress as string }
+                return {
+                    scope: SyncScope.MediaApp,
+                    type: "MediaSendingProgress",
+                    progressPoint: event.data?.progress as string
+                }
             case MediaAppSyncEventType.MediaSendSuccess:
-                return { scope: SyncScope.MediaApp, type: "MediaSendSuccess" };
+                return {scope: SyncScope.MediaApp, type: "MediaSendSuccess"};
             case MediaAppSyncEventType.MediaSendFailed:
-                return { scope: SyncScope.MediaApp, type: "MediaSendFailed" };
+                return {scope: SyncScope.MediaApp, type: "MediaSendFailed"};
             case MediaAppSyncEventType.DeleteStart:
-                return { scope: SyncScope.MediaApp, type: "DeleteStart", mediaAppId: event.data?.mediaAppid as number, id: event.data?.id as number };
+                return {
+                    scope: SyncScope.MediaApp,
+                    type: "DeleteStart",
+                    mediaAppId: event.data?.mediaAppid as number,
+                    id: event.data?.id as number
+                };
             default:
-                throw new Error("Event not valid: ", event.type );
+                throw new Error("Event not valid: ", event.type);
         }
     }
 }

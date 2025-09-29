@@ -32,7 +32,7 @@ export class MediaFilesMarkedToDeleteService {
         if (!allIDs.has(mediaAppId))
             allIDs.set(mediaAppId, []);
 
-        IDsOfMediaApp = allIDs.get(mediaAppId);
+        IDsOfMediaApp = allIDs.get(mediaAppId) as number[];
         IDsOfMediaApp.push(id);
 
         this._saveJSON(allIDs, filePath);
@@ -59,7 +59,7 @@ export class MediaFilesMarkedToDeleteService {
         else
             throw new Error("ID can't be removed because there are no saved IDs!");
 
-        idsOfMediaApp = allIDs.get(mediaAppId);
+        idsOfMediaApp = allIDs.get(mediaAppId) as number[];
 
         indexOfIdToDelete = idsOfMediaApp.indexOf(idToDelete);
 

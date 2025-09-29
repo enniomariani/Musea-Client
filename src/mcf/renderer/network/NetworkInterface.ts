@@ -9,19 +9,19 @@ export class NetworkInterface extends EventTarget {
     static CLOSED: string = "connectionClosed";
 
     private _connected: boolean = false;
-    private _connection: WebSocket = null;
+    private _connection: WebSocket | null = null;
 
-    private _onError = null;
-    private _onOpen = null;
-    private _onClosed = null;
-    private _onDataReceivedCallBack = null;
+    private _onError:Function | null = null;
+    private _onOpen:Function | null  = null;
+    private _onClosed:Function | null  = null;
+    private _onDataReceivedCallBack:Function | null  = null;
 
-    private _connectionTimeoutTimer:number;
+    private _connectionTimeoutTimer:number = -1;
 
-    _onConnectionOpenFunc = this._onConnectionOpen.bind(this);
-    _onConnectionErrorFunc = this._onConnectionError.bind(this);
-    _onConnectionClosedFunc = this._onConnectionClosed.bind(this);
-    _onDataReceivedFunc = this._onDataReceived.bind(this);
+    private _onConnectionOpenFunc = this._onConnectionOpen.bind(this);
+    private _onConnectionErrorFunc = this._onConnectionError.bind(this);
+    private _onConnectionClosedFunc = this._onConnectionClosed.bind(this);
+    private _onDataReceivedFunc = this._onDataReceived.bind(this);
 
     constructor() {
         super();
@@ -43,7 +43,7 @@ export class NetworkInterface extends EventTarget {
      * @param {IOnReceivedData} onDataReceived
      * @returns {}
      */
-    connectToServer(url: string, onOpen: Function = null, onError: Function = null, onClosed: Function = null, onDataReceived: IOnReceivedData = null): void {
+    connectToServer(url: string, onOpen: Function | null = null, onError: Function | null = null, onClosed: Function | null = null, onDataReceived: IOnReceivedData | null = null): void {
 
         //abort if the Websocket exists and is connecting (state 0), opening (state 1) or closing (state 2)
         if (this._connection !== null && this._connection.readyState !== 3) {
@@ -64,7 +64,7 @@ export class NetworkInterface extends EventTarget {
             // that the websocket-connection hangs for a long time
             // @ts-ignore
             this._connectionTimeoutTimer = setTimeout(() => {
-                this._connection.close();
+                this._connection?.close();
             }, 3000);
 
         } catch (error) {
@@ -98,9 +98,9 @@ export class NetworkInterface extends EventTarget {
 
         clearTimeout(this._connectionTimeoutTimer);
 
-        this._connection.removeEventListener("error", this._onConnectionErrorFunc);
-        this._connection.removeEventListener("open", this._onConnectionOpenFunc);
-        this._connection.removeEventListener("close", this._onConnectionClosedFunc);
+        this._connection?.removeEventListener("error", this._onConnectionErrorFunc);
+        this._connection?.removeEventListener("open", this._onConnectionOpenFunc);
+        this._connection?.removeEventListener("close", this._onConnectionClosedFunc);
 
         this._connection = null;
 
@@ -121,7 +121,7 @@ export class NetworkInterface extends EventTarget {
         this.dispatchEvent(new Event(NetworkInterface.ERROR));
     }
 
-    private _onDataReceived(e): void {
+    private _onDataReceived(e:MessageEvent): void {
         let dataAsArray: Uint8Array;
 
         //if the received data is a string, convert it to a Uint8Array (I always send data as Uint8Array, however in the test-
@@ -188,7 +188,7 @@ export class NetworkInterface extends EventTarget {
 
     private async _sendChunk(chunk:Uint8Array):Promise<void> {
         return new Promise((resolve) => {
-            this._connection.send(chunk)
+            this._connection?.send(chunk)
             setTimeout(resolve, 800);   //like this, every chunk is actually processed before the next is sent
             //if the timeout is smaller, all chunks are cached in the media-app and then sent after all chunks have been added
         });

@@ -29,7 +29,7 @@ export class MediaFileCacheHandler {
         if (!this._cachedMedia.has(mediaStationId))
             this._cachedMedia.set(mediaStationId, []);
 
-        cachedMediaArr = this._cachedMedia.get(mediaStationId);
+        cachedMediaArr = this._cachedMedia.get(mediaStationId) as ICachedMedia[];
 
         cachedMediaArr.push({contentId: contentId, mediaAppId: mediaAppId, fileExtension: fileExtension});
     }
