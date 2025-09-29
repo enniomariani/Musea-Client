@@ -19,10 +19,7 @@ export class FolderManager{
         let newFolder:Folder = new Folder(mediaStation.getNextFolderId());
         newFolder.name = name;
 
-        parentFolder = mediaStation.rootFolder.findFolder(parentFolderId);
-
-        if(!parentFolder)
-            throw new Error("Folder with ID could not be found: "+ parentFolderId);
+        parentFolder = mediaStation.rootFolder.requireFolder(parentFolderId);
 
         parentFolder.addSubFolder(newFolder);
         newFolder.parentFolder = parentFolder;
@@ -38,12 +35,7 @@ export class FolderManager{
      * Returns the Folder or throws if it does not exist.
      */
     requireFolder(mediaStation:MediaStation, id:number):Folder {
-        const folder:Folder | null = mediaStation.rootFolder.findFolder(id);
-
-        if (!folder)
-            throw new Error("Folder with this ID does not exist: " + id);
-
-        return folder;
+        return mediaStation.rootFolder.requireFolder(id);
     }
 
     changeName(mediaStation:MediaStation,id:number, name:string):void{
@@ -52,11 +44,8 @@ export class FolderManager{
     }
 
     changeParentFolder(mediaStation:MediaStation, folderId:number, newParentId:number):void{
-        let folder:Folder = this.requireFolder(mediaStation, folderId);
-        let newParentFolder:Folder | null = this.getFolder(mediaStation, newParentId);
-
-        if(!newParentFolder)
-            throw new Error("Parent-Folder with ID does not exist: "+ newParentId);
+        const folder:Folder = this.requireFolder(mediaStation, folderId);
+        const newParentFolder:Folder = this.requireFolder(mediaStation, newParentId);
 
         folder.parentFolder.removeSubFolder(folderId);
         newParentFolder.addSubFolder(folder);
@@ -64,10 +53,7 @@ export class FolderManager{
     }
 
     deleteFolder(mediaStation:MediaStation, id:number, parentFolderId:number):void{
-        let parentFolder:Folder | null = mediaStation.rootFolder.findFolder(parentFolderId);
-
-        if(!parentFolder)
-            throw new Error("Parent-Folder with ID does not exist: "+ parentFolderId);
+        let parentFolder:Folder = mediaStation.rootFolder.requireFolder(parentFolderId);
 
         if(!parentFolder.removeSubFolder(id))
             throw new Error("Folder with ID: " + id + " is not inside folder: "+ parentFolderId);

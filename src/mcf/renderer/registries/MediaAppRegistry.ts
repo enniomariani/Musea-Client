@@ -3,7 +3,8 @@ import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 export class MediaAppRegistry {
     private _mediaApps: Map<number, MediaApp> = new Map();
 
-    constructor() {}
+    constructor() {
+    }
 
     add(id: number, name: string, ip: string, role: string): void {
         let mediaApp: MediaApp = new MediaApp(id);
@@ -18,7 +19,7 @@ export class MediaAppRegistry {
         if (!this._mediaApps.has(id))
             return null;
 
-        return this._mediaApps.get(id);
+        return this._mediaApps.get(id) as MediaApp;
     }
 
     getAll(): Map<number, MediaApp> {
@@ -31,7 +32,7 @@ export class MediaAppRegistry {
      * @returns {MediaApp | null}
      */
     getController(): MediaApp | null {
-        let controller: MediaApp | null;
+        let controller: MediaApp | null = null;
 
         this._mediaApps.forEach((mediaApp: MediaApp) => {
             if (mediaApp.role === MediaApp.ROLE_CONTROLLER) {
@@ -59,7 +60,7 @@ export class MediaAppRegistry {
     }
 
     importFromJSON(json: any): void {
-        let mediaApp: MediaApp;
+        let mediaApp: MediaApp | null = null;
 
         this._mediaApps = new Map();
 
@@ -67,6 +68,10 @@ export class MediaAppRegistry {
             for (let i: number = 0; i < json.length; i++) {
                 if (this._jsonPropertyExists(json[i], "id"))
                     mediaApp = new MediaApp(json[i].id);
+
+                if (!mediaApp)
+                    continue;
+
                 if (this._jsonPropertyExists(json[i], "name"))
                     mediaApp.name = json[i].name;
                 if (this._jsonPropertyExists(json[i], "ip"))

@@ -23,7 +23,7 @@ export class TagRegistry {
         if (!this._tags.has(id))
             return null;
 
-        return this._tags.get(id);
+        return this._tags.get(id) as Tag;
     }
 
     getAll(): Map<number, Tag> {

@@ -4,9 +4,9 @@ export class MediaApp {
     static ROLE_DEFAULT:string = "roleDefault";
 
     private _id: number;
-    private _role: string;
-    private _name: string;
-    private _ip: string;
+    private _role: string = "";
+    private _name: string = "";
+    private _ip: string = "";
 
     constructor(id:number) {
         this._id = id;

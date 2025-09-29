@@ -21,11 +21,7 @@ export class MediaManager{
      * @returns {Image}
      */
     createImage(mediaStation:MediaStation, contentId:number, mediaAppId:number, fileName:string):Image{
-        let content:Content | null = mediaStation.rootFolder.findContent(contentId);
-
-        if(!content)
-            throw new Error("Content with ID could not be found: "+ contentId);
-
+        const content:Content = mediaStation.rootFolder.requireContent(contentId);
         let newImage:Image = new Image();
 
         newImage.idOnMediaApp = -1;
@@ -50,11 +46,7 @@ export class MediaManager{
      * @returns {Video}
      */
     createVideo(mediaStation:MediaStation, contentId:number, mediaAppId:number, duration:number, fileName:string):Video{
-        let content:Content | null = mediaStation.rootFolder.findContent(contentId);
-
-        if(!content)
-            throw new Error("Content with ID could not be found: "+ contentId);
-
+        const content:Content = mediaStation.rootFolder.requireContent(contentId);
         let newVideo:Video = new Video();
 
         newVideo.idOnMediaApp = -1;
@@ -78,10 +70,7 @@ export class MediaManager{
      * @returns {string | null}
      */
     getMediaType(mediaStation:MediaStation, contentId:number, mediaAppId:number):string|null{
-        let content:Content | null = mediaStation.rootFolder.findContent(contentId);
-
-        if(!content)
-            throw new Error("Content with ID could not be found: "+ contentId);
+        const content:Content = mediaStation.rootFolder.requireContent(contentId);
 
         if(content.media.get(mediaAppId) instanceof Image)
             return MediaManager.MEDIA_TYPE_IMAGE;
@@ -92,10 +81,7 @@ export class MediaManager{
     }
 
     getFileName(mediaStation:MediaStation, contentId:number, mediaAppId:number):string|null{
-        let content:Content | null = mediaStation.rootFolder.findContent(contentId);
-
-        if(!content)
-            throw new Error("Content with ID could not be found: "+ contentId);
+        const content:Content = mediaStation.rootFolder.requireContent(contentId);
 
         if(content.media.get(mediaAppId) !== null && content.media.get(mediaAppId) !== undefined)
             return content.media.get(mediaAppId).fileName;
@@ -104,11 +90,8 @@ export class MediaManager{
     }
 
     getIdOnMediaApp(mediaStation:MediaStation, contentId:number, mediaAppId:number):number{
-        let content:Content | null = mediaStation.rootFolder.findContent(contentId);
+        const content:Content | null = mediaStation.rootFolder.requireContent(contentId);
         let media:IMedia;
-
-        if(!content)
-            throw new Error("Content with ID could not be found: "+ contentId);
 
         media = content.media.get(mediaAppId);
 
@@ -116,11 +99,7 @@ export class MediaManager{
     }
 
     deleteMedia(mediaStation:MediaStation, contentId:number, mediaAppId:number):void{
-        let content:Content = mediaStation.rootFolder.findContent(contentId);
-
-        if(!content)
-            throw new Error("Content with ID could not be found: "+ contentId);
-
+        const content:Content = mediaStation.rootFolder.requireContent(contentId);
         content.media.delete(mediaAppId);
     }
 }
