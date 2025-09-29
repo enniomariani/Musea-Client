@@ -99,7 +99,7 @@ export class FolderDataService {
             for (const contentId of contentIds)
                 await this._contentService.deleteContent(mediaStationId, folderId, contentId)
 
-        this._folderManager.deleteFolder(mediaStation, folderId, folder.parentFolder.id);
+        this._folderManager.deleteFolder(mediaStation, folderId, this.getIdOfParentFolder(mediaStationId, folderId));
     }
 
     /**
@@ -107,10 +107,6 @@ export class FolderDataService {
      *
      * the search is case-insensitive at the moment
      *
-     * @param {number} mediaStationId
-     * @param {number} folderId
-     * @param {string} namePart
-     * @returns {Map<number, string>}
      */
     findContentsByNamePart(mediaStationId: number, folderId: number, namePart: string): Map<number, string> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);

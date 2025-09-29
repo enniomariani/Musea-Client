@@ -22,6 +22,15 @@ export class MediaAppRegistry {
         return this._mediaApps.get(id) as MediaApp;
     }
 
+    require(id: number): MediaApp {
+        const mediaApp: MediaApp | undefined = this._mediaApps.get(id);
+
+        if (!mediaApp)
+            throw new Error("Media-App with ID " + id + " does not exist!");
+
+        return mediaApp;
+    }
+
     getAll(): Map<number, MediaApp> {
         return this._mediaApps;
     }
