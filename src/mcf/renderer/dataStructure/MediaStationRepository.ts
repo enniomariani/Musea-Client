@@ -78,7 +78,7 @@ export class MediaStationRepository{
     }
 
     findMediaStation(id:number):MediaStation | null{
-        let mediaStation:MediaStation = this._allMediaStations.get(id);
+        let mediaStation:MediaStation | undefined = this._allMediaStations.get(id);
 
         if(!mediaStation)
             return null;
@@ -89,7 +89,7 @@ export class MediaStationRepository{
      * Returns the MediaStation or throws if it does not exist.
      */
     requireMediaStation(id:number):MediaStation {
-        const ms:MediaStation = this._allMediaStations.get(id);
+        const ms:MediaStation | undefined = this._allMediaStations.get(id);
 
         if (!ms)
             throw new Error("Mediastation with this ID does not exist: " + id);
@@ -153,11 +153,11 @@ export class MediaStationRepository{
 
     private _getNameControllerMap():Map<string, string> {
         let map:Map<string, string> = new Map();
-        let controllerIp:string;
+        let controllerIp:string | null;
 
         this._allMediaStations.forEach((mediaStation:MediaStation, key:number)=>{
             controllerIp = mediaStation.mediaAppRegistry.getControllerIp();
-            map.set(mediaStation.name, controllerIp);
+            map.set(mediaStation.name, controllerIp?controllerIp:"");
         });
 
         return map;

@@ -33,7 +33,7 @@ export class ContentFileService {
     async loadFile(mediaStationId: number): Promise<any> {
         let pathToFile: string = this._createFilePath(mediaStationId);
         let textDecoder: TextDecoder = new TextDecoder();
-        let uint8Array: Uint8Array = await this._backendFileService.loadFile(pathToFile);
+        let uint8Array: Uint8Array | null = await this._backendFileService.loadFile(pathToFile);
         let jsonStr: string;
         let json: any;
 

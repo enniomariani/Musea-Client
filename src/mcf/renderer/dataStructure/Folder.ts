@@ -4,8 +4,8 @@ import {Content} from "./Content";
 export class Folder {
 
     private _id: number;
-    private _name: string;
-    private _parentFolder: Folder;
+    private _name: string = "";
+    private _parentFolder: Folder|null = null;
     private _subFolders: Folder[] = [];
     private _contents: Content[] = [];
 
@@ -28,26 +28,22 @@ export class Folder {
 
         if (this._jsonPropertyExists(json, "subFolders")) {
             for (let i: number = 0; i < json.subFolders.length; i++) {
-
-                if (this._jsonPropertyExists(json.subFolders[i], "id"))
+                if (this._jsonPropertyExists(json.subFolders[i], "id")){
                     subFolder = new Folder(json.subFolders[i].id);
-
-                this.addSubFolder(subFolder);
-                subFolder.parentFolder = this;
-
-                subFolder.importFromJSON(json.subFolders[i]);
+                    this.addSubFolder(subFolder);
+                    subFolder.parentFolder = this;
+                    subFolder.importFromJSON(json.subFolders[i]);
+                }
             }
         }
 
         if (this._jsonPropertyExists(json, "contents")) {
             for (let i: number = 0; i < json.contents.length; i++) {
-
-                if (this._jsonPropertyExists(json.contents[i], "id"))
+                if (this._jsonPropertyExists(json.contents[i], "id")){
                     content = this._createContent(json.contents[i].id, this._id);
-
-                content.importFromJSON(json.contents[i]);
-
-                this.addContent(content);
+                    content.importFromJSON(json.contents[i]);
+                    this.addContent(content);
+                }
             }
         }
     }
@@ -146,7 +142,7 @@ export class Folder {
             return this;
 
         for (const subFolder of this._subFolders) {
-            const foundFolder: Folder = subFolder.findFolder(id);
+            const foundFolder: Folder | null = subFolder.findFolder(id);
             if (foundFolder)
                 return foundFolder;
         }

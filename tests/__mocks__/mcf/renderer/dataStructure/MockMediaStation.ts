@@ -27,7 +27,7 @@ export class MockMediaStation extends MediaStation{
     private _mockTagRegistry: MockTagRegistry = new MockTagRegistry();
     private _mockMediaAppRegistry: MockMediaAppRegistry = new MockMediaAppRegistry();
 
-    constructor(id) {
+    constructor(id:number) {
         super(id, mockTagRegistry, mockMediaAppRegistry);
         this.reset = jest.fn();
 

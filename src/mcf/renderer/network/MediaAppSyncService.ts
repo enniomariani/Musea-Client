@@ -32,7 +32,7 @@ export class MediaAppSyncService {
     }
 
     async sendMediaFilesToMediaApp(mediaStation: MediaStation, allCachedMedia: ICachedMedia[], ipMediaApp: string, reporter: IMediaAppProgress): Promise<boolean> {
-        let fileData: Uint8Array;
+        let fileData: Uint8Array | null;
         let idOnMediaApp: number;
         let content: Content;
         let media: IMedia;

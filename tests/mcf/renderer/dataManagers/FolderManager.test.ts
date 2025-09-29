@@ -3,6 +3,7 @@ import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/Mo
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {FolderManager} from "../../../../src/mcf/renderer/dataManagers/FolderManager";
 import {Folder} from "../../../../src/mcf/renderer/dataStructure/Folder";
+import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 
 let folderManager:FolderManager;
 let mockMediaStation:MockMediaStation;
@@ -77,18 +78,38 @@ describe("getFolder() ", ()=>{
 
     it("should create return the folder if it exists", ()=>{
         setup();
-
-        let answer = folderManager.getFolder(mockMediaStation, folderID);
-
+        const answer = folderManager.getFolder(mockMediaStation, folderID);
         expect(answer).toEqual(folder);
     });
 
     it("should return null if the folder could not be found", ()=>{
         setup();
-
-        let answer = folderManager.getFolder(mockMediaStation, folderID + 1);
-
+        const answer = folderManager.getFolder(mockMediaStation, folderID + 1);
         expect(answer).toEqual(null);
+    });
+});
+
+
+describe("requireFolder() ", () => {
+    const folderID:number = 10;
+    const folder:MockFolder = new MockFolder(folderID);
+
+    it("should return the folder object with the passed ID", async () => {
+        let answer: Folder;
+
+        mockMediaStation.rootFolder.findFolder.mockImplementationOnce((id:number)=>{
+            if(id === folderID)
+                return folder;
+            else
+                return null;
+        });
+
+        answer = folderManager.requireFolder(mockMediaStation, folderID);
+        expect(answer).toEqual(folder);
+    });
+
+    it("should trhow if the folder can not be found", async () => {
+        expect(() => folderManager.requireFolder(mockMediaStation, 0)).toThrow(new Error("Folder with this ID does not exist: 0"));
     });
 });
 

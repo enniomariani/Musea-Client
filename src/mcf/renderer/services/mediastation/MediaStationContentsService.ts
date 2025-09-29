@@ -34,8 +34,8 @@ export class MediaStationContentsService {
      */
     async downloadContentsOfMediaStation(id: number, preserveMSname:boolean,role:string = "admin"): Promise<string> {
         const mediaStation: MediaStation = this._mediaStationRepo.requireMediaStation(id);
-        const controllerIP: string = mediaStation.mediaAppRegistry.getControllerIp();
-        let contentsJSON: string;
+        const controllerIP: string|null = mediaStation.mediaAppRegistry.getControllerIp();
+        let contentsJSON: string|null;
 
         if (!controllerIP)
             return MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP;

@@ -3,6 +3,8 @@ import {ContentManager} from "src/mcf/renderer/dataManagers/ContentManager";
 import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {Content} from "src/mcf/renderer/dataStructure/Content";
 import {MockFolder} from "__mocks__/mcf/renderer/dataStructure/MockFolder";
+import {Folder} from "src/mcf/renderer/dataStructure/Folder";
+import {MockContent} from "__mocks__/mcf/renderer/dataStructure/MockContent";
 
 let contentManager:ContentManager;
 let mockMediaStation:MockMediaStation;
@@ -79,18 +81,34 @@ describe("getContent() ", ()=>{
 
     it("should create return the content if it exists", ()=>{
         setup();
-
         let answer = contentManager.getContent(mockMediaStation, contentID);
-
         expect(answer).toEqual(content);
     });
 
     it("should return null if the content could not be found", ()=>{
         setup();
-
         let answer = contentManager.getContent(mockMediaStation, contentID + 1);
-
         expect(answer).toEqual(null);
+    });
+});
+
+describe("requireContent() ", () => {
+    const contentId:number = 10;
+    const content:MockContent = new MockContent(contentId, 10);
+
+    it("should return the content object with the passed ID", async () => {
+        let answer: Content;
+
+        mockMediaStation.rootFolder.findContent.mockImplementationOnce((id:number)=>{
+            return id === contentId? content:null;
+        });
+
+        answer = contentManager.requireContent(mockMediaStation, contentId);
+        expect(answer).toEqual(content);
+    });
+
+    it("should throw if the mediastation can not be found", async () => {
+        expect(() => contentManager.requireContent(mockMediaStation, 0)).toThrow(new Error("Content with this ID does not exist: 0"));
     });
 });
 
@@ -103,24 +121,18 @@ describe("changeName() ", ()=>{
     function setup():void{
         mockMediaStation.rootFolder.findContent = jest.fn();
         mockMediaStation.rootFolder.findContent.mockImplementationOnce((id:number)=>{
-            if(id === contentID)
-                return content;
-            else
-                return null;
+            return id === contentID? content:null;
         });
     }
 
     it("should change the name of the passed content to the passed new name", ()=>{
         setup();
-
         contentManager.changeName(mockMediaStation, contentID, newName);
-
         expect(content.name).toEqual(newName);
     });
 
     it("should throw an error if the content could not be found", ()=>{
         setup();
-
         expect(()=> contentManager.changeName(mockMediaStation, contentID + 1, newName)).toThrow(Error);
     });
 });
@@ -145,10 +157,7 @@ describe("changeFolder() ", ()=>{
         });
 
         mockMediaStation.rootFolder.findContent.mockImplementation((id:number)=>{
-            if(id === contentID)
-                return content;
-            else
-                return null;
+            return id === contentID? content:null;
         });
     }
 
@@ -172,21 +181,17 @@ describe("changeFolder() ", ()=>{
 
     it("should set the folder-id of the content to the new folder", ()=>{
         setup();
-
         contentManager.changeFolder(mockMediaStation, contentID, newFolderId);
-
         expect(content.folderId).toBe(newFolderId);
     });
 
     it("should throw an error if the content could not be found", ()=>{
         setup();
-
         expect(()=> contentManager.changeFolder(mockMediaStation, contentID + 99, newFolderId)).toThrow(Error("Content with ID does not exist: " + (contentID + 99).toString()));
     });
 
     it("should throw an error if the new folder could not be found", ()=>{
         setup();
-
         expect(()=> contentManager.changeFolder(mockMediaStation, contentID, newFolderId + 99)).toThrow(Error("Folder with ID does not exist: " + (newFolderId +99).toString()));
     });
 });
@@ -200,24 +205,18 @@ describe("changeLightIntensity() ", ()=>{
     function setup():void{
         mockMediaStation.rootFolder.findContent = jest.fn();
         mockMediaStation.rootFolder.findContent.mockImplementationOnce((id:number)=>{
-            if(id === contentID)
-                return content;
-            else
-                return null;
+            return id === contentID? content:null;
         });
     }
 
     it("should change the lightIntensity of the passed content to the passed new intensity", ()=>{
         setup();
-
         contentManager.changeLightIntensity(mockMediaStation, contentID, newIntensity);
-
         expect(content.lightIntensity).toEqual(newIntensity);
     });
 
     it("should throw an error if the content could not be found", ()=>{
         setup();
-
         expect(()=> contentManager.changeLightIntensity(mockMediaStation, contentID + 1, newIntensity)).toThrow(Error);
     });
 });
@@ -230,10 +229,7 @@ describe("deleteContent() ", ()=>{
     function setup():void{
         mockMediaStation.rootFolder.findFolder = jest.fn();
         mockMediaStation.rootFolder.findFolder.mockImplementationOnce((id:number)=>{
-            if(id === folderId)
-                return mockFolder;
-            else
-                return null;
+            return id === folderId ? mockFolder: null;
         });
         mockFolder = new MockFolder(0);
         mockFolder.removeContent.mockImplementation((id) =>{
@@ -254,7 +250,6 @@ describe("deleteContent() ", ()=>{
 
     it("should throw an error if the folder does not exist", ()=>{
         setup();
-
         expect(()=> contentManager.deleteContent(mockMediaStation, folderId + 1, contentId)).toThrow(Error);
     });
 

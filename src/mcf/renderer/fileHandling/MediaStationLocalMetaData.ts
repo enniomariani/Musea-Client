@@ -25,7 +25,7 @@ export class MediaStationLocalMetaData {
         let allMediaStations:Map<string, string> = new Map();
         let json:any;
         let jsonStr:string;
-        let uint8Array:Uint8Array;
+        let uint8Array:Uint8Array | null;
         let i:number;
 
         uint8Array = await this._backendFileService.loadFile(this._pathToFile);

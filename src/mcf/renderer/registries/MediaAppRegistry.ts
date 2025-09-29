@@ -31,7 +31,7 @@ export class MediaAppRegistry {
      * @returns {MediaApp | null}
      */
     getController(): MediaApp | null {
-        let controller: MediaApp;
+        let controller: MediaApp | null;
 
         this._mediaApps.forEach((mediaApp: MediaApp) => {
             if (mediaApp.role === MediaApp.ROLE_CONTROLLER) {

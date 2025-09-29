@@ -16,7 +16,7 @@ export class ContentManager{
      * @returns {Content}
      */
     createContent(mediaStation:MediaStation, name:string, folderId:number):Content{
-        let folder:Folder;
+        let folder:Folder|null;
         let newContent:Content = new Content(mediaStation.getNextContentId(), folderId);
         newContent.name = name;
         newContent.lightIntensity = 0;
@@ -35,6 +35,18 @@ export class ContentManager{
         return mediaStation.rootFolder.findContent(id);
     }
 
+    /**
+     * Returns the Content or throws if it does not exist.
+     */
+    requireContent(mediaStation:MediaStation, id:number):Content {
+        const content:Content | null = mediaStation.rootFolder.findContent(id);
+
+        if (!content)
+            throw new Error("Content with this ID does not exist: " + id);
+
+        return content;
+    }
+
     changeName(mediaStation:MediaStation,id:number, name:string):void{
         let content:Content = this.getContent(mediaStation, id);
 
@@ -46,8 +58,8 @@ export class ContentManager{
 
     changeFolder(mediaStation:MediaStation, contentId:number, newFolderId:number):void{
         let content:Content = this.getContent(mediaStation, contentId);
-        let oldFolder:Folder;
-        let newFolder:Folder = mediaStation.rootFolder.findFolder(newFolderId);
+        let oldFolder:Folder|null;
+        let newFolder:Folder|null = mediaStation.rootFolder.findFolder(newFolderId);
 
         if(!content)
             throw new Error("Content with ID does not exist: "+ contentId);
@@ -74,7 +86,7 @@ export class ContentManager{
 
 
     deleteContent(mediaStation:MediaStation,folderId:number, id:number):void{
-        let folder:Folder = mediaStation.rootFolder.findFolder(folderId);
+        let folder:Folder|null = mediaStation.rootFolder.findFolder(folderId);
 
         if(!folder)
             throw new Error("Folder with ID does not exist: "+ folderId);

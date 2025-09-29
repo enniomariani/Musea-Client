@@ -33,7 +33,7 @@ export  class NetworkConnectionHandler{
      * @param {NetworkInterface} networkInterface - a new instance for this connection
      * @returns {boolean} - Returns true if the connection is successfully created, otherwise false.
      */
-    createConnection(ip: string, onOpen: Function, onError: Function, onClosed: IOnClosedConnection = null,  onDataReceived: IOnReceivedConnectionData = null, networkInterface:NetworkInterface = new NetworkInterface()): void {
+    createConnection(ip: string, onOpen: Function, onError: Function, onClosed: IOnClosedConnection | null = null,  onDataReceived: IOnReceivedConnectionData | null = null, networkInterface:NetworkInterface = new NetworkInterface()): void {
         const url:string = "ws://" + ip + ":5000";
 
         if (this._connections.has(ip)) {
@@ -69,8 +69,8 @@ export  class NetworkConnectionHandler{
      * @param {Function} onSendChunk - the function that is called on each chunk sent
      * @returns {boolean} - Returns true if the data is successfully sent, otherwise false.
      */
-    async sendData(ip: string, data: Uint8Array, onSendChunk:Function = null): Promise<boolean> {
-        const connection:NetworkInterface = this._connections.get(ip);
+    async sendData(ip: string, data: Uint8Array, onSendChunk:Function | null = null): Promise<boolean> {
+        const connection:NetworkInterface | undefined = this._connections.get(ip);
 
         if (!connection) {
             console.error(`No connection found with ip ${ip}.`);
@@ -86,7 +86,7 @@ export  class NetworkConnectionHandler{
      * @param {string} ip - Unique IP for the connection.
      */
     closeConnection(ip: string): void {
-        const connection:NetworkInterface = this._connections.get(ip);
+        const connection:NetworkInterface | undefined = this._connections.get(ip);
         if (!connection) {
             console.error(`No connection found with ip ${ip}.`);
             return;

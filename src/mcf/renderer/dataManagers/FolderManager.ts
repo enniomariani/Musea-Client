@@ -34,6 +34,18 @@ export class FolderManager{
         return mediaStation.rootFolder.findFolder(id);
     }
 
+    /**
+     * Returns the Folder or throws if it does not exist.
+     */
+    requireFolder(mediaStation:MediaStation, id:number):Folder {
+        const folder:Folder | null = mediaStation.rootFolder.findFolder(id);
+
+        if (!folder)
+            throw new Error("Folder with this ID does not exist: " + id);
+
+        return folder;
+    }
+
     changeName(mediaStation:MediaStation,id:number, name:string):void{
         let folder:Folder = this.getFolder(mediaStation, id);
 

@@ -6,13 +6,13 @@ import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 
 export class MediaStation {
     private _id: number;
-    private _name: string;
-    private _rootFolder: Folder;
+    private _name: string = "";
+    private _rootFolder: Folder = new Folder(0);
 
-    private _folderIdCounter: number;
-    private _contentIdCounter: number;
-    private _mediaAppIdCounter: number;
-    private _tagIdCounter: number;
+    private _folderIdCounter: number = -1;
+    private _contentIdCounter: number = -1;
+    private _mediaAppIdCounter: number = -1;
+    private _tagIdCounter: number = -1;
 
     private _tagRegistry:TagRegistry;
     private _mediaAppRegistry:MediaAppRegistry;
