@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import { pathsToModuleNameMapper } from 'ts-jest';
 
 const require = createRequire(import.meta.url);
-const baseTsconfig = require('./tsconfig.json');
+const baseTsconfig = require('./tests/tsconfig.json');
 
 const compilerOptions = (baseTsconfig && baseTsconfig.compilerOptions) || {};
 const hasPaths = compilerOptions.paths && Object.keys(compilerOptions.paths).length > 0;
@@ -26,7 +26,7 @@ export default {
     extensionsToTreatAsEsm: ['.ts'],
     globals: {
         'ts-jest': {
-            tsconfig: './tsconfig.test.json',
+            tsconfig: './tests/tsconfig.json',
             useESM: true,
         },
     },
