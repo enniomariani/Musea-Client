@@ -9,7 +9,7 @@ let mockNetworkConnectionHandler: MockNetworkConnectionHandler;
 let networkService: NetworkService;
 
 const ip1: string = "127.0.0.1";
-let timer;
+let timer:any;
 
 beforeEach(() => {
     mockNetworkConnectionHandler = new MockNetworkConnectionHandler();
@@ -21,7 +21,7 @@ afterEach(() => {
     clearTimeout(timer);
 });
 
-function mockOpenConnection(receiveImmediateCommand = null) {
+function mockOpenConnection(receiveImmediateCommand: Uint8Array | null = null) {
     mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip, onOpen, onError, onClose, onDataReceived) => {
         onOpen();
 
@@ -36,9 +36,9 @@ function mockOpenConnection(receiveImmediateCommand = null) {
     });
 }
 
-function mockOpenConnectionAndReceiveDataLater(ip, command, returnValueSendData = true) {
-    let dataReceived;
-    mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip, onOpen, onError, onClosed, onDataReceived) => {
+function mockOpenConnectionAndReceiveDataLater(ip: string, command: Uint8Array, returnValueSendData = true) {
+    let dataReceived: Function;
+    mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip: string, onOpen: Function, onError: Function, onClosed: Function, onDataReceived) => {
         onOpen();
         dataReceived = onDataReceived;
     });
@@ -562,46 +562,42 @@ describe("getContentFileFrom() ", () => {
     });
 
     it("should return the content-JSON-string if it received a correct content-command", async () => {
-        let contentJSON: string = "{content-JSON}";
+        const contentJSON: string = "{content-JSON}";
         let contentCommand: Uint8Array = ConvertNetworkData.encodeCommand("contents", "put", contentJSON);
         mockOpenConnectionAndReceiveDataLater(ip1, contentCommand);
 
-        let answer: string;
         await networkService.openConnection(ip1);
-        answer = await networkService.getContentFileFrom(ip1);
+        const answer: string | null = await networkService.getContentFileFrom(ip1);
 
         expect(answer).toBe(contentJSON);
     });
 
     it("should return null and print an error if it received a wrong command", async () => {
         let wrongCommand: Uint8Array = ConvertNetworkData.encodeCommand("network", "poiiing");
-        let answer: string;
         let logSpy = jest.spyOn(console, "error");
         mockOpenConnectionAndReceiveDataLater(ip1, wrongCommand);
 
         await networkService.openConnection(ip1);
-        answer = await networkService.getContentFileFrom(ip1);
+        const answer: string | null = await networkService.getContentFileFrom(ip1);
 
         expect(answer).toBe(null);
         expect(logSpy).toHaveBeenCalledTimes(1);
     });
 
     it("should return null if it received nothing after 3 seconds", async () => {
-        let answer: string;
-        let answerPromise: Promise<string>;
         jest.useFakeTimers();
 
         mockOpenConnection();
 
         await networkService.openConnection(ip1);
-        answerPromise = networkService.getContentFileFrom(ip1);
+        const answerPromise: Promise<string | null> = networkService.getContentFileFrom(ip1);
 
         await Promise.resolve(); // Forces the promise to resolve after advancing timers
 
         // Fast-forward until all timers have been executed
         jest.advanceTimersByTime(3000);
 
-        answer = await answerPromise;
+        const answer: string | null = await answerPromise;
 
         expect(answer).toBe(null);
 

@@ -101,7 +101,7 @@ describe("init() and deleteFile() ", () => {
 
 describe("init() and loadFile() ", () => {
     it("should call loadFile from the backend with the correct parameters ", async () => {
-        let fileData:Uint8Array;
+        let fileData:Uint8Array | null;
         let loadedFileData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
         let pathToLoad:string = "0\\cachedMedia\\2.1.jpeg";
 
@@ -120,7 +120,6 @@ describe("init() and loadFile() ", () => {
     });
 
     it("should call loadFile from the backend with the correct parameters  (others than in test 1)", async () => {
-        let fileData:Uint8Array;
         let loadedFileData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x11]);
         let pathToLoad:string = "0\\cachedMedia\\2.5.mp4";
 
@@ -131,7 +130,7 @@ describe("init() and loadFile() ", () => {
         });
 
         mediaFileService.init(pathToFolder);
-        fileData = await mediaFileService.loadFile(0, 2,5,"mp4")
+        const fileData:Uint8Array|null = await mediaFileService.loadFile(0, 2,5,"mp4")
 
         expect(mockBackendFileService.loadFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.loadFile).toHaveBeenCalledWith(pathToFolder + pathToLoad);
@@ -139,7 +138,6 @@ describe("init() and loadFile() ", () => {
     });
 
     it("should return null if the backend returned null (the file does not exist)", async () => {
-        let fileData:Uint8Array;
         let pathToLoad:string = "0\\cachedMedia\\2.5.mp4";
 
         mockBackendFileService.loadFile.mockImplementationOnce(()=>{
@@ -149,7 +147,7 @@ describe("init() and loadFile() ", () => {
         });
 
         mediaFileService.init(pathToFolder);
-        fileData = await mediaFileService.loadFile(0, 2,5,"mp4")
+        const fileData:Uint8Array|null = await mediaFileService.loadFile(0, 2,5,"mp4")
 
         expect(mockBackendFileService.loadFile).toHaveBeenCalledTimes(1);
         expect(mockBackendFileService.loadFile).toHaveBeenCalledWith(pathToFolder + pathToLoad);

@@ -8,8 +8,8 @@ let createdCommand:ArrayBuffer;
 let correctArrayBuffer:Uint8Array = new Uint8Array([0x00, 0xFF, 0x1E, 0x22]);
 jest.mock('../../../../src/mcf/renderer/network/ConvertNetworkData');
 
-let mockEncodeCommand = jest.fn((...parts:(string | Uint8Array)[]):Uint8Array=>{
-    return null;
+let mockEncodeCommand = jest.fn((...parts:(string | Uint8Array)[]):Uint8Array =>{
+    return new Uint8Array();
 });
 
 
@@ -22,13 +22,13 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-function createMock(...correctParts){
-    mockEncodeCommand.mockImplementationOnce((...parts ):Uint8Array=>{
+function createMock(...correctParts: (string | Uint8Array)[]){
+    mockEncodeCommand.mockImplementationOnce((...parts ):Uint8Array =>{
 
         for(let i:number = 0; i < correctParts.length; i++){
             console.log("check parts: ", parts[i], correctParts[i]);
             if(parts[i] !== correctParts[i])
-                return null;
+                return new Uint8Array();
         }
         return correctArrayBuffer;
     });

@@ -98,7 +98,7 @@ describe("getName() ", ()=>{
 describe("getControllerIp() ", ()=>{
     it("should call findMediaStation from the repo and return its controller-ip", ()=>{
         let controllerIp:string = "ip-address"
-        let ipReturned:string;
+        let ipReturned:string | null;
         let createdMediaStation:MockMediaStation = new MockMediaStation(createdID);
         createdMediaStation.mediaAppRegistry.getControllerIp.mockImplementationOnce((idArg)=>{return controllerIp})
 

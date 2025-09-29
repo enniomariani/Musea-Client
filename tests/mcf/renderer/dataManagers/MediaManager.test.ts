@@ -149,7 +149,7 @@ describe("getIdOnMediaApp() ", ()=>{
         let image:Image = new Image();
         image.idOnMediaApp = 33;
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
-        mockContent.media.set(0, image);
+        mockContent.requireMedia.mockReturnValueOnce(image);
 
         idOnMediaApp = mediaManager.getIdOnMediaApp(mockMediaStation, 0, 0);
 
@@ -162,7 +162,7 @@ describe("getIdOnMediaApp() ", ()=>{
         let image:Image = new Image();
         image.idOnMediaApp = -1;
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
-        mockContent.media.set(0, image);
+        mockContent.requireMedia.mockReturnValueOnce(image);
 
         idOnMediaApp = mediaManager.getIdOnMediaApp(mockMediaStation, 0, 0);
 

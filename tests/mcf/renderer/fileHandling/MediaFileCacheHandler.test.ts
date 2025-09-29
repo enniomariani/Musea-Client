@@ -82,24 +82,29 @@ describe("cacheMedia() ", ()=>{
 
     it("should add the cached media to cachedMedia and create a mediaStationId if it does not exist", async ()=>{
         await mediaFileCacheHandler.cacheMedia(0,1,2,"jpeg", mockFile);
+        const mediaFileArr:ICachedMedia[]|undefined = mediaFileCacheHandler.getAllCachedMedia().get(0);
+        expect(mediaFileArr).not.toBeUndefined();
 
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0)).not.toBeNull();
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0)).not.toBeUndefined();
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0)[0].mediaAppId).toBe(2);
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0)[0].contentId).toBe(1);
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0)[0].fileExtension).toBe("jpeg");
+        if (mediaFileArr) {
+            expect(mediaFileArr[0].mediaAppId).toBe(2);
+            expect(mediaFileArr[0].contentId).toBe(1);
+            expect(mediaFileArr[0].fileExtension).toBe("jpeg");
+        }
     });
 
     it("should add the cached media to cachedMedia if the mediastation already exists and has already a cached file set", async ()=>{
         await mediaFileCacheHandler.cacheMedia(0,1,2,"jpeg", mockFile);
         await mediaFileCacheHandler.cacheMedia(0,2,2,"mp4", mockFile);
 
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0)).not.toBeNull();
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0)).not.toBeUndefined();
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0).length).toBe(2);
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0)[1].mediaAppId).toBe(2);
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0)[1].contentId).toBe(2);
-        expect(mediaFileCacheHandler.getAllCachedMedia().get(0)[1].fileExtension).toBe("mp4");
+        const mediaFileArr:ICachedMedia[]|undefined = mediaFileCacheHandler.getAllCachedMedia().get(0);
+        expect(mediaFileArr).not.toBeUndefined();
+
+        if (mediaFileArr) {
+            expect(mediaFileArr.length).toBe(2);
+            expect(mediaFileArr[1].mediaAppId).toBe(2);
+            expect(mediaFileArr[1].contentId).toBe(2);
+            expect(mediaFileArr[1].fileExtension).toBe("mp4");
+        }
     });
 });
 
@@ -200,11 +205,10 @@ describe("getCachedMediaFile() ", ()=>{
     })
 
     it("should return what mediaFileService.loadFile returns", async ()=>{
-        let answer:Uint8Array;
         let data:Uint8Array = new Uint8Array([0x00, 0x11, 0xFF]);
         mockMediaFileService.loadFile.mockReturnValueOnce(data);
 
-        answer = await mediaFileCacheHandler.getCachedMediaFile(0,1,2, "jpeg");
+        const answer:Uint8Array|null = await mediaFileCacheHandler.getCachedMediaFile(0,1,2, "jpeg");
 
         expect(answer).toEqual(data);
     });

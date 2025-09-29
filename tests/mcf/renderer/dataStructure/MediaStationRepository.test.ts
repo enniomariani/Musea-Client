@@ -87,23 +87,27 @@ describe("loadMediaStations() ", () => {
         mediaStation3.getNextMediaAppId.mockReturnValueOnce(idREturnedFrom3);
         const addMediaStationSpy = jest.spyOn(mediaStationRepo, 'addMediaStation');
 
-        addMediaStationSpy.mockImplementation(async (id: string) => {
-            if (id === key1)
+        addMediaStationSpy.mockImplementation(async (name: string, save?: boolean | undefined):Promise<number> => {
+            if (name === key1)
                 return 0;
-            else if (id === key2)
+            else if (name === key2)
                 return 1;
-            else if (id === key3)
+            else if (name === key3)
                 return 2;
+            else
+                return -1;
         });
 
-        const findMediaStationSpy = jest.spyOn(mediaStationRepo, 'findMediaStation');
-        findMediaStationSpy.mockImplementation((id: number) => {
+        const requireMSSpy = jest.spyOn(mediaStationRepo, 'requireMediaStation');
+        requireMSSpy.mockImplementation((id: number):MediaStation  => {
             if (id === 0)
                 return mediaStation1;
             else if (id === 1)
                 return mediaStation2;
             else if (id === 2)
                 return mediaStation3;
+            else
+                return new MockMediaStation(1000);
         });
 
         const isMediaStationCachedSpy = jest.spyOn(mediaStationRepo, 'isMediaStationCached').mockReturnValue(new Promise((resolve) => {
@@ -143,23 +147,27 @@ describe("loadMediaStations() ", () => {
         });
 
         const addMediaStationSpy = jest.spyOn(mediaStationRepo, 'addMediaStation')
-            .mockImplementation(async(name: string) => {
+            .mockImplementation(async (name: string, save?: boolean | undefined):Promise<number> => {
             if (name === key1)
                 return 0;
             else if (name === key2)
                 return 1;
             else if (name === key3)
                 return 2;
+            else
+                return -1
         })
 
-        const findMediaStationSpy = jest.spyOn(mediaStationRepo, 'findMediaStation')
-            .mockImplementation((id: number) => {
+        const requireMSSpy = jest.spyOn(mediaStationRepo, 'requireMediaStation')
+            .mockImplementation((id: number): MediaStation  => {
             if (id === 0)
                 return mockMediaStation1;
             else if (id === 1)
                 return mockMediaStation2;
             else if (id === 2)
                 return mockMediaStation3;
+            else
+                return new MockMediaStation(1111);
         })
 
         mockContentFileService.loadFile.mockReturnValueOnce(mockJSON);
@@ -220,12 +228,11 @@ describe("findMediaStation() ", () => {
 
     it("should return null if the mediastation can not be found", async () => {
         const nameMediaStation: string = "testName";
-        const foundMediaStation: MediaStation | null;
 
         await mediaStationRepo.addMediaStation(nameMediaStation);
         await mediaStationRepo.addMediaStation("testName2");
 
-        foundMediaStation = mediaStationRepo.findMediaStation(20);
+        const foundMediaStation: MediaStation | null = mediaStationRepo.findMediaStation(20);
 
         expect(foundMediaStation).toEqual(null);
     });

@@ -216,14 +216,19 @@ describe("findContentsByTag() ", () => {
         allContents.set(5, new MockContent(5, 13))
         allContents.set(20, new MockContent(20, 13))
 
-        allContents.get(0).tagIds = [];
-        allContents.get(0).name = "content 0";
-        allContents.get(2).tagIds = [1, 3, 300];
-        allContents.get(2).name = "content 2";
-        allContents.get(5).tagIds = [300, 33, 13];
-        allContents.get(5).name = "content 5";
-        allContents.get(20).tagIds = [3];
-        allContents.get(20).name = "content 20";
+        const content0:MockContent = allContents.get(0) as MockContent;
+        const content2:MockContent = allContents.get(2) as MockContent;
+        const content5:MockContent = allContents.get(5) as MockContent;
+        const content20:MockContent = allContents.get(20) as MockContent;
+
+        content0.tagIds = [];
+        content0.name = "content 0";
+        content2.tagIds = [1, 3, 300];
+        content2.name = "content 2";
+        content5.tagIds = [300, 33, 13];
+        content5.name = "content 5";
+        content20.tagIds = [3];
+        content20.name = "content 20";
 
         mockMediaStation.rootFolder.getAllContentIDsInFolderAndSubFolders.mockImplementation(() => {
             return allContentIds;

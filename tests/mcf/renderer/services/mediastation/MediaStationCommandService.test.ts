@@ -104,7 +104,7 @@ describe("sendCommandPlay() ", ()=> {
         mockContentManager.getContent = jest.fn();
         mockContentManager.getContent.mockReturnValue(mockContent);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockContent.media.set(1, null)
+        mockContent.media.delete(1);
 
         await service.sendCommandPlay(mediaStationId,contentId);
 
@@ -241,8 +241,8 @@ describe("sendCommandSync() ", ()=> {
     const seekPos:number = 200;
 
     it("should call contentNetworkService.sendCommandSync for every mediaApp defined in the mocked mediastation", async () => {
-        mockContentManager.getContent = jest.fn();
-        mockContentManager.getContent.mockReturnValue(mockContent);
+        mockContentManager.requireContent = jest.fn();
+        mockContentManager.requireContent.mockReturnValue(mockContent);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
         await service.sendCommandSync(mediaStationId, 34,seekPos);

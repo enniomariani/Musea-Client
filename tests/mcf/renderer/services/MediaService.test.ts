@@ -107,11 +107,10 @@ describe("addVideoAndCacheIt() ", () => {
 describe("getFileName() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     it("should call contentManager.getFileName with the correct arguments", () => {
-        let answer: string;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.getFileName.mockReturnValueOnce("fileNameX");
 
-        answer = mediaService.getFileName(mediaStationId, contentId, 0);
+        const answer:string|null = mediaService.getFileName(mediaStationId, contentId, 0);
 
         expect(answer).toBe("fileNameX");
     });
@@ -120,11 +119,10 @@ describe("getFileName() ", () => {
 describe("getMediaType() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     it("should call contentManager.getMediaType with the correct arguments", () => {
-        let answer: string;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.getMediaType.mockReturnValueOnce(MediaManager.MEDIA_TYPE_IMAGE);
 
-        answer = mediaService.getMediaType(mediaStationId, contentId, 0);
+        const answer:string|null = mediaService.getMediaType(mediaStationId, contentId, 0);
 
         expect(answer).toBe(MediaManager.MEDIA_TYPE_IMAGE);
     });

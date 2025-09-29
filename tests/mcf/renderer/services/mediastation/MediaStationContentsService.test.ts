@@ -22,7 +22,7 @@ afterEach(() => {
 
 describe("downloadContentsOfMediaStation() ", () => {
     let mockMediaStation: MockMediaStation;
-    let answer: string;
+    let answer: string | null;
     const controllerIp: string = "127.0.0.1";
     const correctJSON: any = {name: "mediaStationX"};
 

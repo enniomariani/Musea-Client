@@ -2,6 +2,7 @@ import {beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MainFileService} from "../../../src/mcf/main/MainFileService";
 import * as fs from 'fs';
 import * as path from "node:path";
+import type { PathLike } from "fs";
 
 let fileService: MainFileService;
 jest.mock("fs", () => ({
@@ -36,11 +37,12 @@ describe("saveFile () ", () => {
         let fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEF]);
         let buffer = Buffer.from(fileData);
         let returnValue: string;
-        mockedFs.existsSync.mockImplementation((path: string): boolean => {
+        mockedFs.existsSync.mockImplementation((path: PathLike): boolean => {
             if (path === filePath)
                 return false;
             else if (path === directory)
                 return true;
+            throw new Error("ERROR, FOLDER DOES NOT EXIST!")
         });
         // @ts-ignore
         mockedFs.writeFile.mockImplementation((path, data, callback) => callback(null));
@@ -58,11 +60,13 @@ describe("saveFile () ", () => {
         const directory = path.dirname(filePath);
         let returnValue: string;
         let fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEF]);
-        mockedFs.existsSync.mockImplementation((path: string): boolean => {
+        mockedFs.existsSync.mockImplementation((path: PathLike): boolean => {
             if (path === filePath)
                 return true;
             else if (path === directory)
                 return true;
+
+            throw new Error("ERROR, FOLDER DOES NOT EXIST!")
         });
         // @ts-ignore
         mockedFs.writeFile.mockImplementation((path, data, callback) => callback(null));
@@ -78,11 +82,13 @@ describe("saveFile () ", () => {
         const directory:string = path.dirname(filePath);
         let returnValue: string;
         let fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEF]);
-        mockedFs.existsSync.mockImplementation((path: string) => {
+        mockedFs.existsSync.mockImplementation((path: PathLike):boolean => {
             if (path === filePath)
                 return false;
             else if (path === directory)
                 return false;
+
+            throw new Error("ERROR, FOLDER DOES NOT EXIST!")
         });
 
         // @ts-ignore
@@ -100,11 +106,13 @@ describe("saveFile () ", () => {
         let returnValue: string;
         let fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEF]);
         let buffer = Buffer.from(fileData);
-        mockedFs.existsSync.mockImplementation((path: string) => {
+        mockedFs.existsSync.mockImplementation((path: PathLike):boolean => {
             if (path === filePath)
                 return false;
             else if (path === directory)
                 return false;
+
+            throw new Error("ERROR, FOLDER DOES NOT EXIST!")
         });
 
         // @ts-ignore
@@ -162,23 +170,21 @@ describe("loadFile () ", () => {
     it("should return the correct fileData if a file is loaded", async() => {
         let filePath: string = "/path/to/nonexistent/directory/file.txt";
         let fileData: Buffer = new Buffer([0x00, 0xFF, 0xEF]);
-        let returnValue: Buffer;
 
         // @ts-ignore
         mockedFs.promises.readFile.mockResolvedValue(fileData);
 
-        returnValue = await fileService.loadFile(filePath);
+        const returnValue:Buffer | null = await fileService.loadFile(filePath);
 
         expect(returnValue).toEqual(Buffer.from(fileData));
     });
 
     it("should return null if the file could not be loaded", async () => {
         let filePath: string = "/path/to/nonexistent/directory/file.txt";
-        let returnValue: ArrayBufferView;
 
         mockedFs.promises.readFile.mockRejectedValue(new Error("file cannot be loaded"));
 
-        returnValue = await fileService.loadFile(filePath);
+        const returnValue:Buffer | null  = await fileService.loadFile(filePath);
 
         expect(returnValue).toEqual(null);
     });
@@ -189,7 +195,7 @@ describe("fileExists () ", () => {
         let filePath: string = "/path/to/existent/directory/file.txt";
         let returnValue: boolean;
 
-        mockedFs.existsSync.mockImplementation((path: string): boolean => {
+        mockedFs.existsSync.mockImplementation((path: PathLike): boolean => {
             return true
         });
 
@@ -202,7 +208,7 @@ describe("fileExists () ", () => {
         let filePath: string = "/path/to/nonexistent/directory/file.txt";
         let returnValue: boolean;
 
-        mockedFs.existsSync.mockImplementation((path: string): boolean => {
+        mockedFs.existsSync.mockImplementation((path: PathLike): boolean => {
             return false
         });
 
@@ -220,24 +226,25 @@ describe("getAllFileNamesInFolder() ", () => {
         let fileNames:string[] = ["file1.txt", "file2.jpeg", "file3.png", "file4.mp4"];
         const allFilesAndFolderNames: string[] = [fileNames[0], "folderName1", fileNames[1], fileNames[2], fileNames[3], "folderName2"];
 
-        mockedFs.existsSync.mockImplementation((path: string): any => {
+        mockedFs.existsSync.mockImplementation((path: PathLike): any => {
             if(path === folderPath)
                 return true;
             else
                 return false;
         });
 
-        mockedFs.readdirSync.mockImplementation((path: string): any => {
+        mockedFs.readdirSync.mockImplementation((path: PathLike): any => {
             if(path === folderPath)
                 return allFilesAndFolderNames;
         });
 
-        mockedFs.statSync.mockImplementation((path: string): any =>{
-            const splittedPath:string[] = path.split("\\");
-            const fileOrFolderName:string = splittedPath.pop();
+        mockedFs.statSync.mockImplementation((path: PathLike): any =>{
+            const pathStr:string = path as string;
+            const splittedPath:string[] = pathStr.split("\\");
+            const fileOrFolderName:string | undefined = splittedPath.pop();
 
             return {isFile: ()=>{
-                if(fileNames.indexOf(fileOrFolderName) >= 0)
+                if(fileOrFolderName && fileNames.indexOf(fileOrFolderName) >= 0)
                     return true;
                 else
                     return false;
@@ -253,19 +260,16 @@ describe("getAllFileNamesInFolder() ", () => {
         let returnValue: string[];
         const allFilesAndFolderNames: string[] = ["folderName1", "folderName2"];
 
-        mockedFs.existsSync.mockImplementation((path: string): any => {
-            if(path === folderPath)
-                return true;
-            else
-                return false;
+        mockedFs.existsSync.mockImplementation((path: PathLike): any => {
+            return path === folderPath;
         });
 
-        mockedFs.readdirSync.mockImplementation((path: string): any => {
+        mockedFs.readdirSync.mockImplementation((path: PathLike): any => {
             if(path === folderPath)
                 return allFilesAndFolderNames;
         });
 
-        mockedFs.statSync.mockImplementation((path: string): any =>{
+        mockedFs.statSync.mockImplementation((path: PathLike): any =>{
             return {isFile: ()=>{
                         return false;
                 }}
@@ -279,19 +283,16 @@ describe("getAllFileNamesInFolder() ", () => {
     it("should return an empty array if no files and folders are found", () => {
         let returnValue: string[];
 
-        mockedFs.existsSync.mockImplementation((path: string): any => {
-            if(path === folderPath)
-                return true;
-            else
-                return false;
+        mockedFs.existsSync.mockImplementation((path: PathLike): boolean => {
+            return path === folderPath;
         });
 
-        mockedFs.readdirSync.mockImplementation((path: string): any => {
+        mockedFs.readdirSync.mockImplementation((path: PathLike): any => {
             if(path === folderPath)
                 return [];
         });
 
-        mockedFs.statSync.mockImplementation((path: string): any =>{
+        mockedFs.statSync.mockImplementation((path: PathLike): any =>{
             return {isFile: ()=>{
                     return false;
                 }}
@@ -305,11 +306,11 @@ describe("getAllFileNamesInFolder() ", () => {
     it("should return an empty array if the folder does not exist", () => {
         let returnValue: string[];
 
-        mockedFs.existsSync.mockImplementation((path: string): any => {
+        mockedFs.existsSync.mockImplementation((path: PathLike): any => {
                 return false;
         });
 
-        mockedFs.readdirSync.mockImplementation((path: string): any => {
+        mockedFs.readdirSync.mockImplementation((path: PathLike): any => {
             throw new Error("ERROR, FOLDER DOES NOT EXIST!")
         });
 

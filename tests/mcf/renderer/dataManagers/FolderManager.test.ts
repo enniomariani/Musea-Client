@@ -3,7 +3,6 @@ import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/Mo
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {FolderManager} from "../../../../src/mcf/renderer/dataManagers/FolderManager";
 import {Folder} from "../../../../src/mcf/renderer/dataStructure/Folder";
-import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 
 let folderManager:FolderManager;
 let mockMediaStation:MockMediaStation;
@@ -26,8 +25,8 @@ describe("createFolder() ", ()=>{
 
     function setup():void{
         mockMediaStation.getNextFolderId.mockReturnValueOnce(uniqueID);
-        mockMediaStation.rootFolder.findFolder = jest.fn();
-        mockMediaStation.rootFolder.findFolder.mockImplementationOnce((id:number)=>{
+        mockMediaStation.rootFolder.requireFolder = jest.fn();
+        mockMediaStation.rootFolder.requireFolder.mockImplementationOnce((id:number)=>{
             if(id === parentFolderId)
                 return mockFolder;
             else
@@ -92,16 +91,12 @@ describe("requireFolder() ", () => {
     const folder:MockFolder = new MockFolder(folderID);
 
     it("should return the folder object with the passed ID", async () => {
-        mockMediaStation.rootFolder.findFolder.mockImplementationOnce((id:number)=>{
+        mockMediaStation.rootFolder.requireFolder.mockImplementationOnce((id:number)=>{
             return id === folderID ? folder:null;
         });
 
         const answer:Folder = folderManager.requireFolder(mockMediaStation, folderID);
         expect(answer).toEqual(folder);
-    });
-
-    it("should trhow if the folder can not be found", async () => {
-        expect(() => folderManager.requireFolder(mockMediaStation, 0)).toThrow(new Error("Folder with this ID does not exist: 0"));
     });
 });
 
@@ -112,7 +107,7 @@ describe("changeName() ", ()=>{
     folder.name = "initialName";
 
     function setup():void{
-        mockMediaStation.rootFolder.findFolder.mockImplementationOnce((id:number)=>{
+        mockMediaStation.rootFolder.requireFolder.mockImplementationOnce((id:number)=>{
             return id === folderID ? folder:null;
         });
     }
@@ -121,11 +116,6 @@ describe("changeName() ", ()=>{
         setup();
         folderManager.changeName(mockMediaStation, folderID, newName);
         expect(folder.name).toEqual(newName);
-    });
-
-    it("should throw an error if the folder could not be found", ()=>{
-        setup();
-        expect(()=> folderManager.changeName(mockMediaStation, folderID + 1, newName)).toThrow(Error("Folder with this ID does not exist: " + (folderID + 1).toString()));
     });
 });
 
@@ -140,7 +130,7 @@ describe("changeParentFolder() ", ()=>{
     folder.parentFolder = mockOldParentFolder;
 
     function setup():void{
-        mockMediaStation.rootFolder.findFolder.mockImplementation((id:number)=>{
+        mockMediaStation.rootFolder.requireFolder.mockImplementation((id:number)=>{
             if(id === folderID)
                 return folder;
             else if(id === olderParentFolderId)
@@ -175,16 +165,6 @@ describe("changeParentFolder() ", ()=>{
         folderManager.changeParentFolder(mockMediaStation, folderID, newParentFolderId);
         expect(folder.parentFolder).toEqual(mockNewParentFolder);
     });
-
-    it("should throw an error if the folder could not be found", ()=>{
-        setup();
-        expect(()=> folderManager.changeParentFolder(mockMediaStation, folderID + 99, newParentFolderId)).toThrow(Error("Folder with this ID does not exist: " + (folderID + 99).toString()));
-    });
-
-    it("should throw an error if the new parent-folder could not be found", ()=>{
-        setup();
-        expect(()=> folderManager.changeParentFolder(mockMediaStation, folderID, newParentFolderId +99)).toThrow(Error("Parent-Folder with ID does not exist: " + (newParentFolderId +99).toString()));
-    });
 });
 
 describe("deleteFolder() ", ()=>{
@@ -193,8 +173,8 @@ describe("deleteFolder() ", ()=>{
     let mockFolder:MockFolder;
 
     function setup():void{
-        mockMediaStation.rootFolder.findFolder = jest.fn();
-        mockMediaStation.rootFolder.findFolder.mockImplementationOnce((id:number)=>{
+        mockMediaStation.rootFolder.requireFolder = jest.fn();
+        mockMediaStation.rootFolder.requireFolder.mockImplementationOnce((id:number)=>{
             if(id === parentFodlerId)
                 return mockFolder;
             else

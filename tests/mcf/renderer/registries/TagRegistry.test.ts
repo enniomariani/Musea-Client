@@ -19,21 +19,19 @@ afterEach(() => {
 
 describe("addTag() and getTag()", () => {
     it("getTag should return the tag that was created with addTag()", () => {
-        let receivedTag: Tag;
         let tag:Tag = new Tag(200, "testName");
 
         tagRegistry.add(200, tag.name);
-        receivedTag = tagRegistry.get(200);
+        const receivedTag: Tag | null = tagRegistry.get(200);
 
         expect(receivedTag).toStrictEqual(tag);
     });
 
     it("getTag() should return null if the tag-id does not exist", () => {
-        let receivedTag: Tag;
         let tag:Tag = new Tag(200, "testName");
 
         tagRegistry.add(200, tag.name);
-        receivedTag = tagRegistry.get(121);
+        const receivedTag: Tag | null = tagRegistry.get(121);
 
         expect(receivedTag).toEqual(null);
     });

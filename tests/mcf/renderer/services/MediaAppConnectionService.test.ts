@@ -289,7 +289,7 @@ describe("unregisterAndCloseMediaApp() ", () => {
 
 describe("checkOnlineStatusOfAllMediaApps() ", () => {
     let mockMediaStation: MockMediaStation;
-    let answer: boolean;
+    let answer: boolean | null;
     const controllerIp: string = "127.0.0.1";
     const correctJSON: any = {name: "mediaStationX"};
     const correctJSONwithTwoMediaApps = {

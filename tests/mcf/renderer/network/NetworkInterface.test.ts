@@ -123,17 +123,13 @@ describe("connectToServer(): ", () => {
 
     it("calls onError callback when the connection could not be established", async () =>{
         let onErrorHandler = jest.fn();
-
         networkInterface.connectToServer("wrong-serverpath", null, onErrorHandler, null);
-
         expect(onErrorHandler).toBeCalledTimes(1);
     });
 
     it("prints the error when the connection could not be established", async () =>{
         let logSpy:any = jest.spyOn(console, 'error');
-
         networkInterface.connectToServer("wrong-serverpath", null, null, null);
-
         expect(logSpy).toBeCalledTimes(1);
     });
 

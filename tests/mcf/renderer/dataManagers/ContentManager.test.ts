@@ -27,8 +27,8 @@ describe("createContent() ", ()=>{
 
     function setup():void{
         mockMediaStation.getNextContentId.mockReturnValueOnce(uniqueID);
-        mockMediaStation.rootFolder.findFolder = jest.fn();
-        mockMediaStation.rootFolder.findFolder.mockImplementationOnce((id:number)=>{
+        mockMediaStation.rootFolder.requireFolder = jest.fn();
+        mockMediaStation.rootFolder.requireFolder.mockImplementationOnce((id:number)=>{
             if(id === folderId)
                 return mockFolder;
             else
@@ -56,12 +56,6 @@ describe("createContent() ", ()=>{
 
         expect(mockFolder.addContent).toHaveBeenCalledTimes(1);
         expect(mockFolder.addContent).toHaveBeenCalledWith(content);
-    });
-
-    it("should throw an error if the folder does not exist", ()=>{
-        setup();
-
-        expect(()=> contentManager.createContent(mockMediaStation, name,folderId + 1)).toThrow(Error);
     });
 });
 
@@ -119,7 +113,7 @@ describe("changeName() ", ()=>{
     content.name = "initialName";
 
     function setup():void{
-        mockMediaStation.rootFolder.findContent = jest.fn();
+        mockMediaStation.rootFolder.requireContent = jest.fn();
         mockMediaStation.rootFolder.findContent.mockImplementationOnce((id:number)=>{
             return id === contentID? content:null;
         });
@@ -147,7 +141,7 @@ describe("changeFolder() ", ()=>{
     let mockNewFolder:MockFolder = new MockFolder(newFolderId);
 
     function setup():void{
-        mockMediaStation.rootFolder.findFolder.mockImplementation((id:number)=>{
+        mockMediaStation.rootFolder.requireFolder.mockImplementation((id:number)=>{
             if(id === oldFolderId)
                 return mockOldFolder;
             else if(id === newFolderId)
@@ -189,11 +183,6 @@ describe("changeFolder() ", ()=>{
         setup();
         expect(()=> contentManager.changeFolder(mockMediaStation, contentID + 99, newFolderId)).toThrow(Error("Content with this ID does not exist: " + (contentID + 99).toString()));
     });
-
-    it("should throw an error if the new folder could not be found", ()=>{
-        setup();
-        expect(()=> contentManager.changeFolder(mockMediaStation, contentID, newFolderId + 99)).toThrow(Error("Folder with ID does not exist: " + (newFolderId +99).toString()));
-    });
 });
 
 describe("changeLightIntensity() ", ()=>{
@@ -227,8 +216,8 @@ describe("deleteContent() ", ()=>{
     let mockFolder:MockFolder;
 
     function setup():void{
-        mockMediaStation.rootFolder.findFolder = jest.fn();
-        mockMediaStation.rootFolder.findFolder.mockImplementationOnce((id:number)=>{
+        mockMediaStation.rootFolder.requireFolder = jest.fn();
+        mockMediaStation.rootFolder.requireFolder.mockImplementationOnce((id:number)=>{
             return id === folderId ? mockFolder: null;
         });
         mockFolder = new MockFolder(0);
@@ -246,11 +235,6 @@ describe("deleteContent() ", ()=>{
 
         expect(mockFolder.removeContent).toHaveBeenCalledTimes(1);
         expect(mockFolder.removeContent).toHaveBeenCalledWith(contentId);
-    });
-
-    it("should throw an error if the folder does not exist", ()=>{
-        setup();
-        expect(()=> contentManager.deleteContent(mockMediaStation, folderId + 1, contentId)).toThrow(Error);
     });
 
     it("should throw an error if the contentid is not inside the passed folder", ()=>{

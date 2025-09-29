@@ -20,7 +20,7 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-function createJSONandConvertToBinary(idsApp1: number[], idsApp2: number[]): Uint8Array {
+function createJSONandConvertToBinary(idsApp1: number[] | undefined, idsApp2: number[] | undefined | null): Uint8Array {
     let textEncoder: TextEncoder = new TextEncoder();
     let json: any;
     let jsonStr: string;
@@ -56,7 +56,8 @@ describe("init() and addID() ", () => {
         await mediaFilesMarkedToDeleteService.addID(mediaStationId,0, idToSave);
 
         expect(mockBackendFileService.saveFile).toHaveBeenCalledTimes(1);
-        expect(mockBackendFileService.saveFile).toHaveBeenCalledWith(fileToSave, createJSONandConvertToBinary([idToSave], null));
+        expect(mockBackendFileService.saveFile).toHaveBeenCalledWith(fileToSave,
+            createJSONandConvertToBinary([idToSave], null));
     });
 
     it("should call saveFile from the backend with the new ID, if there were other IDs saved before", async () => {

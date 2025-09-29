@@ -60,7 +60,10 @@ describe("sendMediaFilesToMediaApp()", () => {
         content0.media.set(0, image1);
         content2.media.set(0, image2);
 
-        station.rootFolder.findContent.mockImplementation((contentId: number) => {
+        content0.requireMedia.mockReturnValue(image1);
+        content2.requireMedia.mockReturnValue(image2);
+
+        station.rootFolder.requireContent.mockImplementation((contentId: number) => {
             if (contentId === 0) return content0;
             if (contentId === 2) return content2;
             return null as any;

@@ -46,7 +46,7 @@ function createStationWithTwoApps() {
     app2.ip = "127.0.0.2";
     app2.role = MediaApp.ROLE_DEFAULT;
 
-    station.mediaAppRegistry.get.mockImplementation((id: number) => {
+    station.mediaAppRegistry.require.mockImplementation((id: number) => {
         if (id === controller.id) return controller;
         if (id === app2.id) return app2;
         throw new Error("Unknown app id");

@@ -266,7 +266,7 @@ export class Folder {
         return this._parentFolder;
     }
 
-    set parentFolder(value: Folder) {
+    set parentFolder(value: Folder | null) {
         this._parentFolder = value;
     }
 

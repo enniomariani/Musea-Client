@@ -123,13 +123,15 @@ describe("getAllMediaApps() ", () => {
         returnValue = mediaAppService.getAllMediaApps(0);
 
         expect(returnValue.size).toBe(2);
-        expect(returnValue.get(0).name).toBe(name1);
-        expect(returnValue.get(0).ip).toBe(ip1);
-        expect(returnValue.get(0).isController).toBe(true);
+        expect(returnValue.get(0)).not.toBeNull();
+        expect(returnValue.get(0)?.name).toBe(name1);
+        expect(returnValue.get(0)?.ip).toBe(ip1);
+        expect(returnValue.get(0)?.isController).toBe(true);
 
-        expect(returnValue.get(1).name).toBe(name2);
-        expect(returnValue.get(1).ip).toBe(ip2);
-        expect(returnValue.get(1).isController).toBe(false);
+        expect(returnValue.get(1)).not.toBeNull();
+        expect(returnValue.get(1)?.name).toBe(name2);
+        expect(returnValue.get(1)?.ip).toBe(ip2);
+        expect(returnValue.get(1)?.isController).toBe(false);
     });
 });
 
