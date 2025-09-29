@@ -75,18 +75,19 @@ export class MediaFilesMarkedToDeleteService {
         let textDecoder: TextDecoder = new TextDecoder();
         let json: any;
         let jsonStr: string;
-        let uint8Array: Uint8Array;
+        let uint8Array: Uint8Array | null;
         let map: Map<number, number[]> = new Map();
 
         uint8Array = await this._backendFileService.loadFile(filePath);
 
-        if (uint8Array) {
-            jsonStr = textDecoder.decode(uint8Array);
-            json = JSON.parse(jsonStr);
+        if (!uint8Array)
+            return map;
 
-            for (let i = 0; i < json.allIds.length; i++)
-                map.set(json.allIds[i].mediaAppId, json.allIds[i].ids);
-        }
+        jsonStr = textDecoder.decode(uint8Array);
+        json = JSON.parse(jsonStr);
+
+        for (let i = 0; i < json.allIds.length; i++)
+            map.set(json.allIds[i].mediaAppId, json.allIds[i].ids);
 
         return map;
     }

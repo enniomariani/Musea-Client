@@ -144,7 +144,7 @@ export class NetworkInterface extends EventTarget {
      * @param {number} chunkSizeInBytes    // default 32MB chunks (was the fastest in tests compared with 16MB, 8 MB and 64MB))
      * @returns {boolean}
      */
-    async sendDataToServer(buffer: Uint8Array, onSendChunk:Function, chunkSizeInBytes: number = 32768 * 1024):Promise<boolean>{
+    async sendDataToServer(buffer: Uint8Array, onSendChunk:Function | null, chunkSizeInBytes: number = 32768 * 1024):Promise<boolean>{
         let dataViewChunks: DataView = new DataView(new ArrayBuffer(2));
         let chunksInfo:Uint8Array = new Uint8Array(2);
         let arrayToSend: Uint8Array;
@@ -162,8 +162,6 @@ export class NetworkInterface extends EventTarget {
             arrayToSend = new Uint8Array(dataViewChunks.buffer.byteLength + buffer.length);
             arrayToSend.set(chunksInfo);
             arrayToSend.set(buffer, chunksInfo.length);
-
-            buffer = null;
 
             while (offset < arrayToSend.length) {
                 const chunk:Uint8Array = arrayToSend.slice(offset, offset + chunkSizeInBytes);

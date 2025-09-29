@@ -1,7 +1,7 @@
 export class ContentFileService {
 
     private _backendFileService: IBackendFileService;
-    private _pathToFolder: string;
+    private _pathToFolder: string  = "";
 
     constructor(backendFileService: IBackendFileService = window.backendFileService) {
         this._backendFileService = backendFileService;

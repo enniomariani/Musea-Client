@@ -49,7 +49,7 @@ export class MediaStationRepository{
         if(loadedMetaData){
             for (let [key, controllerIp] of loadedMetaData) {
                 id = await this.addMediaStation(key, false);
-                mediaStation = this.findMediaStation(id);
+                mediaStation = this.requireMediaStation(id);
 
                 await this._mediaCacheHandler.hydrate(id);
 
@@ -120,9 +120,7 @@ export class MediaStationRepository{
     }
 
     cacheMediaStation(id:number):void{
-        this.requireMediaStation(id);
-        let mediaStation:MediaStation = this._allMediaStations.get(id);
-
+        const mediaStation:MediaStation = this.requireMediaStation(id);
         this._contentFileService.saveFile(id,mediaStation.exportToJSON() );
     }
 

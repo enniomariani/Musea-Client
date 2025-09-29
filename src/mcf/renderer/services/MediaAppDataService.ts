@@ -75,10 +75,7 @@ export class MediaAppDataService {
 
     private _getMediaApp(mediaStationId: number, mediaAppId: number): MediaApp {
         let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let mediaApp: MediaApp;
-
-        if (!mediaStation)
-            throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
+        let mediaApp: MediaApp | null;
 
         mediaApp = mediaStation.mediaAppRegistry.get(mediaAppId);
 

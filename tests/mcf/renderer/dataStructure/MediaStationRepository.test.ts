@@ -26,7 +26,7 @@ const mockLoadedMetaData: Map<string, string> = new Map();
 let key1: string = "mediaStation1";
 let key2: string = "mediaStation2";
 let key3: string = "mediaStation3";
-mockLoadedMetaData.set(key1, null);
+mockLoadedMetaData.set(key1, "");
 mockLoadedMetaData.set(key2, "192.168.2.1");
 mockLoadedMetaData.set(key3, "192.168.2.100");
 
@@ -54,7 +54,6 @@ afterEach(() => {
 describe("loadMediaStations() ", () => {
     it("should call load() of MediaStationLocalMetaData", () => {
         mediaStationRepo.loadMediaStations();
-
         expect(mockMediaStationLocalMetaData.load).toHaveBeenCalledTimes(1);
     });
 
@@ -205,23 +204,23 @@ describe("addMediaStation() ", () => {
 
 describe("findMediaStation() ", () => {
     it("should return the mediaStation object with the passed ID", async () => {
+        const nameMediaStation: string = "testName";
         let receivedId: number;
-        let nameMediaStation: string = "testName";
-        let foundMediaStation: MediaStation;
+        let foundMediaStation: MediaStation | null;
 
         receivedId = await mediaStationRepo.addMediaStation(nameMediaStation);
         mediaStationRepo.addMediaStation("testName2");
 
         foundMediaStation = mediaStationRepo.findMediaStation(receivedId);
 
-        expect(foundMediaStation.id).toEqual(receivedId);
-        expect(foundMediaStation.name).toEqual(nameMediaStation);
+        expect(foundMediaStation?.id).toEqual(receivedId);
+        expect(foundMediaStation?.name).toEqual(nameMediaStation);
 
     });
 
     it("should return null if the mediastation can not be found", async () => {
-        let nameMediaStation: string = "testName";
-        let foundMediaStation: MediaStation;
+        const nameMediaStation: string = "testName";
+        const foundMediaStation: MediaStation | null;
 
         await mediaStationRepo.addMediaStation(nameMediaStation);
         await mediaStationRepo.addMediaStation("testName2");
@@ -229,7 +228,6 @@ describe("findMediaStation() ", () => {
         foundMediaStation = mediaStationRepo.findMediaStation(20);
 
         expect(foundMediaStation).toEqual(null);
-
     });
 });
 
@@ -263,7 +261,7 @@ describe("deleteMediaStation() ", () => {
     it("should remove the mediastation-object from the repository", async () => {
         let receivedId: number;
         let nameMediaStation: string = "testName";
-        let foundMediaStation: MediaStation;
+        let foundMediaStation: MediaStation | null;
 
         receivedId = await mediaStationRepo.addMediaStation(nameMediaStation);
         mediaStationRepo.addMediaStation("testName2");
