@@ -1,5 +1,6 @@
 import {NetworkConnectionHandler} from "src/mcf/renderer/network/NetworkConnectionHandler";
 import {ConvertNetworkData} from "src/mcf/renderer/network/ConvertNetworkData";
+import {NetworkCommandRouter} from "./NetworkCommandRouter";
 
 type PromiseHandler<T = any> = {
     resolve: (value: T) => void;
@@ -11,14 +12,14 @@ export class NetworkService {
     private _networkConnectionHandler: NetworkConnectionHandler;
     private _dataReceivedPromises: Map<string, PromiseHandler>;
     private _onConnectionClosedPromises: Map<string, PromiseHandler<void>>;
+    private _networkCommandRouter: NetworkCommandRouter;
 
-    private _onBlockReceivedCallback: Function | null = null;
-    private _onUnBlockReceivedCallback: Function | null = null;
-
-    constructor(networkConnectionHandler: NetworkConnectionHandler) {
+    constructor(networkConnectionHandler: NetworkConnectionHandler, networkCommandRouter: NetworkCommandRouter = new NetworkCommandRouter()) {
         this._networkConnectionHandler = networkConnectionHandler;
         this._dataReceivedPromises = new Map();
         this._onConnectionClosedPromises = new Map();
+        this._networkCommandRouter = networkCommandRouter;
+        this._networkCommandRouter.onPingReceived(this._onPingReceived.bind(this));
     }
 
     /**
@@ -54,8 +55,12 @@ export class NetworkService {
         });
     }
 
+    private async _onPingReceived(ip: string): Promise<void> {
+        console.log("ping received from: ", ip);
+        await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("network", "pong"));
+    }
+
     public closeConnection(ip: string): void {
-        console.log("Networkservice: close connection: ", ip)
         this._networkConnectionHandler.closeConnection(ip);
     }
 
@@ -73,12 +78,12 @@ export class NetworkService {
         }
     }
 
-    onBlockReceived(callback: Function): void {
-        this._onBlockReceivedCallback = callback;
+    onBlockReceived(callback: (() => void) | null = null): void {
+        this._networkCommandRouter.onBlockReceived(callback);
     }
 
-    onUnBlockReceived(callback: Function): void {
-        this._onUnBlockReceivedCallback = callback;
+    onUnBlockReceived(callback: (() => void) | null = null): void {
+        this._networkCommandRouter.onUnBlockReceived(callback);
     }
 
     /**
@@ -120,7 +125,6 @@ export class NetworkService {
      * @returns {Promise<string|null>}
      */
     async getContentFileFrom(ip: string, timeout: number = 3000): Promise<string | null> {
-        console.log("get contents file from: ", ip)
         return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("contents", "get"), timeout, null);
     }
 
@@ -135,7 +139,6 @@ export class NetworkService {
      * @returns {Promise<string>}
      */
     async sendMediaFileToIp(ip: string, mediaType: string, mediaFile: Uint8Array, timeout: number = 3000, onSendChunk: Function): Promise<number> {
-        console.log("Send media-file to ip: ", ip, mediaType)
         return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("media", "put", mediaType, mediaFile), timeout, null, onSendChunk);
     }
 
@@ -216,8 +219,6 @@ export class NetworkService {
                 return;
             }
 
-            console.log("data sent!");
-
             if (onSendChunk !== null)
                 onSendChunk("Daten gesendet, warte auf Antwort...");
 
@@ -248,118 +249,6 @@ export class NetworkService {
     private async _onDataReceived(ip: string, data: Uint8Array): Promise<void> {
         const convertedData = ConvertNetworkData.decodeCommand(data);
         const promise = this._dataReceivedPromises.get(ip);
-
-        console.info('network service: Data received:', ip, data, convertedData);
-
-        if (convertedData[0] === ConvertNetworkData.INTERPRETATION_ERROR) {
-            console.error("Non-valid command received: ", convertedData);
-            this._resolveWithNull(promise, ip);
-            return;
-        }
-
-        await this._routeCommand(ip, convertedData, promise);
-    }
-
-    private async _routeCommand(
-        ip: string,
-        command: (string | Uint8Array)[],
-        promise?: PromiseHandler
-    ): Promise<void> {
-        if (command.length < 2) return;
-
-        const [category, action, ...params] = command;
-
-        if (category === "network") {
-            await this._handleNetworkCommand(ip, action as string, params, promise);
-        } else if (category === "contents") {
-            this._handleContentsCommand(ip, action as string, params, promise);
-        } else if (category === "media") {
-            this._handleMediaCommand(ip, action as string, params, promise);
-        } else if (category === "system") {
-            this._handleSystemCommand(ip, action as string, params, promise);
-        } else {
-            console.error("Non-valid command received: ", command);
-            this._resolveWithNull(promise, ip);
-        }
-    }
-
-    private async _handleNetworkCommand(
-        ip: string,
-        action: string,
-        params: (string | Uint8Array)[],
-        promise?: PromiseHandler
-    ): Promise<void> {
-        switch (action) {
-            case "ping":
-                await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("network", "pong"));
-                break;
-            case "pong":
-                promise?.resolve(true);
-                break;
-            case "registration":
-                if (params[0] === "accepted") promise?.resolve("yes");
-                else if (params[0] === "accepted_block") promise?.resolve("yes_blocked");
-                else promise?.resolve("no");
-                break;
-            case "isRegistrationPossible":
-                promise?.resolve(params[0] === "yes");
-                break;
-            default:
-                console.error("Non-valid network command received: ", action, params);
-                this._resolveWithNull(promise, ip);
-                break;
-        }
-    }
-
-    private _handleContentsCommand(
-        ip: string,
-        action: string,
-        params: (string | Uint8Array)[],
-        promise?: PromiseHandler
-    ): void {
-        if (action === "put" && params[0] !== null) {
-            console.log("contents received: ", params[0]);
-            promise?.resolve(params[0]);
-        } else {
-            console.error("Non-valid content-command received: ", action, params);
-            this._resolveWithNull(promise, ip);
-        }
-    }
-
-    private _handleMediaCommand(
-        ip: string,
-        action: string,
-        params: (string | Uint8Array)[],
-        promise?: PromiseHandler
-    ): void {
-        if (action === "put" && params[0] !== null && typeof params[0] === "string") {
-            console.log("media received: ", params[0], promise);
-            promise?.resolve(parseInt(params[0]));
-        } else {
-            console.error("Non-valid media-command received: ", action, params);
-            this._resolveWithNull(promise, ip);
-        }
-    }
-
-    private _handleSystemCommand(
-        ip:string,
-        action: string,
-        params: (string | Uint8Array)[],
-        promise?: PromiseHandler ): void {
-        if (action === "block") {
-            this._onBlockReceivedCallback?.();
-        } else if (action === "unblock") {
-            this._onUnBlockReceivedCallback?.();
-        }else{
-            console.error("Non-valid system-command received: ", action, params);
-            this._resolveWithNull(promise, ip);
-        }
-    }
-
-    private _resolveWithNull(promise: PromiseHandler | undefined, ip: string): void {
-        if (promise) {
-            promise.resolve(null);
-            this._dataReceivedPromises.delete(ip);
-        }
+        await this._networkCommandRouter.routeCommand(ip, convertedData, promise);
     }
 }
