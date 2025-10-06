@@ -56,30 +56,17 @@ export class NetworkService {
     }
 
     /**
-     * sends a "ping"(ICMP) signal to the ip and waits the amount of timeout in MS
-     * until it returns a "false" if it did not receive a response
+     * sends a "ping"(ICMP) signal to the ip and returns if it was succesful (timeout defined in backend)
      *
      * @param {string} ip
-     * @param {number} timeout  in MS
      * @returns {Promise<boolean>}
      */
-    async pcRespondsToPing(ip: string, timeout: number = 3000): Promise<boolean> {
-        console.log("net-service: ping icmp: ", this._networkConnectionHandler)
-        return new Promise((resolve, reject) => {
-            const timer = setTimeout(() => {
-                resolve(false);
-            }, timeout);
-
-            this._networkConnectionHandler.ping(ip)
-                .then(result => {
-                    clearTimeout(timer);
-                    resolve(result);
-                })
-                .catch(error => {
-                    clearTimeout(timer);
-                    reject(error);
-                });
-        });
+    async pcRespondsToPing(ip: string): Promise<boolean> {
+        try {
+            return await this._networkConnectionHandler.ping(ip);
+        } catch (error) {
+            return false;
+        }
     }
 
     onBlockReceived(callback: Function): void {
