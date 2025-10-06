@@ -13,7 +13,7 @@
     "package": "npm run build && electron-forge package",
     "clean": "rimraf build/",
     "postbuild": "node fix-imports.js",
-    "copy-files": "copyfiles -u 1 src/**/* build/ -e **/*.ts",
+    "copy-files": "copyfiles -u 1 src/**/* build/ -e **/*.ts -e **/tsconfig.json && copyfiles -u 1 daten/**/* build/daten",
     "build": "npm run clean && tsc -p ./src/tsconfig.json && tsc-alias -p ./src/tsconfig.json && npm run copy-files"
   },
   "devDependencies": {
