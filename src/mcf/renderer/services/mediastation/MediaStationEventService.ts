@@ -8,11 +8,11 @@ export class MediaStationEventService {
         this._networkService = networkService;
     }
 
-    onBlockReceived(callback:Function):void{
+    onBlockReceived(callback:() => void):void{
         this._networkService.onBlockReceived(callback);
     }
 
-    onUnBlockReceived(callback:Function):void{
+    onUnBlockReceived(callback:() => void):void{
         this._networkService.onUnBlockReceived(callback);
     }
 }
