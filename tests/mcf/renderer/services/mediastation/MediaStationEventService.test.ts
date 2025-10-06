@@ -16,12 +16,11 @@ afterEach(() => {
 
 describe("onBlockReceived() ",  ()=> {
     it("should call the callback if the callback was called from the network-service", async () => {
-        let blockReceivedCallback:Function = jest.fn();
+        let blockReceivedCallback:() => void = jest.fn();
         mockNetworkService.onBlockReceived.mockImplementation((callback) =>{
             callback();
         })
 
-        // Method to test
         service.onBlockReceived(blockReceivedCallback);
 
         expect(blockReceivedCallback).toHaveBeenCalledTimes(1);
@@ -30,14 +29,12 @@ describe("onBlockReceived() ",  ()=> {
 
 describe("onUnBlockReceived() ",  ()=> {
     it("should call the callback if the callback was called from the network-service", async () => {
-        let unBlockReceivedCallback:Function = jest.fn();
+        let unBlockReceivedCallback:() => void = jest.fn();
         mockNetworkService.onUnBlockReceived.mockImplementation((callback) =>{
             callback();
         })
 
-        // Method to test
         service.onUnBlockReceived(unBlockReceivedCallback);
-
         expect(unBlockReceivedCallback).toHaveBeenCalledTimes(1);
     });
 });

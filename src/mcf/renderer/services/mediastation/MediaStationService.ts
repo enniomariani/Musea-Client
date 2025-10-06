@@ -109,11 +109,11 @@ export class MediaStationService {
     }
 
     // Events
-    onBlockReceived(callback:Function): void {
+    onBlockReceived(callback:() => void): void {
         this._events.onBlockReceived(callback);
     }
 
-    onUnBlockReceived(callback:Function): void {
+    onUnBlockReceived(callback:() => void): void {
         this._events.onUnBlockReceived(callback);
     }
 }
