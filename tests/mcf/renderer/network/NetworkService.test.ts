@@ -144,7 +144,7 @@ describe("closeConnection() ", () => {
 describe("onBlockReceived() ", () => {
     it("should call the callback if it received a system/block command", async () => {
         let blockCommand: Uint8Array = ConvertNetworkData.encodeCommand("system", "block");
-        let blockReceivedCallback: Function = jest.fn();
+        let blockReceivedCallback: () => void = jest.fn();
 
         mockOpenConnection(blockCommand);
 
@@ -158,7 +158,7 @@ describe("onBlockReceived() ", () => {
 describe("onUnBlockReceived() ", () => {
     it("should call the callback if it received a system/unblock command", async () => {
         let blockCommand: Uint8Array = ConvertNetworkData.encodeCommand("system", "unblock");
-        let unBlockCallback: Function = jest.fn();
+        let unBlockCallback: () => void = jest.fn();
 
         mockOpenConnection(blockCommand);
 
