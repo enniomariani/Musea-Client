@@ -1,4 +1,4 @@
-import {NetworkInterface} from "./NetworkInterface";
+    import {NetworkInterface} from "./NetworkInterface";
 
 export interface IOnReceivedConnectionData{
     (ip:string, data:Uint8Array):void

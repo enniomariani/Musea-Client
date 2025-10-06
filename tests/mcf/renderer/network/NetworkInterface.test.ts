@@ -1,6 +1,6 @@
 import {WS} from "jest-websocket-mock";
 import {jest, expect, beforeEach, describe, it} from '@jest/globals'
-import {NetworkInterface} from "../../../../src/mcf/renderer/network/NetworkInterface";
+import {NetworkEvent, NetworkInterface} from "../../../../src/mcf/renderer/network/NetworkInterface";
 
 // create a WSS instance, listening on port 1234 on localhost
 const serverPath:string = "wss://localhost:1234";
@@ -29,7 +29,7 @@ describe("connectToServer(): ", () => {
 
         server.on("connection", serverEventHandler);
 
-        networkInterface.addEventListener(NetworkInterface.CONNECTED, eventHandler);
+        networkInterface.addEventListener(NetworkEvent.CONNECTED, eventHandler);
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
@@ -37,31 +37,28 @@ describe("connectToServer(): ", () => {
         expect(eventHandler).toBeCalledTimes(1);
         expect(serverEventHandler).toBeCalledTimes(1);
 
-        networkInterface.removeEventListener(NetworkInterface.CONNECTED, eventHandler);
+        networkInterface.removeEventListener(NetworkEvent.CONNECTED, eventHandler);
     });
 
     it("if the connection is established, do not reconnect if connectToServer is called again", async () =>{
-
         let eventHandler = jest.fn();
 
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
-        networkInterface.addEventListener(NetworkInterface.CONNECTED, eventHandler);
+        networkInterface.addEventListener(NetworkEvent.CONNECTED, eventHandler);
         networkInterface.connectToServer(serverPath);
 
         expect(networkInterface.connected).toBe(true);
         expect(eventHandler).toBeCalledTimes(0);
 
-        networkInterface.removeEventListener(NetworkInterface.CONNECTED, eventHandler);
+        networkInterface.removeEventListener(NetworkEvent.CONNECTED, eventHandler);
     });
 
     it("does not throw if connection-timeout fires after server closes connection", async () => {
-        const onClosed = jest.fn();
-
         jest.useFakeTimers();
 
-        networkInterface.connectToServer(serverPath, null, null, onClosed);
+        networkInterface.connectToServer(serverPath, null);
 
         server.close();
 
@@ -73,12 +70,11 @@ describe("connectToServer(): ", () => {
     });
 
     it("fires error and closed-event on server-error", async () =>{
-
         let eventHandlerError = jest.fn();
         let eventHandlerClosed = jest.fn();
 
-        networkInterface.addEventListener(NetworkInterface.ERROR, eventHandlerError);
-        networkInterface.addEventListener(NetworkInterface.CLOSED, eventHandlerClosed);
+        networkInterface.addEventListener(NetworkEvent.ERROR, eventHandlerError);
+        networkInterface.addEventListener(NetworkEvent.CLOSED, eventHandlerClosed);
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
@@ -90,15 +86,15 @@ describe("connectToServer(): ", () => {
         expect(eventHandlerError).toBeCalledTimes(1);
         expect(eventHandlerClosed).toBeCalledTimes(1);
 
-        networkInterface.removeEventListener(NetworkInterface.ERROR, eventHandlerError);
-        networkInterface.removeEventListener(NetworkInterface.CLOSED, eventHandlerClosed);
+        networkInterface.removeEventListener(NetworkEvent.ERROR, eventHandlerError);
+        networkInterface.removeEventListener(NetworkEvent.CLOSED, eventHandlerClosed);
     });
 
     it("fires close-event on server closed", async () =>{
 
         let eventHandler = jest.fn();
 
-        networkInterface.addEventListener(NetworkInterface.CLOSED, eventHandler);
+        networkInterface.addEventListener(NetworkEvent.CLOSED, eventHandler);
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
@@ -109,59 +105,20 @@ describe("connectToServer(): ", () => {
         expect(eventHandler).toBeCalledTimes(1);
         expect(networkInterface.connected).toBe(false);
 
-        networkInterface.removeEventListener(NetworkInterface.CLOSED, eventHandler);
-    });
-
-    it("calls onOpen callback when the server is connected", async () =>{
-        let onOpenHandler = jest.fn();
-
-        networkInterface.connectToServer(serverPath, onOpenHandler, null, null);
-        await server.connected; //wait until client connected to server, otherwise the events would not have been fired
-
-        expect(onOpenHandler).toBeCalledTimes(1);
-    });
-
-    it("calls onError callback when the connection could not be established", async () =>{
-        let onErrorHandler = jest.fn();
-        networkInterface.connectToServer("wrong-serverpath", null, onErrorHandler, null);
-        expect(onErrorHandler).toBeCalledTimes(1);
+        networkInterface.removeEventListener(NetworkEvent.CLOSED, eventHandler);
     });
 
     it("prints the error when the connection could not be established", async () =>{
         let logSpy:any = jest.spyOn(console, 'error');
-        networkInterface.connectToServer("wrong-serverpath", null, null, null);
+        networkInterface.connectToServer("wrong-serverpath", null);
         expect(logSpy).toBeCalledTimes(1);
-    });
-
-    it("calls onError callback when the server-connection threw an error", async () =>{
-        let onErrorHandler = jest.fn();
-
-        networkInterface.connectToServer(serverPath, null, onErrorHandler, null);
-        await server.connected; //wait until client connected to server, otherwise the events would not have been fired
-
-        server.error();
-
-        expect(onErrorHandler).toBeCalledTimes(1);
-    });
-
-    it("calls onClose callback when the server closed", async () =>{
-        let onClosedHandler = jest.fn();
-
-        networkInterface.connectToServer(serverPath, null, null, onClosedHandler);
-        await server.connected; //wait until client connected to server, otherwise the events would not have been fired
-
-        server.close();
-
-        await server.closed; //wait until client closed the connection to server, otherwise the events would not have been fired
-
-        expect(onClosedHandler).toBeCalledTimes(1);
     });
 
     it("calls onDataReceived callback when the server sent a message", async () =>{
         let onDataReceivedHandler = jest.fn();
         let data:Uint8Array = new Uint8Array([0x00, 0xF0, 0x11, 0x1E]);
 
-        networkInterface.connectToServer(serverPath, null, null, null, onDataReceivedHandler);
+        networkInterface.connectToServer(serverPath, onDataReceivedHandler);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
         server.send(data)
         server.close();
@@ -174,7 +131,7 @@ describe("connectToServer(): ", () => {
         let onDataReceivedHandler = jest.fn();
         let data:Blob = new Blob();
 
-        networkInterface.connectToServer(serverPath, null, null, null, onDataReceivedHandler);
+        networkInterface.connectToServer(serverPath, onDataReceivedHandler);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
         expect(()=> server.send(data)).toThrow("Websocket received data which is neither a string nor a Uint8Array!");
         server.close();
@@ -201,7 +158,6 @@ describe("sendDataToServer() ", ()=>{
     });
 
     it ("should send passed data to server in two chunks, if it is big enough (for test-purpose big enough = bigger than 2 bytes)", async () =>{
-
         let testData:Uint8Array = new Uint8Array([0x00, 0xFF])
         let onChunkCallback = jest.fn();
         let response:boolean;
@@ -331,7 +287,7 @@ describe("closeConnection() ", ()=>{
     test("should close the connection to the server", async () =>{
         let eventHandler = jest.fn();
 
-        networkInterface.addEventListener(NetworkInterface.CLOSED, eventHandler);
+        networkInterface.addEventListener(NetworkEvent.CLOSED, eventHandler);
         networkInterface.connectToServer(serverPath);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
@@ -342,6 +298,6 @@ describe("closeConnection() ", ()=>{
         expect(eventHandler).toBeCalledTimes(1);
         expect(networkInterface.connected).toBe(false);
 
-        networkInterface.removeEventListener(NetworkInterface.CLOSED, eventHandler);
+        networkInterface.removeEventListener(NetworkEvent.CLOSED, eventHandler);
     });
 });

@@ -2,18 +2,16 @@ export interface IOnReceivedData {
     (data: Uint8Array): void
 }
 
+export enum NetworkEvent {
+    CONNECTED = "connectedToServer",
+    ERROR = "connectionError",
+    CLOSED = "connectionClosed"
+}
+
 export class NetworkInterface extends EventTarget {
-
-    static CONNECTED: string = "connectedToServer";
-    static ERROR: string = "connectionError";
-    static CLOSED: string = "connectionClosed";
-
-    private _connected: boolean = false;
+        private _connected: boolean = false;
     private _connection: WebSocket | null = null;
 
-    private _onError:Function | null = null;
-    private _onOpen:Function | null  = null;
-    private _onClosed:Function | null  = null;
     private _onDataReceivedCallBack:Function | null  = null;
 
     private _connectionTimeoutTimer:number = -1;
@@ -29,21 +27,13 @@ export class NetworkInterface extends EventTarget {
 
     /**
      * creates a websocket-connection to the passed url and port.
-     *
-     * Listen for the WebSocketConnection.CONNECTED event or use the onOpen-callback before you send messages to the server
-     *
-     * the callback-functions are triggered before the events
-     *
-     * calls onError if the connection could not be opened
+     * Listen for the NetworkEvent.CONNECTED event before sending messages to the server
      *
      * @param {string} url
-     * @param {Function} onOpen
-     * @param {Function} onError
-     * @param {Function} onClosed
      * @param {IOnReceivedData} onDataReceived
      * @returns {}
      */
-    connectToServer(url: string, onOpen: Function | null = null, onError: Function | null = null, onClosed: Function | null = null, onDataReceived: IOnReceivedData | null = null): void {
+    connectToServer(url: string, onDataReceived: IOnReceivedData | null = null): void {
 
         //abort if the Websocket exists and is connecting (state 0), opening (state 1) or closing (state 2)
         if (this._connection !== null && this._connection.readyState !== 3) {
@@ -51,9 +41,6 @@ export class NetworkInterface extends EventTarget {
             return;
         }
 
-        this._onOpen = onOpen;
-        this._onError = onError;
-        this._onClosed = onClosed;
         this._onDataReceivedCallBack = onDataReceived;
 
         try {
@@ -62,15 +49,14 @@ export class NetworkInterface extends EventTarget {
             // Close WebSocket connection if it could not be established after a certain time
             // --> normally not necesary, but if the connection is over WLAN and the connection is unstable, it could be
             // that the websocket-connection hangs for a long time
-            // @ts-ignore
+            //@ts-ignore
             this._connectionTimeoutTimer = setTimeout(() => {
                 this._connection?.close();
             }, 3000);
 
         } catch (error) {
             console.error("NetworkInterface Error: ", error);
-            if (onError)
-                onError();
+            this.dispatchEvent(new Event(NetworkEvent.ERROR));
             return;
         }
 
@@ -84,13 +70,8 @@ export class NetworkInterface extends EventTarget {
 
     private _onConnectionOpen(): void {
         this._connected = true;
-
         clearTimeout(this._connectionTimeoutTimer);
-
-        if (this._onOpen)
-            this._onOpen();
-
-        this.dispatchEvent(new Event(NetworkInterface.CONNECTED));
+        this.dispatchEvent(new Event(NetworkEvent.CONNECTED));
     }
 
     private _onConnectionClosed(): void {
@@ -104,21 +85,13 @@ export class NetworkInterface extends EventTarget {
 
         this._connection = null;
 
-        if (this._onClosed)
-            this._onClosed();
-
-        this.dispatchEvent(new Event(NetworkInterface.CLOSED));
+        this.dispatchEvent(new Event(NetworkEvent.CLOSED));
     }
 
     private _onConnectionError(): void {
         this._connected = false;
-
         clearTimeout(this._connectionTimeoutTimer);
-
-        if (this._onError)
-            this._onError();
-
-        this.dispatchEvent(new Event(NetworkInterface.ERROR));
+        this.dispatchEvent(new Event(NetworkEvent.ERROR));
     }
 
     private _onDataReceived(e:MessageEvent): void {
@@ -190,7 +163,7 @@ export class NetworkInterface extends EventTarget {
         return new Promise((resolve) => {
             this._connection?.send(chunk)
             setTimeout(resolve, 800);   //like this, every chunk is actually processed before the next is sent
-            //if the timeout is smaller, all chunks are cached in the media-app and then sent after all chunks have been added
+            //if the timeout is smaller, all chunks are cached in the app and then sent after all chunks have been added
         });
     }
 
