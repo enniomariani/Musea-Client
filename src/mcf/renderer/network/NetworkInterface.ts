@@ -195,7 +195,6 @@ export class NetworkInterface extends EventTarget {
     }
 
     closeConnection(): void {
-
         if(this._connection)
             this._connection.close();
     }

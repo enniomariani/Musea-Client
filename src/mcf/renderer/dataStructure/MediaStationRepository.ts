@@ -34,6 +34,12 @@ export class MediaStationRepository{
         this._mediaStationMetaData.init(this._pathToMainFolder + "savedMediaStations.json")
     }
 
+    /**
+     * Load all media-stations with corresponding controller-ips from the saved json.
+     * Reset the mediaStationIdCounter and clears all mediastations added before calling this method.
+     *
+     * @returns {Promise<Map<string, string>>}  return "mediastation-Name" + "ip of controller" as key-value-pairs
+     */
     async loadMediaStations():Promise<Map<string, string>>{
         let loadedMetaData:Map<string, string>;
         let mediaStation:MediaStation;
@@ -41,9 +47,7 @@ export class MediaStationRepository{
 
         loadedMetaData = await this._mediaStationMetaData.load();
 
-        console.log("loadedMetaData: ",loadedMetaData);
-
-        this._allMediaStations.clear();     //TO DO: add to tests
+        this._allMediaStations.clear();
         this._mediaStationIdCounter = 0;
 
         if(loadedMetaData){

@@ -38,7 +38,7 @@ beforeEach(() => {
     mockContentFileService = new MockContentFileService();
     mockMediaFilesMarkedToDeleteService = new MockMediaFilesMarkedToDeleteService();
 
-    mockMediaStationLocalMetaData.load.mockImplementation(() => mockLoadedMetaData);
+    mockMediaStationLocalMetaData.load.mockResolvedValue(mockLoadedMetaData);
 
     mediaStationRepo = new MediaStationRepository(mockMediaStationLocalMetaData, "fakePathToDataFolder", mockMediaFileCacheHandler, mockMediaFilesMarkedToDeleteService, mockContentFileService,
         (id: number) => {const ms = new MockMediaStation(id);
@@ -128,6 +128,35 @@ describe("loadMediaStations() ", () => {
         expect(answer).toStrictEqual(mockLoadedMetaData);
     });
 
+    it("should clear the mediastation-repo and reset ID counter before loading all mediastations", async () => {
+        // First load - will assign IDs starting from initial counter value
+        const firstMS = new Map([["station1", "192.168.1.1"], ["station2", "192.168.1.2"]]);
+        mockMediaStationLocalMetaData.load.mockResolvedValue(firstMS);
+        await mediaStationRepo.loadMediaStations();
+
+        // Add a media station manually - this should get the next ID
+        const manualId = await mediaStationRepo.addMediaStation("manual", false);
+
+        // Second load with different data
+        const secondMS = new Map([["newStation1", "192.168.1.10"]]);
+        mockMediaStationLocalMetaData.load.mockResolvedValue(secondMS);
+        await mediaStationRepo.loadMediaStations();
+
+        // Now add another station - if counter was reset, it should reuse an early ID
+        // If counter wasn't reset, it would continue from where it left off
+        const afterReloadId = await mediaStationRepo.addMediaStation("afterReload", false);
+
+        // The ID should be low (reset counter), not continuing from manualId
+        // For example, if initial counter is 0 and secondMS has 1 station (id=0),
+        // then afterReloadId should be 1, not manualId+1
+        expect(afterReloadId).toBeLessThan(manualId);
+
+        // Also verify that the manually added station no longer exists
+        // This will throw or return null/undefined depending on your implementation
+        expect(() => mediaStationRepo.requireMediaStation(manualId)).toThrow();
+        // OR: expect(mediaStationRepo.getMediaStation(manualId)).toBeNull();
+    });
+
     it("should call loadFile from cached media station if media station was cached", async () => {
         let mockJSON: any = {
             testkey: "asdfadsf",
@@ -179,10 +208,7 @@ describe("loadMediaStations() ", () => {
     });
 
     it("should not throw an error if loaded map is empty", () => {
-        mockMediaStationLocalMetaData.load.mockImplementation(() => {
-            return new Map();
-        });
-
+        mockMediaStationLocalMetaData.load.mockImplementation(() => {return new Map();});
         expect(() => mediaStationRepo.loadMediaStations()).not.toThrow();
     });
 });
