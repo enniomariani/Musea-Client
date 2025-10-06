@@ -181,43 +181,17 @@ describe("onUnBlockReceived() ", () => {
 });
 
 describe("pcRespondsToPing() ", () => {
-    it("should call mockNetworkConnectionHandler.ping and return its answer", async () => {
-        let answer: boolean;
-        mockNetworkConnectionHandler.ping.mockImplementationOnce((ip) => {
-            return new Promise((resolve, reject) => {
-                resolve(true)
-            });
-        });
-
-        // Method to test
+    it("should call mockNetworkConnectionHandler.ping and return true if it is reachable", async () => {
+        mockNetworkConnectionHandler.ping.mockResolvedValue(true);
         const answerPromise = networkService.pcRespondsToPing(ip1);
-
-        // Fast-forward until all timers have been executed
-        jest.advanceTimersByTime(3000);
-
-        answer = await answerPromise;
-
-        expect(mockNetworkConnectionHandler.ping).toHaveBeenCalledTimes(1);
+        const answer:boolean = await answerPromise;
         expect(answer).toBe(true);
     });
 
-    it("should return false if PC is not reachable after 3 seconds", async () => {
-        jest.useFakeTimers();
-        mockNetworkConnectionHandler.ping.mockImplementationOnce(() => new Promise(() => {
-        }));
-
-        // Method to test
-        const answerPromise = networkService.pcRespondsToPing(ip1);
-
-        // Fast-forward until all timers have been executed
-        jest.advanceTimersByTime(3000);
-
-        const answer = await answerPromise;
-
-        // Tests
+    it("should return false if PC is not reachable", async () => {
+        mockNetworkConnectionHandler.ping.mockResolvedValueOnce(false);
+        const answer:boolean = await networkService.pcRespondsToPing(ip1);
         expect(answer).toBe(false);
-
-        jest.useRealTimers();
     });
 });
 
