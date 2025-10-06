@@ -37,27 +37,21 @@ function createMock(...correctParts: (string | Uint8Array)[]){
 describe("method should return the converted Code from ConvertNetworkData.encodeCommand: ", ()=>{
     it("pong()", ()=>{
         createMock("network", "pong");
-
         createdCommand = sendCommandFactory.createPong();
-
         expect(createdCommand).toEqual(correctArrayBuffer);
     });
 
     it("createContentFile()", ()=>{
         let fileData:string = "testContentFileContent";
         createMock("contents", "put", fileData);
-
         createdCommand = sendCommandFactory.createContentFile(fileData);
-
         expect(createdCommand).toEqual(correctArrayBuffer);
     });
 
     it("createMedia()", ()=>{
         let mediaData:Uint8Array = new Uint8Array([0x00, 0xFF, 0x1E, 0x22]);
         createMock("media", "put", mediaData);
-
         createdCommand = sendCommandFactory.createMedia(mediaData);
-
         expect(createdCommand).toEqual(correctArrayBuffer);
     });
 });

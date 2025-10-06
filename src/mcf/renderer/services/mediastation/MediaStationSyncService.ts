@@ -139,7 +139,7 @@ export class MediaStationSyncService {
                 return false;
             }
 
-            progressReporter({scope: SyncScope.Controller, type: "Connecting", ip: controller.ip});
+            progressReporter({scope: SyncScope.Controller, type: "Connecting", ip: controller.ip, appName: controller.name});
 
             const answer: MediaAppConnectionStatus = await this._mediaAppConnectionService.checkConnection(controller.ip, {role: "admin"});
 
