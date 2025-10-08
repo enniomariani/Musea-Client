@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {MediaManager} from "../../../../src/mcf/renderer/dataManagers/MediaManager";
+import {MediaManager, MediaType} from "../../../../src/mcf/renderer/dataManagers/MediaManager";
 import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
 import {Image, Video} from "../../../../src/mcf/renderer/dataStructure/Media";
 
@@ -124,7 +124,7 @@ describe("getMediaType() ", ()=>{
 
         const  mediaType:string | null = mediaManager.getMediaType(mockMediaStation, 0, 0);
 
-        expect(mediaType).toBe(MediaManager.MEDIA_TYPE_IMAGE);
+        expect(mediaType).toBe(MediaType.IMAGE);
     });
 
     it("should return a string with type video if the asked for media is  an video", ()=>{
@@ -133,7 +133,7 @@ describe("getMediaType() ", ()=>{
 
         const  mediaType:string | null = mediaManager.getMediaType(mockMediaStation, 0, 0);
 
-        expect(mediaType).toBe(MediaManager.MEDIA_TYPE_VIDEO);
+        expect(mediaType).toBe(MediaType.VIDEO);
     });
 
     it("should return null if there is no media set for the mediaAppId", ()=>{

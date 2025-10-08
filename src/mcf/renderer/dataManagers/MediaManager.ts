@@ -2,23 +2,20 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {Image, IMedia, Video} from "../dataStructure/Media";
 import {Content} from "../dataStructure/Content";
 
-export class MediaManager{
+export const MediaType = {
+    VIDEO: "video",
+    IMAGE: "image",
+} as const;
 
-    static MEDIA_TYPE_VIDEO:string = "TYPE_VIDEO";
-    static MEDIA_TYPE_IMAGE:string = "TYPE_IMAGE";
+export type MediaType = typeof MediaType[keyof typeof MediaType];
+
+export class MediaManager{
 
     constructor(){}
 
     /**
-     * creates an Image-Object, adds it to the media-array of the content and returns the object
-     *
-     * throws an error if contentId can not be found in the mediaStation-folders
-     *
-     * @param {MediaStation} mediaStation
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @param {string} fileName
-     * @returns {Image}
+     * Create an Image-Object, add it to the media-array of the content and return the object
+     * Throw an error if contentId can not be found in the mediaStation-folders
      */
     createImage(mediaStation:MediaStation, contentId:number, mediaAppId:number, fileName:string):Image{
         const content:Content = mediaStation.rootFolder.requireContent(contentId);
@@ -34,16 +31,8 @@ export class MediaManager{
     }
 
     /**
-     * creates an Video-Object, adds it to the media-array of the content and returns the object
-     *
-     * throws an error if contentId can not be found in the mediaStation-folders
-     *
-     * @param {MediaStation} mediaStation
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @param {number} duration
-     * @param {string} fileName
-     * @returns {Video}
+     * Create a Video-Object, add it to the media-array of the content and return the object
+     * Throw an error if contentId can not be found in the mediaStation-folders
      */
     createVideo(mediaStation:MediaStation, contentId:number, mediaAppId:number, duration:number, fileName:string):Video{
         const content:Content = mediaStation.rootFolder.requireContent(contentId);
@@ -60,22 +49,16 @@ export class MediaManager{
     }
 
     /**
-     * returns one of the static MEDIA_TYPE strings of this class and null if there is not a media set for the mediaAppId
-     *
-     * throws an error if contentId can not be found in the mediaStation-folders
-     *
-     * @param {MediaStation} mediaStation
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @returns {string | null}
+     * Return the media-type or null if there is not a media set for the mediaAppId
+     * Throw an error if contentId can not be found in the mediaStation-folders
      */
-    getMediaType(mediaStation:MediaStation, contentId:number, mediaAppId:number):string|null{
+    getMediaType(mediaStation:MediaStation, contentId:number, mediaAppId:number):MediaType|null{
         const content:Content = mediaStation.rootFolder.requireContent(contentId);
 
         if(content.media.get(mediaAppId) instanceof Image)
-            return MediaManager.MEDIA_TYPE_IMAGE;
+            return MediaType.IMAGE;
         else if(content.media.get(mediaAppId) instanceof Video)
-            return MediaManager.MEDIA_TYPE_VIDEO;
+            return MediaType.VIDEO;
         else
             return null;
     }
