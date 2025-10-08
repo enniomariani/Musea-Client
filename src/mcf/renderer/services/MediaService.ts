@@ -1,6 +1,6 @@
 import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
-import {MediaManager} from "../dataManagers/MediaManager";
+import {MediaManager, MediaType} from "../dataManagers/MediaManager";
 
 export const FileExtension = {
     IMAGE: {
@@ -8,7 +8,7 @@ export const FileExtension = {
         PNG: "png",
     },
     VIDEO: {
-        MP4: "stop"
+        MP4: "mp4"
     }
 } as const;
 
@@ -54,9 +54,9 @@ export class MediaService {
     }
 
     /**
-     * Return one of the types (static vars) in MediaManager or null if there was no media set
+     * Return a media-type or null if there was no media set
      */
-    getMediaType(mediaStationId: number, contentId: number, mediaAppId: number): string | null {
+    getMediaType(mediaStationId: number, contentId: number, mediaAppId: number):  MediaType | null {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         return this._mediaManager.getMediaType(mediaStation, contentId, mediaAppId);
     }
