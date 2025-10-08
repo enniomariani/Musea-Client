@@ -2,7 +2,7 @@ import {MediaStationDataService} from "src/mcf/renderer/services/mediastation/Me
 import {MediaStationCacheService} from "src/mcf/renderer/services/mediastation/MediaStationCacheService";
 import {MediaStationCommandService} from "src/mcf/renderer/services/mediastation/MediaStationCommandService";
 import {
-    ContentDownloadStatus, IContentDownloadResult,
+    IContentDownloadResult,
     MediaStationContentsService
 } from "src/mcf/renderer/services/mediastation/MediaStationContentsService";
 import {MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
@@ -186,7 +186,6 @@ export class MediaStationService {
     }
 
     // Contents
-    //TO DO: mit enums ergänzen, wenn download-klasse dann enums hat!
     /**
      * Download the contents.json file (the file that holds all meta-information about the folder-structure, contents, light-intensity,
      * tags, ...) from the controller-app of the media-station with the given id.

@@ -7,6 +7,7 @@ import {MockMediaStationCommandService} from "tests/__mocks__/mcf/renderer/servi
 import {MockMediaStationContentsService} from "tests/__mocks__/mcf/renderer/services/mediastation/MockMediaStationContentsService";
 import {MockMediaStationSyncService} from "tests/__mocks__/mcf/renderer/services/mediastation/MockMediaStationSyncService";
 import {MockMediaStationEventService} from "tests/__mocks__/mcf/renderer/services/mediastation/MockMediaStationEventService";
+import {IContentDownloadResult} from "src/mcf/renderer/services/mediastation/MediaStationContentsService";
 
 export class MockMediaStationService extends MediaStationService {
     // Data
@@ -34,7 +35,7 @@ export class MockMediaStationService extends MediaStationService {
     setVolume: jest.Mock<Promise<void>, [mediaStationId: number, volume: number]>;
 
     // Contents
-    downloadContents: jest.Mock<Promise<string>, [mediaStationId: number, preserveName: boolean, role?: "admin" | "user"]>;
+    downloadContents: jest.Mock<Promise<IContentDownloadResult>, [mediaStationId: number, preserveName: boolean, role?: "admin" | "user"]>;
 
     // Sync
     syncMediaStation: jest.Mock<Promise<boolean>, [mediaStationId: number, progressReporter: ProgressReporter]>;
