@@ -19,14 +19,9 @@ export class FolderDataService {
     }
 
     /**
-     * creates a new Folder-object and adds it to the parentFolder
+     * Create a new Folder and add it to the parentFolder
      *
-     * throws an error if the mediaStation or the parentFolder does not exist
-     *
-     * @param {number} mediaStationId
-     * @param {number} parentFolderId
-     * @param {string} name
-     * @returns {number}        returns the ID of the new Folder
+     * @returns {number} The ID of the new Folder
      */
     createFolder(mediaStationId: number, parentFolderId: number, name: string): number {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
@@ -35,12 +30,7 @@ export class FolderDataService {
     }
 
     /**
-     * returns the name of the folder with the passed id
-     * throws an error if the mediaStation or the folder don't exist
-     *
-     * @param {number} mediaStationId
-     * @param {number} id
-     * @returns {string}
+     * Get the name of the folder
      */
     getName(mediaStationId: number, id: number): string {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
@@ -49,12 +39,7 @@ export class FolderDataService {
     }
 
     /**
-     * changes the name of the folder with the passed id
-     * throws an error if the mediaStation or the folder don't exist
-     *
-     * @param {number} mediaStationId
-     * @param {number} folderId
-     * @param {string} name
+     * Change the name of the folder with the passed id
      */
     changeName(mediaStationId: number, folderId: number, name: string): void {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
@@ -62,12 +47,8 @@ export class FolderDataService {
     }
 
     /**
-     * changes the parentFolder of the folder with the passed id
-     * throws an error if the mediaStation, the folder or the new parent-folder don't exist
-     '
-     * @param {number} mediaStationId
-     * @param {number} folderId
-     * @param {number} newParentId
+     * Change the parentFolder of the folder with the passed id
+     * @throws {Error} If the new parent-folder doesn't exist
      */
     changeParentFolder(mediaStationId:number, folderId:number, newParentId:number):void{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
@@ -75,12 +56,8 @@ export class FolderDataService {
     }
 
     /**
-     * returns the parentFolder-id of the folder with the passed id
-     * throws an error if the mediaStation or the folder don't exist or if the folder has no parent-folder
-     * '
-     * @param {number} mediaStationId
-     * @param {number} folderId
-     * @returns {number}
+     * Return the parentFolder-id of the folder with the passed id
+     * @throws {Error} If folder has no parent-folder
      */
     getIdOfParentFolder(mediaStationId: number, folderId: number): number {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
@@ -93,11 +70,7 @@ export class FolderDataService {
     }
 
     /**
-     * returns the names of the direct subfolders of the passed folder-id
-     *
-     * @param {number} mediaStationId
-     * @param {number} folderId
-     * @returns {Map<number, string>}
+     * Get the ids(key) and names (values) of the direct subfolders (folders inside subfolder not included)
      */
     getAllSubFoldersInFolder(mediaStationId: number, folderId: number): Map<number, string> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
@@ -112,6 +85,9 @@ export class FolderDataService {
         return returnMap;
     }
 
+    /**
+     * Get the ids(key) and names (values) of the direct contents (contents in sub-folders not included)
+     */
     getAllContentsInFolder(mediaStationId: number, folderId: number): Map<number, string> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         const folder: Folder = mediaStation.rootFolder.requireFolder(folderId);
@@ -126,13 +102,7 @@ export class FolderDataService {
     }
 
     /**
-     * deletes the folder, all sub-folders, all contents and all media in it
-     *
-     * throws an error if the mediaStation or the folder doesn't exist'
-     *
-     * @param {number} mediaStationId
-     * @param {number} folderId
-     * @returns {Promise<void>}
+     * Delete the folder, all sub-folders, all contents and all media in it
      */
     async deleteFolder(mediaStationId: number, folderId: number): Promise<void> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
@@ -147,10 +117,10 @@ export class FolderDataService {
     }
 
     /**
-     * returns all contents in the folder and its subfolder which have the namePart in their name (regardless of the position)
+     * Get all contents in the folder and its subfolder which have the namePart in their name (regardless of the position)
+     * The search is case-insensitive
      *
-     * the search is case-insensitive at the moment
-     *
+     * @return {Map<number, string>} the ids(key) and names (values) of the contents
      */
     findContentsByNamePart(mediaStationId: number, folderId: number, namePart: string): Map<number, string> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);

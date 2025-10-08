@@ -24,9 +24,7 @@ export class MediaAppConnectionService {
      * 4) Send registration-signal and wait for response (ONLY FOR ADMIN-ROLE)
      * -> if everything passes, the app is considered online
      *
-     * @param {string} ip
-     * @param {CheckOptions} options
-     * @returns {Promise<MediaAppConnectionStatus>}
+     * @returns {Promise<MediaAppConnectionStatus>} The status of the connection
      */
     async checkConnection(ip: string, options: CheckOptions): Promise<MediaAppConnectionStatus> {
         const baseSteps: StepDef[] = [
@@ -43,14 +41,11 @@ export class MediaAppConnectionService {
     }
 
     /**
-     * opens the connection to the passed media-app and registers to it
+     * Open the connection to the passed media-app and register to it
      *
-     * @param {number} mediaStationId
-     * @param {number} mediaAppId
-     * @param {string} role      either "user" or "admin", default is "admin"
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean>} true if the registration was successful, false if not
      */
-    async connectAndRegisterToMediaApp(mediaStationId: number, mediaAppId: number, role: string = "admin"): Promise<boolean> {
+    async connectAndRegisterToMediaApp(mediaStationId: number, mediaAppId: number, role: ("admin" | "user") = "admin"): Promise<boolean> {
         let ip: string = this._getMediaApp(mediaStationId, mediaAppId).ip;
 
         if (role !== "admin" && role !== "user")
@@ -70,20 +65,18 @@ export class MediaAppConnectionService {
         return true;
     }
 
+    /**
+     * Send unregister-command to media-app and close the connection
+     */
     async unregisterAndCloseMediaApp(mediaStationId: number, mediaAppId: number): Promise<void> {
         let ip: string = this._getMediaApp(mediaStationId, mediaAppId).ip;
         await this._networkService.unregisterAndCloseConnection(ip);
     }
 
     /**
-     * checks if all media-apps (including the controller) are online, reachable and registration is possible (as admin-app)
+     * Check if all media-apps (including the controller) are online, reachable and registration is possible (as admin-app)
      *
-     * returns true if this is true for all of them
-     *
-     * returns false if one of the media-apps is not reachable
-     *
-     * @param {number} id
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean>} true if all apps are online, false if not
      */
     async checkOnlineStatusOfAllMediaApps(id: number): Promise<boolean> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(id);

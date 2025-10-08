@@ -49,6 +49,13 @@ export class MediaClientFramework implements IMediaClientFramework {
     protected _mediaService: MediaService;
     protected _tagService: TagDataService;
 
+    /**
+     * @remarks
+     * All methods accepting a mediaStationId, folderId, contentId or tagId will throw an error
+     * if the element with the corresponding id does not exist.
+     *
+     * @param {string} pathToDataFolder
+     */
     constructor(pathToDataFolder: string) {
         this._mediaStationMetaData = new MediaStationLocalMetaData();
 
@@ -76,30 +83,52 @@ export class MediaClientFramework implements IMediaClientFramework {
         this._tagService = new TagDataService(this._mediaStationRepository);
     }
 
+    /**
+     * all services related to change data of media-apps (add, remove, change name, ...)
+     */
     get mediaAppDataService(): MediaAppDataService {
         return this._mediaAppDataService;
     }
 
+    /**
+     * all services related to connections of media-apps: check online status, connect, disconnect, ...
+     */
     get mediaAppConnectionService(): MediaAppConnectionService {
         return this._mediaAppConnectionService;
     }
 
+    /**
+     * all services related to change data of folders (add, remove, change name, search for content, delete, ...)
+     */
     get folderService(): FolderDataService {
         return this._folderService;
     }
 
+    /**
+     * all services related to change data of contents (add, remove, change name, search for content, delete, ...)
+     */
     get contentService(): ContentDataService {
         return this._contentService;
     }
 
+    /**
+     * all services related to change media-data: add media, remove, ...
+     */
     get mediaService(): MediaService {
         return this._mediaService;
     }
 
+    /**
+     * all services related to a media-station: add, remove, change name, send media-commands, receive block/unblock-events,
+     * sync, cache, ...
+     */
     get mediaStationService(): MediaStationService {
         return this._mediaStationService;
     }
 
+    /**
+     * all services related to change tag-data: add tag, remove tag, rename, ...
+     */
     get tagService(): TagDataService {
         return this._tagService;
     }

@@ -17,11 +17,8 @@ export class MediaService {
     }
 
     /**
-     * creates a new Image-object and adds it to the content
-     *
-     * also caches the image!
-     *
-     * throws an error if the mediastation, the content or the mediaApp do not exist
+     * Create a new Image-object and add it to the content.
+     * Cache the image: image stays cached even if app is closed. Cache is removed when mediastation is  succesfully synced.
      *
      * @param {number} mediaStationId
      * @param {number} contentId
@@ -41,16 +38,12 @@ export class MediaService {
     }
 
     /**
-     * creates a new Video-object and adds it to the content
-     *
-     * also caches the image!
-     *
-     * throws an error if the mediastation, the content or the mediaApp do not exist
+     * Create a new video-object and add it to the content.
+     * Cache the video: video stays cached even if app is closed. Cache is removed when mediastation is  succesfully synced.
      *
      * @param {number} mediaStationId
      * @param {number} contentId
      * @param {number} mediaAppId
-     * @param {number} duration
      * @param {string} fileExtension    must be one of the static FILE_EXTENSION_VIDEO variables of MediaService
      * @param {File} fileInstance
      * @param {string} fileName
@@ -66,7 +59,7 @@ export class MediaService {
     }
 
     /**
-     * returns the fileName of the media or null if there was no media set
+     * Return the fileName of the media or null if there was no media set
      */
     getFileName(mediaStationId:number, contentId:number, mediaAppId:number): string | null{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
@@ -74,8 +67,7 @@ export class MediaService {
     }
 
     /**
-     * returns one of the types (static vars) in MediaManager or null if there was no media set
-     *
+     * Return one of the types (static vars) in MediaManager or null if there was no media set
      */
     getMediaType(mediaStationId:number, contentId:number, mediaAppId:number): string | null{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
@@ -83,15 +75,10 @@ export class MediaService {
     }
 
     /**
-     * deletes the media from the data-structure
+     * Delete the media from the data-structure
      *
-     * If the media is cached it deletes the cached media, if it is not cached (means it was already sent to a media-app),
+     * If the media is cached it deletes the cached media, if it is not cached (means it was already sent to the mediastation),
      * save the ID for the sync-process to send the delete-command to the media-App
-     *
-     * @param {number} mediaStationId
-     * @param {number} contentId
-     * @param {number} mediaAppId
-     * @returns {Promise<void>}
      */
     async deleteMedia(mediaStationId:number, contentId:number, mediaAppId:number):Promise<void>{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);

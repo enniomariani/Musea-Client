@@ -15,6 +15,11 @@ export class MediaAppDataService {
         this._mediaStationRepository = mediaStationRepository;
     }
 
+    /**
+     * Create media app. If it is the first created media-app in the media-station it becomes the controller.
+     * If it is not the first media-app, it is set to default role.
+     * If it is the controller, the media-station-metadata (media-station-name + ip of controller) are saved.
+     */
     async createMediaApp(mediaStationId: number, name: string, ip: string): Promise<number> {
         let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         let mediaAppId: number;
@@ -31,6 +36,13 @@ export class MediaAppDataService {
         return mediaAppId;
     }
 
+    /**
+     * Return a map of all media-apps in the media-station.
+     * The key is the media-app-id, the value is an object with the following properties:
+     *  - name: name of the media-app
+     *  - ip: ip of the media-app
+     *  - isController: true if the media-app is the controller, false if it is a default-app
+     */
     getAllMediaApps(mediaStationId: number): Map<number, IMediaAppData> {
         let map: Map<number, IMediaAppData> = new Map();
         let mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
@@ -51,20 +63,33 @@ export class MediaAppDataService {
         return map;
     }
 
+    /**
+     * Return the name of the media-app
+     */
     getName(mediaStationId: number, mediaAppId: number): string {
         return this._getMediaApp(mediaStationId, mediaAppId).name;
     }
 
+    /**
+     * Change the name of the media-app
+     */
     changeName(mediaStationId: number, mediaAppId: number, name: string): void {
         this._mediaStationRepository.requireMediaStation(mediaStationId);
         const mediaApp: MediaApp = this._getMediaApp(mediaStationId, mediaAppId);
         mediaApp.name = name;
     }
 
+    /**
+     * Return the ip of the media-app
+     */
     getIp(mediaStationId: number, mediaAppId: number): string {
         return this._getMediaApp(mediaStationId, mediaAppId).ip;
     }
 
+    /**
+     * Change the ip of the media-app.
+     * If mediaApp-id is 0 (means it is the controller), save the mediastation-metadata.
+     */
     async changeIp(mediaStationId: number, mediaAppId: number, ip: string): Promise<void> {
         this._mediaStationRepository.requireMediaStation(mediaStationId);
         this._getMediaApp(mediaStationId, mediaAppId).ip = ip;
