@@ -6,7 +6,7 @@ import {
 import {
     MockMediaStationRepository
 } from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
-import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
+import {MediaApp, MediaAppRole} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 
 let mediaAppService: MediaAppDataService;
@@ -14,11 +14,11 @@ let mockMediaStationRepo: MockMediaStationRepository;
 
 let ip1: string = "127.0.0.1";
 let name1: string = "media-App X";
-let role1: string = MediaApp.ROLE_CONTROLLER;
+let role1: MediaAppRole = MediaAppRole.CONTROLLER;
 
 let ip2: string = "127.0.0.2";
 let name2: string = "media-App 2";
-let role2: string = MediaApp.ROLE_DEFAULT;
+let role2: MediaAppRole = MediaAppRole.DEFAULT;
 
 let mediaAppId: number = 0;
 let mediaStation: MockMediaStation;
@@ -76,7 +76,7 @@ describe("createMediaApp() ", () => {
         mediaAppService.createMediaApp(0, name1, ip1);
 
         expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
-        expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledWith(mediaAppId, name1, ip1, MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledWith(mediaAppId, name1, ip1, MediaAppRole.CONTROLLER);
     });
 
     it("should call mediaStationRepository.updateAndSaveMediaStation if media-App ID is 0", () => {
@@ -97,7 +97,7 @@ describe("createMediaApp() ", () => {
         mediaAppService.createMediaApp(0, name1, ip1);
 
         expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
-        expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledWith(mediaAppId, name1, ip1, MediaApp.ROLE_DEFAULT);
+        expect(mediaStation.mediaAppRegistry.add).toHaveBeenCalledWith(mediaAppId, name1, ip1, MediaAppRole.DEFAULT);
     });
 
     it("should return the ID of the newly created mediaApp", async () => {

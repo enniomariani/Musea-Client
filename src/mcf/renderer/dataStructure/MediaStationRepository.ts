@@ -1,6 +1,6 @@
 import {MediaStation} from "./MediaStation";
 import {MediaStationLocalMetaData} from "../fileHandling/MediaStationLocalMetaData";
-import {MediaApp} from "./MediaApp";
+import {MediaApp, MediaAppRole} from "./MediaApp";
 import {ContentFileService} from "../fileHandling/ContentFileService";
 import {MediaFilesMarkedToDeleteService} from "../fileHandling/MediaFilesMarkedToDeleteService";
 import {TagRegistry} from "src/mcf/renderer/registries/TagRegistry";
@@ -60,7 +60,7 @@ export class MediaStationRepository{
                 if(await this.isMediaStationCached(id))
                     mediaStation.importFromJSON(await this._contentFileService.loadFile(id), false);
                 else if(controllerIp)
-                    mediaStation.mediaAppRegistry.add(mediaStation.getNextMediaAppId(), "Controller-App not reachable", controllerIp, MediaApp.ROLE_CONTROLLER);
+                    mediaStation.mediaAppRegistry.add(mediaStation.getNextMediaAppId(), "Controller-App not reachable", controllerIp, MediaAppRole.CONTROLLER);
             }
         }
 

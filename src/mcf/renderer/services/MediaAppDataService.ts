@@ -1,6 +1,6 @@
 import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
-import {MediaApp} from "../dataStructure/MediaApp";
+import {MediaApp, MediaAppRole} from "../dataStructure/MediaApp";
 
 export interface IMediaAppData {
     ip: string
@@ -28,7 +28,7 @@ export class MediaAppDataService {
             throw new Error("Mediastation with this ID does not exist: " + mediaStationId);
 
         mediaAppId = mediaStation.getNextMediaAppId();
-        mediaStation.mediaAppRegistry.add(mediaAppId, name, ip, mediaAppId === 0 ? MediaApp.ROLE_CONTROLLER : MediaApp.ROLE_DEFAULT);
+        mediaStation.mediaAppRegistry.add(mediaAppId, name, ip, mediaAppId === 0 ? MediaAppRole.CONTROLLER : MediaAppRole.DEFAULT);
 
         if (mediaAppId === 0)
             await this._mediaStationRepository.saveMediaStations();
@@ -56,7 +56,7 @@ export class MediaAppDataService {
             map.set(mediaApp.id, {
                 name: mediaApp.name,
                 ip: mediaApp.ip,
-                isController: mediaApp.role === MediaApp.ROLE_CONTROLLER
+                isController: mediaApp.role === MediaAppRole.CONTROLLER
             });
         });
 

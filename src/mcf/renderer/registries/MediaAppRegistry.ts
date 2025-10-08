@@ -1,4 +1,4 @@
-import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
+import {MediaApp, MediaAppRole} from "src/mcf/renderer/dataStructure/MediaApp";
 
 export class MediaAppRegistry {
     private _mediaApps: Map<number, MediaApp> = new Map();
@@ -6,7 +6,7 @@ export class MediaAppRegistry {
     constructor() {
     }
 
-    add(id: number, name: string, ip: string, role: string): void {
+    add(id: number, name: string, ip: string, role: MediaAppRole): void {
         let mediaApp: MediaApp = new MediaApp(id);
         mediaApp.ip = ip;
         mediaApp.name = name;
@@ -44,7 +44,7 @@ export class MediaAppRegistry {
         let controller: MediaApp | null = null;
 
         this._mediaApps.forEach((mediaApp: MediaApp) => {
-            if (mediaApp.role === MediaApp.ROLE_CONTROLLER) {
+            if (mediaApp.role === MediaAppRole.CONTROLLER) {
                 controller = mediaApp;
                 return;
             }

@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {MediaAppRegistry} from "src/mcf/renderer/registries/MediaAppRegistry";
-import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
+import {MediaApp, MediaAppRole} from "src/mcf/renderer/dataStructure/MediaApp";
 import {Image, IMedia} from "src/mcf/renderer/dataStructure/Media";
 
 let registry: MediaAppRegistry;
@@ -10,12 +10,11 @@ let mockMediaStation: MockMediaStation;
 let mediaAppController: MediaApp = new MediaApp(0);
 mediaAppController.ip = "127.0.0.1";
 mediaAppController.name = "testName";
-mediaAppController.role = MediaApp.ROLE_CONTROLLER;
+mediaAppController.role = MediaAppRole.CONTROLLER;
 
 let mediaAppDefault: MediaApp = new MediaApp(1);
 mediaAppDefault.ip = "127.0.0.2";
 mediaAppDefault.name = "testName2";
-mediaAppDefault.role = MediaApp.ROLE_DEFAULT;
 
 beforeEach(() => {
     mockMediaStation = new MockMediaStation(0);
@@ -144,7 +143,7 @@ describe("importFromJSON()", () => {
     });
 
     it("should clear existing media apps before importing new ones", () => {
-        registry.add(99, "old", "10.0.0.1", MediaApp.ROLE_DEFAULT);
+        registry.add(99, "old", "10.0.0.1", MediaAppRole.DEFAULT);
 
         const json = [
             {
@@ -165,7 +164,7 @@ describe("importFromJSON()", () => {
 
     it("should throw when a required property is missing (id)", () => {
         const jsonMissingId = [
-            {name: "no-id", ip: "127.0.0.3", role: MediaApp.ROLE_DEFAULT} as any,
+            {name: "no-id", ip: "127.0.0.3", role: MediaAppRole.DEFAULT} as any,
         ];
 
         expect(() => registry.importFromJSON(jsonMissingId))
@@ -174,7 +173,7 @@ describe("importFromJSON()", () => {
 
     it("should throw when a required property is missing (name)", () => {
         const jsonMissingName = [
-            {id: 3, ip: "127.0.0.4", role: MediaApp.ROLE_DEFAULT} as any,
+            {id: 3, ip: "127.0.0.4", role: MediaAppRole.DEFAULT} as any,
         ];
 
         expect(() => registry.importFromJSON(jsonMissingName))
@@ -182,7 +181,7 @@ describe("importFromJSON()", () => {
     });
 
     it("should clear the registry when json is null/undefined", () => {
-        registry.add(42, "will-be-cleared", "192.168.0.1", MediaApp.ROLE_DEFAULT);
+        registry.add(42, "will-be-cleared", "192.168.0.1", MediaAppRole.DEFAULT);
         registry.importFromJSON(null as any);
         expect(registry.getAll().size).toBe(0);
     });

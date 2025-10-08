@@ -1,6 +1,6 @@
 import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
-import {MediaApp} from "../dataStructure/MediaApp";
+import {MediaApp, MediaAppRole} from "../dataStructure/MediaApp";
 import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 import {CheckOptions, MediaAppConnectionStatus, ConnectionStep, runPipeline, StepDef
 } from "src/mcf/renderer/network/MediaAppConnectionSteps";
@@ -98,7 +98,7 @@ export class MediaAppConnectionService {
 
             if (contentsJSON.mediaApps) {
                 for (let i: number = 0; i < contentsJSON.mediaApps.length; i++) {
-                    if (contentsJSON.mediaApps[i].role !== MediaApp.ROLE_CONTROLLER)
+                    if (contentsJSON.mediaApps[i].role !== MediaAppRole.CONTROLLER)
                         if (await this.checkConnection(contentsJSON.mediaApps[i].ip, {role:"admin"}) !== MediaAppConnectionStatus.Online)
                             return false;
                 }

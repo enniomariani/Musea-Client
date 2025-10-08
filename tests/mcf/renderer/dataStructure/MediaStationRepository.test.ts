@@ -6,7 +6,7 @@ import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/Mo
 import {
     MockContentFileService
 } from "../../../__mocks__/mcf/renderer/fileHandling/MockContentFileService";
-import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
+import {MediaApp, MediaAppRole} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
 import {MediaStation} from "../../../../src/mcf/renderer/dataStructure/MediaStation";
 import {
     MediaStationRepository
@@ -118,9 +118,9 @@ describe("loadMediaStations() ", () => {
 
         expect(mediaStation1.mediaAppRegistry.add).toHaveBeenCalledTimes(0);
         expect(mediaStation2.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
-        expect(mediaStation2.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom2, "Controller-App not reachable", "192.168.2.1", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation2.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom2, "Controller-App not reachable", "192.168.2.1", MediaAppRole.CONTROLLER);
         expect(mediaStation3.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
-        expect(mediaStation3.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom3, "Controller-App not reachable", "192.168.2.100", MediaApp.ROLE_CONTROLLER);
+        expect(mediaStation3.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom3, "Controller-App not reachable", "192.168.2.100", MediaAppRole.CONTROLLER);
     });
 
     it("should return the map it got from the loading-service", async () => {

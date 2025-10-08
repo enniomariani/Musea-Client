@@ -5,7 +5,7 @@ import {MockMediaStationRepository} from "__mocks__/mcf/renderer/dataStructure/M
 import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {MockMediaAppConnectionService} from "__mocks__/mcf/renderer/services/MockMediaAppConnectionService";
 import {MockMediaAppSyncService} from "__mocks__/mcf/renderer/network/MockMediaAppSyncService";
-import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
+import {MediaApp, MediaAppRole} from "src/mcf/renderer/dataStructure/MediaApp";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 import {ProgressReporter, SyncEvent, SyncScope} from "src/mcf/renderer/services/mediastation/SyncEvents";
 import {ConnectionStatus as UiConnectionStatus} from "src/mcf/renderer/services/mediastation/SyncEvents";
@@ -39,12 +39,12 @@ function createStationWithTwoApps() {
     const controller = new MediaApp(0);
     controller.name = "controller";
     controller.ip = "127.0.0.1";
-    controller.role = MediaApp.ROLE_CONTROLLER;
+    controller.role = MediaAppRole.CONTROLLER;
 
     const app2 = new MediaApp(1);
     app2.name = "display-2";
     app2.ip = "127.0.0.2";
-    app2.role = MediaApp.ROLE_DEFAULT;
+    app2.role = MediaAppRole.DEFAULT;
 
     station.mediaAppRegistry.require.mockImplementation((id: number) => {
         if (id === controller.id) return controller;

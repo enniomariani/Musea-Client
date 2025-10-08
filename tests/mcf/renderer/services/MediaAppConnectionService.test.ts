@@ -2,7 +2,7 @@ import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {
     MockMediaStationRepository
 } from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
-import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
+import {MediaApp, MediaAppRole} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
 import {MediaAppConnectionService} from "src/mcf/renderer/services/MediaAppConnectionService";
@@ -16,11 +16,11 @@ let mockNetworkService: MockNetworkService;
 
 let ip1: string = "127.0.0.1";
 let name1: string = "media-App X";
-let role1: string = MediaApp.ROLE_CONTROLLER;
+let role1: MediaAppRole = MediaAppRole.CONTROLLER;
 
 let ip2: string = "127.0.0.2";
 let name2: string = "media-App 2";
-let role2: string = MediaApp.ROLE_DEFAULT;
+let role2: MediaAppRole = MediaAppRole.DEFAULT;
 
 let mediaAppId: number = 0;
 let mediaStation: MockMediaStation;
@@ -286,17 +286,17 @@ describe("checkOnlineStatusOfAllMediaApps() ", () => {
     const correctJSONwithTwoMediaApps = {
         name: "mediaStationX",
         mediaApps: [
-            {id: 0, ip: "127.0.0.1", role: MediaApp.ROLE_CONTROLLER},
-            {id: 1, ip: "127.0.0.2", role: MediaApp.ROLE_DEFAULT}
+            {id: 0, ip: "127.0.0.1", role: MediaAppRole.CONTROLLER},
+            {id: 1, ip: "127.0.0.2", role: MediaAppRole.DEFAULT}
         ]
     };
 
     const correctJSONwithThreeMediaApps = {
         name: "mediaStationX",
         mediaApps: [
-            {id: 0, ip: "127.0.0.1", role: MediaApp.ROLE_CONTROLLER},
-            {id: 1, ip: "127.0.0.2", role: MediaApp.ROLE_DEFAULT},
-            {id: 2, ip: "127.0.0.3", role: MediaApp.ROLE_DEFAULT}
+            {id: 0, ip: "127.0.0.1", role: MediaAppRole.CONTROLLER},
+            {id: 1, ip: "127.0.0.2", role: MediaAppRole.DEFAULT},
+            {id: 2, ip: "127.0.0.3", role: MediaAppRole.DEFAULT}
         ]
     };
 

@@ -11,7 +11,7 @@ import {
     MediaService,
     VideoFileExtension
 } from "../../../../src/mcf/renderer/services/MediaService";
-import {MediaManager} from "../../../../src/mcf/renderer/dataManagers/MediaManager";
+import {MediaManager, MediaType} from "../../../../src/mcf/renderer/dataManagers/MediaManager";
 
 let mediaService: MediaService;
 let mockMediaStationRepo: MockMediaStationRepository;
@@ -111,11 +111,11 @@ describe("getMediaType() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     it("should call contentManager.getMediaType with the correct arguments", () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaManager.getMediaType.mockReturnValueOnce(MediaManager.MEDIA_TYPE_IMAGE);
+        mockMediaManager.getMediaType.mockReturnValueOnce(MediaType.IMAGE);
 
         const answer:string|null = mediaService.getMediaType(mediaStationId, contentId, 0);
 
-        expect(answer).toBe(MediaManager.MEDIA_TYPE_IMAGE);
+        expect(answer).toBe(MediaType.IMAGE);
     });
 });
 

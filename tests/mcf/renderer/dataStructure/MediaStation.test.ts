@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
 import {MediaStation} from "../../../../src/mcf/renderer/dataStructure/MediaStation";
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
-import {MediaApp} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
+import {MediaApp, MediaAppRole} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
 import {Tag} from "../../../../src/mcf/renderer/dataStructure/Tag";
 import {MockTagRegistry} from "__mocks__/mcf/renderer/registries/MockTagRegistry";
 import {MockMediaAppRegistry} from "__mocks__/mcf/renderer/registries/MockMediaAppRegistry";
@@ -13,11 +13,11 @@ let mockMediaAppRegistry:MockMediaAppRegistry;
 let mediaApp1: MediaApp = new MediaApp(0);
 mediaApp1.name = "app1";
 mediaApp1.ip = "127.0.0.1";
-mediaApp1.role = MediaApp.ROLE_CONTROLLER;
+mediaApp1.role = MediaAppRole.CONTROLLER;
 let mediaApp2: MediaApp = new MediaApp(1);
 mediaApp2.name = "app2";
 mediaApp2.ip = "127.0.0.2";
-mediaApp2.role = MediaApp.ROLE_DEFAULT;
+mediaApp2.role = MediaAppRole.DEFAULT;
 
 const date:Date = new Date();
 const jsonMock: any = {
