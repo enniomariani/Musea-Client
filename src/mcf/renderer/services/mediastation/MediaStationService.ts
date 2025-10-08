@@ -34,7 +34,7 @@ export class MediaStationService {
     /**
      * (Re-) load all media-stations + controller-ips from the saved JSON-file
      *
-     * clears all previsously loaded media-stations and resets the media-station-id-counter before loading the
+     * clears all previously loaded media-stations and resets the media-station-id-counter before loading the
      *
      * mediastation-metadata-file (savedMediaStations.json)
      *
@@ -92,7 +92,7 @@ export class MediaStationService {
     /**
      * Cache the whole content (folder-structure, tags, contents, ..., except the media-files) of the media-station with the given id.
      * The cached contents.json file will be saved in the data folder.
-     * The file persists until the media-station is succesfully synced
+     * The file persists until the media-station is successfully synced
      */
     cacheMediaStation(id: number): void {
         this._cache.cacheMediaStation(id);
@@ -155,7 +155,7 @@ export class MediaStationService {
     /**
      * Send seek command to all media-apps defined in the media-station
      *
-     * Prints an error and does not send the command if posInSec is negative
+     * Print an error and do not send the command if posInSec is negative
      */
     async seek(mediaStationId: number, posInSec: number): Promise<void> {
         return this._command.sendCommandSeek(mediaStationId, posInSec);
@@ -169,7 +169,7 @@ export class MediaStationService {
     }
 
     /**
-     * Send command un-mute to all media-apps defined in the media-station
+     * Send command unmute to all media-apps defined in the media-station
      */
     async unmute(mediaStationId: number): Promise<void> {
         return this._command.sendCommandUnmute(mediaStationId);
@@ -188,7 +188,7 @@ export class MediaStationService {
      * Download the contents.json file (the file that holds all meta-information about the folder-structure, contents, light-intensity,
      * tags, ...) from the controller-app of the media-station with the given id.
      *
-     * Connects and registers to the controller-app with the role "role". Does not close the connection after downloading the contents.
+     * Connect and register to the controller-app with the role "role". Do not close the connection after downloading the contents.
      *
      * @param {number} mediaStationId
      * @param {boolean} preserveName
@@ -205,11 +205,11 @@ export class MediaStationService {
      * Send the file contents.json to the controller (which holds folder-structure, content-info, tag-info, etc.) and all cached media-files
      * to their specific media-app and delete-commands to delete media files.
      *
-     * If a media-file is sent succesfully (and the ID created on the media-app is received): Delete the cached file
+     * If a media-file is sent successfully (and the ID created on the media-app is received): Delete the cached file
      *
      * If all media-files + all delete-commands are sent, send the contents.json-File to the controller and delete the cached one.
      *
-     * To check if the last sync was succesful, call isMediaStationCached(). If it returns true, the sync was NOT succesful.
+     * To check if the last sync was succesful,call isMediaStationCached(). If it returns true, the sync was NOT successful.
      *
      * Attention: always registers as admin-app!
      *
