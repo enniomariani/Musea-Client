@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MainFileService} from "../../../src/mcf/main/MainFileService";
+import {MainFileService, FileServiceMessage} from "../../../src/mcf/main/MainFileService";
 import * as fs from 'fs';
 import * as path from "node:path";
 import type { PathLike } from "fs";
@@ -21,8 +21,6 @@ let mockedFs = fs as jest.Mocked<typeof fs>;
 
 
 beforeEach(() => {
-
-
     fileService = new MainFileService();
 });
 
@@ -52,7 +50,7 @@ describe("saveFile () ", () => {
         //expect
         expect(fs.writeFile).toHaveBeenCalledTimes(1);
         expect(fs.writeFile).toHaveBeenCalledWith(filePath, buffer, expect.anything());
-        expect(returnValue).toEqual(MainFileService.FILE_SAVED_SUCCESSFULLY);
+        expect(returnValue).toEqual(FileServiceMessage.FILE_SAVED_SUCCESSFULLY);
     });
 
     it("should return an error if the passed parameter overrideExistingFile is true and the file already exists", async () => {
@@ -73,7 +71,7 @@ describe("saveFile () ", () => {
 
         returnValue = await fileService.saveFile(filePath, Buffer.from(fileData), false);
 
-        expect(returnValue).toEqual(MainFileService.ERROR_FILE_EXISTS);
+        expect(returnValue).toEqual(FileServiceMessage.ERROR_FILE_EXISTS);
         expect(fs.writeFile).toHaveBeenCalledTimes(0);
     });
 
@@ -96,7 +94,7 @@ describe("saveFile () ", () => {
 
         returnValue = await fileService.saveFile(filePath, Buffer.from(fileData), false, false);
 
-        expect(returnValue).toBe(MainFileService.ERROR_DIRECTORY_DOES_NOT_EXIST);
+        expect(returnValue).toBe(FileServiceMessage.ERROR_DIRECTORY_DOES_NOT_EXIST);
         expect(fs.writeFile).toHaveBeenCalledTimes(0);
     });
 
@@ -120,7 +118,7 @@ describe("saveFile () ", () => {
 
         returnValue = await fileService.saveFile(filePath, Buffer.from(fileData), false, true);
 
-        expect(returnValue).toBe(MainFileService.FILE_SAVED_SUCCESSFULLY);
+        expect(returnValue).toBe(FileServiceMessage.FILE_SAVED_SUCCESSFULLY);
         expect(fs.writeFile).toHaveBeenCalledTimes(1);
         expect(fs.writeFile).toHaveBeenCalledWith(filePath, buffer, expect.anything());
         expect(fs.mkdirSync).toHaveBeenCalledTimes(1);
@@ -137,7 +135,7 @@ describe("delete () ", () => {
 
         expect(fs.rmSync).toHaveBeenCalledTimes(1);
         expect(fs.rmSync).toHaveBeenCalledWith(filePath);
-        expect(returnValue).toBe(MainFileService.FILE_DELETED_SUCCESSFULLY);
+        expect(returnValue).toBe(FileServiceMessage.FILE_DELETED_SUCCESSFULLY);
     });
 
     it("should call fs.rmSync if a folder-path is passed", () => {
@@ -148,7 +146,7 @@ describe("delete () ", () => {
 
         expect(fs.rmSync).toHaveBeenCalledTimes(1);
         expect(fs.rmSync).toHaveBeenCalledWith(folderPath);
-        expect(returnValue).toBe(MainFileService.FILE_DELETED_SUCCESSFULLY);
+        expect(returnValue).toBe(FileServiceMessage.FILE_DELETED_SUCCESSFULLY);
     });
 
     it("should return an error string if file or folder cannot be deleted", () => {
@@ -161,7 +159,7 @@ describe("delete () ", () => {
 
         returnValue = fileService.delete(folderPath);
 
-        expect(returnValue).toBe(MainFileService.FILE_OR_FOLDER_CAN_NOT_BE_DELETED);
+        expect(returnValue).toBe(FileServiceMessage.FILE_OR_FOLDER_CAN_NOT_BE_DELETED);
     });
 });
 
