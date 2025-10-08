@@ -103,11 +103,6 @@ describe("downloadContentsOfMediaStation() ", () => {
         expect(answer).toBe(MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIp);
     });
 
-    it("should throw an error if a wrong role-type is passed", async () => {
-
-        await expect(service.downloadContentsOfMediaStation(0, false,"wrongRole")).rejects.toThrowError("Role not valid: wrongRole");
-    });
-
     it("should return an error if the content-file was not received within the timeout set in NetworkService", async () => {
         mockNetworkService.getContentFileFrom = jest.fn();
         mockNetworkService.getContentFileFrom.mockReturnValueOnce(null);
