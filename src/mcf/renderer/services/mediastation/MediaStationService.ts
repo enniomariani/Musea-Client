@@ -1,7 +1,10 @@
 import {MediaStationDataService} from "src/mcf/renderer/services/mediastation/MediaStationDataService";
 import {MediaStationCacheService} from "src/mcf/renderer/services/mediastation/MediaStationCacheService";
 import {MediaStationCommandService} from "src/mcf/renderer/services/mediastation/MediaStationCommandService";
-import {MediaStationContentsService} from "src/mcf/renderer/services/mediastation/MediaStationContentsService";
+import {
+    ContentDownloadStatus, IContentDownloadResult,
+    MediaStationContentsService
+} from "src/mcf/renderer/services/mediastation/MediaStationContentsService";
 import {MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
 import {ProgressReporter} from "src/mcf/renderer/services/mediastation/SyncEvents";
 import {MediaStationEventService} from "src/mcf/renderer/services/mediastation/MediaStationEventService";
@@ -194,9 +197,9 @@ export class MediaStationService {
      * @param {boolean} preserveName
      * @param {"admin" | "user"} role   user = apps that do not block the media-station. admin = apps that block the media-station and send
      * block/unblock-commands to apps connected with the role "user". Only one admin + one user-app can be connected to a media-station at the same time
-     * @returns {Promise<string>}
+     * @returns {Promise<IContentDownloadResult>}
      */
-    async downloadContents(mediaStationId: number, preserveName: boolean, role: "admin" | "user" = "admin"): Promise<string> {
+    async downloadContents(mediaStationId: number, preserveName: boolean, role: "admin" | "user" = "admin"): Promise<IContentDownloadResult> {
         return this._contents.downloadContentsOfMediaStation(mediaStationId, preserveName, role);
     }
 

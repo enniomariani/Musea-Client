@@ -5,7 +5,7 @@ import {
 } from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
 import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {
-    ContentDownloadStatus,
+    ContentDownloadStatus, IContentDownloadResult,
     MediaStationContentsService
 } from "src/mcf/renderer/services/mediastation/MediaStationContentsService";
 
@@ -25,7 +25,7 @@ afterEach(() => {
 
 describe("downloadContentsOfMediaStation() ", () => {
     let mockMediaStation: MockMediaStation;
-    let answer: string | null;
+    let answer: IContentDownloadResult | null;
     const controllerIp: string = "127.0.0.1";
     const correctJSON: any = {name: "mediaStationX"};
 
@@ -49,7 +49,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         expect(mockMediaStation.importFromJSON).toHaveBeenCalledTimes(1);
         expect(mockMediaStation.importFromJSON).toHaveBeenCalledWith(correctJSON, true);
-        expect(answer).toBe(ContentDownloadStatus.Success + "0");
+        expect(answer).toEqual({status: ContentDownloadStatus.Success, ip: controllerIp});
     });
 
     it("should return an error if the controller is not reachable with ping", async () => {
@@ -58,7 +58,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         answer = await service.downloadContentsOfMediaStation(0, false);
 
-        expect(answer).toBe(ContentDownloadStatus.FailedNoResponseFrom + controllerIp);
+        expect(answer).toEqual({status: ContentDownloadStatus.FailedNoResponseFrom, ip: controllerIp});
     });
 
     it("should return an error if the connection to the controller could not be opened", async () => {
@@ -67,7 +67,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         answer = await service.downloadContentsOfMediaStation(0, false);
 
-        expect(answer).toBe(ContentDownloadStatus.FailedNoResponseFrom + controllerIp);
+        expect(answer).toEqual({status: ContentDownloadStatus.FailedNoResponseFrom, ip: controllerIp});
     });
 
     it("should return an error if the controller-app is not responding", async () => {
@@ -76,7 +76,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         answer = await service.downloadContentsOfMediaStation(0, false);
 
-        expect(answer).toBe(ContentDownloadStatus.FailedNoResponseFrom + controllerIp);
+        expect(answer).toEqual({status: ContentDownloadStatus.FailedNoResponseFrom, ip: controllerIp});
     });
 
     it("should return an error if the app could not register itself in the controller as admin-app", async () => {
@@ -85,7 +85,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         answer = await service.downloadContentsOfMediaStation(0, false);
 
-        expect(answer).toBe(ContentDownloadStatus.FailedNoResponseFrom + controllerIp);
+        expect(answer).toEqual({status: ContentDownloadStatus.FailedNoResponseFrom, ip: controllerIp});
     });
 
     it("should return an error if the app could register itself in the controller as user-app, but is blocked", async () => {
@@ -94,7 +94,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         answer = await service.downloadContentsOfMediaStation(0, false,"user");
 
-        expect(answer).toBe(ContentDownloadStatus.FailedAppBlocked);
+        expect(answer).toEqual({status: ContentDownloadStatus.FailedAppBlocked, ip: controllerIp});
     });
 
     it("should return an error if the app could not register itself in the controller as user-app", async () => {
@@ -103,7 +103,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         answer = await service.downloadContentsOfMediaStation(0, false,"user");
 
-        expect(answer).toBe(ContentDownloadStatus.FailedNoResponseFrom + controllerIp);
+        expect(answer).toEqual({status: ContentDownloadStatus.FailedNoResponseFrom, ip: controllerIp});
     });
 
     it("should return an error if the content-file was not received within the timeout set in NetworkService", async () => {
@@ -112,7 +112,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         answer = await service.downloadContentsOfMediaStation(0, true);
 
-        expect(answer).toBe(ContentDownloadStatus.FailedNoResponseFrom + controllerIp);
+        expect(answer).toEqual({status: ContentDownloadStatus.FailedNoResponseFrom, ip: controllerIp});
     });
 
     it("should return an error if the controller-app returned an empty JSON (which means there wasn't saved any before)", async () => {
@@ -121,7 +121,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         answer = await service.downloadContentsOfMediaStation(0, false);
 
-        expect(answer).toBe(ContentDownloadStatus.SuccessNoContentsOnController + controllerIp);
+        expect(answer).toEqual({status: ContentDownloadStatus.SuccessNoContentsOnController, ip: controllerIp});
     });
 
     it("should return call mediaStation.reset if the controller-app returned an empty JSON", async () => {
@@ -139,7 +139,7 @@ describe("downloadContentsOfMediaStation() ", () => {
 
         answer = await service.downloadContentsOfMediaStation(0, false);
 
-        expect(answer).toBe(ContentDownloadStatus.FailedNoControllerIp);
+        expect(answer).toEqual({status: ContentDownloadStatus.FailedNoControllerIp, ip: ""});
     });
 
     it("should NOT call unregisterAndCloseConnection() at the end", async () => {

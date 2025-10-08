@@ -2,12 +2,18 @@ import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
 import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 
-export enum ContentDownloadStatus{
-    Success = "success",
-    SuccessNoContentsOnController = "failedNoContentsOnController",
-    FailedNoResponseFrom = "failedNoResponseFrom",
-    FailedNoControllerIp = "failedNoControllerIp",
-    FailedAppBlocked = "failedAppBlocked"
+export const ContentDownloadStatus = {
+    Success : "success",
+    SuccessNoContentsOnController : "failedNoContentsOnController",
+    FailedNoResponseFrom : "failedNoResponseFrom",
+    FailedNoControllerIp : "failedNoControllerIp",
+    FailedAppBlocked : "failedAppBlocked"
+} as const;
+export type ContentDownloadStatus = typeof ContentDownloadStatus[keyof typeof ContentDownloadStatus];
+
+export interface IContentDownloadResult {
+    status: ContentDownloadStatus,
+    ip:string
 }
 
 export class MediaStationContentsService {
@@ -25,36 +31,34 @@ export class MediaStationContentsService {
      *
      * The registration will be kept alive and the connection open after this method
      *
-     * Always resolves the promise with different strings (see statics in this class), only throws an error if the passed mediaStationId does not exist
-     *
      * @param {number} id
      * @param {boolean} preserveMSname if true, the actually set name in the mediaStation object is preserved, if false the name is overwritten by the
      * name loaded from the contents-file
      * @param {string} role either "admin" or "user": determines if the app registers as admin- or user-app on the media-apps
-     * @returns {Promise<string>}
+     * @returns {Promise<ContentDownloadStatus>}
      */
-    async downloadContentsOfMediaStation(id: number, preserveMSname: boolean, role: ("user" | "admin") = "admin"): Promise<string> {
+    async downloadContentsOfMediaStation(id: number, preserveMSname: boolean, role: ("user" | "admin") = "admin"): Promise<IContentDownloadResult> {
         const mediaStation: MediaStation = this._mediaStationRepo.requireMediaStation(id);
         const controllerIP: string | null = mediaStation.mediaAppRegistry.getControllerIp();
         let contentsJSON: string | null;
 
         if (!controllerIP)
-            return ContentDownloadStatus.FailedNoControllerIp;
+            return {status: ContentDownloadStatus.FailedNoControllerIp, ip:""};
 
         const pingResult: boolean = await this._networkService.pcRespondsToPing(controllerIP);
 
         if (!pingResult)
-            return ContentDownloadStatus.FailedNoResponseFrom + controllerIP;
+            return {status: ContentDownloadStatus.FailedNoResponseFrom , ip: controllerIP};
 
         const connection: boolean = await this._networkService.openConnection(controllerIP);
 
         if (!connection)
-            return ContentDownloadStatus.FailedNoResponseFrom + controllerIP;
+            return {status: ContentDownloadStatus.FailedNoResponseFrom , ip: controllerIP};
 
         const appIsOnline: boolean = await this._networkService.isMediaAppOnline(controllerIP);
 
         if (!appIsOnline)
-            return ContentDownloadStatus.FailedNoResponseFrom + controllerIP;
+            return {status: ContentDownloadStatus.FailedNoResponseFrom , ip: controllerIP};
 
         let registration: string
 
@@ -66,21 +70,21 @@ export class MediaStationContentsService {
             throw new Error("Role not valid: " + role);
 
         if (registration === "no")
-            return ContentDownloadStatus.FailedNoResponseFrom + controllerIP;
+            return {status: ContentDownloadStatus.FailedNoResponseFrom , ip: controllerIP};
          else if (registration === "yes_blocked")
-            return ContentDownloadStatus.FailedAppBlocked;
+            return {status: ContentDownloadStatus.FailedAppBlocked , ip: controllerIP};
 
         contentsJSON = await this._networkService.getContentFileFrom(controllerIP);
 
         if (contentsJSON === null) {
-            return ContentDownloadStatus.FailedNoResponseFrom + controllerIP;
+            return {status: ContentDownloadStatus.FailedNoResponseFrom , ip: controllerIP};
         } else if (contentsJSON === "{}") {
             mediaStation.reset();
-            return ContentDownloadStatus.SuccessNoContentsOnController + controllerIP;
+            return {status: ContentDownloadStatus.SuccessNoContentsOnController , ip: controllerIP};
         } else {
             mediaStation.importFromJSON(JSON.parse(contentsJSON), preserveMSname);
             await this._mediaStationRepo.saveMediaStations();
-            return ContentDownloadStatus.Success + mediaStation.id;
+            return {status: ContentDownloadStatus.Success , ip: controllerIP};
         }
     }
 }
