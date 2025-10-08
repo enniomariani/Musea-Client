@@ -8,7 +8,7 @@ import {
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
 import {MockFolderManager} from "../../../__mocks__/mcf/renderer/dataManagers/MockFolderManager";
-import {MockContentDataService} from "__mocks__/mcf/renderer/services/MockContentDataService";
+import {MockContentDataService} from "tests/__mocks__/mcf/renderer/services/MockContentDataService";
 
 let folderService: FolderDataService;
 let mockMediaStationRepo: MockMediaStationRepository;

@@ -1,10 +1,10 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
-import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
-import {MockMediaStationRepository} from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
-import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {MockMediaAppConnectionService} from "__mocks__/mcf/renderer/services/MockMediaAppConnectionService";
-import {MockMediaAppSyncService} from "__mocks__/mcf/renderer/network/MockMediaAppSyncService";
+import {MockNetworkService} from "tests/__mocks__/mcf/renderer/network/MockNetworkService";
+import {MockMediaStationRepository} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
+import {MockMediaStation} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStation";
+import {MockMediaAppConnectionService} from "tests/__mocks__/mcf/renderer/services/MockMediaAppConnectionService";
+import {MockMediaAppSyncService} from "tests/__mocks__/mcf/renderer/network/MockMediaAppSyncService";
 import {MediaApp, MediaAppRole} from "src/mcf/renderer/dataStructure/MediaApp";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
 import {ProgressReporter, SyncEvent, SyncScope} from "src/mcf/renderer/services/mediastation/SyncEvents";

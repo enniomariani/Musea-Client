@@ -3,8 +3,8 @@ import {MediaStation} from "../../../../src/mcf/renderer/dataStructure/MediaStat
 import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
 import {MediaApp, MediaAppRole} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
 import {Tag} from "../../../../src/mcf/renderer/dataStructure/Tag";
-import {MockTagRegistry} from "__mocks__/mcf/renderer/registries/MockTagRegistry";
-import {MockMediaAppRegistry} from "__mocks__/mcf/renderer/registries/MockMediaAppRegistry";
+import {MockTagRegistry} from "tests/__mocks__/mcf/renderer/registries/MockTagRegistry";
+import {MockMediaAppRegistry} from "tests/__mocks__/mcf/renderer/registries/MockMediaAppRegistry";
 
 let mediaStation: MediaStation;
 let mockTagRegistry:MockTagRegistry;

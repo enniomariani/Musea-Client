@@ -1,17 +1,17 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {
     MockMediaStationRepository
-} from "__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
-import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {MockContentManager} from "__mocks__/mcf/renderer/dataManagers/MockContentManager";
-import {MockContent} from "__mocks__/mcf/renderer/dataStructure/MockContent";
+} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
+import {MockMediaStation} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStation";
+import {MockContentManager} from "tests/__mocks__/mcf/renderer/dataManagers/MockContentManager";
+import {MockContent} from "tests/__mocks__/mcf/renderer/dataStructure/MockContent";
 import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
 import {
     MockMediaAppCommandService
-} from "__mocks__/mcf/renderer/network/MockMediaAppCommandService";
+} from "tests/__mocks__/mcf/renderer/network/MockMediaAppCommandService";
 import {Image, Video} from "src/mcf/renderer/dataStructure/Media";
 import {MediaStationCommandService} from "src/mcf/renderer/services/mediastation/MediaStationCommandService";
-import {MockNetworkService} from "__mocks__/mcf/renderer/network/MockNetworkService";
+import {MockNetworkService} from "tests/__mocks__/mcf/renderer/network/MockNetworkService";
 
 let service:MediaStationCommandService;
 let mockMediaStationRepo:MockMediaStationRepository;

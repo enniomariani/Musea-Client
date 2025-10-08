@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {Tag} from "src/mcf/renderer/dataStructure/Tag";
 import {TagRegistry} from "src/mcf/renderer/registries/TagRegistry";
-import {MockMediaStation} from "__mocks__/mcf/renderer/dataStructure/MockMediaStation";
+import {MockMediaStation} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 
 let tagRegistry: TagRegistry;
 let mockMediaStation:MockMediaStation;

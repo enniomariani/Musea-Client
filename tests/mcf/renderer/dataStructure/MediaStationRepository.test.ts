@@ -6,7 +6,7 @@ import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/Mo
 import {
     MockContentFileService
 } from "../../../__mocks__/mcf/renderer/fileHandling/MockContentFileService";
-import {MediaApp, MediaAppRole} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
+import {MediaAppRole} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
 import {MediaStation} from "../../../../src/mcf/renderer/dataStructure/MediaStation";
 import {
     MediaStationRepository
@@ -14,7 +14,7 @@ import {
 import {
     MockMediaFilesMarkedToDeleteService
 } from "../../../__mocks__/mcf/renderer/fileHandling/MockMediaFilesMarkedToDeleteService";
-import {MockMediaFileCacheHandler} from "__mocks__/mcf/renderer/fileHandling/MockMediaFileCacheHandler";
+import {MockMediaFileCacheHandler} from "tests/__mocks__/mcf/renderer/fileHandling/MockMediaFileCacheHandler";
 
 let mediaStationRepo: MediaStationRepository;
 let mockMediaFileCacheHandler: MockMediaFileCacheHandler;
