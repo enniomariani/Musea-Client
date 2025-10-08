@@ -1,12 +1,11 @@
+export const DataIndicator = {
+    TEXT: 0,
+    BINARY_DATA: 1
+} as const;
+export type DataIndicator = typeof DataIndicator[keyof typeof DataIndicator];
+
 export class ConvertNetworkData {
-
-    static VERSION:string = "0.2";
-
-    //0.2: - improved memory-usage in both methods
-
-    static DATA_INDICATOR_TEXT: number = 0;
-    static DATA_INDICATOR_BINARY_DATA: number = 1;
-    static INTERPRETATION_ERROR:string = "error, data could not be interpreted!";
+    static readonly INTERPRETATION_ERROR:string = "error, data could not be interpreted!";
 
     constructor() {}
 
@@ -22,10 +21,10 @@ export class ConvertNetworkData {
             let length: number;
             if (typeof part === 'string') {
                 const encodedPart = encoder.encode(part);
-                partTypes.push(ConvertNetworkData.DATA_INDICATOR_TEXT);
+                partTypes.push(DataIndicator.TEXT);
                 length = encodedPart.length;
             } else if (part instanceof Uint8Array) {
-                partTypes.push(ConvertNetworkData.DATA_INDICATOR_BINARY_DATA);
+                partTypes.push(DataIndicator.BINARY_DATA);
                 length = part.length;
             } else {
                 console.error("ConvertNetworkData: unknown data format: ", part);
@@ -105,9 +104,9 @@ export class ConvertNetworkData {
             }
 
             // Handle text or binary data based on the part type
-            if (partType === ConvertNetworkData.DATA_INDICATOR_TEXT) {
+            if (partType === DataIndicator.TEXT) {
                 parts.push(decoder.decode(partData));  // Decode text directly
-            } else if (partType === ConvertNetworkData.DATA_INDICATOR_BINARY_DATA) {
+            } else if (partType === DataIndicator.BINARY_DATA) {
                 parts.push(partData);  // Push the binary data directly (no extra copy)
             } else {
                 return [ConvertNetworkData.INTERPRETATION_ERROR];  // Handle unknown data type
