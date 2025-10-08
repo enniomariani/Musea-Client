@@ -125,7 +125,7 @@ export class MediaStationRepository{
 
     cacheMediaStation(id:number):void{
         const mediaStation:MediaStation = this.requireMediaStation(id);
-        this._contentFileService.saveFile(id,mediaStation.exportToJSON() );
+        this._contentFileService.saveFile(id,mediaStation.exportToJSON(new Date()) );
     }
 
     removeCachedMediaStation(id:number):void{
