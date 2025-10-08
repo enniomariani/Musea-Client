@@ -9,7 +9,7 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-function arrayBufferToHex(buffer: ArrayBuffer): string {
+function arrayBufferToHex(buffer: Uint8Array): string {
     const byteArray: Uint8Array = new Uint8Array(buffer);
     let str: string = "[";
     let tempStr: string;
@@ -127,7 +127,7 @@ const cases = [
 describe('encodeCommand(): ', () => {
     test.each(cases)('$description', ({dataParts, expectedData}) => {
         if(expectedData instanceof Uint8Array) {
-            let data: ArrayBuffer = ConvertNetworkData.encodeCommand(...dataParts);
+            let data: Uint8Array = ConvertNetworkData.encodeCommand(...dataParts);
 
             console.log("--ENCODE COMPARE-- \nRECEVIED: ", new Uint8Array(data), "\n EXPECTED: ", expectedData);
 

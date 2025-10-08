@@ -63,19 +63,19 @@ describe("connectToServer(): ", () => {
         networkInterface.connectToServer(serverPath, onOpenHandler, null, null);
         await server.connected; //wait until client connected to server, otherwise the events would not have been fired
 
-        expect(onOpenHandler).toBeCalledTimes(1);
+        expect(onOpenHandler).toHaveBeenCalledTimes(1);
     });
 
     it("calls onError callback when the connection could not be established", async () =>{
         let onErrorHandler = jest.fn();
         networkInterface.connectToServer("wrong-serverpath", null, onErrorHandler, null);
-        expect(onErrorHandler).toBeCalledTimes(1);
+        expect(onErrorHandler).toHaveBeenCalledTimes(1);
     });
 
     it("prints the error when the connection could not be established", async () =>{
         let logSpy:any = jest.spyOn(console, 'error');
         networkInterface.connectToServer("wrong-serverpath", null, null, null);
-        expect(logSpy).toBeCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledTimes(1);
     });
 
     it("calls onError callback when the server-connection threw an error", async () =>{
@@ -86,7 +86,7 @@ describe("connectToServer(): ", () => {
 
         server.error();
 
-        expect(onErrorHandler).toBeCalledTimes(1);
+        expect(onErrorHandler).toHaveBeenCalledTimes(1);
     });
 
     it("calls onClose callback when the server closed", async () =>{
@@ -99,7 +99,7 @@ describe("connectToServer(): ", () => {
 
         await server.closed; //wait until client closed the connection to server, otherwise the events would not have been fired
 
-        expect(onClosedHandler).toBeCalledTimes(1);
+        expect(onClosedHandler).toHaveBeenCalledTimes(1);
     });
 
     it("calls onDataReceived callback when the server sent a message", async () =>{
@@ -111,7 +111,7 @@ describe("connectToServer(): ", () => {
         server.send(data)
         server.close();
 
-        expect(onDataReceivedHandler).toBeCalledTimes(1);
+        expect(onDataReceivedHandler).toHaveBeenCalledTimes(1);
         expect(onDataReceivedHandler).toHaveBeenCalledWith(data);
     });
 

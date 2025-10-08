@@ -3,7 +3,7 @@ import {SendCommandFactory} from "../../../../src/mcf/renderer/network/SendComma
 import {ConvertNetworkData} from "../../../../src/mcf/renderer/network/ConvertNetworkData";
 
 let sendCommandFactory:SendCommandFactory;
-let createdCommand:ArrayBuffer;
+let createdCommand: Uint8Array;
 
 let correctArrayBuffer:Uint8Array = new Uint8Array([0x00, 0xFF, 0x1E, 0x22]);
 jest.mock('../../../../src/mcf/renderer/network/ConvertNetworkData');
