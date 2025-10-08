@@ -14,11 +14,9 @@ export class MediaStationLocalMetaData {
     }
 
     /**
-     * loads the map of mediastation-names (keys) and controller-ips (values) from the json-file specified in the init() method
+     * Load the map of mediastation-names (keys) and controller-ips (values) from the json-file specified in the init() method
      *
-     * returns an empty map if there is no file saved
-     *
-     * @returns {Promise<Map<string, string>>}
+     * @returns {Promise<Map<string, string>>}  An empty map if there is no file saved
      */
     async load():Promise<Map<string, string>>{
         let textDecoder:TextDecoder = new TextDecoder();
@@ -31,9 +29,7 @@ export class MediaStationLocalMetaData {
         uint8Array = await this._backendFileService.loadFile(this._pathToFile);
 
         if(uint8Array){
-            console.log("MediaStationLocalMetaData: file exists");
             jsonStr = textDecoder.decode(uint8Array);
-            console.log("Loaded json-string: ", jsonStr);
             json = JSON.parse(jsonStr);
 
             for(i = 0; i < json.mediaStations.length; i++)

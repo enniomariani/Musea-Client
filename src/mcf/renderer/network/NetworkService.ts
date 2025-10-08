@@ -42,7 +42,6 @@ export class NetworkService {
                 this._networkConnectionHandler.createConnection(
                     ip,
                     () => {
-                        console.log("CONNECTION ESTABLISHED TO: ", ip);
                         resolve(true);
                     },
                     () => {
@@ -56,7 +55,6 @@ export class NetworkService {
     }
 
     private async _onPingReceived(ip: string): Promise<void> {
-        console.log("ping received from: ", ip);
         await this._networkConnectionHandler.sendData(ip, ConvertNetworkData.encodeCommand("network", "pong"));
     }
 
@@ -65,7 +63,7 @@ export class NetworkService {
     }
 
     /**
-     * sends a "ping"(ICMP) signal to the ip and returns if it was succesful (timeout defined in backend)
+     * Send a "ping"(ICMP) signal to the ip and return if it was succesful (timeout defined in backend)
      *
      * @param {string} ip
      * @returns {Promise<boolean>}
@@ -163,7 +161,6 @@ export class NetworkService {
     }
 
     private _onConnectionClosed(ip: string): void {
-        console.info('Connection closed: ', ip, this._onConnectionClosedPromises, this._dataReceivedPromises.has(ip));
         const promise = this._onConnectionClosedPromises.get(ip);
 
         if (promise) {
@@ -182,7 +179,6 @@ export class NetworkService {
     private async _createConnectionClosedPromise(ip: string, command: Uint8Array, timeout: number): Promise<void> {
         return new Promise(async (resolve, reject) => {
             const timer = setTimeout(() => {
-                console.log("Networkservice: close connection after timeout")
                 this._onConnectionClosedPromises.delete(ip);
                 this.closeConnection(ip);
                 resolve();
@@ -199,7 +195,6 @@ export class NetworkService {
                 }
             });
 
-            console.log("Networkservice: send command: ", command)
             await this._networkConnectionHandler.sendData(ip, command, null);
         });
     }
@@ -207,9 +202,7 @@ export class NetworkService {
     private async _createNetworkPromise(ip: string, command: Uint8Array, timeout: number, rejectValue: any, onSendChunk: Function | null = null): Promise<any> {
 
         return new Promise(async (resolve, reject) => {
-
-            console.log("sending data to: ", ip);
-            let answer: boolean = await this._networkConnectionHandler.sendData(ip, command, onSendChunk);
+            const answer: boolean = await this._networkConnectionHandler.sendData(ip, command, onSendChunk);
 
             //if the connection was closed during the sending-process, resolve with reject-value
             if (!answer) {
@@ -222,14 +215,12 @@ export class NetworkService {
                 onSendChunk("Daten gesendet, warte auf Antwort...");
 
             const timer = setTimeout(() => {
-                console.log("timeout reached!", rejectValue);
                 this._dataReceivedPromises.delete(ip);
                 resolve(rejectValue); // Resolve with rejectValue on timeout
             }, timeout);
 
             this._dataReceivedPromises.set(ip, {
                 resolve: (value) => {
-                    console.log("resolve network-send-promise: ", value, timer)
                     if (timer) clearTimeout(timer);
 
                     this._dataReceivedPromises.delete(ip);

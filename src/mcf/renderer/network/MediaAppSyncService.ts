@@ -63,12 +63,9 @@ export class MediaAppSyncService {
 
                 media.idOnMediaApp = idOnMediaApp;
 
-                console.log("SET NEW ID FOR MEDIA: ", content.id, media.idOnMediaApp, idOnMediaApp)
-
                 this._mediaStationRepo.mediaCacheHandler.deleteCachedMedia(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId);
             } else {
                 areAllMediaSentSuccesfully = false;
-                console.log("MEDIUM KONNTE NICHT GESENDET ODER EMPFANGEN WERDEN!")
                 reporter({ type: MediaAppSyncEventType.MediaSendFailed });
             }
         }

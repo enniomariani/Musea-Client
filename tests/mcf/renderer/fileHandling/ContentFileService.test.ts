@@ -110,7 +110,6 @@ describe("init () and fileExists() ", () => {
         let pathToLoad: string = "\\0\\0.json";
 
         mockBackendFileService.fileExists.mockImplementationOnce((path: string): Promise<boolean> => {
-            console.log("MOCK PATH: ", path, pathToLoad)
             return new Promise((resolve) =>{
                 if (path === pathToFolder + pathToLoad)
                     resolve(true)

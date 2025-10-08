@@ -2,8 +2,6 @@
 
 const {ipcRenderer, contextBridge, webUtils} = require('electron');
 
-console.log("Preload-Script starts: ", process.env.NODE_ENV);
-
 //the "main"-world means the RENDERER-world (the code that runs in the virtual browser)
 //this method makes the ipcRenderer-Object available as a sub-object of the window-object (window.ipcRenderer)
 //if you include it like this in the renderer.ts: const { backend } = window;, you can use the object ipcRenderer directly
@@ -14,10 +12,9 @@ contextBridge.exposeInMainWorld("backend", {
 
 contextBridge.exposeInMainWorld("backendFileService", {
     saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('mediaClientFramework:saveFile', path, data),
-    saveFileByPath: (path: string, fileInstance:File) =>{
-        let pathToLoad:string = webUtils.getPathForFile(fileInstance);
-        console.log("preload: path for file to save: ", pathToLoad);
-        ipcRenderer.invoke('mediaClientFramework:saveFileByPath', path, pathToLoad)
+    saveFileByPath: async (path: string, fileInstance:File) =>{
+        const pathToLoad:string = webUtils.getPathForFile(fileInstance);
+        await ipcRenderer.invoke('mediaClientFramework:saveFileByPath', path, pathToLoad)
     },
     deleteFile: (path: string) => ipcRenderer.invoke('mediaClientFramework:deleteFile', path),
     loadFile: (path: string) => ipcRenderer.invoke('mediaClientFramework:loadFile', path),
@@ -28,5 +25,3 @@ contextBridge.exposeInMainWorld("backendFileService", {
 contextBridge.exposeInMainWorld("backendNetworkService", {
     ping: (ip: string) => ipcRenderer.invoke('backendNetworkService:ping', ip)
 });
-
-console.log("Preload-script ended");

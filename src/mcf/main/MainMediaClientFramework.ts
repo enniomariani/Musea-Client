@@ -21,14 +21,10 @@ export class MainMediaClientFramework {
         });
 
         ipcMain.handle('mediaClientFramework:saveFileByPath', async (event:Electron.IpcMainInvokeEvent, path: string, pathToLoad: string) => {
-
-            console.log("load file from path: ", pathToLoad)
-
-            try {
+                        try {
                 let dataAsNodeBuffer:Buffer = await fs.promises.readFile(pathToLoad);
                 return await this.mainFileService.saveFile(path, dataAsNodeBuffer);
             } catch (err:any) {
-                console.error("Error saving file:", err);
                 return "Error: " + err.message;
             }
         });
@@ -51,10 +47,7 @@ export class MainMediaClientFramework {
 
         //ping
         ipcMain.handle('backendNetworkService:ping', async (event:Electron.IpcMainInvokeEvent, ip: string):Promise<boolean> => {
-            let answer = await ping.promise.probe(ip);
-
-            console.log("MainMediaClientFramework, ping-answer: ", ip, answer);
-
+            const answer = await ping.promise.probe(ip);
             return answer.alive;
         });
     }

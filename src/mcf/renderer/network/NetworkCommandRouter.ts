@@ -89,10 +89,9 @@ export class NetworkCommandRouter {
         params: (string | Uint8Array)[],
         promise?: PromiseHandler
     ): void {
-        if (action === "put" && params[0] !== null) {
-            console.log("contents received: ", params[0]);
+        if (action === "put" && params[0] !== null)
             promise?.resolve(params[0]);
-        } else {
+         else {
             console.error("Non-valid content-command received: ", action, params);
             this._resolveWithNull(promise, ip);
         }
@@ -105,7 +104,6 @@ export class NetworkCommandRouter {
         promise?: PromiseHandler
     ): void {
         if (action === "put" && params[0] !== null && typeof params[0] === "string") {
-            console.log("media received: ", params[0], promise);
             promise?.resolve(parseInt(params[0]));
         } else {
             console.error("Non-valid media-command received: ", action, params);

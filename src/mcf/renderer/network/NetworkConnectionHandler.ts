@@ -19,7 +19,7 @@ export  class NetworkConnectionHandler{
     }
 
     /**
-     * Creates and stores a new connection.
+     * Create and store a new connection.
      *
      * If the connection already exists it prints an error, but does not throw an error
      *
@@ -46,7 +46,6 @@ export  class NetworkConnectionHandler{
                 onOpen();
             }, onError,
             ()=>{
-                console.log("Connection-Handler: CLOSE: ", ip);
                 this._connections.delete(ip);
                 if(onClosed)
                     onClosed(ip);
@@ -62,7 +61,7 @@ export  class NetworkConnectionHandler{
     }
 
     /**
-     * Sends data to a specific connection.
+     * Send data to a specific connection.
      *
      * @param {string} ip - IP-address of the connection
      * @param {Uint8Array} data - The data to send.
@@ -81,7 +80,7 @@ export  class NetworkConnectionHandler{
     }
 
     /**
-     * Closes a specific connection.
+     * Close a specific connection.
      *
      * @param {string} ip - Unique IP for the connection.
      */
