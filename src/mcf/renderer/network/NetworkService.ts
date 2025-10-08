@@ -174,44 +174,61 @@ export class NetworkService {
         });
     }
 
-    private async _createNetworkPromise(ip: string, command: Uint8Array, timeout: number, rejectValue: any, onSendChunk: Function | null = null): Promise<any> {
+    private async _createNetworkPromise(
+        ip: string,
+        command: Uint8Array,
+        timeout: number,
+        rejectValue: any,
+        onSendChunk: Function | null = null
+    ): Promise<any> {
 
-        return new Promise(async (resolve, reject) => {
-            const answer: boolean = await this._networkConnectionHandler.sendData(ip, command, onSendChunk);
+        // Step 1: Send the data
+        const sendSuccessful = await this._networkConnectionHandler.sendData(ip, command, onSendChunk);
 
-            //if the connection was closed during the sending-process, resolve with reject-value
-            if (!answer) {
-                console.error("Connection closed during sending-process: reject-value: ", rejectValue)
-                resolve(rejectValue);
-                return;
-            }
+        if (!sendSuccessful) {
+            console.error("Connection closed during sending-process: reject-value: ", rejectValue);
+            return rejectValue;
+        }
 
-            if (onSendChunk !== null)
-                onSendChunk("Daten gesendet, warte auf Antwort...");
+        if (onSendChunk !== null)
+            onSendChunk("Daten gesendet, warte auf Antwort...");
 
+        // Step 2: Wait for the response with timeout
+        return this._waitForResponse(ip, timeout, rejectValue);
+    }
+
+    private _waitForResponse(ip: string, timeout: number, rejectValue: any): Promise<any> {
+        return new Promise((resolve, reject) => {
             const timer = setTimeout(() => {
-                this._dataReceivedPromises.delete(ip);
-                resolve(rejectValue); // Resolve with rejectValue on timeout
+                this._cleanupPromise(ip);
+                resolve(rejectValue);
             }, timeout);
 
             this._dataReceivedPromises.set(ip, {
                 resolve: (value) => {
-                    if (timer) clearTimeout(timer);
-                    this._dataReceivedPromises.delete(ip);
+                    clearTimeout(timer);
+                    this._cleanupPromise(ip);
                     resolve(value);
                 },
                 reject: (error) => {
-                    if (timer) clearTimeout(timer);
-                    this._dataReceivedPromises.delete(ip);
+                    clearTimeout(timer);
+                    this._cleanupPromise(ip);
                     reject(error);
                 }
             });
         });
     }
 
+    private _cleanupPromise(ip: string): void {
+        this._dataReceivedPromises.delete(ip);
+    }
+
     private async _onDataReceived(ip: string, data: Uint8Array): Promise<void> {
         const convertedData = ConvertNetworkData.decodeCommand(data);
         const promise = this._dataReceivedPromises.get(ip);
+
+        //the router executes promise.resolve/reject which then triggers the promise-handler defined in
+        //the method _waitForResponse
         await this._networkCommandRouter.routeCommand(ip, convertedData, promise);
     }
 }
