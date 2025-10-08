@@ -253,17 +253,8 @@ describe("connectAndRegisterToMediaApp() ", () => {
         });
     });
 
-    it("should throw an error if the app-type is not valid", async () => {
-        mockNetworkService.openConnection.mockReturnValueOnce(true);
-        mockNetworkService.sendRegistrationUserApp.mockReturnValueOnce("no");
-        setupMediaAppWithName();
-
-        await expect(service.connectAndRegisterToMediaApp(0, mediaAppId, "not-valid")).rejects.toThrow(Error("Role not valid: not-valid"));
-    });
-
     it("should throw an error if the MediaApp ID could not be found", async () => {
         setupMediaAppWithName(false);
-
         await expect(service.connectAndRegisterToMediaApp(0, mediaAppId, "admin")).rejects.toThrow(Error("Media-App with this ID does not exist: 0"));
     });
 });

@@ -48,9 +48,6 @@ export class MediaAppConnectionService {
     async connectAndRegisterToMediaApp(mediaStationId: number, mediaAppId: number, role: ("admin" | "user") = "admin"): Promise<boolean> {
         let ip: string = this._getMediaApp(mediaStationId, mediaAppId).ip;
 
-        if (role !== "admin" && role !== "user")
-            throw new Error("Role not valid: " + role);
-
         if (!await this._networkService.openConnection(ip))
             return false;
 
