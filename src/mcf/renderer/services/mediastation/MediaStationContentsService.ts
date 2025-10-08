@@ -2,14 +2,15 @@ import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
 import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
 
+export enum ContentDownloadStatus{
+    Success = "success",
+    SuccessNoContentsOnController = "failedNoContentsOnController",
+    FailedNoResponseFrom = "failedNoResponseFrom",
+    FailedNoControllerIp = "failedNoControllerIp",
+    FailedAppBlocked = "failedAppBlocked"
+}
+
 export class MediaStationContentsService {
-
-    static CONTENT_DOWNLOAD_SUCCESS: string = "contents of mediaStation received and saved: ";
-    static CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM: string = "download of contents of mediaStation failed, because controller-app did not answer: ";
-    static CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER: string = "download of contents of mediaStation failed, because controller-app does not have a contents.json file saved: ";
-    static CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP: string = "download of contents of mediaStation failed, because there is no controller-ip specified!";
-    static CONTENT_DOWNLOAD_FAILED_APP_BLOCKED: string = "download of contents of mediaStation for user-app failed, because it is blocked by an admin-app!";
-
     private _networkService: NetworkService;
     private _mediaStationRepo: MediaStationRepository;
 
@@ -38,22 +39,22 @@ export class MediaStationContentsService {
         let contentsJSON: string | null;
 
         if (!controllerIP)
-            return MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_NO_CONTROLLER_IP;
+            return ContentDownloadStatus.FailedNoControllerIp;
 
         const pingResult: boolean = await this._networkService.pcRespondsToPing(controllerIP);
 
         if (!pingResult)
-            return MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+            return ContentDownloadStatus.FailedNoResponseFrom + controllerIP;
 
         const connection: boolean = await this._networkService.openConnection(controllerIP);
 
         if (!connection)
-            return MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+            return ContentDownloadStatus.FailedNoResponseFrom + controllerIP;
 
         const appIsOnline: boolean = await this._networkService.isMediaAppOnline(controllerIP);
 
         if (!appIsOnline)
-            return MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+            return ContentDownloadStatus.FailedNoResponseFrom + controllerIP;
 
         let registration: string
 
@@ -65,21 +66,21 @@ export class MediaStationContentsService {
             throw new Error("Role not valid: " + role);
 
         if (registration === "no")
-            return MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+            return ContentDownloadStatus.FailedNoResponseFrom + controllerIP;
          else if (registration === "yes_blocked")
-            return MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_APP_BLOCKED;
+            return ContentDownloadStatus.FailedAppBlocked;
 
         contentsJSON = await this._networkService.getContentFileFrom(controllerIP);
 
         if (contentsJSON === null) {
-            return MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_NO_RESPONSE_FROM + controllerIP;
+            return ContentDownloadStatus.FailedNoResponseFrom + controllerIP;
         } else if (contentsJSON === "{}") {
             mediaStation.reset();
-            return MediaStationContentsService.CONTENT_DOWNLOAD_FAILED_NO_CONTENTS_ON_CONTROLLER + controllerIP;
+            return ContentDownloadStatus.SuccessNoContentsOnController + controllerIP;
         } else {
             mediaStation.importFromJSON(JSON.parse(contentsJSON), preserveMSname);
             await this._mediaStationRepo.saveMediaStations();
-            return MediaStationContentsService.CONTENT_DOWNLOAD_SUCCESS + mediaStation.id;
+            return ContentDownloadStatus.Success + mediaStation.id;
         }
     }
 }
