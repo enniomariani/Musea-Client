@@ -5,7 +5,12 @@ import {
 import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
 import {MockMediaManager} from "../../../__mocks__/mcf/renderer/dataManagers/MockMediaManager";
 import {Image, Video} from "../../../../src/mcf/renderer/dataStructure/Media";
-import {MediaService} from "../../../../src/mcf/renderer/services/MediaService";
+import {
+    FileExtension,
+    ImageFileExtension,
+    MediaService,
+    VideoFileExtension
+} from "../../../../src/mcf/renderer/services/MediaService";
 import {MediaManager} from "../../../../src/mcf/renderer/dataManagers/MediaManager";
 
 let mediaService: MediaService;
@@ -28,7 +33,7 @@ afterEach(() => {
 describe("addImageAndCacheIt() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     let image: Image = new Image();
-    let fileExtension: string = MediaService.FILE_EXTENSION_IMAGE_JPEG;
+    let fileExtension: ImageFileExtension = FileExtension.IMAGE.JPEG;
     const fileContent = 'Hello, world!';
     const fileType = 'text/plain';
     const fileName:string = "testFileName.xy";
@@ -56,19 +61,12 @@ describe("addImageAndCacheIt() ", () => {
         expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0, fileExtension, mockFile);
     });
-
-    it("should throw an error if the passed fileExtension is not one of the MediaService.FILE_EXTENSION_IMAGE vars", async () => {
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaManager.createImage.mockReturnValueOnce(image);
-
-        await expect(mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, "otherFileExtension", mockFile, fileName)).rejects.toThrow(new Error("Non-valid file-extension passed: otherFileExtension"));
-    });
 });
 
 describe("addVideoAndCacheIt() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     let video: Video = new Video();
-    let fileExtension: string = MediaService.FILE_EXTENSION_VIDEO_MP4;
+    let fileExtension: VideoFileExtension = FileExtension.VIDEO.MP4;
     const fileContent = 'Hello, world!';
     const fileType = 'text/plain';
     const fileName:string = "testFileName.xy";
@@ -94,13 +92,6 @@ describe("addVideoAndCacheIt() ", () => {
 
         expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.mediaCacheHandler.cacheMedia).toHaveBeenCalledWith(mediaStationId, contentId, 0, fileExtension, mockFile);
-    });
-
-    it("should throw an error if the passed fileExtension is not one of the MediaService.FILE_EXTENSION_VIDEO vars", async() => {
-        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaManager.createImage.mockReturnValueOnce(video);
-
-        await expect(mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 150, "otherFileExtension", mockFile, fileName)).rejects.toThrow(new Error("Non-valid file-extension passed: otherFileExtension"));
     });
 });
 

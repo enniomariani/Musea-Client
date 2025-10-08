@@ -20,7 +20,7 @@ export class MediaStationContentsService {
     }
 
     /**
-     * gets the controller-ip of the passed mediaStation, sends the command to download the content-file of this controller-app
+     * Get the controller-ip of the passed mediaStation, sends the command to download the content-file of this controller-app
      * and saves the contents-json to the mediaStation.
      *
      * The registration will be kept alive and the connection open after this method
