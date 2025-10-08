@@ -19,7 +19,9 @@ mediaApp2.name = "app2";
 mediaApp2.ip = "127.0.0.2";
 mediaApp2.role = MediaApp.ROLE_DEFAULT;
 
+const date:Date = new Date();
 const jsonMock: any = {
+    lastSync: date.toLocaleString(),
     name: "newName",
     folderIdCounter: 2,
     contentIdCounter: 1,
@@ -91,7 +93,7 @@ describe("exportToJSON() ", () => {
         mockTagRegistry.getAll.mockReturnValueOnce(new Map([[0, tag1],[3,tag2]]));
         mockMediaAppRegistry.getAll.mockReturnValueOnce(new Map([[mediaApp1.id, mediaApp1],[mediaApp2.id,mediaApp2]]));
 
-        receivedJSONstr = mediaStation.exportToJSON();
+        receivedJSONstr = mediaStation.exportToJSON(date);
 
         expect(() => JSON.parse(receivedJSONstr)).not.toThrow();
         receivedJSON = JSON.parse(receivedJSONstr);

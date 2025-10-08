@@ -40,10 +40,11 @@ export class MediaStation {
         this._mediaAppRegistry.reset();
     }
 
-    exportToJSON(): string {
+    exportToJSON(date:Date): string {
         const allTags:Map<number, Tag> = this._tagRegistry.getAll();
 
         let json: any = {
+            lastSync: date.toLocaleString(),
             name: this._name,
             folderIdCounter: this._folderIdCounter,
             contentIdCounter: this._contentIdCounter,

@@ -163,7 +163,7 @@ export class MediaStationSyncService {
                 });
 
                 progressReporter({scope: SyncScope.Controller, type: "SendingContents"});
-                json = mediaStation.exportToJSON();
+                json = mediaStation.exportToJSON(new Date());
 
                 await this._networkService.sendContentFileTo(controller.ip, json);
                 this._mediaStationRepo.removeCachedMediaStation(mediaStationId);
