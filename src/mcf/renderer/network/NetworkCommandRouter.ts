@@ -1,15 +1,15 @@
 import {ConvertNetworkData} from "./ConvertNetworkData";
 
-type PromiseHandler<T = any> = {
+export type PromiseHandler<T = any> = {
     resolve: (value: T) => void;
     reject: (error?: any) => void;
 };
 
 export class NetworkCommandRouter {
 
-    private _onBlockReceivedCallback: Function | null = null;
-    private _onUnBlockReceivedCallback: Function | null = null;
-    private _onPingReceived: Function | null = null;
+    private _onBlockReceivedCallback: (() => void) | null  = null;
+    private _onUnBlockReceivedCallback: (() => void) | null = null;
+    private _onPingReceived: ((ip:string) => void) | null = null;
 
     constructor(){}
 
@@ -36,8 +36,6 @@ export class NetworkCommandRouter {
             this._resolveWithNull(promise, ip);
             return;
         }
-
-        if (command.length < 2) return;
 
         const [category, action, ...params] = command;
 
@@ -89,7 +87,7 @@ export class NetworkCommandRouter {
         params: (string | Uint8Array)[],
         promise?: PromiseHandler
     ): void {
-        if (action === "put" && params[0] !== null)
+        if (action === "put" && params?.[0])
             promise?.resolve(params[0]);
          else {
             console.error("Non-valid content-command received: ", action, params);
@@ -103,7 +101,7 @@ export class NetworkCommandRouter {
         params: (string | Uint8Array)[],
         promise?: PromiseHandler
     ): void {
-        if (action === "put" && params[0] !== null && typeof params[0] === "string") {
+        if (action === "put" && params?.[0] && typeof params[0] === "string") {
             promise?.resolve(parseInt(params[0]));
         } else {
             console.error("Non-valid media-command received: ", action, params);

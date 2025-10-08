@@ -1,5 +1,6 @@
 import {NetworkService} from "src/mcf/renderer/network/NetworkService";
 import {MockNetworkConnectionHandler} from "tests/__mocks__/mcf/renderer/network/MockNetworkConnectionHandler";
+import {MockNetworkCommandRouter} from "./MockNetworkCommandRouter";
 
 const mockNetworkConnectionHandler:MockNetworkConnectionHandler = new MockNetworkConnectionHandler();
 
@@ -30,7 +31,7 @@ export class MockNetworkService extends NetworkService{
     sendLightCommandTo: jest.Mock;
 
     constructor() {
-        super(mockNetworkConnectionHandler);
+        super(mockNetworkConnectionHandler, new MockNetworkCommandRouter());
         this.openConnection = jest.fn();
         this.closeConnection = jest.fn();
         this.pcRespondsToPing = jest.fn();

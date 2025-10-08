@@ -8,7 +8,6 @@ type PromiseHandler<T = any> = {
 };
 
 export class NetworkService {
-
     private _networkConnectionHandler: NetworkConnectionHandler;
     private _dataReceivedPromises: Map<string, PromiseHandler>;
     private _onConnectionClosedPromises: Map<string, PromiseHandler<void>>;
@@ -23,17 +22,10 @@ export class NetworkService {
     }
 
     /**
-     * opens a connection to the passed ip
-     *
-     * resolves the promise with false if the connection could not be opened
-     *
-     * should not throw an error
-     *
-     * @param {string} ip
-     * @returns {Promise<boolean>}
+     * Open a connection to the passed ip
+     * Return true if the connections could be opened
      */
     async openConnection(ip: string): Promise<boolean> {
-
         return new Promise((resolve, reject) => {
             if (this._networkConnectionHandler.hasConnection(ip)) {
                 console.info("Connection is already open: ", ip);
@@ -64,9 +56,6 @@ export class NetworkService {
 
     /**
      * Send a "ping"(ICMP) signal to the ip and return if it was succesful (timeout defined in backend)
-     *
-     * @param {string} ip
-     * @returns {Promise<boolean>}
      */
     async pcRespondsToPing(ip: string): Promise<boolean> {
         try {
@@ -85,59 +74,45 @@ export class NetworkService {
     }
 
     /**
-     * sends a "ping" signal to the ip (if it is connected) via websocket and waits the amount of timeout in MS
+     * Send a "ping" signal to the ip (if it is connected) via websocket and waits the amount of timeout in MS
      * until it returns a "false" if it did not receive a pong-signal until then
-     *
-     * @param {string} ip
-     * @param {number} timeout  in MS
-     * @returns {Promise<boolean>}
      */
-    async isMediaAppOnline(ip: string, timeout: number = 3000): Promise<boolean> {
-        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "ping"), timeout, false);
+    async isMediaAppOnline(ip: string, timeoutMS: number = 3000): Promise<boolean> {
+        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "ping"), timeoutMS, false);
     }
 
-    async sendRegistrationAdminApp(ip: string, timeout: number = 3000): Promise<string> {
-        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "admin"), timeout, "no");
+    async sendRegistrationAdminApp(ip: string, timeoutMS: number = 3000): Promise<string> {
+        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "admin"), timeoutMS, "no");
     }
 
-    async sendRegistrationUserApp(ip: string, timeout: number = 3000): Promise<string> {
-        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "user"), timeout, "no");
+    async sendRegistrationUserApp(ip: string, timeoutMS: number = 3000): Promise<string> {
+        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "register", "user"), timeoutMS, "no");
     }
 
-    async sendCheckRegistration(ip: string, timeout: number = 3000): Promise<boolean> {
-        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "isRegistrationPossible"), timeout, false);
+    async sendCheckRegistration(ip: string, timeoutMS: number = 3000): Promise<boolean> {
+        return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "isRegistrationPossible"), timeoutMS, false);
     }
 
-    async unregisterAndCloseConnection(ip: string, timeout: number = 3000): Promise<void> {
-        return await this._createConnectionClosedPromise(ip, ConvertNetworkData.encodeCommand("network", "disconnect"), timeout);
+    async unregisterAndCloseConnection(ip: string, timeoutMS: number = 3000): Promise<void> {
+        return await this._createConnectionClosedPromise(ip, ConvertNetworkData.encodeCommand("network", "disconnect"), timeoutMS);
     }
 
     /**
-     * sends a command to the ip which asks for the content file saved on it. The media-app should
+     * Send a command to the ip which asks for the content file saved on it. The media-app should
      * return an empty JSON if there is no content-file or the JSON of the content-file
      *
      * Returns null if there was no response from the controller-app during the timeout passed
-     *
-     * @param {string} ip
-     * @param {number} timeout  in MS
-     * @returns {Promise<string|null>}
      */
-    async getContentFileFrom(ip: string, timeout: number = 3000): Promise<string | null> {
-        return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("contents", "get"), timeout, null);
+    async getContentFileFrom(ip: string, timeoutMS: number = 3000): Promise<string | null> {
+        return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("contents", "get"), timeoutMS, null);
     }
 
     /**
-     * sends a command to the ip which contains the passed media-file and type. If the transfer was succesful, the promise
+     * Send a command to the ip which contains the passed media-file and type. If the transfer was succesful, the promise
      * returns the number of the newly created media from the media-app if not it returns null
-     *
-     * @param {string} ip
-     * @param {string} mediaType
-     * @param {Uint8Array} mediaFile
-     * @param {number} timeout
-     * @returns {Promise<string>}
      */
-    async sendMediaFileToIp(ip: string, mediaType: string, mediaFile: Uint8Array, timeout: number = 3000, onSendChunk: Function): Promise<number> {
-        return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("media", "put", mediaType, mediaFile), timeout, null, onSendChunk);
+    async sendMediaFileToIp(ip: string, mediaType: string, mediaFile: Uint8Array, timeoutMS: number = 3000, onSendChunk: Function): Promise<number> {
+        return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("media", "put", mediaType, mediaFile), timeoutMS, null, onSendChunk);
     }
 
     public async sendContentFileTo(ip: string, contentFileJSON: string): Promise<void> {
@@ -222,13 +197,11 @@ export class NetworkService {
             this._dataReceivedPromises.set(ip, {
                 resolve: (value) => {
                     if (timer) clearTimeout(timer);
-
                     this._dataReceivedPromises.delete(ip);
                     resolve(value);
                 },
                 reject: (error) => {
                     if (timer) clearTimeout(timer);
-
                     this._dataReceivedPromises.delete(ip);
                     reject(error);
                 }
