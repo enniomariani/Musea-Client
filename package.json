@@ -5,7 +5,7 @@
   "version": "1.0.3",
   "description": "Framework for media management and communication with app that contain the media-server-frameworks",
   "type": "module",
-  "main": "./build/main/main.js",
+  "main": "./build/test-app/main/main.js",
   "scripts": {
     "test": "node --no-warnings node_modules/jest/bin/jest.js ./tests --maxWorkers=50% --coverage",
     "dev": "cross-env NODE_ENV=development npm start",
@@ -15,6 +15,11 @@
     "postbuild": "node fix-imports.js",
     "copy-files": "copyfiles -u 1 src/**/* build/ -e **/*.ts -e **/tsconfig.json && copyfiles -u 1 daten/**/* build/daten",
     "build": "npm run clean && tsc -p ./src/tsconfig.json && tsc-alias -p ./src/tsconfig.json && npm run copy-files"
+  },
+  "exports": {
+    "./main": "./build/mcf/main/index.js",
+    "./renderer": "./build/mcf/renderer/index.js",
+    "./preload": "./dist/preload/index.js"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.9.0",

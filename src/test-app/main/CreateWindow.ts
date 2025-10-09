@@ -14,8 +14,8 @@ export class CreateWindow{
             width: windowWidth, height: windowHeight, kiosk: false, //hides the menubar when fullscreen is set to true in the settings-file
             autoHideMenuBar: false, fullscreen: false, webPreferences: {
                 nodeIntegration: false, contextIsolation: true,
-                preload: pathToPreload
-            }
+                preload: pathToPreload,sandbox: true
+            },
         });
 
         await this._win.loadFile(pathToIndexHtml);

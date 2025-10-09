@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join} from 'path';
 
 import {CreateWindow} from "./CreateWindow";
-import {MainMediaClientFramework} from "../mcf/main/MainMediaClientFramework";
+import {MediaClientFrameworkMain} from "../../mcf/main/MediaClientFrameworkMain";
 
 //size of main-window
 const windowWidth:number = 1920;
@@ -17,7 +17,7 @@ const __dirname:string = dirname(filename);
 const environment:string | undefined = process.env.NODE_ENV;
 
 let mainWindow:BrowserWindow;
-let mainMediaServerFramework:MainMediaClientFramework;
+let mainMediaServerFramework:MediaClientFrameworkMain;
 
 app.whenReady().then(async () => {
     let createWindow:CreateWindow = new CreateWindow();
@@ -28,7 +28,7 @@ app.whenReady().then(async () => {
 
     console.log("MAIN WINDOW: ", mainWindow)
 
-    mainMediaServerFramework = new MainMediaClientFramework(mainWindow);
+    mainMediaServerFramework = new MediaClientFrameworkMain();
     mainMediaServerFramework.init();
 
     app.on('window-all-closed', () => {

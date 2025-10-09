@@ -1,15 +1,13 @@
-import {BrowserWindow, ipcMain} from 'electron';
+import {ipcMain} from 'electron';
 import {MainFileService} from "./MainFileService";
 import ping from "ping";
 import * as fs from 'fs';
 
-export class MainMediaClientFramework {
+export class MediaClientFrameworkMain {
 
     private mainFileService: MainFileService;
-    private mainWindow: BrowserWindow;
 
-    constructor(mainWindow:BrowserWindow, mainFileService: MainFileService = new MainFileService()) {
-        this.mainWindow = mainWindow;
+    constructor(mainFileService: MainFileService = new MainFileService()) {
         this.mainFileService = mainFileService;
     }
 
