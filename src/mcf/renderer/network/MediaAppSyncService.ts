@@ -33,7 +33,7 @@ export class MediaAppSyncService {
 
     async sendMediaFilesToMediaApp(mediaStation: MediaStation, allCachedMedia: ICachedMedia[], ipMediaApp: string, reporter: IMediaAppProgress): Promise<boolean> {
         let fileData: Uint8Array | null;
-        let idOnMediaApp: number;
+        let idOnMediaApp: number | null;
         let content: Content;
         let media: IMedia;
         let areAllMediaSentSuccesfully: boolean = true;
@@ -55,7 +55,10 @@ export class MediaAppSyncService {
 
             fileData = null;    //to free memory as fast as possible when transferring large files
 
-            if (idOnMediaApp !== null && idOnMediaApp !== undefined && idOnMediaApp >= 0) {
+            if(idOnMediaApp === null || idOnMediaApp < 0){
+                areAllMediaSentSuccesfully = false;
+                reporter({ type: MediaAppSyncEventType.MediaSendFailed });
+            }else{
                 reporter({ type: MediaAppSyncEventType.MediaSendSuccess });
 
                 content = mediaStation.rootFolder.requireContent(cachedMedia.contentId);
@@ -64,9 +67,6 @@ export class MediaAppSyncService {
                 media.idOnMediaApp = idOnMediaApp;
 
                 this._mediaStationRepo.mediaCacheHandler.deleteCachedMedia(mediaStation.id, cachedMedia.contentId, cachedMedia.mediaAppId);
-            } else {
-                areAllMediaSentSuccesfully = false;
-                reporter({ type: MediaAppSyncEventType.MediaSendFailed });
             }
         }
         return areAllMediaSentSuccesfully;

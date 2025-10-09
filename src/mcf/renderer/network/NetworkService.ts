@@ -111,7 +111,7 @@ export class NetworkService {
      * Send a command to the ip which contains the passed media-file and type. If the transfer was succesful, the promise
      * returns the number of the newly created media from the media-app if not it returns null
      */
-    async sendMediaFileToIp(ip: string, mediaType: string, mediaFile: Uint8Array, timeoutMS: number = 3000, onSendChunk: Function): Promise<number> {
+    async sendMediaFileToIp(ip: string, mediaType: string, mediaFile: Uint8Array, timeoutMS: number = 3000, onSendChunk: Function): Promise<number | null> {
         return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("media", "put", mediaType, mediaFile), timeoutMS, null, onSendChunk);
     }
 

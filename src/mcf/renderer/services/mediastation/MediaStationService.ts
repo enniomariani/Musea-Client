@@ -220,7 +220,7 @@ export class MediaStationService {
      * @returns {Promise<boolean>}
      */
     async syncMediaStation(mediaStationId: number, progressReporter: ProgressReporter): Promise<boolean> {
-        return this._sync.sync(mediaStationId, progressReporter);
+        return await this._sync.sync(mediaStationId, progressReporter);
     }
 
     // Events

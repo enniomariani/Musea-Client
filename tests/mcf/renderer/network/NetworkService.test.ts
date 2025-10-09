@@ -591,7 +591,7 @@ describe("sendMediaFileToIp() ", () => {
         mockOpenConnectionAndReceiveDataLater(ip1, command, returnedID);
 
         await networkService.openConnection(ip1);
-        const answer:number = await networkService.sendMediaFileToIp(ip1, mediaType, mediaFile, 3000, jest.fn());
+        const answer:number | null = await networkService.sendMediaFileToIp(ip1, mediaType, mediaFile, 3000, jest.fn());
 
         expect(answer).toBe(returnedID);
     });
@@ -601,7 +601,7 @@ describe("sendMediaFileToIp() ", () => {
         mockOpenConnectionAndReceiveDataLater(ip1,command, null);
 
         await networkService.openConnection(ip1);
-        const answer: number = await networkService.sendMediaFileToIp(ip1, mediaType, mediaFile, 0, jest.fn());
+        const answer: number | null = await networkService.sendMediaFileToIp(ip1, mediaType, mediaFile, 0, jest.fn());
 
         expect(answer).toBe(null);
     });
@@ -611,14 +611,14 @@ describe("sendMediaFileToIp() ", () => {
         mockOpenConnectionAndReceiveDataLater(ip1,command, null, false);
 
         await networkService.openConnection(ip1);
-        const answer: number = await networkService.sendMediaFileToIp(ip1, mediaType, mediaFile, 0, jest.fn());
+        const answer: number | null = await networkService.sendMediaFileToIp(ip1, mediaType, mediaFile, 0, jest.fn());
 
         expect(answer).toBe(null);
     });
 
     it("should return null if it received nothing after 90 seconds", async () => {
-        let answer: number;
-        let answerPromise: Promise<number>;
+        let answer: number | null;
+        let answerPromise: Promise<number | null>;
         jest.useFakeTimers();
 
         mockOpenConnection();
