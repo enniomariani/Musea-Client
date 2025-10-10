@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./build",
+    "declaration": true,
     "target": "es2022",
     "module": "es2022",
     "moduleResolution": "Node",
@@ -11,7 +12,6 @@
     "composite": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "declaration": false,
     "sourceMap": true
   }
 }

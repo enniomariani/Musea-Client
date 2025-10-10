@@ -1,5 +1,5 @@
 {
-  "name": "Media-Framework-Client",
+  "name": "Media-Client-Framework",
   "author": "Ennio Mariani",
   "email": "mail@enniomariani.ch",
   "version": "1.0.3",
@@ -21,9 +21,9 @@
     "./renderer": "./build/mcf/renderer/MediaClientFramework.js",
     "./preload": "./build/preload/preload.js"
   },
-  "files":
-    ["build"]
-  ,
+  "files": [
+    "build"
+  ],
   "devDependencies": {
     "@electron-forge/cli": "^7.9.0",
     "@electron-forge/maker-squirrel": "^7.9.0",
