@@ -17,9 +17,9 @@
     "build": "npm run clean && tsc -p ./src/tsconfig.json && tsc-alias -p ./src/tsconfig.json && npm run copy-files"
   },
   "exports": {
-    "./main": "./build/mcf/main/index.js",
-    "./renderer": "./build/mcf/renderer/index.js",
-    "./preload": "./dist/preload/index.js"
+    "./main": "./build/mcf/main/MediaClientFrameworkMain.js",
+    "./renderer": "./build/mcf/renderer/MediaClientFramework.js",
+    "./preload": "./build/preload/preload.js"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.9.0",
