@@ -1,8 +1,6 @@
 import {app, BrowserWindow, ipcMain} from 'electron';
 import { fileURLToPath } from 'url';
 import { dirname, join} from 'path';
-
-import {CreateWindow} from "./CreateWindow";
 import {MediaClientFrameworkMain} from "../../mcf/main/MediaClientFrameworkMain";
 
 //size of main-window
@@ -20,20 +18,24 @@ let mainWindow:BrowserWindow;
 let mainMediaServerFramework:MediaClientFrameworkMain;
 
 app.whenReady().then(async () => {
-    let createWindow:CreateWindow = new CreateWindow();
+    mainWindow = new BrowserWindow({
+        width: windowWidth, height: windowHeight, kiosk: false, //hides the menubar when fullscreen is set to true in the settings-file
+        autoHideMenuBar: false, fullscreen: false, webPreferences: {
+            nodeIntegration: false, contextIsolation: true,
+            preload: join(__dirname, 'preload.js'),sandbox: true
+        },
+    });
 
-    console.log("Main: create window...");
-    mainWindow = await createWindow.create(windowWidth, windowHeight,
-        join(__dirname, '../index.html'),join(__dirname, 'preload.js'),environment === 'development');
-
-    console.log("MAIN WINDOW: ", mainWindow)
+    await mainWindow.loadFile(join(__dirname, '../index.html'));
+    mainWindow.webContents.openDevTools();
+    mainWindow.show(); //initially sets the focus to the created electron-window
 
     mainMediaServerFramework = new MediaClientFrameworkMain();
     mainMediaServerFramework.init();
 
     app.on('window-all-closed', () => {
         if (process.platform !== 'darwin') {
-            createWindow.close();
+            mainWindow.close();
             app.quit();
         }
     });
