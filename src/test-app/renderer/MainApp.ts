@@ -19,8 +19,8 @@ export class MainApp extends EventTarget {
         let firstMediaStationId: number = await mcf.mediaStationService.createMediaStation("111");
         console.log("FIRST MEDIA-STATIONID: ", firstMediaStationId)
 
-        console.log("ADD MEDIA-APP WITH ID: ", mcf.mediaAppDataService.createMediaApp(firstMediaStationId, "myControllerApp", "localhost"));
-        console.log("ADD MEDIA-APP WITH ID: ", mcf.mediaAppDataService.createMediaApp(firstMediaStationId, "media-app2", "127.0.0.1"));
+        console.log("ADD MEDIA-APP WITH ID: ", await mcf.mediaAppDataService.createMediaApp(firstMediaStationId, "myControllerApp", "localhost"));
+        console.log("ADD MEDIA-APP WITH ID: ", await mcf.mediaAppDataService.createMediaApp(firstMediaStationId, "media-app2", "127.0.0.1"));
 
         console.log("IS MEDIA-APP PC REACHABLE?", await mcf.mediaAppConnectionService
             .checkConnection("localhost", {

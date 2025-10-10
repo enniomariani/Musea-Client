@@ -3,13 +3,19 @@ import {MainFileService} from "./MainFileService";
 import ping from "ping";
 import * as fs from 'fs';
 import * as net from "node:net";
+import {dirname, join} from "path";
+import {fileURLToPath} from "url";
 
 export class MediaClientFrameworkMain {
 
     private mainFileService: MainFileService;
 
-    constructor(mainFileService: MainFileService = new MainFileService()) {
-        this.mainFileService = mainFileService;
+    constructor(developmentMode:boolean = false) {
+        const filename:string = fileURLToPath(import.meta.url);
+        const __dirname:string = dirname(filename);
+
+        const pathToDataFolder:string = developmentMode ? join(__dirname, '..', '..', 'daten\\') : join(process.resourcesPath, '\\daten\\');
+        this.mainFileService = new MainFileService(pathToDataFolder);
     }
 
     init(): void {

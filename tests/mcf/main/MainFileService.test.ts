@@ -3,6 +3,7 @@ import {MainFileService, FileServiceMessage} from "../../../src/mcf/main/MainFil
 import * as fs from 'fs';
 import * as path from "node:path";
 import type { PathLike } from "fs";
+import {join} from "path";
 
 let fileService: MainFileService;
 jest.mock("fs", () => ({
@@ -18,10 +19,12 @@ jest.mock("fs", () => ({
 }));
 
 let mockedFs = fs as jest.Mocked<typeof fs>;
-
+const dataFolder = path.join(__dirname, 'test-data');
+const dataFolderInput = dataFolder + "\\";
+const validFile = path.join(dataFolder, 'valid-file.txt');
 
 beforeEach(() => {
-    fileService = new MainFileService();
+    fileService = new MainFileService(dataFolderInput);
 });
 
 afterEach(() => {
@@ -30,7 +33,7 @@ afterEach(() => {
 
 describe("saveFile () ", () => {
     it("should call fs.writeFile with the correct path and the passed file-data as ArrayBufferView", async () => {
-        let filePath: string = "/path/to/existent/directory/file.txt";
+        let filePath: string = dataFolderInput + "path/to/existent/directory/file.txt";
         const directory = path.dirname(filePath);
         let fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEF]);
         let buffer = Buffer.from(fileData);
@@ -54,7 +57,7 @@ describe("saveFile () ", () => {
     });
 
     it("should return an error if the passed parameter overrideExistingFile is true and the file already exists", async () => {
-        let filePath: string = "/path/to/existent/directory/file.txt";
+        let filePath: string = dataFolderInput + "path/to/existent/directory/file.txt";
         const directory = path.dirname(filePath);
         let returnValue: string;
         let fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEF]);
@@ -76,7 +79,7 @@ describe("saveFile () ", () => {
     });
 
     it("should return an error if the folder where the file should be saved does not exist and createDirectory is false", async () => {
-        let filePath: string = "/path/to/nonexistent/directory/file.txt";
+        let filePath: string = dataFolderInput + "path/to/nonexistent/directory/file.txt";
         const directory:string = path.dirname(filePath);
         let returnValue: string;
         let fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEF]);
@@ -99,7 +102,7 @@ describe("saveFile () ", () => {
     });
 
     it("should create the folder where the file should be saved if the folder does not exist and createDirectory is true", async () => {
-        let filePath: string = "/path/to/nonexistent/directory/file.txt";
+        let filePath: string = dataFolderInput + "path/to/nonexistent/directory/file.txt";
         const directory:string = path.dirname(filePath);
         let returnValue: string;
         let fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEF]);
@@ -128,7 +131,7 @@ describe("saveFile () ", () => {
 
 describe("delete () ", () => {
     it("should call fs.rmSync if a file is passed", () => {
-        let filePath: string = "/path/to/nonexistent/directory/file.txt";
+        let filePath: string = dataFolderInput + "path/to/nonexistent/directory/file.txt";
         let returnValue: string;
 
         returnValue = fileService.delete(filePath);
@@ -139,7 +142,7 @@ describe("delete () ", () => {
     });
 
     it("should call fs.rmSync if a folder-path is passed", () => {
-        let folderPath: string = "/path/to/nonexistent/directory";
+        let folderPath: string = dataFolderInput + "path/to/nonexistent/directory";
         let returnValue: string;
 
         returnValue = fileService.delete(folderPath);
@@ -150,7 +153,7 @@ describe("delete () ", () => {
     });
 
     it("should return an error string if file or folder cannot be deleted", () => {
-        let folderPath: string = "/path/to/nonexistent/directory";
+        let folderPath: string = dataFolderInput + "path/to/nonexistent/directory";
         let returnValue: string;
 
         mockedFs.rmSync.mockImplementation(() => {
@@ -166,7 +169,7 @@ describe("delete () ", () => {
 describe("loadFile () ", () => {
 
     it("should return the correct fileData if a file is loaded", async() => {
-        let filePath: string = "/path/to/nonexistent/directory/file.txt";
+        let filePath: string = dataFolderInput + "path/to/nonexistent/directory/file.txt";
         let fileData: Buffer = new Buffer([0x00, 0xFF, 0xEF]);
 
         // @ts-ignore
@@ -178,7 +181,7 @@ describe("loadFile () ", () => {
     });
 
     it("should return null if the file could not be loaded", async () => {
-        let filePath: string = "/path/to/nonexistent/directory/file.txt";
+        let filePath: string = dataFolderInput + "path/to/nonexistent/directory/file.txt";
 
         mockedFs.promises.readFile.mockRejectedValue(new Error("file cannot be loaded"));
 
@@ -190,7 +193,7 @@ describe("loadFile () ", () => {
 
 describe("fileExists () ", () => {
     it("should return true if fs.existsSync returns true", () => {
-        let filePath: string = "/path/to/existent/directory/file.txt";
+        let filePath: string = dataFolderInput + "path/to/existent/directory/file.txt";
         let returnValue: boolean;
 
         mockedFs.existsSync.mockImplementation((path: PathLike): boolean => {
@@ -203,7 +206,7 @@ describe("fileExists () ", () => {
     });
 
     it("should return false if fs.existsSync returns false", () => {
-        let filePath: string = "/path/to/nonexistent/directory/file.txt";
+        let filePath: string = dataFolderInput + "path/to/nonexistent/directory/file.txt";
         let returnValue: boolean;
 
         mockedFs.existsSync.mockImplementation((path: PathLike): boolean => {
@@ -217,7 +220,7 @@ describe("fileExists () ", () => {
 })
 
 describe("getAllFileNamesInFolder() ", () => {
-    const folderPath: string = "/path/to/existent/directory/";
+    const folderPath: string = dataFolderInput + "path/to/existent/directory/";
 
     it("should return an array of all file-names without the folder-names in the passed folder-directory", () => {
         let returnValue: string[];
@@ -316,4 +319,121 @@ describe("getAllFileNamesInFolder() ", () => {
 
         expect(returnValue).toEqual([]);
     });
+});
+
+describe('Path Validation Security Tests', () => {
+    /**
+     * Tests if a file operation properly blocks malicious path attempts
+     * @param operation - The function to test (e.g., load, save, delete)
+     * @param operationName - Name of the operation for test descriptions
+     */
+    const testPathValidation = (
+        operation: (filePath: string, ...args: any[]) => any,
+        operationName: string,
+        isSync: boolean = false
+    ) => {
+        describe(`${operationName} - Path Validation`, () => {
+            const maliciousPaths = [
+                {
+                    name: 'parent directory traversal with ..',
+                    path: path.join(dataFolder, '..', '..', 'etc', 'passwd')
+                },
+                {
+                    name: 'relative path traversal',
+                    path: '../../../etc/passwd'
+                },
+                {
+                    name: 'absolute path outside data folder',
+                    path: '/etc/passwd'
+                },
+                {
+                    name: 'Windows absolute path outside data folder',
+                    path: 'C:\\Windows\\System32\\config\\sam'
+                },
+                {
+                    name: 'path with null byte injection',
+                    path: path.join(dataFolder, 'file.txt\0.jpg')
+                },
+                {
+                    name: 'encoded path traversal',
+                    path: path.join(dataFolder, '..%2F..%2F..%2Fetc%2Fpasswd')
+                },
+                {
+                    name: 'double-encoded path traversal',
+                    path: path.join(dataFolder, '..%252F..%252Fetc%252Fpasswd')
+                },
+                {
+                    name: 'path trying to match prefix (data-evil)',
+                    path: dataFolder + '-evil/malicious.txt'
+                },
+                {
+                    name: 'empty path',
+                    path: ''
+                },
+                {
+                    name: 'path with backslash traversal',
+                    path: path.join(dataFolder, '..\\..\\..\\etc\\passwd')
+                }
+            ];
+
+            test.each(maliciousPaths)(
+                'should reject $name',
+                async ({ path: maliciousPath }) => {
+                    console.log("check malicious path: " + maliciousPath)
+                    if (isSync)
+                        expect(() => operation(maliciousPath)).toThrow();
+                     else
+                        await expect(operation(maliciousPath)).rejects.toThrow();
+                }
+            );
+
+            test('should allow valid path inside data folder', async () => {
+                // This test assumes the operation might fail for other reasons
+                // (e.g., file doesn't exist), but shouldn't fail with path validation error
+                try {
+                    await operation(validFile);
+                } catch (error: any) {
+                    // Should not be a path validation error
+                    expect(error.message).not.toMatch(/invalid.*path|path.*invalid|unauthorized/i);
+                }
+            });
+
+            test('should allow nested valid paths', async () => {
+                const nestedPath = path.join(dataFolder, 'subfolder', 'nested', 'file.txt');
+                try {
+                    await operation(nestedPath);
+                } catch (error: any) {
+                    expect(error.message).not.toMatch(/invalid.*path|path.*invalid|unauthorized/i);
+                }
+            });
+        });
+    };
+
+    testPathValidation(
+        (filePath) => fileService.loadFile(filePath),
+        'load'
+    );
+
+    testPathValidation(
+        (filePath) => fileService.saveFile(filePath, new Buffer("test-content")),
+        'save'
+    );
+
+    testPathValidation(
+        (filePath:string) => fileService.fileExists(filePath),
+        'fileExists',
+        true
+    );
+
+    testPathValidation(
+        (filePath:string) => fileService.delete(filePath),
+        'delete',
+        true
+    );
+
+    testPathValidation(
+        (filePath:string) => fileService.getAllFileNamesInFolder(filePath),
+        'getAllFileNamesInFolder',
+        true
+    );
 });

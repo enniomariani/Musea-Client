@@ -17,6 +17,10 @@ const environment:string | undefined = process.env.NODE_ENV;
 let mainWindow:BrowserWindow;
 let mainMediaServerFramework:MediaClientFrameworkMain;
 
+//this is necessary because the path to the data-folder is in public_html/daten in the dev-environment but
+//in the resources-folder in the production-environment. If in the production-env nothing is specified as path, it looks in the asar-package
+const pathToDataFolder:string = environment === 'development' ? join(__dirname, '..', '..', 'daten\\') : join(process.resourcesPath, '\\daten\\');
+
 app.whenReady().then(async () => {
     mainWindow = new BrowserWindow({
         width: windowWidth, height: windowHeight, kiosk: false, //hides the menubar when fullscreen is set to true in the settings-file
@@ -30,12 +34,11 @@ app.whenReady().then(async () => {
     mainWindow.webContents.openDevTools();
     mainWindow.show(); //initially sets the focus to the created electron-window
 
-    mainMediaServerFramework = new MediaClientFrameworkMain();
+    mainMediaServerFramework = new MediaClientFrameworkMain(environment === 'development');
     mainMediaServerFramework.init();
 
     app.on('window-all-closed', () => {
         if (process.platform !== 'darwin') {
-            mainWindow.close();
             app.quit();
         }
     });
@@ -44,10 +47,6 @@ app.whenReady().then(async () => {
 });
 
 ipcMain.handle('app:load-settings', (event, args) => {
-    //this is necessary because the path to the data-folder is in public_html/daten in the dev-environment but
-    //in the resources-folder in the production-environment. If in the production-env nothing is specified as path, it looks in the asar-package
-    const pathToDataFolder:string = environment === 'development' ? join(__dirname, '..', '..', 'daten\\') : join(process.resourcesPath, '\\daten\\');
-
     console.log("Main: send global-settings-json to renderer: ", pathToDataFolder);
 
     return {pathToDataFolder: pathToDataFolder};
