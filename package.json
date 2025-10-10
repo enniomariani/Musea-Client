@@ -21,6 +21,9 @@
     "./renderer": "./build/mcf/renderer/MediaClientFramework.js",
     "./preload": "./build/preload/preload.js"
   },
+  "files":
+    ["build"]
+  ,
   "devDependencies": {
     "@electron-forge/cli": "^7.9.0",
     "@electron-forge/maker-squirrel": "^7.9.0",
