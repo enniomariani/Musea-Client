@@ -1,6 +1,6 @@
 import {ipcMain} from 'electron';
 import {MainFileService} from "./MainFileService";
-import ping, {PingResponse} from "ping";
+import ping from "ping";
 import * as fs from 'fs';
 import * as net from "node:net";
 
@@ -51,7 +51,7 @@ export class MediaClientFrameworkMain {
             if(!isValidIp)
                 return false;
 
-            const answer:PingResponse = await ping.promise.probe(ip);
+            const answer = await ping.promise.probe(ip);
             return answer.alive;
         });
     }
