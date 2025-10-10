@@ -1,7 +1,8 @@
 import {ipcMain} from 'electron';
 import {MainFileService} from "./MainFileService";
-import ping from "ping";
+import ping, {PingResponse} from "ping";
 import * as fs from 'fs';
+import * as net from "node:net";
 
 export class MediaClientFrameworkMain {
 
@@ -45,8 +46,27 @@ export class MediaClientFrameworkMain {
 
         //ping
         ipcMain.handle('backendNetworkService:ping', async (event:Electron.IpcMainInvokeEvent, ip: string):Promise<boolean> => {
-            const answer = await ping.promise.probe(ip);
+            const isValidIp:boolean = this._isValidIp(ip);
+
+            if(!isValidIp)
+                return false;
+
+            const answer:PingResponse = await ping.promise.probe(ip);
             return answer.alive;
         });
+    }
+
+    private _isValidIp(ipAddress:string) {
+        // For IPv4
+        if (net.isIPv4(ipAddress) || ipAddress === "localhost") {
+            return true;
+        }
+
+        // For IPv6
+        if (net.isIPv6(ipAddress)) {
+            return true;
+        }
+
+        return false;
     }
 }

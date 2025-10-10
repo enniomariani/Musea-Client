@@ -40,7 +40,7 @@ describe("saveFile () ", () => {
                 return false;
             else if (path === directory)
                 return true;
-            throw new Error("ERROR, FOLDER DOES NOT EXIST!")
+            throw new Error("Folder does not exist: " + path)
         });
         // @ts-ignore
         mockedFs.writeFile.mockImplementation((path, data, callback) => callback(null));

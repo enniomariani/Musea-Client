@@ -18,7 +18,6 @@ export class MainFileService {
      * Write a file to the passed path. If overrideExistingFile is false, it returns an error if the file already exists
      */
     async saveFile(filePath:string, fileData:Buffer, overrideExistingFile:boolean = true, createDirectory:boolean = true):Promise<FileServiceMessage>{
-        //this conversion is necessary because ArrayBufferView is a class from the web-context
         const directory:string = path.dirname(filePath);
 
         if(!fs.existsSync(directory)){
