@@ -1,4 +1,4 @@
-import {ContentManager} from "renderer/dataManagers/ContentManager";
+import {ContentManager} from "renderer/dataManagers/ContentManager.js";
 
 export class MockContentManager extends ContentManager{
 

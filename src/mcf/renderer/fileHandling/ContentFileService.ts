@@ -1,4 +1,4 @@
-import {IMainFileService} from "../../main";
+import {IMainFileService} from "main/MediaClientFrameworkMain.js";
 
 export class ContentFileService {
 

@@ -1,9 +1,9 @@
-import {MediaStation} from "renderer/dataStructure/MediaStation";
-import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler";
-import {Content} from "renderer/dataStructure/Content";
-import {IMedia} from "renderer/dataStructure/Media";
-import {NetworkService} from "renderer/network/NetworkService";
-import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository";
+import {MediaStation} from "renderer/dataStructure/MediaStation.js";
+import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler.js";
+import {Content} from "renderer/dataStructure/Content.js";
+import {IMedia} from "renderer/dataStructure/Media.js";
+import {NetworkService} from "renderer/network/NetworkService.js";
+import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository.js";
 
 export enum MediaAppSyncEventType {
     LoadMediaStart = "LoadMediaStart",

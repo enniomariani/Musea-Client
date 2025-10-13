@@ -1,6 +1,6 @@
 import {WS} from "jest-websocket-mock";
 import {jest, expect, beforeEach, describe, it} from '@jest/globals'
-import {NetworkInterface} from "../../../../renderer/network/NetworkInterface";
+import {NetworkInterface} from "../../../../renderer/network/NetworkInterface.js";
 
 // create a WSS instance, listening on port 1234 on localhost
 const serverPath:string = "wss://localhost:1234";

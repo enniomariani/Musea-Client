@@ -1,5 +1,5 @@
-import {MediaStation} from "../dataStructure/MediaStation";
-import {Folder} from "../dataStructure/Folder";
+import {MediaStation} from "../dataStructure/MediaStation.js";
+import {Folder} from "../dataStructure/Folder.js";
 
 export class FolderManager{
     constructor(){}

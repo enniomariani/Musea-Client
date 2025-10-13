@@ -2,10 +2,6 @@
   "extends": "../../../tsconfig.node.json",
   "compilerOptions": {
     "outDir": "../../../build/mcf/preload",
-    "baseUrl": ".",
-    "paths": {
-      "main/*": ["*"]
-    }
   },
-  "include": ["./**/*"]
+  "include": ["**/*.ts"]
 }

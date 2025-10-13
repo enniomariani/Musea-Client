@@ -1,11 +1,11 @@
-import {MediaStation} from "./MediaStation";
-import {MediaStationLocalMetaData} from "../fileHandling/MediaStationLocalMetaData";
-import {MediaApp, MediaAppRole} from "./MediaApp";
-import {ContentFileService} from "../fileHandling/ContentFileService";
-import {MediaFilesMarkedToDeleteService} from "../fileHandling/MediaFilesMarkedToDeleteService";
-import {TagRegistry} from "renderer/registries/TagRegistry";
-import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry";
-import {MediaFileCacheHandler} from "renderer/fileHandling/MediaFileCacheHandler";
+import {MediaStation} from "./MediaStation.js";
+import {MediaStationLocalMetaData} from "../fileHandling/MediaStationLocalMetaData.js";
+import {MediaApp, MediaAppRole} from "./MediaApp.js";
+import {ContentFileService} from "../fileHandling/ContentFileService.js";
+import {MediaFilesMarkedToDeleteService} from "../fileHandling/MediaFilesMarkedToDeleteService.js";
+import {TagRegistry} from "renderer/registries/TagRegistry.js";
+import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry.js";
+import {MediaFileCacheHandler} from "renderer/fileHandling/MediaFileCacheHandler.js";
 
 export class MediaStationRepository{
 

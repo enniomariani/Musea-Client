@@ -1,5 +1,5 @@
-import {MockNetworkService} from "../../network/MockNetworkService";
-import {MediaStationEventService} from "../../../../renderer/services/mediastation/MediaStationEventService";
+import {MockNetworkService} from "../../network/MockNetworkService.js";
+import {MediaStationEventService} from "../../../../renderer/services/mediastation/MediaStationEventService.js";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();
 

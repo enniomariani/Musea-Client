@@ -1,4 +1,4 @@
-import {MainApp} from "./MainApp";
+import {MainApp} from "./MainApp.js";
 
 document.addEventListener("DOMContentLoaded", async function () {
     let mainApp:MainApp =  new MainApp()

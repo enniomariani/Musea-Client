@@ -1,7 +1,7 @@
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../build/mcf/renderer",
+    "outDir": "../../../build/test-app/renderer",
     "lib": ["es2022", "dom", "dom.iterable"]
   },
   "include": ["**/*.ts", "**/*.d.ts"]

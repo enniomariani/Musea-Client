@@ -1,5 +1,4 @@
-import {Tag} from "renderer/dataStructure/Tag";
-import {MediaStation} from "renderer/dataStructure/MediaStation";
+import {Tag} from "renderer/dataStructure/Tag.js";
 
 export class TagRegistry {
     private _tags: Map<number, Tag> = new Map();

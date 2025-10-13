@@ -1,4 +1,4 @@
-import {Content} from "renderer/dataStructure/Content";
+import {Content} from "renderer/dataStructure/Content.js";
 
 
 export class MockContent extends Content{

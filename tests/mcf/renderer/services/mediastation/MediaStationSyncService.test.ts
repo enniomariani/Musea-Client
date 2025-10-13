@@ -1,15 +1,15 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MediaStationSyncService} from "renderer/services/mediastation/MediaStationSyncService";
-import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService";
-import {MockMediaStationRepository} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository";
+import {MediaStationSyncService} from "renderer/services/mediastation/MediaStationSyncService.js";
+import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService.js";
+import {MockMediaStationRepository} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository.js";
 import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
-import {MockMediaAppConnectionService} from "src/mcf/mocks/renderer/services/MockMediaAppConnectionService";
-import {MockMediaAppSyncService} from "src/mcf/mocks/renderer/network/MockMediaAppSyncService";
-import {MediaApp, MediaAppRole} from "renderer/dataStructure/MediaApp";
-import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler";
-import {ProgressReporter, SyncEvent, SyncScope} from "renderer/services/mediastation/SyncEvents";
-import {ConnectionStatus as UiConnectionStatus} from "renderer/services/mediastation/SyncEvents";
-import {MediaAppConnectionStatus} from "renderer/network/MediaAppConnectionSteps";
+import {MockMediaAppConnectionService} from "src/mcf/mocks/renderer/services/MockMediaAppConnectionService.js";
+import {MockMediaAppSyncService} from "src/mcf/mocks/renderer/network/MockMediaAppSyncService.js";
+import {MediaApp, MediaAppRole} from "renderer/dataStructure/MediaApp.js";
+import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler.js";
+import {ProgressReporter, SyncEvent, SyncScope} from "renderer/services/mediastation/SyncEvents.js";
+import {ConnectionStatus as UiConnectionStatus} from "renderer/services/mediastation/SyncEvents.js";
+import {MediaAppConnectionStatus} from "renderer/network/MediaAppConnectionSteps.js";
 
 let service: MediaStationSyncService;
 let mockNetworkService: MockNetworkService;

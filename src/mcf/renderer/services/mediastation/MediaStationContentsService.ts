@@ -1,6 +1,6 @@
-import {NetworkService} from "renderer/network/NetworkService";
-import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository";
-import {MediaStation} from "renderer/dataStructure/MediaStation";
+import {NetworkService} from "renderer/network/NetworkService.js";
+import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository.js";
+import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 
 export const ContentDownloadStatus = {
     Success : "success",

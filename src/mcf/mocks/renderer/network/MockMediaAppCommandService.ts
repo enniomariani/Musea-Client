@@ -1,7 +1,7 @@
 import {
     MediaAppCommandService
-} from "renderer/network/MediaAppCommandService";
-import {MockNetworkService} from "./MockNetworkService";
+} from "renderer/network/MediaAppCommandService.js";
+import {MockNetworkService} from "./MockNetworkService.js";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();
 

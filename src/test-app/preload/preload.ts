@@ -1,8 +1,6 @@
-//the preload-script does NOT SUPPORT ESM!
 const {ipcRenderer, contextBridge, webUtils} = require('electron');
-const {url} = require('node:url');
-
-console.log("PRELOAD: ", url)
+const {url} = require('url');
+//the preload-script does NOT SUPPORT ESM!
 
 //the "main"-world means the RENDERER-world (the code that runs in the virtual browser)
 //this method makes the ipcRenderer-Object available as a sub-object of the window-object (window.ipcRenderer)

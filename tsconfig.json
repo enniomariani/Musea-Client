@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "./build",
     "target": "es2022",
     "module": "nodenext",
     "esModuleInterop": true,
@@ -20,6 +19,7 @@
       "mocks/*": ["src/mcf/mocks/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.vue",
-    "renderer/mcf-ipc-globals.d.ts", "src/test-app-ipc-globals.d.ts"],
+  "exclude": [
+    "**/build/**",
+  ]
 }

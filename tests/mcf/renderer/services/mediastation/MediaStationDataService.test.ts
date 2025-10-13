@@ -1,10 +1,10 @@
 import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {
     MediaStationDataService
-} from "renderer/services/mediastation/MediaStationDataService";
+} from "renderer/services/mediastation/MediaStationDataService.js";
 import {
     MockMediaStationRepository
-} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository";
+} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository.js";
 import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
 
 let mockMediaStationRepository:MockMediaStationRepository;

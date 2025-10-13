@@ -1,6 +1,6 @@
-import {NetworkConnectionHandler} from "renderer/network/NetworkConnectionHandler";
-import {ConvertNetworkData} from "renderer/network/ConvertNetworkData";
-import {NetworkCommandRouter} from "./NetworkCommandRouter";
+import {NetworkConnectionHandler} from "renderer/network/NetworkConnectionHandler.js";
+import {ConvertNetworkData} from "renderer/network/ConvertNetworkData.js";
+import {NetworkCommandRouter} from "./NetworkCommandRouter.js";
 
 type PromiseHandler<T = any> = {
     resolve: (value: T) => void;

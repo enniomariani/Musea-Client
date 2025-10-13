@@ -1,4 +1,4 @@
-import {IMainFileService} from "../../main";
+import {IMainFileService} from "main/MediaClientFrameworkMain.js";
 
 export class MediaFilesMarkedToDeleteService {
 
@@ -7,7 +7,7 @@ export class MediaFilesMarkedToDeleteService {
     private _backendFileService: IMainFileService;
     private _pathToDataFolder: string = "";
 
-    constructor(backendFileService: IMainFileService = window.mcfBackendFiles) {
+    constructor(backendFileService: IMainFileService = (window as any).mcfBackendFiles) {
         this._backendFileService = backendFileService;
     }
 

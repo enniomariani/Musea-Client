@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MediaAppCommandService, MediaCommand} from "renderer/network/MediaAppCommandService";
-import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService";
-import {MediaApp} from "renderer/dataStructure/MediaApp";
+import {MediaAppCommandService, MediaCommand} from "renderer/network/MediaAppCommandService.js";
+import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService.js";
+import {MediaApp} from "renderer/dataStructure/MediaApp.js";
 
 let service: MediaAppCommandService;
 let net: MockNetworkService;

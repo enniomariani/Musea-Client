@@ -1,6 +1,6 @@
-import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
-import {MediaStation} from "../dataStructure/MediaStation";
-import {MediaApp, MediaAppRole} from "../dataStructure/MediaApp";
+import {MediaStationRepository} from "../dataStructure/MediaStationRepository.js";
+import {MediaStation} from "../dataStructure/MediaStation.js";
+import {MediaApp, MediaAppRole} from "../dataStructure/MediaApp.js";
 
 export interface IMediaAppData {
     ip: string

@@ -1,9 +1,9 @@
-import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
-import {MediaStation} from "../dataStructure/MediaStation";
-import {MediaApp, MediaAppRole} from "../dataStructure/MediaApp";
-import {NetworkService} from "renderer/network/NetworkService";
+import {MediaStationRepository} from "../dataStructure/MediaStationRepository.js";
+import {MediaStation} from "../dataStructure/MediaStation.js";
+import {MediaApp, MediaAppRole} from "../dataStructure/MediaApp.js";
+import {NetworkService} from "renderer/network/NetworkService.js";
 import {CheckOptions, MediaAppConnectionStatus, ConnectionStep, runPipeline, StepDef
-} from "renderer/network/MediaAppConnectionSteps";
+} from "renderer/network/MediaAppConnectionSteps.js";
 
 export class MediaAppConnectionService {
     private _mediaStationRepository: MediaStationRepository;

@@ -1,13 +1,13 @@
-import {MediaStationService} from "../../../../renderer/services/mediastation/MediaStationService";
-import {ProgressReporter} from "../../../../renderer/services/mediastation/SyncEvents";
+import {MediaStationService} from "renderer/services/mediastation/MediaStationService.js";
+import {ProgressReporter} from "renderer/services/mediastation/SyncEvents.js";
+import {IContentDownloadResult} from "renderer/services/mediastation/MediaStationContentsService.js";
 
-import {MockMediaStationDataService} from "./MockMediaStationDataService";
-import {MockMediaStationCacheService} from "./MockMediaStationCacheService";
-import {MockMediaStationCommandService} from "./MockMediaStationCommandService";
-import {MockMediaStationContentsService} from "./MockMediaStationContentsService";
-import {MockMediaStationSyncService} from "./MockMediaStationSyncService";
-import {MockMediaStationEventService} from "./MockMediaStationEventService";
-import {IContentDownloadResult} from "../../../../renderer/services/mediastation/MediaStationContentsService";
+import {MockMediaStationDataService} from "./MockMediaStationDataService.js";
+import {MockMediaStationCacheService} from "./MockMediaStationCacheService.js";
+import {MockMediaStationCommandService} from "./MockMediaStationCommandService.js";
+import {MockMediaStationContentsService} from "./MockMediaStationContentsService.js";
+import {MockMediaStationSyncService} from "./MockMediaStationSyncService.js";
+import {MockMediaStationEventService} from "./MockMediaStationEventService.js";
 
 export class MockMediaStationService extends MediaStationService {
     // Data

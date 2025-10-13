@@ -1,8 +1,8 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {
     NetworkConnectionHandler
-} from "../../../../renderer/network/NetworkConnectionHandler";
-import {MockNetworkInterface} from "src/mcf/mocks/renderer/network/MockNetworkInterface";
+} from "renderer/network/NetworkConnectionHandler.js";
+import {MockNetworkInterface} from "mocks/renderer/network/MockNetworkInterface.js";
 
 
 let mockNetworkInterface: MockNetworkInterface;
@@ -16,7 +16,7 @@ const onDataReceived = jest.fn();
 const firstIP: string = "127.0.0.1";
 const firstURL: string = "ws://" + firstIP + ":5000";
 
-const mockBackendNetworkService: jest.Mocked<IBackendNetworkService> = {
+const mockBackendNetworkService: jest.Mocked<IMainNetworkService> = {
     ping: jest.fn(),
 }
 

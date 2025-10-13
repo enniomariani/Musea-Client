@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MainFileService, FileServiceMessage} from "../../../src/mcf/main/MainFileService";
+import {MainFileService, FileServiceMessage} from "../../../src/mcf/main/MainFileService.js";
 import * as fs from 'fs';
 import * as path from "node:path";
 import type { PathLike } from "fs";

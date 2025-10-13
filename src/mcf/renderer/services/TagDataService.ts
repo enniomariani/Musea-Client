@@ -1,8 +1,8 @@
-import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
-import {MediaStation} from "../dataStructure/MediaStation";
-import {Tag} from "../dataStructure/Tag";
-import {Content} from "../dataStructure/Content";
-import {ContentManager} from "renderer/dataManagers/ContentManager";
+import {MediaStationRepository} from "../dataStructure/MediaStationRepository.js";
+import {MediaStation} from "../dataStructure/MediaStation.js";
+import {Tag} from "../dataStructure/Tag.js";
+import {Content} from "../dataStructure/Content.js";
+import {ContentManager} from "renderer/dataManagers/ContentManager.js";
 
 
 export class TagDataService {

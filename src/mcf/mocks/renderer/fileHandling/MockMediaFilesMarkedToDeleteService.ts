@@ -1,7 +1,7 @@
-import {MockBackendFileService} from "src/mcf/mocks/main/MockBackendFileService";
+import {MockBackendFileService} from "src/mcf/mocks/main/MockBackendFileService.js";
 import {
     MediaFilesMarkedToDeleteService
-} from "renderer/fileHandling/MediaFilesMarkedToDeleteService";
+} from "renderer/fileHandling/MediaFilesMarkedToDeleteService.js";
 
 export class MockMediaFilesMarkedToDeleteService extends MediaFilesMarkedToDeleteService{
 

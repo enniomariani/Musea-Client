@@ -1,4 +1,4 @@
-import {TagRegistry} from "renderer/registries/TagRegistry";
+import {TagRegistry} from "renderer/registries/TagRegistry.js";
 
 export class MockTagRegistry extends TagRegistry{
 

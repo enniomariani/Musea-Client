@@ -1,4 +1,4 @@
-import {Folder} from "renderer/dataStructure/Folder";
+import {Folder} from "renderer/dataStructure/Folder.js";
 
 
 export class MockFolder extends Folder{

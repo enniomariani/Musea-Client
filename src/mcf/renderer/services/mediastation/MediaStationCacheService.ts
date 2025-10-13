@@ -1,4 +1,4 @@
-import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository";
+import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository.js";
 
 export class MediaStationCacheService{
 

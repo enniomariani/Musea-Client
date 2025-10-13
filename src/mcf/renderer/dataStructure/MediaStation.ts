@@ -1,8 +1,8 @@
-import {Folder} from "./Folder";
-import {TagRegistry} from "renderer/registries/TagRegistry";
-import {Tag} from "renderer/dataStructure/Tag";
-import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry";
-import {MediaApp} from "renderer/dataStructure/MediaApp";
+import {Folder} from "./Folder.js";
+import {TagRegistry} from "renderer/registries/TagRegistry.js";
+import {Tag} from "renderer/dataStructure/Tag.js";
+import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry.js";
+import {MediaApp} from "renderer/dataStructure/MediaApp.js";
 
 export class MediaStation {
     private _id: number;

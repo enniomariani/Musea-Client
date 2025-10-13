@@ -1,12 +1,12 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService";
-import {MockMediaStationRepository} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository";
+import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService.js";
+import {MockMediaStationRepository} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository.js";
 import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
-import {MockFolder} from "src/mcf/mocks/renderer/dataStructure/MockFolder";
+import {MockFolder} from "src/mcf/mocks/renderer/dataStructure/MockFolder.js";
 import {MockContent} from "src/mcf/mocks/renderer/dataStructure/MockContent";
-import {Image} from "renderer/dataStructure/Media";
-import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler";
-import {MediaAppSyncService, IMediaAppProgress, IMediaAppSyncEvent} from "renderer/network/MediaAppSyncService";
+import {Image} from "renderer/dataStructure/Media.js";
+import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler.js";
+import {MediaAppSyncService, IMediaAppProgress, IMediaAppSyncEvent} from "renderer/network/MediaAppSyncService.js";
 
 let service: MediaAppSyncService;
 let mockNetworkService: MockNetworkService;

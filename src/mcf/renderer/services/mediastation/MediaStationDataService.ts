@@ -1,5 +1,5 @@
-import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository";
-import {MediaStation} from "renderer/dataStructure/MediaStation";
+import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository.js";
+import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 
 export class MediaStationDataService{
 

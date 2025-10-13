@@ -1,6 +1,6 @@
-import {MediaClientFramework} from "renderer/MediaClientFramework";
-import {SyncEvent} from "renderer/services/mediastation/SyncEvents";
-import {IConnectionProgress} from "renderer/network/MediaAppConnectionSteps";
+import {MediaClientFramework} from "renderer/MediaClientFramework.js";
+import {SyncEvent} from "renderer/services/mediastation/SyncEvents.js";
+import {IConnectionProgress} from "renderer/network/MediaAppConnectionSteps.js";
 
 export class MainApp extends EventTarget {
     private _backend: IBackend;

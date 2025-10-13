@@ -1,7 +1,7 @@
 import {
     MediaStationLocalMetaData
-} from "renderer/fileHandling/MediaStationLocalMetaData";
-import {MockBackendFileService} from "src/mcf/mocks/main/MockBackendFileService";
+} from "renderer/fileHandling/MediaStationLocalMetaData.js";
+import {MockBackendFileService} from "src/mcf/mocks/main/MockBackendFileService.js";
 
 export class MockMediaStationLocalMetaData extends MediaStationLocalMetaData{
 

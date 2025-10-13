@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {NetworkCommandRouter, PromiseHandler} from "renderer/network/NetworkCommandRouter";
-import {ConvertNetworkData} from "renderer/network/ConvertNetworkData";
+import {NetworkCommandRouter, PromiseHandler} from "renderer/network/NetworkCommandRouter.js";
+import {ConvertNetworkData} from "renderer/network/ConvertNetworkData.js";
 
 let networkCommandRouter: NetworkCommandRouter;
 

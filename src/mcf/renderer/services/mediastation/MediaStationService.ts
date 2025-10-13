@@ -1,13 +1,13 @@
-import {MediaStationDataService} from "renderer/services/mediastation/MediaStationDataService";
-import {MediaStationCacheService} from "renderer/services/mediastation/MediaStationCacheService";
-import {MediaStationCommandService} from "renderer/services/mediastation/MediaStationCommandService";
+import {MediaStationDataService} from "renderer/services/mediastation/MediaStationDataService.js";
+import {MediaStationCacheService} from "renderer/services/mediastation/MediaStationCacheService.js";
+import {MediaStationCommandService} from "renderer/services/mediastation/MediaStationCommandService.js";
 import {
     IContentDownloadResult,
     MediaStationContentsService
-} from "renderer/services/mediastation/MediaStationContentsService";
-import {MediaStationSyncService} from "renderer/services/mediastation/MediaStationSyncService";
-import {ProgressReporter} from "renderer/services/mediastation/SyncEvents";
-import {MediaStationEventService} from "renderer/services/mediastation/MediaStationEventService";
+} from "renderer/services/mediastation/MediaStationContentsService.js";
+import {MediaStationSyncService} from "renderer/services/mediastation/MediaStationSyncService.js";
+import {ProgressReporter} from "renderer/services/mediastation/SyncEvents.js";
+import {MediaStationEventService} from "renderer/services/mediastation/MediaStationEventService.js";
 
 export class MediaStationService {
     private _data: MediaStationDataService;

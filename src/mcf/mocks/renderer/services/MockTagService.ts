@@ -1,5 +1,5 @@
-import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository";
-import {TagDataService} from "../../../renderer/services/TagDataService";
+import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository.js";
+import {TagDataService} from "renderer/services/TagDataService.js";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
 

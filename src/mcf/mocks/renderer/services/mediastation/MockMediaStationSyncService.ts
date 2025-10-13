@@ -1,8 +1,8 @@
-import {MockNetworkService} from "../../network/MockNetworkService";
-import {MockMediaStationRepository} from "../../dataStructure/MockMediaStationRepository";
-import {MediaStationSyncService} from "../../../../renderer/services/mediastation/MediaStationSyncService";
-import {MockMediaAppConnectionService} from "../MockMediaAppConnectionService";
-import {MockMediaAppSyncService} from "../../network/MockMediaAppSyncService";
+import {MockNetworkService} from "../../network/MockNetworkService.js";
+import {MockMediaStationRepository} from "../../dataStructure/MockMediaStationRepository.js";
+import {MediaStationSyncService} from "renderer/services/mediastation/MediaStationSyncService.js";
+import {MockMediaAppConnectionService} from "../MockMediaAppConnectionService.js";
+import {MockMediaAppSyncService} from "../../network/MockMediaAppSyncService.js";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();

@@ -1,4 +1,4 @@
-import {NetworkCommandRouter} from "renderer/network/NetworkCommandRouter";
+import {NetworkCommandRouter} from "renderer/network/NetworkCommandRouter.js";
 
 export class MockNetworkCommandRouter extends NetworkCommandRouter{
     onBlockReceived: jest.Mock;

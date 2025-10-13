@@ -1,8 +1,8 @@
-import {MockMediaStationLocalMetaData} from "../fileHandling/MockMediaStationLocalMetaData";
-import {MockContentFileService} from "../fileHandling/MockContentFileService";
-import {MockMediaFilesMarkedToDeleteService} from "../fileHandling/MockMediaFilesMarkedToDeleteService";
-import {MockMediaFileCacheHandler} from "../fileHandling/MockMediaFileCacheHandler";
-import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository";
+import {MockMediaStationLocalMetaData} from "../fileHandling/MockMediaStationLocalMetaData.js";
+import {MockContentFileService} from "../fileHandling/MockContentFileService.js";
+import {MockMediaFilesMarkedToDeleteService} from "../fileHandling/MockMediaFilesMarkedToDeleteService.js";
+import {MockMediaFileCacheHandler} from "../fileHandling/MockMediaFileCacheHandler.js";
+import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository.js";
 
 const mockMediaStationLocalMetaData:MockMediaStationLocalMetaData = new MockMediaStationLocalMetaData();
 const mockMediaCacheHandler:MockMediaFileCacheHandler = new MockMediaFileCacheHandler("fakePathToMediaFolder");

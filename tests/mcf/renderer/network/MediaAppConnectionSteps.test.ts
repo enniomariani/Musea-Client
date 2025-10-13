@@ -6,7 +6,7 @@ import {
     CheckOptions,
     IConnectionProgress,
     MediaAppConnectionStatus
-} from "renderer/network/MediaAppConnectionSteps";
+} from "renderer/network/MediaAppConnectionSteps.js";
 
 describe("MediaAppConnectionSteps - runPipeline", () => {
     const ip = "10.0.0.1";

@@ -1,6 +1,6 @@
-import {MediaStation} from "../dataStructure/MediaStation";
-import {Image, IMedia, Video} from "../dataStructure/Media";
-import {Content} from "../dataStructure/Content";
+import {MediaStation} from "../dataStructure/MediaStation.js";
+import {Image, IMedia, Video} from "../dataStructure/Media.js";
+import {Content} from "../dataStructure/Content.js";
 
 export const MediaType = {
     VIDEO: "video",

@@ -1,7 +1,7 @@
-import {MediaStation} from "renderer/dataStructure/MediaStation";
-import {MockFolder} from "./MockFolder";
-import {MockTagRegistry} from "../registries/MockTagRegistry";
-import {MockMediaAppRegistry} from "../registries/MockMediaAppRegistry";
+import {MediaStation} from "renderer/dataStructure/MediaStation.js";
+import {MockFolder} from "./MockFolder.js";
+import {MockTagRegistry} from "../registries/MockTagRegistry.js";
+import {MockMediaAppRegistry} from "../registries/MockMediaAppRegistry.js";
 
 const mockTagRegistry:MockTagRegistry = new MockTagRegistry();
 const mockMediaAppRegistry: MockMediaAppRegistry = new MockMediaAppRegistry();

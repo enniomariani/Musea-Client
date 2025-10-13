@@ -1,8 +1,9 @@
 import {
     NetworkConnectionHandler
-} from "renderer/network/NetworkConnectionHandler";
+} from "renderer/network/NetworkConnectionHandler.js";
+import {IMainNetworkService} from "main/MediaClientFrameworkMain.js";
 
-const mockBackendNetworkService:jest.Mocked<IBackendNetworkService> = {
+const mockBackendNetworkService:jest.Mocked<IMainNetworkService> = {
     ping: jest.fn(),
 }
 

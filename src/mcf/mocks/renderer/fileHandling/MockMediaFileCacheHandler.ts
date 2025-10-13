@@ -1,5 +1,5 @@
-import {MediaFileCacheHandler} from "renderer/fileHandling/MediaFileCacheHandler";
-import {MockMediaFileService} from "./MockMediaFileService";
+import {MediaFileCacheHandler} from "renderer/fileHandling/MediaFileCacheHandler.js";
+import {MockMediaFileService} from "./MockMediaFileService.js";
 
 const mockMediaFileService:MockMediaFileService = new MockMediaFileService();
 

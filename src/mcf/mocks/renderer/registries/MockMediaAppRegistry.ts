@@ -1,4 +1,4 @@
-import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry";
+import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry.js";
 
 export class MockMediaAppRegistry extends MediaAppRegistry{
 

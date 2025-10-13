@@ -1,7 +1,7 @@
 {
   "extends": "../../../tsconfig.node.json",
   "compilerOptions": {
-    "outDir": "../../../build/mcf/main",
+    "outDir": "../../../build/test-app/main",
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts"]
 }

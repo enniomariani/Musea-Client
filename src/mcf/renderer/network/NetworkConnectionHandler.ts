@@ -1,5 +1,5 @@
-import {NetworkInterface} from "./NetworkInterface";
-import {IMainNetworkService} from "../../main";
+import {NetworkInterface} from "./NetworkInterface.js";
+import {IMainNetworkService} from "main/MediaClientFrameworkMain.js";
 
 export interface IOnReceivedConnectionData{
     (ip:string, data:Uint8Array):void

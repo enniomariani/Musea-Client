@@ -1,5 +1,5 @@
-import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler";
-import {IMainFileService} from "../../main";
+import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler.js";
+import {IMainFileService} from "main/MediaClientFrameworkMain.js";
 
 export class MediaFileService {
 

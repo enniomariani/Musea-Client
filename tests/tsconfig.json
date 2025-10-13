@@ -4,11 +4,5 @@
     "types": ["node", "jest"],
     "moduleResolution": "node16",
     "module": "node16",
-    "rootDir": "../",
-    "paths": {
-      "main/*": ["src/main/*"],
-      "renderer/*": ["src/renderer/*"],
-      "mocks/*": ["src/mcf/mocks/*"],
-    }
   }
 }

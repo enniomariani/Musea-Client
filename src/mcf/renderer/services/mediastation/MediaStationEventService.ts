@@ -1,4 +1,4 @@
-import {NetworkService} from "renderer/network/NetworkService";
+import {NetworkService} from "renderer/network/NetworkService.js";
 
 export class MediaStationEventService {
 

@@ -1,9 +1,10 @@
 {
   "extends": "../../../tsconfig.json",
-  "outDir": "../../../build/mcf/mocks",
   "compilerOptions": {
+    "outDir": "../../../build/mcf/mocks",
     "types": ["node", "jest"],
   },
   "include": ["**/*.ts",
-    "../../test-app-ipc-globals.d.ts", "./mcf/mcf-ipc-globals.d.ts"]
+    "../renderer/global.d.ts"
+  ]
 }

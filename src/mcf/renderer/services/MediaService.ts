@@ -1,6 +1,6 @@
-import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
-import {MediaStation} from "../dataStructure/MediaStation";
-import {MediaManager, MediaType} from "../dataManagers/MediaManager";
+import {MediaStationRepository} from "../dataStructure/MediaStationRepository.js";
+import {MediaStation} from "../dataStructure/MediaStation.js";
+import {MediaManager, MediaType} from "../dataManagers/MediaManager.js";
 
 export const FileExtension = {
     IMAGE: {

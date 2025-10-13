@@ -1,9 +1,9 @@
-import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
-import {MediaStation} from "../dataStructure/MediaStation";
-import {Content} from "../dataStructure/Content";
-import {ContentManager} from "../dataManagers/ContentManager";
-import {MediaService} from "./MediaService";
-import {MediaApp} from "../dataStructure/MediaApp";
+import {MediaStationRepository} from "../dataStructure/MediaStationRepository.js";
+import {MediaStation} from "../dataStructure/MediaStation.js";
+import {Content} from "../dataStructure/Content.js";
+import {ContentManager} from "../dataManagers/ContentManager.js";
+import {MediaService} from "./MediaService.js";
+import {MediaApp} from "../dataStructure/MediaApp.js";
 
 
 export class ContentDataService  {

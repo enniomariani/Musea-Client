@@ -1,6 +1,6 @@
-import {NetworkService} from "renderer/network/NetworkService";
-import {MockNetworkConnectionHandler} from "./MockNetworkConnectionHandler";
-import {MockNetworkCommandRouter} from "./MockNetworkCommandRouter";
+import {NetworkService} from "renderer/network/NetworkService.js";
+import {MockNetworkConnectionHandler} from "./MockNetworkConnectionHandler.js";
+import {MockNetworkCommandRouter} from "./MockNetworkCommandRouter.js";
 
 const mockNetworkConnectionHandler:MockNetworkConnectionHandler = new MockNetworkConnectionHandler();
 

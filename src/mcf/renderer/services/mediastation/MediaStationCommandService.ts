@@ -1,11 +1,11 @@
-import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository";
-import {MediaStation} from "renderer/dataStructure/MediaStation";
-import {Content} from "renderer/dataStructure/Content";
-import {ContentManager} from "renderer/dataManagers/ContentManager";
-import {MediaAppCommandService} from "renderer/network/MediaAppCommandService";
-import {IMedia, Video} from "renderer/dataStructure/Media";
-import {ContentDataService} from "renderer/services/ContentDataService";
-import {NetworkService} from "renderer/network/NetworkService";
+import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository.js";
+import {MediaStation} from "renderer/dataStructure/MediaStation.js";
+import {Content} from "renderer/dataStructure/Content.js";
+import {ContentManager} from "renderer/dataManagers/ContentManager.js";
+import {MediaAppCommandService} from "renderer/network/MediaAppCommandService.js";
+import {IMedia, Video} from "renderer/dataStructure/Media.js";
+import {ContentDataService} from "renderer/services/ContentDataService.js";
+import {NetworkService} from "renderer/network/NetworkService.js";
 
 export class MediaStationCommandService  {
     private _mediaStationRepository: MediaStationRepository;

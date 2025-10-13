@@ -1,7 +1,7 @@
 import {
     MediaFileService
-} from "renderer/fileHandling/MediaFileService";
-import {MockBackendFileService} from "src/mcf/mocks/main/MockBackendFileService";
+} from "renderer/fileHandling/MediaFileService.js";
+import {MockBackendFileService} from "src/mcf/mocks/main/MockBackendFileService.js";
 
 export class MockMediaFileService extends MediaFileService{
 

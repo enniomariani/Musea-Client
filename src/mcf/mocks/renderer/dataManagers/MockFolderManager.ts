@@ -1,6 +1,4 @@
-import {FolderManager} from "renderer/dataManagers/FolderManager";
-import {MediaStation} from "renderer/dataStructure/MediaStation";
-import {Folder} from "renderer/dataStructure/Folder";
+import {FolderManager} from "renderer/dataManagers/FolderManager.js";
 
 export class MockFolderManager extends FolderManager{
 

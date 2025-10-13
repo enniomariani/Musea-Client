@@ -1,4 +1,4 @@
-import {Image, IMedia, Video} from "./Media";
+import {Image, IMedia, Video} from "./Media.js";
 
 export class Content {
     private _id: number;
