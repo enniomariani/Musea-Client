@@ -5,7 +5,6 @@
   "version": "1.0.3",
   "description": "Framework for media management and communication with app that contain the media-server-frameworks",
   "type": "module",
-  "main": "./build/test-app/main/main.js",
   "scripts": {
     "test": "node --no-warnings node_modules/jest/bin/jest.js ./tests --maxWorkers=50% --coverage",
     "dev": "cross-env NODE_ENV=development npm start",
@@ -16,9 +15,18 @@
     "build": "npm run clean && tsc -p ./src/tsconfig.json && tsc-alias -p ./src/tsconfig.json && npm run copy-files"
   },
   "exports": {
-    "./main": "./build/mcf/main/MediaClientFrameworkMain.js",
-    "./renderer": "./build/mcf/renderer/MediaClientFramework.js",
-    "./preload": "./build/preload/preload.js"
+    "./main": {
+      "types": "./build/mcf/main/index.d.ts",
+      "default": "./build/mcf/main/index.js"
+    },
+    "./renderer": {
+      "types": "./build/mcf/renderer/index.d.ts",
+      "default": "./build/mcf/renderer/index.js"
+    },
+    "./preload": {
+      "types": "./build/preload/index.d.ts",
+      "default": "./build/preload/index.js"
+    }
   },
   "files": [
     "build"
