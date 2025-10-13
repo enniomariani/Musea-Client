@@ -7,7 +7,7 @@ const {ipcRenderer, contextBridge, webUtils} = require('electron');
 //more info here: https://chiragagrawal65.medium.com/how-to-import-ipcrenderer-in-renderer-process-component-26fef55fa4b7
 
 export function exposeMCFAPI() {
-    contextBridge.exposeInMainWorld("backendFileService", {
+    contextBridge.exposeInMainWorld("mcfBackendFiles", {
         saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('mediaClientFramework:saveFile', path, data),
         saveFileByPath: async (path: string, fileInstance: File) => {
             const pathToLoad: string = webUtils.getPathForFile(fileInstance);
@@ -19,7 +19,7 @@ export function exposeMCFAPI() {
         getAllFileNamesInFolder: (path: string) => ipcRenderer.invoke('mediaClientFramework:getAllFileNamesInFolder', path)
     });
 
-    contextBridge.exposeInMainWorld("backendNetworkService", {
+    contextBridge.exposeInMainWorld("mcfBackendNetwork", {
         ping: (ip: string) => ipcRenderer.invoke('backendNetworkService:ping', ip)
     });
 }

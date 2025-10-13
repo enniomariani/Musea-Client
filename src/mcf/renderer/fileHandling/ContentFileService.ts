@@ -1,9 +1,11 @@
+import {IMainFileService} from "../../main";
+
 export class ContentFileService {
 
-    private _backendFileService: IBackendFileService;
+    private _backendFileService: IMainFileService;
     private _pathToFolder: string  = "";
 
-    constructor(backendFileService: IBackendFileService = window.backendFileService) {
+    constructor(backendFileService: IMainFileService = window.mcfBackendFiles) {
         this._backendFileService = backendFileService;
     }
 

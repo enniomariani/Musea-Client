@@ -1,11 +1,12 @@
+import {IMainFileService} from "../../main";
 
 
 export class MediaStationLocalMetaData {
 
-    private _backendFileService:IBackendFileService;
+    private _backendFileService:IMainFileService;
     private _pathToFile:string = "";
 
-    constructor(backendFileService:IBackendFileService = window.backendFileService) {
+    constructor(backendFileService:IMainFileService = window.mcfBackendFiles) {
         this._backendFileService = backendFileService;
     }
 

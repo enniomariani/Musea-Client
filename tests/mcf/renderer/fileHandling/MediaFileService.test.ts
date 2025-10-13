@@ -1,10 +1,11 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MediaFileService} from "../../../../src/mcf/renderer/fileHandling/MediaFileService";
 import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
+import {IMainFileService} from "src/mcf/main";
 
 let mediaFileService:MediaFileService;
 
-const mockBackendFileService: jest.Mocked<IBackendFileService> = {
+const mockBackendFileService: jest.Mocked<IMainFileService> = {
     saveFile: jest.fn(),
     saveFileByPath: jest.fn(),
     loadFile: jest.fn(),

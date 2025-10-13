@@ -5,9 +5,9 @@ import {IConnectionProgress} from "../../mcf/renderer/network/MediaAppConnection
 export class MainApp extends EventTarget {
     private _backend: IBackend;
 
-    constructor(backend: IBackend) {
+    constructor() {
         super();
-        this._backend = backend;
+        this._backend = window.backend;
     }
 
     async initFrameWork() {

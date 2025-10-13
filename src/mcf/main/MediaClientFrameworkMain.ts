@@ -6,6 +6,19 @@ import * as net from "node:net";
 import {dirname, join} from "path";
 import {fileURLToPath} from "url";
 
+export interface IMainFileService {
+    saveFile(path:string, data:Uint8Array):Promise<string>;
+    saveFileByPath(path:string, fileInstance:File):Promise<string>;
+    deleteFile(path:string):string;
+    loadFile(path:string):Promise<Uint8Array|null>;
+    fileExists(path:string):Promise<boolean>;
+    getAllFileNamesInFolder(path:string):Promise<string[]>;
+}
+
+export interface IMainNetworkService {
+    ping(ip:string):Promise<boolean>;
+}
+
 export class MediaClientFrameworkMain {
 
     private mainFileService: MainFileService;

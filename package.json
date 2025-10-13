@@ -26,6 +26,9 @@
     "./preload": {
       "types": "./build/preload/index.d.ts",
       "default": "./build/preload/index.js"
+    },
+    "./mocks": {
+      "default": "./tests/__mocks__/index.js"
     }
   },
   "files": [

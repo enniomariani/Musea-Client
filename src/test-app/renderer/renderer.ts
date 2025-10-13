@@ -1,6 +1,6 @@
 import {MainApp} from "./MainApp";
 
 document.addEventListener("DOMContentLoaded", async function () {
-    let mainApp:MainApp =  new MainApp(window.backend)
+    let mainApp:MainApp =  new MainApp()
     await mainApp.initFrameWork();
 });

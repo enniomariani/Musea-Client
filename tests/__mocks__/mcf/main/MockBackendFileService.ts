@@ -1,5 +1,6 @@
+import {IMainFileService} from "src/mcf/main";
 
-export class MockBackendFileService implements IBackendFileService{
+export class MockBackendFileService implements IMainFileService{
 
     saveFile: jest.Mock;
     saveFileByPath: jest.Mock;

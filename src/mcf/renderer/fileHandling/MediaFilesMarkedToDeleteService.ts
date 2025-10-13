@@ -1,11 +1,13 @@
+import {IMainFileService} from "../../main";
+
 export class MediaFilesMarkedToDeleteService {
 
     private _fileName: string = "ids_to_delete.json"
 
-    private _backendFileService: IBackendFileService;
+    private _backendFileService: IMainFileService;
     private _pathToDataFolder: string = "";
 
-    constructor(backendFileService: IBackendFileService = window.backendFileService) {
+    constructor(backendFileService: IMainFileService = window.mcfBackendFiles) {
         this._backendFileService = backendFileService;
     }
 
