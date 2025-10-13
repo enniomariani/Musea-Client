@@ -1,5 +1,6 @@
 {
   "extends": "../../../tsconfig.json",
+  "outDir": "../../../build/mcf/mocks",
   "compilerOptions": {
     "types": ["node", "jest"],
   },
