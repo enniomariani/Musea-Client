@@ -1,4 +1,5 @@
 import {NetworkInterface} from "./NetworkInterface";
+import {IMainNetworkService} from "../../main";
 
 export interface IOnReceivedConnectionData{
     (ip:string, data:Uint8Array):void
@@ -11,9 +12,9 @@ export interface IOnClosedConnection{
 export  class NetworkConnectionHandler{
 
     private _connections: Map<string, NetworkInterface>;
-    private _backenNetworkService:IBackendNetworkService;
+    private _backenNetworkService:IMainNetworkService;
 
-    constructor( backenNetworkService:IBackendNetworkService = window.backendNetworkService) {
+    constructor( backenNetworkService:IMainNetworkService = window.mcfBackendNetwork) {
         this._connections = new Map();
         this._backenNetworkService = backenNetworkService;
     }
