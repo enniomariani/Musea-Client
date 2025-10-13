@@ -11,7 +11,7 @@
     "start": "electron .",
     "clean": "rimraf build/",
     "copy-files": "copyfiles -u 1 daten/**/* build/daten",
-    "build": "npm run clean && npm-run-all --parallel build:* && npm run copy-files",
+    "build": "npm run clean && npm-run-all build:* && npm run copy-files",
     "build:mcf-main": "tsc -p ./src/mcf/main",
     "build:mcf-renderer": "tsc -p ./src/mcf/renderer",
     "build:mcf-preload": "tsc -p ./src/mcf/preload",

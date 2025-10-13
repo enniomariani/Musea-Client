@@ -4,7 +4,7 @@
     "outDir": "../../../build/mcf/mocks",
     "types": ["node", "jest"],
   },
-  "include": ["**/*.ts",
-    "../renderer/global.d.ts"
-  ]
+  "include": ["./**/*.ts",
+    "../renderer/mcf-ipc-globals.d.ts"
+  ],
 }

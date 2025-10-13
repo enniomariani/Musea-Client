@@ -1,3 +1,5 @@
+/// <reference path="../mcf-ipc-globals.d.ts" />
+
 import {IMainFileService} from "main/MediaClientFrameworkMain.js";
 
 export class ContentFileService {

@@ -4,5 +4,5 @@
     "outDir": "../../../build/mcf/renderer",
     "lib": ["es2022", "dom", "dom.iterable"]
   },
-  "include": ["**/*.ts", "**/*.d.ts"]
+  "include": ["./**/*.ts", "./mcf-ipc-globals.d.ts"],
 }

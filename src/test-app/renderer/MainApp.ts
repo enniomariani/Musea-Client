@@ -1,3 +1,5 @@
+/// <reference path="./test-app-ipc-globals.d.ts" />
+
 import {MediaClientFramework} from "renderer/MediaClientFramework.js";
 import {SyncEvent} from "renderer/services/mediastation/SyncEvents.js";
 import {IConnectionProgress} from "renderer/network/MediaAppConnectionSteps.js";

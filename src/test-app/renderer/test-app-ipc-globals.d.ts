@@ -11,3 +11,5 @@ declare global {
         pathToDataFolder: string;
     }
 }
+
+export{}

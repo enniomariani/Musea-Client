@@ -3,5 +3,5 @@
   "compilerOptions": {
     "outDir": "../../../build/mcf/main",
   },
-  "include": ["**/*.ts"],
+  "include": ["./**/*.ts"],
 }
