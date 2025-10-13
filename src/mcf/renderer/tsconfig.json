@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "jest"],
+    "baseUrl": "..",
+    "paths": {
+      "src/*": ["*"]
+    }
+  },
+  "include": ["**/*.ts",
+    "../../test-app-ipc-globals.d.ts", "./mcf/mcf-ipc-globals.d.ts"]
+}

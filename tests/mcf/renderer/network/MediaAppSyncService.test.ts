@@ -1,12 +1,12 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MockNetworkService} from "tests/__mocks__/mcf/renderer/network/MockNetworkService";
-import {MockMediaStationRepository} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
-import {MockMediaStation} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {MockFolder} from "tests/__mocks__/mcf/renderer/dataStructure/MockFolder";
-import {MockContent} from "tests/__mocks__/mcf/renderer/dataStructure/MockContent";
-import {Image} from "src/mcf/renderer/dataStructure/Media";
-import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
-import {MediaAppSyncService, IMediaAppProgress, IMediaAppSyncEvent} from "src/mcf/renderer/network/MediaAppSyncService";
+import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService";
+import {MockMediaStationRepository} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository";
+import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
+import {MockFolder} from "src/mcf/mocks/renderer/dataStructure/MockFolder";
+import {MockContent} from "src/mcf/mocks/renderer/dataStructure/MockContent";
+import {Image} from "renderer/dataStructure/Media";
+import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler";
+import {MediaAppSyncService, IMediaAppProgress, IMediaAppSyncEvent} from "renderer/network/MediaAppSyncService";
 
 let service: MediaAppSyncService;
 let mockNetworkService: MockNetworkService;

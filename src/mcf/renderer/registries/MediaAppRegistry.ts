@@ -1,4 +1,4 @@
-import {MediaApp, MediaAppRole} from "src/mcf/renderer/dataStructure/MediaApp";
+import {MediaApp, MediaAppRole} from "renderer/dataStructure/MediaApp";
 
 export class MediaAppRegistry {
     private _mediaApps: Map<number, MediaApp> = new Map();

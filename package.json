@@ -12,7 +12,7 @@
     "clean": "rimraf build/",
     "postbuild": "node fix-imports.js",
     "copy-files": "copyfiles -u 1 src/**/* build/ -e **/*.ts -e **/tsconfig.json && copyfiles -u 1 daten/**/* build/daten",
-    "build": "npm run clean && tsc -p ./src/tsconfig.json && tsc-alias -p ./src/tsconfig.json && npm run copy-files"
+    "build": "npm run clean && tsc -p ./src/mcf/main/tsconfig.json && tsc-alias -p ./src/mcf/main/tsconfig.json && npm run copy-files"
   },
   "exports": {
     "./main": {
@@ -28,7 +28,7 @@
       "default": "./build/preload/index.js"
     },
     "./mocks": {
-      "default": "./tests/__mocks__/index.js"
+      "default": "./tests/mocks/index.js"
     }
   },
   "files": [

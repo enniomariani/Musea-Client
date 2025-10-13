@@ -1,14 +1,14 @@
 import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
 
-import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {FolderDataService} from "src/mcf/renderer/services/FolderDataService";
+import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
+import {FolderDataService} from "renderer/services/FolderDataService";
 import {
     MockMediaStationRepository
-} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
-import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
-import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
-import {MockFolderManager} from "../../../__mocks__/mcf/renderer/dataManagers/MockFolderManager";
-import {MockContentDataService} from "tests/__mocks__/mcf/renderer/services/MockContentDataService";
+} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository";
+import {MockFolder} from "src/mcf/mocks/renderer/dataStructure/MockFolder";
+import {MockContent} from "src/mcf/mocks/renderer/dataStructure/MockContent";
+import {MockFolderManager} from "src/mcf/mocks/renderer/dataManagers/MockFolderManager";
+import {MockContentDataService} from "src/mcf/mocks/renderer/services/MockContentDataService";
 
 let folderService: FolderDataService;
 let mockMediaStationRepo: MockMediaStationRepository;

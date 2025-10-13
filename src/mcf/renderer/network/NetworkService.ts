@@ -1,5 +1,5 @@
-import {NetworkConnectionHandler} from "src/mcf/renderer/network/NetworkConnectionHandler";
-import {ConvertNetworkData} from "src/mcf/renderer/network/ConvertNetworkData";
+import {NetworkConnectionHandler} from "renderer/network/NetworkConnectionHandler";
+import {ConvertNetworkData} from "renderer/network/ConvertNetworkData";
 import {NetworkCommandRouter} from "./NetworkCommandRouter";
 
 type PromiseHandler<T = any> = {

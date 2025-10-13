@@ -2,12 +2,12 @@ import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 
 import {
     MockMediaStationRepository
-} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
-import {MockMediaStation} from "../../../__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {Tag} from "src/mcf/renderer/dataStructure/Tag";
-import {MockContentManager} from "../../../__mocks__/mcf/renderer/dataManagers/MockContentManager";
-import {MockContent} from "../../../__mocks__/mcf/renderer/dataStructure/MockContent";
-import {TagDataService} from "../../../../src/mcf/renderer/services/TagDataService";
+} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository";
+import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
+import {Tag} from "renderer/dataStructure/Tag";
+import {MockContentManager} from "src/mcf/mocks/renderer/dataManagers/MockContentManager";
+import {MockContent} from "src/mcf/mocks/renderer/dataStructure/MockContent";
+import {TagDataService} from "../../../../renderer/services/TagDataService";
 
 let tagService: TagDataService;
 let mockMediaStationRepo: MockMediaStationRepository;

@@ -1,4 +1,4 @@
-import {MediaFileService} from "src/mcf/renderer/fileHandling/MediaFileService";
+import {MediaFileService} from "renderer/fileHandling/MediaFileService";
 
 export interface ICachedMedia{
     contentId:number

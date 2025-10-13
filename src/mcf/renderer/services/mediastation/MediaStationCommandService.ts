@@ -1,11 +1,11 @@
-import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
-import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
-import {Content} from "src/mcf/renderer/dataStructure/Content";
-import {ContentManager} from "src/mcf/renderer/dataManagers/ContentManager";
-import {MediaAppCommandService} from "src/mcf/renderer/network/MediaAppCommandService";
-import {IMedia, Video} from "src/mcf/renderer/dataStructure/Media";
-import {ContentDataService} from "src/mcf/renderer/services/ContentDataService";
-import {NetworkService} from "src/mcf/renderer/network/NetworkService";
+import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository";
+import {MediaStation} from "renderer/dataStructure/MediaStation";
+import {Content} from "renderer/dataStructure/Content";
+import {ContentManager} from "renderer/dataManagers/ContentManager";
+import {MediaAppCommandService} from "renderer/network/MediaAppCommandService";
+import {IMedia, Video} from "renderer/dataStructure/Media";
+import {ContentDataService} from "renderer/services/ContentDataService";
+import {NetworkService} from "renderer/network/NetworkService";
 
 export class MediaStationCommandService  {
     private _mediaStationRepository: MediaStationRepository;

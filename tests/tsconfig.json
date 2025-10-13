@@ -1,13 +1,14 @@
 {
-  "extends": "../tsconfig-base.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["jest"],
-    "baseUrl": "..",
+    "types": ["node", "jest"],
+    "moduleResolution": "node16",
+    "module": "node16",
+    "rootDir": "../",
     "paths": {
-      "src/*": ["src/*"],
-      "tests/__mocks__/*": ["tests/__mocks__/*"]
+      "main/*": ["src/main/*"],
+      "renderer/*": ["src/renderer/*"],
+      "mocks/*": ["src/mcf/mocks/*"],
     }
-  },
-  "include": ["../src/**/*", "../tests/**/*.ts"],
-  "references": [{ "path": "../src" }]
+  }
 }

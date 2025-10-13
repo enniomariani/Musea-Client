@@ -1,6 +1,6 @@
-import {NetworkService} from "src/mcf/renderer/network/NetworkService";
-import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
-import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
+import {NetworkService} from "renderer/network/NetworkService";
+import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository";
+import {MediaStation} from "renderer/dataStructure/MediaStation";
 
 export const ContentDownloadStatus = {
     Success : "success",

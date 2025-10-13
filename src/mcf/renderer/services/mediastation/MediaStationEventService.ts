@@ -1,4 +1,4 @@
-import {NetworkService} from "src/mcf/renderer/network/NetworkService";
+import {NetworkService} from "renderer/network/NetworkService";
 
 export class MediaStationEventService {
 

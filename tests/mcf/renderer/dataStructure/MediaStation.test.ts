@@ -1,10 +1,10 @@
 import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
-import {MediaStation} from "../../../../src/mcf/renderer/dataStructure/MediaStation";
-import {MockFolder} from "../../../__mocks__/mcf/renderer/dataStructure/MockFolder";
-import {MediaApp, MediaAppRole} from "../../../../src/mcf/renderer/dataStructure/MediaApp";
-import {Tag} from "../../../../src/mcf/renderer/dataStructure/Tag";
-import {MockTagRegistry} from "tests/__mocks__/mcf/renderer/registries/MockTagRegistry";
-import {MockMediaAppRegistry} from "tests/__mocks__/mcf/renderer/registries/MockMediaAppRegistry";
+import {MediaStation} from "../../../../renderer/dataStructure/MediaStation";
+import {MockFolder} from "src/mcf/mocks/renderer/dataStructure/MockFolder";
+import {MediaApp, MediaAppRole} from "../../../../renderer/dataStructure/MediaApp";
+import {Tag} from "../../../../renderer/dataStructure/Tag";
+import {MockTagRegistry} from "src/mcf/mocks/renderer/registries/MockTagRegistry";
+import {MockMediaAppRegistry} from "src/mcf/mocks/renderer/registries/MockMediaAppRegistry";
 
 let mediaStation: MediaStation;
 let mockTagRegistry:MockTagRegistry;

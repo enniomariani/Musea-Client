@@ -1,7 +1,7 @@
 import {app, BrowserWindow, ipcMain} from 'electron';
 import { fileURLToPath } from 'url';
 import { dirname, join} from 'path';
-import {MediaClientFrameworkMain} from "../../mcf/main/MediaClientFrameworkMain";
+import {MediaClientFrameworkMain} from "src/mcf/main/MediaClientFrameworkMain";
 
 //size of main-window
 const windowWidth:number = 1920;

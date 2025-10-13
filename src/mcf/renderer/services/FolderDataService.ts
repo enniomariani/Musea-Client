@@ -3,7 +3,7 @@ import {MediaStation} from "../dataStructure/MediaStation";
 import {Folder} from "../dataStructure/Folder";
 import {Content} from "../dataStructure/Content";
 import {FolderManager} from "../dataManagers/FolderManager";
-import {ContentDataService} from "src/mcf/renderer/services/ContentDataService";
+import {ContentDataService} from "renderer/services/ContentDataService";
 
 
 export class FolderDataService {

@@ -3,9 +3,9 @@ import {MediaStationLocalMetaData} from "../fileHandling/MediaStationLocalMetaDa
 import {MediaApp, MediaAppRole} from "./MediaApp";
 import {ContentFileService} from "../fileHandling/ContentFileService";
 import {MediaFilesMarkedToDeleteService} from "../fileHandling/MediaFilesMarkedToDeleteService";
-import {TagRegistry} from "src/mcf/renderer/registries/TagRegistry";
-import {MediaAppRegistry} from "src/mcf/renderer/registries/MediaAppRegistry";
-import {MediaFileCacheHandler} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
+import {TagRegistry} from "renderer/registries/TagRegistry";
+import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry";
+import {MediaFileCacheHandler} from "renderer/fileHandling/MediaFileCacheHandler";
 
 export class MediaStationRepository{
 

@@ -1,9 +1,9 @@
 import {MediaStationRepository} from "../dataStructure/MediaStationRepository";
 import {MediaStation} from "../dataStructure/MediaStation";
 import {MediaApp, MediaAppRole} from "../dataStructure/MediaApp";
-import {NetworkService} from "src/mcf/renderer/network/NetworkService";
+import {NetworkService} from "renderer/network/NetworkService";
 import {CheckOptions, MediaAppConnectionStatus, ConnectionStep, runPipeline, StepDef
-} from "src/mcf/renderer/network/MediaAppConnectionSteps";
+} from "renderer/network/MediaAppConnectionSteps";
 
 export class MediaAppConnectionService {
     private _mediaStationRepository: MediaStationRepository;

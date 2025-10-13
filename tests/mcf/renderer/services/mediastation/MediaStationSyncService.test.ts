@@ -1,15 +1,15 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MediaStationSyncService} from "src/mcf/renderer/services/mediastation/MediaStationSyncService";
-import {MockNetworkService} from "tests/__mocks__/mcf/renderer/network/MockNetworkService";
-import {MockMediaStationRepository} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStationRepository";
-import {MockMediaStation} from "tests/__mocks__/mcf/renderer/dataStructure/MockMediaStation";
-import {MockMediaAppConnectionService} from "tests/__mocks__/mcf/renderer/services/MockMediaAppConnectionService";
-import {MockMediaAppSyncService} from "tests/__mocks__/mcf/renderer/network/MockMediaAppSyncService";
-import {MediaApp, MediaAppRole} from "src/mcf/renderer/dataStructure/MediaApp";
-import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
-import {ProgressReporter, SyncEvent, SyncScope} from "src/mcf/renderer/services/mediastation/SyncEvents";
-import {ConnectionStatus as UiConnectionStatus} from "src/mcf/renderer/services/mediastation/SyncEvents";
-import {MediaAppConnectionStatus} from "src/mcf/renderer/network/MediaAppConnectionSteps";
+import {MediaStationSyncService} from "renderer/services/mediastation/MediaStationSyncService";
+import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService";
+import {MockMediaStationRepository} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository";
+import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
+import {MockMediaAppConnectionService} from "src/mcf/mocks/renderer/services/MockMediaAppConnectionService";
+import {MockMediaAppSyncService} from "src/mcf/mocks/renderer/network/MockMediaAppSyncService";
+import {MediaApp, MediaAppRole} from "renderer/dataStructure/MediaApp";
+import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler";
+import {ProgressReporter, SyncEvent, SyncScope} from "renderer/services/mediastation/SyncEvents";
+import {ConnectionStatus as UiConnectionStatus} from "renderer/services/mediastation/SyncEvents";
+import {MediaAppConnectionStatus} from "renderer/network/MediaAppConnectionSteps";
 
 let service: MediaStationSyncService;
 let mockNetworkService: MockNetworkService;

@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MediaStationService} from "src/mcf/renderer/services/mediastation/MediaStationService";
+import {MediaStationService} from "renderer/services/mediastation/MediaStationService";
 
 describe("MediaStationService", () => {
     let data: any;

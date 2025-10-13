@@ -1,5 +1,5 @@
-import {NetworkService} from "src/mcf/renderer/network/NetworkService";
-import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
+import {NetworkService} from "renderer/network/NetworkService";
+import {MediaApp} from "renderer/dataStructure/MediaApp";
 
 export const MediaCommand = {
     PLAY: "play",

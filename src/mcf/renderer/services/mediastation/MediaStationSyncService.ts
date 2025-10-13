@@ -1,21 +1,21 @@
-import {NetworkService} from "src/mcf/renderer/network/NetworkService";
-import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
-import {MediaStation} from "src/mcf/renderer/dataStructure/MediaStation";
-import {MediaApp} from "src/mcf/renderer/dataStructure/MediaApp";
-import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
-import {MediaAppConnectionService} from "src/mcf/renderer/services/MediaAppConnectionService";
-import {MediaAppConnectionStatus} from "src/mcf/renderer/network/MediaAppConnectionSteps";
+import {NetworkService} from "renderer/network/NetworkService";
+import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository";
+import {MediaStation} from "renderer/dataStructure/MediaStation";
+import {MediaApp} from "renderer/dataStructure/MediaApp";
+import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler";
+import {MediaAppConnectionService} from "renderer/services/MediaAppConnectionService";
+import {MediaAppConnectionStatus} from "renderer/network/MediaAppConnectionSteps";
 import {
     IMediaAppSyncEvent,
     MediaAppSyncEventType,
     MediaAppSyncService
-} from "src/mcf/renderer/network/MediaAppSyncService";
+} from "renderer/network/MediaAppSyncService";
 import {
     ConnectionStatus,
     ProgressReporter,
     SyncEvent,
     SyncScope
-} from "src/mcf/renderer/services/mediastation/SyncEvents";
+} from "renderer/services/mediastation/SyncEvents";
 
 export class MediaStationSyncService {
 

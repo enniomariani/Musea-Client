@@ -1,4 +1,4 @@
-import {MediaStationRepository} from "src/mcf/renderer/dataStructure/MediaStationRepository";
+import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository";
 
 export class MediaStationCacheService{
 

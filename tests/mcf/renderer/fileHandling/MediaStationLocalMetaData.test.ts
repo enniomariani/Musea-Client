@@ -1,10 +1,8 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MediaFileService} from "../../../../src/mcf/renderer/fileHandling/MediaFileService";
 import {
     MediaStationLocalMetaData
-} from "../../../../src/mcf/renderer/fileHandling/MediaStationLocalMetaData";
-import {file} from "@babel/types";
-import {MockBackendFileService} from "../../../__mocks__/mcf/main/MockBackendFileService";
+} from "../../../../renderer/fileHandling/MediaStationLocalMetaData";
+import {MockBackendFileService} from "src/mcf/mocks/main/MockBackendFileService";
 
 let mediaStationLocalMetaData: MediaStationLocalMetaData;
 

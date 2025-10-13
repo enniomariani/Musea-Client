@@ -1,4 +1,4 @@
-import {ICachedMedia} from "src/mcf/renderer/fileHandling/MediaFileCacheHandler";
+import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler";
 import {IMainFileService} from "../../main";
 
 export class MediaFileService {

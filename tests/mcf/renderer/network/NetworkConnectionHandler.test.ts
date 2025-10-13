@@ -1,8 +1,8 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {
     NetworkConnectionHandler
-} from "../../../../src/mcf/renderer/network/NetworkConnectionHandler";
-import {MockNetworkInterface} from "../../../__mocks__/mcf/renderer/network/MockNetworkInterface";
+} from "../../../../renderer/network/NetworkConnectionHandler";
+import {MockNetworkInterface} from "src/mcf/mocks/renderer/network/MockNetworkInterface";
 
 
 let mockNetworkInterface: MockNetworkInterface;

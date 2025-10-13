@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
-import {Content} from "../../../../src/mcf/renderer/dataStructure/Content";
-import {Image, IMedia, Video} from "../../../../src/mcf/renderer/dataStructure/Media";
-import {Folder} from "src/mcf/renderer/dataStructure/Folder";
+import {Content} from "../../../../renderer/dataStructure/Content";
+import {Image, IMedia, Video} from "../../../../renderer/dataStructure/Media";
+import {Folder} from "renderer/dataStructure/Folder";
 
 let content: Content;
 
