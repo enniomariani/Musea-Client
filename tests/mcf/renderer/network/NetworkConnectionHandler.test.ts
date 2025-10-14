@@ -3,6 +3,7 @@ import {
     NetworkConnectionHandler
 } from "renderer/network/NetworkConnectionHandler.js";
 import {MockNetworkInterface} from "mocks/renderer/network/MockNetworkInterface.js";
+import {IMainNetworkService} from "main/MediaClientFrameworkMain.js";
 
 
 let mockNetworkInterface: MockNetworkInterface;
@@ -216,7 +217,7 @@ describe("ping() ", () => {
 
     it("should return true if mockBackendNetworkService.ping returns true", async () => {
         let answer: boolean;
-        mockBackendNetworkService.ping.mockReturnValue(true);
+        mockBackendNetworkService.ping.mockResolvedValue(true);
 
         answer = await connectionHandler.ping(firstIP);
 
@@ -225,7 +226,7 @@ describe("ping() ", () => {
 
     it("should return false if mockBackendNetworkService.ping returns false", async () => {
         let answer: boolean;
-        mockBackendNetworkService.ping.mockReturnValue(false);
+        mockBackendNetworkService.ping.mockResolvedValue(false);
 
         answer = await connectionHandler.ping(firstIP);
 

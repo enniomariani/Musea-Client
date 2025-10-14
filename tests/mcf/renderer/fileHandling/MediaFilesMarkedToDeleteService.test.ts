@@ -3,6 +3,7 @@ import {
     MediaFilesMarkedToDeleteService
 } from "renderer/fileHandling/MediaFilesMarkedToDeleteService.js";
 import {MockBackendFileService} from "mocks/main/MockBackendFileService.js";
+import {FileServiceMessage} from "main/MainFileService.js";
 
 let mediaFilesMarkedToDeleteService: MediaFilesMarkedToDeleteService;
 
@@ -76,16 +77,19 @@ describe("init() and addID() ", () => {
             })
         });
 
-        mockBackendFileService.loadFile.mockImplementation((path: string) => {
+        mockBackendFileService.loadFile.mockImplementation(async (path: string) => {
             if (path === fileToSave)
                 return savedData;
             else
                 return null;
         });
 
-        mockBackendFileService.saveFile.mockImplementation((path: string, data: Uint8Array) => {
-            if (path === fileToSave)
+        mockBackendFileService.saveFile.mockImplementation(async (path: string, data: Uint8Array):Promise<string> => {
+            if (path === fileToSave){
                 savedData = data;
+                return FileServiceMessage.FILE_SAVED_SUCCESSFULLY
+            }
+            return "";
         });
 
         uint8Array = createJSONandConvertToBinary(savedIDsApp1, savedIDsApp2);
@@ -125,7 +129,7 @@ describe("init() and removeID() ", () => {
         loadedUint8Array = createJSONandConvertToBinary(savedIDs, null);
         expectedUint8Array = createJSONandConvertToBinary([5, 0], null);
 
-        mockBackendFileService.loadFile.mockImplementation((path: string) => {
+        mockBackendFileService.loadFile.mockImplementation(async (path: string) => {
             if (path === fileToSave)
                 return loadedUint8Array;
             else
@@ -159,7 +163,7 @@ describe("init() and removeID() ", () => {
         const idToDelete: number = 25;
         const fileToSave: string = pathToSave + "\\" + mediaStationId.toString() + "\\ids_to_delete.json";
 
-        mockBackendFileService.fileExists.mockImplementation((path: string) => {
+        mockBackendFileService.fileExists.mockImplementation(async (path: string) => {
             return new Promise((resolve, reject) => {
                 if (path === fileToSave)
                     resolve(true);
@@ -170,7 +174,7 @@ describe("init() and removeID() ", () => {
 
         loadedUint8Array = createJSONandConvertToBinary(savedIDs, null);
 
-        mockBackendFileService.loadFile.mockImplementation((path: string) => {
+        mockBackendFileService.loadFile.mockImplementation(async (path: string) => {
             if (path === fileToSave)
                 return loadedUint8Array;
             else
@@ -200,7 +204,7 @@ describe("init() and getAllIds() ", () => {
 
         uint8Array = createJSONandConvertToBinary(savedIDs.get(0), null);
 
-        mockBackendFileService.loadFile.mockImplementation((path: string) => {
+        mockBackendFileService.loadFile.mockImplementation(async (path: string) => {
             if (path === fileToSave)
                 return uint8Array;
             else
