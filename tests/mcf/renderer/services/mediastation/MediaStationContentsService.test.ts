@@ -1,9 +1,9 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService.js";
+import {MockNetworkService} from "mocks/renderer/network/MockNetworkService.js";
 import {
     MockMediaStationRepository
-} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository.js";
-import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
+} from "mocks/renderer/dataStructure/MockMediaStationRepository.js";
+import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
 import {
     ContentDownloadStatus, IContentDownloadResult,
     MediaStationContentsService

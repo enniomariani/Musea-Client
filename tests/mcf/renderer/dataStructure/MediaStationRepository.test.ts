@@ -1,20 +1,20 @@
 import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {
     MockMediaStationLocalMetaData
-} from "src/mcf/mocks/renderer/fileHandling/MockMediaStationLocalMetaData.js";
-import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
+} from "mocks/renderer/fileHandling/MockMediaStationLocalMetaData.js";
+import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
 import {
     MockContentFileService
-} from "src/mcf/mocks/renderer/fileHandling/MockContentFileService.js";
-import {MediaAppRole} from "../../../../renderer/dataStructure/MediaApp.js";
-import {MediaStation} from "../../../../renderer/dataStructure/MediaStation.js";
+} from "mocks/renderer/fileHandling/MockContentFileService.js";
+import {MediaAppRole} from "renderer/dataStructure/MediaApp.js";
+import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 import {
     MediaStationRepository
-} from "../../../../renderer/dataStructure/MediaStationRepository.js";
+} from "renderer/dataStructure/MediaStationRepository.js";
 import {
     MockMediaFilesMarkedToDeleteService
-} from "src/mcf/mocks/renderer/fileHandling/MockMediaFilesMarkedToDeleteService.js";
-import {MockMediaFileCacheHandler} from "src/mcf/mocks/renderer/fileHandling/MockMediaFileCacheHandler.js";
+} from "mocks/renderer/fileHandling/MockMediaFilesMarkedToDeleteService.js";
+import {MockMediaFileCacheHandler} from "mocks/renderer/fileHandling/MockMediaFileCacheHandler.js";
 
 let mediaStationRepo: MediaStationRepository;
 let mockMediaFileCacheHandler: MockMediaFileCacheHandler;

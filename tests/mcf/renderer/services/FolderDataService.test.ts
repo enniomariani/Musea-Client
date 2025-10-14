@@ -1,14 +1,14 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 
-import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
+import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
 import {FolderDataService} from "renderer/services/FolderDataService.js";
 import {
     MockMediaStationRepository
-} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository.js";
-import {MockFolder} from "src/mcf/mocks/renderer/dataStructure/MockFolder.js";
-import {MockContent} from "src/mcf/mocks/renderer/dataStructure/MockContent";
-import {MockFolderManager} from "src/mcf/mocks/renderer/dataManagers/MockFolderManager";
-import {MockContentDataService} from "src/mcf/mocks/renderer/services/MockContentDataService.js";
+} from "mocks/renderer/dataStructure/MockMediaStationRepository.js";
+import {MockFolder} from "mocks/renderer/dataStructure/MockFolder.js";
+import {MockContent} from "mocks/renderer/dataStructure/MockContent.js";
+import {MockFolderManager} from "mocks/renderer/dataManagers/MockFolderManager.js";
+import {MockContentDataService} from "mocks/renderer/services/MockContentDataService.js";
 
 let folderService: FolderDataService;
 let mockMediaStationRepo: MockMediaStationRepository;
@@ -65,7 +65,7 @@ describe("getIdOfParentFolder() ", () => {
         const mockFolder: MockFolder = new MockFolder(folderId);
         mockFolder.parentFolder = mockParentFolder;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockFolderManager.requireFolder.mockImplementation((mediaStationLocal, id) => {
+        mockFolderManager.requireFolder.mockImplementation((mediaStationLocal:MockMediaStation, id:number) => {
             console.log("get folder: ", mediaStationLocal.id, id)
             if (mediaStationLocal.id === mockMediaStation.id && id === folderId)
                 return mockFolder;
@@ -80,7 +80,7 @@ describe("getIdOfParentFolder() ", () => {
         const mockFolder: MockFolder = new MockFolder(folderId);
         mockFolder.parentFolder = null;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockFolderManager.requireFolder.mockImplementation((mediaStationLocal, id) => {
+        mockFolderManager.requireFolder.mockImplementation((mediaStationLocal:MockMediaStation, id:number) => {
             if (mediaStationLocal.id === mockMediaStation.id && id === folderId)
                 return mockFolder;
         })
@@ -95,7 +95,7 @@ describe("getName() ", () => {
     it("should return the name of the folder", () => {
         mockFolder.name = "firstName";
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockFolderManager.requireFolder.mockImplementation((mediaStation, id) => {
+        mockFolderManager.requireFolder.mockImplementation((mediaStation:MockMediaStation, id:number) => {
             if (mediaStation === mockMediaStation && id === folderId)
                 return mockFolder;
         });

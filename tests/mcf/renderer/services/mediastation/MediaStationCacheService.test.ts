@@ -5,8 +5,8 @@ import {
 } from "renderer/services/mediastation/MediaStationCacheService.js";
 import {
     MockMediaStationRepository
-} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository.js";
-import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
+} from "mocks/renderer/dataStructure/MockMediaStationRepository.js";
+import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
 
 let mediaStationCacheService:MediaStationCacheService;
 let mockMediaStationRepo:MockMediaStationRepository;

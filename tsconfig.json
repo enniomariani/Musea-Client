@@ -50,11 +50,14 @@
     },
     {
       "path": "./src/test-app/renderer"
+    },
+
+    {
+      "path": "./tests"
     }
   ],
   "exclude": [
-    "**/build/**",
-    "tests"
+    "**/build/**"
   ],
   "files": []  // Important: prevents root config from compiling anything
 }

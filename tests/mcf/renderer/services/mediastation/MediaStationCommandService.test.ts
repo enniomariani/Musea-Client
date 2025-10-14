@@ -1,17 +1,17 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {
     MockMediaStationRepository
-} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository.js";
-import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
-import {MockContentManager} from "src/mcf/mocks/renderer/dataManagers/MockContentManager";
-import {MockContent} from "src/mcf/mocks/renderer/dataStructure/MockContent";
+} from "mocks/renderer/dataStructure/MockMediaStationRepository.js";
+import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
+import {MockContentManager} from "mocks/renderer/dataManagers/MockContentManager.js";
+import {MockContent} from "mocks/renderer/dataStructure/MockContent.js";
 import {MediaApp} from "renderer/dataStructure/MediaApp.js";
 import {
     MockMediaAppCommandService
-} from "src/mcf/mocks/renderer/network/MockMediaAppCommandService";
+} from "mocks/renderer/network/MockMediaAppCommandService.js";
 import {Image, Video} from "renderer/dataStructure/Media.js";
 import {MediaStationCommandService} from "renderer/services/mediastation/MediaStationCommandService.js";
-import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService.js";
+import {MockNetworkService} from "mocks/renderer/network/MockNetworkService.js";
 
 let service:MediaStationCommandService;
 let mockMediaStationRepo:MockMediaStationRepository;

@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
+import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
 import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry.js";
 import {MediaApp, MediaAppRole} from "renderer/dataStructure/MediaApp.js";
 

@@ -2,9 +2,9 @@ import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {NetworkService} from "renderer/network/NetworkService.js";
 import {
     MockNetworkConnectionHandler
-} from "src/mcf/mocks/renderer/network/MockNetworkConnectionHandler";
+} from "mocks/renderer/network/MockNetworkConnectionHandler.js";
 import {ConvertNetworkData} from "renderer/network/ConvertNetworkData.js";
-import {MockNetworkCommandRouter} from "src/mcf/mocks/renderer/network/MockNetworkCommandRouter";
+import {MockNetworkCommandRouter} from "mocks/renderer/network/MockNetworkCommandRouter.js";
 import {PromiseHandler} from "renderer/network/NetworkCommandRouter.js";
 
 let mockNetworkConnectionHandler: MockNetworkConnectionHandler;
@@ -70,7 +70,7 @@ function mockOpenConnectionAndReceiveDataLater(ip: string, command: (string | Ui
     });
 
     mockNetworkConnectionHandler.sendData = jest.fn();
-    mockNetworkConnectionHandler.sendData.mockImplementation((ip, data) => {
+    mockNetworkConnectionHandler.sendData.mockImplementation((ip:string, data) => {
         console.log("mock sendData called: ", ip, data)
         // Return a resolved promise
         return Promise.resolve(returnValueSendData).then((answer) => {
@@ -117,7 +117,7 @@ describe("openConnection() ", () => {
 
     it("should return false if connection was not created succesfully", async () => {
         let answer: boolean;
-        mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip, onOpen, onError) => {
+        mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip:string, onOpen, onError) => {
             onError();
         });
 
@@ -494,12 +494,12 @@ describe("unregisterAndClose() ", () => {
     it("should NOT call networkConnectionHandler.closeConnection if the connection was closed by the server before the timeout", async () => {
         let onCloseFunc: any;
         jest.useFakeTimers();
-        mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip, onOpen, onError, onClose, onDataReceived) => {
+        mockNetworkConnectionHandler.createConnection.mockImplementationOnce((ip:string, onOpen, onError, onClose, onDataReceived) => {
             onOpen();
             onCloseFunc = onClose;
         });
 
-        mockNetworkConnectionHandler.sendData.mockImplementationOnce((ip, command) => {
+        mockNetworkConnectionHandler.sendData.mockImplementationOnce((ip:string, command:string) => {
             onCloseFunc(ip);
         });
 

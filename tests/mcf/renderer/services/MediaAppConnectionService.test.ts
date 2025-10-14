@@ -1,10 +1,10 @@
 import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {
     MockMediaStationRepository
-} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository.js";
-import {MediaApp, MediaAppRole} from "../../../../renderer/dataStructure/MediaApp.js";
-import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
-import {MockNetworkService} from "src/mcf/mocks/renderer/network/MockNetworkService.js";
+} from "mocks/renderer/dataStructure/MockMediaStationRepository.js";
+import {MediaApp, MediaAppRole} from "renderer/dataStructure/MediaApp.js";
+import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
+import {MockNetworkService} from "mocks/renderer/network/MockNetworkService.js";
 import {MediaAppConnectionService} from "renderer/services/MediaAppConnectionService.js";
 import {runPipeline} from "renderer/network/MediaAppConnectionSteps.js";
 import * as Steps from "renderer/network/MediaAppConnectionSteps.js";

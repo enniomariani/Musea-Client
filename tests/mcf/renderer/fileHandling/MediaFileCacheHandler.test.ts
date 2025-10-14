@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
-import {MockMediaFileService} from "src/mcf/mocks/renderer/fileHandling/MockMediaFileService";
+import {MockMediaFileService} from "mocks/renderer/fileHandling/MockMediaFileService.js";
 import {ICachedMedia, MediaFileCacheHandler} from "renderer/fileHandling/MediaFileCacheHandler.js";
 
 let mockMediaFileService:MockMediaFileService;

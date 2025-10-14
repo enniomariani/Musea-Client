@@ -5,9 +5,9 @@ import {
 } from "renderer/services/MediaAppDataService.js";
 import {
     MockMediaStationRepository
-} from "src/mcf/mocks/renderer/dataStructure/MockMediaStationRepository.js";
-import {MediaApp, MediaAppRole} from "../../../../renderer/dataStructure/MediaApp.js";
-import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaStation";
+} from "mocks/renderer/dataStructure/MockMediaStationRepository.js";
+import {MediaApp, MediaAppRole} from "renderer/dataStructure/MediaApp.js";
+import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
 
 let mediaAppService: MediaAppDataService;
 let mockMediaStationRepo: MockMediaStationRepository;

@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
-import {Content} from "../../../../renderer/dataStructure/Content.js";
-import {Image, IMedia, Video} from "../../../../renderer/dataStructure/Media.js";
+import {Content} from "renderer/dataStructure/Content.js";
+import {Image, IMedia, Video} from "renderer/dataStructure/Media.js";
 import {Folder} from "renderer/dataStructure/Folder.js";
 
 let content: Content;
