@@ -5,13 +5,14 @@
   "version": "1.0.3",
   "description": "Framework for media management and communication with app that contain the media-server-frameworks",
   "type": "module",
+  "main": "build/test-app/main/main.js",
   "scripts": {
     "test": "node --no-warnings node_modules/jest/bin/jest.js ./tests --maxWorkers=50% --coverage",
     "dev": "cross-env NODE_ENV=development npm start",
     "start": "electron .",
     "clean": "rimraf build/",
     "copy-files": "copyfiles -u 1 daten/**/* build/daten",
-    "build": "cls && npm run clean && tsc --b --verbose && npm run copy-files"
+    "build": "cls && npm run clean && tsc --b --verbose && node build-alias.js && npm run copy-files"
   },
   "exports": {
     "./main": {
@@ -47,6 +48,7 @@
     "ts-jest": "^29.4.4",
     "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.9.3"
   },
   "dependencies": {
