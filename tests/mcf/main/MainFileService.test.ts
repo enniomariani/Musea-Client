@@ -1,9 +1,8 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MainFileService, FileServiceMessage} from "../../../src/mcf/main/MainFileService.js";
+import {MainFileService, FileServiceMessage} from "main/MainFileService.js";
 import * as fs from 'fs';
 import * as path from "node:path";
 import type { PathLike } from "fs";
-import {join} from "path";
 
 let fileService: MainFileService;
 jest.mock("fs", () => ({

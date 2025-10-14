@@ -10,7 +10,18 @@
     "types": [
       "node",
       "jest"
-    ]
+    ],
+    "paths": {
+      "main/*": [
+        "src/mcf/main/*"
+      ],
+      "renderer/*": [
+        "src/mcf/renderer/*"
+      ],
+      "mocks/*": [
+        "src/mcf/mocks/*"
+      ]
+    }
   },
   "include": [
     "./**/*.ts"
