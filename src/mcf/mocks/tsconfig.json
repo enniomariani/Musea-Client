@@ -1,10 +1,12 @@
 {
-  "extends": "../../../tsconfig.json",
+  "extends": "../../../tsconfig.node.json",
   "compilerOptions": {
-    "outDir": "../../../build/mcf/mocks",
     "types": ["node", "jest"],
+    "outDir": "../../../build/mcf/mocks",
+    "rootDir": "."
   },
-  "include": ["./**/*.ts",
-    "../renderer/mcf-ipc-globals.d.ts"
-  ],
+  "include": ["./**/*.ts"],
+  "references": [
+    { "path": "../main" }
+  ]
 }

@@ -1,8 +1,12 @@
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
+    "lib": ["es2022", "dom", "dom.iterable"],
     "outDir": "../../../build/mcf/renderer",
-    "lib": ["es2022", "dom", "dom.iterable"]
+    "rootDir": ".",
   },
-  "include": ["./**/*.ts", "./mcf-ipc-globals.d.ts"],
+  "include": ["./**/*.ts"],
+  "references": [
+    { "path": "../main" }
+  ]
 }

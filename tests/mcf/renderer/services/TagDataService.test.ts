@@ -7,7 +7,7 @@ import {MockMediaStation} from "src/mcf/mocks/renderer/dataStructure/MockMediaSt
 import {Tag} from "renderer/dataStructure/Tag.js";
 import {MockContentManager} from "src/mcf/mocks/renderer/dataManagers/MockContentManager";
 import {MockContent} from "src/mcf/mocks/renderer/dataStructure/MockContent";
-import {TagDataService} from "../../../../renderer/services/TagDataService.js";
+import {TagDataService} from "renderer/services/TagDataService.js";
 
 let tagService: TagDataService;
 let mockMediaStationRepo: MockMediaStationRepository;
@@ -130,7 +130,7 @@ describe("addTagToContent() ", () => {
         let expectedTags: number[] = [12, 3, 21, 22];
         mockContent.tagIds = [12, 3, 21];
 
-        mockContentManager.requireContent.mockImplementation((mediaStation, id) => {
+        mockContentManager.requireContent.mockImplementation((mediaStation:number, id:number) => {
             if (id === 3)
                 return mockContent;
         })
@@ -144,7 +144,7 @@ describe("addTagToContent() ", () => {
         let mockContent: MockContent = new MockContent(22, 12);
         mockContent.tagIds = [12, 3, 21];
 
-        mockContentManager.requireContent.mockImplementation((mediaStation, id) => {
+        mockContentManager.requireContent.mockImplementation((mediaStation:number, id:number) => {
             if (id === 3)
                 return mockContent;
         })
@@ -160,7 +160,7 @@ describe("removeTagFromContent() ", () => {
         let expectedTags: number[] = [12, 3];
         mockContent.tagIds = [12, 3, 21];
 
-        mockContentManager.requireContent.mockImplementation((mediaStation, id) => {
+        mockContentManager.requireContent.mockImplementation((mediaStation:number, id:number) => {
             if (id === 3)
                 return mockContent;
         })
@@ -174,7 +174,7 @@ describe("removeTagFromContent() ", () => {
         let mockContent: MockContent = new MockContent(22, 12);
         mockContent.tagIds = [12, 3, 21];
 
-        mockContentManager.requireContent.mockImplementation((mediaStation, id) => {
+        mockContentManager.requireContent.mockImplementation((mediaStation:number, id:number) => {
             if (id === 3)
                 return mockContent;
         })
@@ -190,7 +190,7 @@ describe("getTagIdsForContent() ", () => {
 
         mockContent.tagIds = [0, 21];
 
-        mockContentManager.requireContent.mockImplementation((mediaStation, id) => {
+        mockContentManager.requireContent.mockImplementation((mediaStation:number, id:number) => {
             if (id === 3)
                 return mockContent;
         })
@@ -234,7 +234,7 @@ describe("findContentsByTag() ", () => {
             return allContentIds;
         });
 
-        mockContentManager.requireContent.mockImplementation((mediaStation, id) => {
+        mockContentManager.requireContent.mockImplementation((mediaStation:number, id:number) => {
             return allContents.get(id);
         });
 

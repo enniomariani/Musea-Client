@@ -1,4 +1,4 @@
-import {ConvertNetworkData} from "./ConvertNetworkData.js";
+import {ConvertNetworkData} from "renderer/network/ConvertNetworkData.js";
 
 export type PromiseHandler<T = any> = {
     resolve: (value: T) => void;

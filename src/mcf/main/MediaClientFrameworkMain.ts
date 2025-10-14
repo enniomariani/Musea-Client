@@ -1,5 +1,5 @@
 import {ipcMain} from 'electron';
-import {MainFileService} from "./MainFileService.js";
+import {MainFileService} from "main/MainFileService.js";
 import ping from "ping";
 import * as fs from 'fs';
 import * as net from "node:net";

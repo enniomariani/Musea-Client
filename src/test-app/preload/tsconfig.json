@@ -1,9 +1,8 @@
 {
-  "extends": "../../../tsconfig.json",
+  "extends": "../../../tsconfig.node.json",
   "compilerOptions": {
     "outDir": "../../../build/test-app/preload",
-    "isolatedModules": false,
-    "module": "commonjs"
+    "rootDir": "."
   },
   "include": ["./**/*.ts"]
 }
