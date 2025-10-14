@@ -1,12 +1,22 @@
 {
   "extends": "../../../tsconfig.node.json",
   "compilerOptions": {
-    "types": ["node", "jest"],
+    "types": [
+      "node",
+      "jest"
+    ],
     "outDir": "../../../build/mcf/mocks",
     "rootDir": "."
   },
-  "include": ["./**/*.ts"],
+  "include": [
+    "./**/*.ts"
+  ],
   "references": [
-    { "path": "../main" }
+    {
+      "path": "../main"
+    },
+    {
+      "path": "../renderer"
+    }
   ]
 }

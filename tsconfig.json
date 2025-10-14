@@ -12,6 +12,9 @@
     "sourceMap": true,
     "composite": true,
     "declaration": true,
+
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
     "baseUrl": ".",
     "paths": {
       "main/*": [
