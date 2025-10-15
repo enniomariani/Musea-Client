@@ -26,7 +26,7 @@ app.whenReady().then(async () => {
         width: windowWidth, height: windowHeight, kiosk: false, //hides the menubar when fullscreen is set to true in the settings-file
         autoHideMenuBar: false, fullscreen: false, webPreferences: {
             nodeIntegration: false, contextIsolation: true,
-            preload: join(__dirname, 'preload.js'),sandbox: true
+            preload: join(__dirname,'..', "preload", 'preload.js'),sandbox: true
         },
     });
 

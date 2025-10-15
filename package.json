@@ -11,8 +11,10 @@
     "dev": "cross-env NODE_ENV=development npm start",
     "start": "electron .",
     "clean": "rimraf build/",
-    "copy-files": "copyfiles -u 1 daten/**/* build/daten",
-    "build": "cls && npm run clean && tsc --b --verbose && node build-alias.js && npm run copy-files"
+    "copy:data": "copyfiles -u 1 \"daten/**/*\" build/daten",
+    "copy:html": "copyfiles -u 1 \"src/**/*.html\" build",
+    "copy": "npm run copy:data && npm run copy:html",
+    "build": "cls && npm run clean && tsc --b && tsc-alias -p tsconfig.node.json --outDir build && npm run copy"
   },
   "exports": {
     "./main": {
