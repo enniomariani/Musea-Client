@@ -34,7 +34,10 @@ app.whenReady().then(async () => {
     mainWindow.webContents.openDevTools();
     mainWindow.show(); //initially sets the focus to the created electron-window
 
-    mainMediaServerFramework = new MediaClientFrameworkMain(environment === 'development');
+    const pathToDataFolder:string =
+        environment === 'development' ? join(__dirname, '..', '..', 'daten\\') : join(process.resourcesPath, '\\daten\\');
+
+    mainMediaServerFramework = new MediaClientFrameworkMain(pathToDataFolder);
     mainMediaServerFramework.init();
 
     app.on('window-all-closed', () => {

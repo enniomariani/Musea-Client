@@ -23,11 +23,8 @@ export class MediaClientFrameworkMain {
 
     private mainFileService: MainFileService;
 
-    constructor(developmentMode:boolean = false) {
-        const filename:string = fileURLToPath(import.meta.url);
-        const __dirname:string = dirname(filename);
+    constructor(pathToDataFolder:string) {
 
-        const pathToDataFolder:string = developmentMode ? join(__dirname, '..', '..', 'daten\\') : join(process.resourcesPath, '\\daten\\');
         this.mainFileService = new MainFileService(pathToDataFolder);
     }
 

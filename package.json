@@ -13,7 +13,8 @@
     "clean": "rimraf build/",
     "copy:data": "copyfiles -u 1 \"daten/**/*\" build/daten",
     "copy:html": "copyfiles -u 1 \"src/**/*.html\" build",
-    "copy": "npm run copy:data && npm run copy:html",
+    "copy:d.ts": "copyfiles -u 1 \"src/**/*.d.ts\" build",
+    "copy": "npm run copy:data && npm run copy:html && npm run copy:d.ts",
     "build": "cls && npm run clean && tsc --b && tsc-alias -p tsconfig.node.json --outDir build && npm run copy"
   },
   "exports": {
