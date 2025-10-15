@@ -27,11 +27,12 @@
       "default": "./build/mcf/renderer/index.js"
     },
     "./preload": {
-      "types": "./build/preload/index.d.ts",
-      "default": "./build/preload/index.js"
+      "types": "./build/mcf/preload/index.d.ts",
+      "default": "./build/mcf/preload/index.js"
     },
     "./mocks": {
-      "default": "./tests/mocks/index.js"
+      "default": "./build/mcf/mocks/index.js",
+      "types": "./build/mcf/mocks/index.d.ts"
     }
   },
   "files": [
