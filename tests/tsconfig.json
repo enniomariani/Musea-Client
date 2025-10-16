@@ -21,6 +21,7 @@
   "include": [
     "./**/*.ts"
   ],
+  "exclude": ["**/build/**"],   //important, because on root-level tsconfig, tests are excluded
   "references": [
     {
       "path": "../src/mcf/renderer"
