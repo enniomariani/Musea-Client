@@ -17,15 +17,9 @@
 
     "baseUrl": ".",
     "paths": {
-      "main/*": [
-        "src/mcf/main/*"
-      ],
-      "renderer/*": [
-        "src/mcf/renderer/*"
-      ],
-      "mocks/*": [
-        "src/mcf/mocks/*"
-      ]
+      "main/*": ["src/mcf/main/*"],
+      "renderer/*": ["src/mcf/renderer/*"],
+      "mocks/*": ["src/mcf/mocks/*"]
     }
   },
   "references": [
@@ -41,7 +35,6 @@
     {
       "path": "./src/mcf/mocks"
     },
-
     {
       "path": "./src/test-app/main"
     },
@@ -51,13 +44,10 @@
     {
       "path": "./src/test-app/renderer"
     },
-
     {
       "path": "./tests"
     }
   ],
-  "exclude": [
-    "**/build/**"
-  ],
+  "exclude": ["**/build/**"],
   "files": []  // Important: prevents root config from compiling anything
 }

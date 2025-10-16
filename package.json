@@ -31,8 +31,8 @@
       "default": "./build/mcf/preload/index.js"
     },
     "./mocks": {
-      "default": "./build/mcf/mocks/index.js",
-      "types": "./build/mcf/mocks/index.d.ts"
+      "types": "./build/mcf/mocks/index.d.ts",
+      "default": "./build/mcf/mocks/index.js"
     }
   },
   "files": [
