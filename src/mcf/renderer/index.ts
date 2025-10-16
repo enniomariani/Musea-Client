@@ -1,5 +1,7 @@
 export {IMediaClientFramework, MediaClientFramework} from "./MediaClientFramework.js";
 
+export {ConvertNetworkData} from "./network/ConvertNetworkData.js"
+
 export {ContentDataService} from "./services/ContentDataService.js";
 export {FolderDataService} from "./services/FolderDataService.js";
 export {IMediaAppData, MediaAppDataService} from "./services/MediaAppDataService.js"
