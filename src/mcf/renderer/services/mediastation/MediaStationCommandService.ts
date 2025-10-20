@@ -46,7 +46,6 @@ export class MediaStationCommandService  {
         for (const [key, item] of ms.mediaAppRegistry.getAll())
             await this._contentNetworkService.sendCommandStop(item);
 
-        await this._contentNetworkService.sendCommandPause(ms.mediaAppRegistry.getAll());
         await this._contentNetworkService.sendCommandLight(ms.mediaAppRegistry.getAll(), ContentDataService.DEFAULT_DMX_PRESET);
     }
 
