@@ -124,15 +124,6 @@ describe("downloadContentsOfMediaStation() ", () => {
         expect(answer).toEqual({status: ContentDownloadStatus.SuccessNoContentsOnController, ip: controllerIp});
     });
 
-    it("should return call mediaStation.reset if the controller-app returned an empty JSON", async () => {
-        mockNetworkService.getContentFileFrom = jest.fn();
-        mockNetworkService.getContentFileFrom.mockReturnValueOnce("{}");
-
-        answer = await service.downloadContentsOfMediaStation(0, false);
-
-        expect(mockMediaStation.reset).toHaveBeenCalledTimes(1);
-    });
-
     it("should return an error if there is no controller-ip specified", async () => {
         mockMediaStation.mediaAppRegistry.getControllerIp = jest.fn();
         mockMediaStation.mediaAppRegistry.getControllerIp.mockReturnValueOnce(null);

@@ -11,6 +11,7 @@ export class MediaAppRegistry {
         mediaApp.ip = ip;
         mediaApp.name = name;
         mediaApp.role = role;
+        console.log("add media-app entry: ", id, name, ip)
 
         this._mediaApps.set(id, mediaApp);
     }
@@ -45,10 +46,13 @@ export class MediaAppRegistry {
 
         this._mediaApps.forEach((mediaApp: MediaApp) => {
             if (mediaApp.role === MediaAppRole.CONTROLLER) {
+                console.log("found controller-app!")
                 controller = mediaApp;
                 return;
             }
         });
+
+        console.log("found controller-app? ", controller)
 
         if (!controller) {
             console.error("No controller-app is set!");
