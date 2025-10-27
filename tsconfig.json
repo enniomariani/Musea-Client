@@ -3,7 +3,7 @@
     "target": "es2022",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "esModuleInterop": true,
+    "esModuleInterop": false,   //false because library-users should be free to turn it on/off,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,

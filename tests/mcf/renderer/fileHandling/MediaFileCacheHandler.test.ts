@@ -25,10 +25,8 @@ describe("hydrate() ", ()=>{
         ];
         mockMediaFileService.getAllCachedMedia.mockResolvedValueOnce(list);
 
-        // method to test
         await mediaFileCacheHandler.hydrate(stationId);
 
-        // tests
         expect(mockMediaFileService.getAllCachedMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaFileService.getAllCachedMedia).toHaveBeenCalledWith(stationId);
         expect(mediaFileCacheHandler.getAllCachedMedia().get(stationId)).toEqual(list);
@@ -38,10 +36,8 @@ describe("hydrate() ", ()=>{
         const stationId = 3;
         mockMediaFileService.getAllCachedMedia.mockResolvedValueOnce(undefined as unknown as ICachedMedia[]);
 
-        // method to test
         await mediaFileCacheHandler.hydrate(stationId);
 
-        // tests
         expect(mediaFileCacheHandler.getAllCachedMedia().get(stationId)).toEqual([]);
     });
 
@@ -58,10 +54,8 @@ describe("hydrate() ", ()=>{
         const replacement: ICachedMedia[] = [{ contentId: 2, mediaAppId: 2, fileExtension: "mp4" }];
         mockMediaFileService.getAllCachedMedia.mockResolvedValueOnce(replacement);
 
-        // method to test
         await mediaFileCacheHandler.hydrate(stationId);
 
-        // tests
         expect(mediaFileCacheHandler.getAllCachedMedia().get(stationId)).toEqual(replacement);
     });
 });
@@ -70,9 +64,8 @@ describe("cacheMedia() ", ()=>{
     const fileName = 'mockFile.txt';
     const fileContent = 'Hello, world!';
     const fileType = 'text/plain';
-
-    // Create a mock File object
     const mockFile = new File([fileContent], fileName, { type: fileType });
+
     it("should call mediaFileService.saveFile with the passed parameters", async ()=>{
         await mediaFileCacheHandler.cacheMedia(0,1,2,"jpeg", mockFile);
 
@@ -112,9 +105,8 @@ describe("isMediaCached() ", ()=>{
     it("should return true if the media is cached", async ()=>{
         const file = new File(["x"], "x", {type: "text/plain"});
         await mediaFileCacheHandler.cacheMedia(0,1,2,"jpeg", file);
-        let answer:boolean;
 
-        answer = mediaFileCacheHandler.isMediaCached(0,1,2);
+        const answer:boolean = mediaFileCacheHandler.isMediaCached(0,1,2);
 
         expect(answer).toBe(true);
     });
@@ -122,9 +114,8 @@ describe("isMediaCached() ", ()=>{
     it("should return false if the media is not cached", async ()=>{
         const file = new File(["x"], "x", {type: "text/plain"});
         await mediaFileCacheHandler.cacheMedia(0,1,2,"jpeg", file);
-        let answer:boolean;
 
-        answer = mediaFileCacheHandler.isMediaCached(0,1,1);
+        const answer:boolean = mediaFileCacheHandler.isMediaCached(0,1,1);
 
         expect(answer).toBe(false);
     });
@@ -191,7 +182,6 @@ describe("deleteCachedMedia() ", ()=>{
     it("should throw an error if there is no cached media for the passed contentId and mediaAppID", async ()=>{
         const file = new File(["x"], "x", {type: "text/plain"});
         await mediaFileCacheHandler.cacheMedia(0,1,2,"jpeg", file);
-
         expect(()=> mediaFileCacheHandler.deleteCachedMedia(0,2,2)).toThrow("No media cached for media-App-ID 2 in content-ID 2 of mediastation with ID: 0")
     });
 });
@@ -199,7 +189,6 @@ describe("deleteCachedMedia() ", ()=>{
 describe("getCachedMediaFile() ", ()=>{
     it("should call mediaFileService.loadFile with the passed parameters", async ()=>{
         await mediaFileCacheHandler.getCachedMediaFile(0,1,2, "jpeg");
-
         expect(mockMediaFileService.loadFile).toHaveBeenCalledTimes(1);
         expect(mockMediaFileService.loadFile).toHaveBeenCalledWith(0, 1,2, "jpeg");
     })
