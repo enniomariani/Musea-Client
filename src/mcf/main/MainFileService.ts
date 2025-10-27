@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import path from "node:path";
+import * as path from "node:path";
 
 export const FileServiceMessage = {
     ERROR_FILE_EXISTS: "FileService: file already exists, and overwriting is deactivated",
