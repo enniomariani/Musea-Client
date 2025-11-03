@@ -19,7 +19,7 @@
     }
   },
   "include": [
-    "./**/*.ts", "./src/**/*.d.ts"
+    "./**/*.ts", "../src/**/*.d.ts"
   ],
   "exclude": ["**/build/**"],
   "references": [
