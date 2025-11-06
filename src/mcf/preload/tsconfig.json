@@ -1,9 +1,0 @@
-{
-  "extends": "../../../tsconfig.node.json",
-  "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "Node",
-    "outDir": "../../../build/mcf/preload",
-  },
-  "include": ["./**/*.ts"]
-}

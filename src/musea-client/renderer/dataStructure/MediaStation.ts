@@ -1,0 +1,168 @@
+import {Folder} from "renderer/dataStructure/Folder.js";
+import {TagRegistry} from "renderer/registries/TagRegistry.js";
+import {Tag} from "renderer/dataStructure/Tag.js";
+import {MediaPlayerRegistry} from "renderer/registries/MediaPlayerRegistry.js";
+import {MediaPlayer} from "renderer/dataStructure/MediaPlayer.js";
+
+export class MediaStation {
+    private _id: number;
+    private _name: string = "";
+    private _rootFolder: Folder = new Folder(0);
+
+    private _folderIdCounter: number = -1;
+    private _contentIdCounter: number = -1;
+    private _mediaPlayerIdCounter: number = -1;
+    private _tagIdCounter: number = -1;
+
+    private _tagRegistry:TagRegistry;
+    private _mediaPlayerRegistry:MediaPlayerRegistry;
+
+    constructor(id: number, tagRegistry:TagRegistry, mediaPlayerRegistry:MediaPlayerRegistry) {
+        this._id = id;
+        this._tagRegistry = tagRegistry;
+        this._mediaPlayerRegistry = mediaPlayerRegistry;
+        this.reset();
+    }
+
+    /**
+     * resets the mediastation, preserves its ID and its name
+     */
+    reset(): void {
+        this._rootFolder = new Folder(0);
+        this._rootFolder.name = "root";
+
+        this._folderIdCounter = 1;    //must be 1 because the root-folder has the id 0
+        this._contentIdCounter = 0;
+        this._mediaPlayerIdCounter = 0;
+        this._tagIdCounter = 0;
+
+        this._tagRegistry.reset();
+        this._mediaPlayerRegistry.reset();
+    }
+
+    exportToJSON(date:Date): string {
+        const allTags:Map<number, Tag> = this._tagRegistry.getAll();
+
+        let json: any = {
+            lastSync: date.toLocaleString(),
+            name: this._name,
+            folderIdCounter: this._folderIdCounter,
+            contentIdCounter: this._contentIdCounter,
+            mediaPlayerIdCounter: this._mediaPlayerIdCounter,
+            tagIdCounter: this._tagIdCounter,
+            mediaPlayers: [],
+            tags: [],
+            rootFolder: this._rootFolder.exportToJSON(),
+        };
+
+        for(const [key, tag] of allTags)
+            json.tags.push({id: tag.id, name: tag.name});
+
+        this._mediaPlayerRegistry.getAll().forEach((mediaPlayer: MediaPlayer) => {
+            json.mediaPlayers.push({id: mediaPlayer.id, name: mediaPlayer.name, ip: mediaPlayer.ip, role: mediaPlayer.role});
+        });
+
+        return JSON.stringify(json);
+    }
+
+    /**
+     *
+     * imports the whole data-structure from the JSON
+     *
+     * before it imports the data, it deletes the root-folder and all mediaPlayers
+     *
+     * @param json
+     * @param {boolean} preserveName
+     * @param {Folder} newRootFolder
+     */
+    importFromJSON(json: any,preserveName:boolean, newRootFolder: Folder = new Folder(0)): void {
+
+        if(!preserveName){
+            if (this._jsonPropertyExists(json, "name"))
+                this._name = json.name;
+        }
+
+        if (this._jsonPropertyExists(json, "folderIdCounter"))
+            this._folderIdCounter = json.folderIdCounter;
+        if (this._jsonPropertyExists(json, "contentIdCounter"))
+            this._contentIdCounter = json.contentIdCounter;
+        if (this._jsonPropertyExists(json, "tagIdCounter"))
+            this._tagIdCounter = json.tagIdCounter;
+        if (this._jsonPropertyExists(json, "mediaPlayerIdCounter"))
+            this._mediaPlayerIdCounter = json.mediaPlayerIdCounter;
+
+        if (this._jsonPropertyExists(json, "mediaPlayers"))
+            this._mediaPlayerRegistry.importFromJSON(json.mediaPlayers);
+
+        if (this._jsonPropertyExists(json, "tags")) {
+            this._tagRegistry.reset();
+
+            for (let i: number = 0; i < json.tags.length; i++)
+                this._tagRegistry.add(json.tags[i].id, json.tags[i].name);
+        }
+
+        if (this._jsonPropertyExists(json, "rootFolder")) {
+            this._rootFolder = newRootFolder;
+            this._rootFolder.importFromJSON(json.rootFolder);
+        }
+    }
+
+    private _jsonPropertyExists(json: any, propName: string): boolean {
+        if (json.hasOwnProperty(propName))
+            return true;
+        else
+            throw new Error("MediaStation: missing property in JSON: " + propName);
+    }
+
+    getNextMediaPlayerId(): number {
+        let actualID: number = this._mediaPlayerIdCounter;
+        this._mediaPlayerIdCounter++;
+        return actualID;
+    }
+
+    getNextFolderId(): number {
+        let actualID: number = this._folderIdCounter;
+        this._folderIdCounter++;
+        return actualID;
+    }
+
+    getNextTagId(): number {
+        let actualID: number = this._tagIdCounter;
+        this._tagIdCounter++;
+        return actualID;
+    }
+
+    getNextContentId(): number {
+        let actualID: number = this._contentIdCounter;
+        this._contentIdCounter++;
+        return actualID;
+    }
+
+    get id(): number {
+        return this._id;
+    }
+
+    get name(): string {
+        return this._name;
+    }
+
+    set name(value: string) {
+        this._name = value;
+    }
+
+    get rootFolder(): Folder {
+        return this._rootFolder;
+    }
+
+    set rootFolder(value: Folder) {
+        this._rootFolder = value;
+    }
+
+    get tagRegistry(): TagRegistry {
+        return this._tagRegistry;
+    }
+
+    get mediaPlayerRegistry(): MediaPlayerRegistry {
+        return this._mediaPlayerRegistry;
+    }
+}

@@ -17,23 +17,23 @@
 
     "baseUrl": ".",
     "paths": {
-      "main/*": ["src/mcf/main/*"],
-      "renderer/*": ["src/mcf/renderer/*"],
-      "mocks/*": ["src/mcf/mocks/*"]
+      "main/*": ["src/musea-client/main/*"],
+      "renderer/*": ["src/musea-client/renderer/*"],
+      "mocks/*": ["src/musea-client/mocks/*"]
     }
   },
   "references": [
     {
-      "path": "./src/mcf/main"
+      "path": "./src/musea-client/main"
     },
     {
-      "path": "./src/mcf/preload"
+      "path": "./src/musea-client/preload"
     },
     {
-      "path": "./src/mcf/renderer"
+      "path": "./src/musea-client/renderer"
     },
     {
-      "path": "./src/mcf/mocks"
+      "path": "./src/musea-client/mocks"
     },
     {
       "path": "./src/test-app/main"

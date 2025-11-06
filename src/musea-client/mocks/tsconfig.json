@@ -1,0 +1,22 @@
+{
+  "extends": "../../../tsconfig.node.json",
+  "compilerOptions": {
+    "types": [
+      "node",
+      "jest"
+    ],
+    "outDir": "../../../build/musea-client/mocks",
+    "rootDir": "."
+  },
+  "include": [
+    "./**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "../main"
+    },
+    {
+      "path": "../renderer"
+    }
+  ]
+}

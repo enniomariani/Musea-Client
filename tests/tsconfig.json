@@ -8,13 +8,13 @@
     "types": ["node", "jest"],
     "paths": {
       "main/*": [
-        "src/mcf/main/*"
+        "src/musea-client/main/*"
       ],
       "renderer/*": [
-        "src/mcf/renderer/*"
+        "src/musea-client/renderer/*"
       ],
       "mocks/*": [
-        "src/mcf/mocks/*"
+        "src/musea-client/mocks/*"
       ]
     }
   },
@@ -24,13 +24,13 @@
   "exclude": ["**/build/**"],
   "references": [
     {
-      "path": "../src/mcf/renderer"
+      "path": "../src/musea-client/renderer"
     },
     {
-      "path": "../src/mcf/main"
+      "path": "../src/musea-client/main"
     },
     {
-      "path": "../src/mcf/mocks"
+      "path": "../src/musea-client/mocks"
     }
   ]
 }
