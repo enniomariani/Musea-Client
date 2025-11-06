@@ -37,21 +37,21 @@ function asciiCodesOfString(str: string): number[] {
 const cases = [
     {
         dataParts: ["xxyy"],
-        expectedData: new Uint8Array([1, DataIndicator.TEXT,6,0,0,0, ...asciiCodesOfString("xxyy")]),
+        expectedData: new Uint8Array([1, DataIndicator.Text,6,0,0,0, ...asciiCodesOfString("xxyy")]),
         get description() {
             return `data '${this.dataParts.join(' ')}' should return ${arrayBufferToHex(this.expectedData)}`;
         }
     },
     {
         dataParts: ["network"],
-        expectedData: new Uint8Array([1, DataIndicator.TEXT,6,0,0,0,...asciiCodesOfString("network")]),
+        expectedData: new Uint8Array([1, DataIndicator.Text,6,0,0,0,...asciiCodesOfString("network")]),
         get description() {
             return `data '${this.dataParts.join(' ')}' should return ${arrayBufferToHex(this.expectedData)}`;
         }
     },
     {
         dataParts: ["network", "ping"],
-        expectedData: new Uint8Array([2, DataIndicator.TEXT,11,0,0,0, DataIndicator.TEXT,18,0,0,0,
+        expectedData: new Uint8Array([2, DataIndicator.Text,11,0,0,0, DataIndicator.Text,18,0,0,0,
             ...asciiCodesOfString("network"),
             ...asciiCodesOfString("ping")]),
         get description() {
@@ -60,7 +60,7 @@ const cases = [
     },
     {
         dataParts: ["network", "register"],
-        expectedData: new Uint8Array([2, DataIndicator.TEXT,11,0,0,0, DataIndicator.TEXT,18,0,0,0,
+        expectedData: new Uint8Array([2, DataIndicator.Text,11,0,0,0, DataIndicator.Text,18,0,0,0,
             ...asciiCodesOfString("network"),
             ...asciiCodesOfString("register")]),
         get description() {
@@ -69,8 +69,8 @@ const cases = [
     },
     {
         dataParts: ["network", "register", "admin"],
-        expectedData: new Uint8Array([3, DataIndicator.TEXT,16,0,0,0, DataIndicator.TEXT,23,0,0,0,
-            DataIndicator.TEXT,31,0,0,0,
+        expectedData: new Uint8Array([3, DataIndicator.Text,16,0,0,0, DataIndicator.Text,23,0,0,0,
+            DataIndicator.Text,31,0,0,0,
             ...asciiCodesOfString("network"),
             ...asciiCodesOfString("register"),
             ...asciiCodesOfString("admin")]),
@@ -80,9 +80,9 @@ const cases = [
     },
     {
         dataParts: ["network", "register", "user", "usernameX"],
-        expectedData: new Uint8Array([4, DataIndicator.TEXT,21,0,0,0,
-            DataIndicator.TEXT,28,0,0,0, DataIndicator.TEXT,36,0,0,0,
-            DataIndicator.TEXT,40,0,0,0,
+        expectedData: new Uint8Array([4, DataIndicator.Text,21,0,0,0,
+            DataIndicator.Text,28,0,0,0, DataIndicator.Text,36,0,0,0,
+            DataIndicator.Text,40,0,0,0,
             ...asciiCodesOfString("network"),
             ...asciiCodesOfString("register"),
             ...asciiCodesOfString("user"),
@@ -94,7 +94,7 @@ const cases = [
     },
     {
         dataParts: ["media", "put", new Uint8Array([20, 0, 2, 50, 30, 100])],
-        expectedData: new Uint8Array([3, 0,16,0,0,0, 0,21,0,0,0, DataIndicator.BINARY_DATA,24,0,0,0,
+        expectedData: new Uint8Array([3, 0,16,0,0,0, 0,21,0,0,0, DataIndicator.BinaryData,24,0,0,0,
             ...asciiCodesOfString("media"),
             ...asciiCodesOfString("put"),
             20, 0, 2, 50, 30, 100]),
@@ -104,7 +104,7 @@ const cases = [
     },
     {
         dataParts: ["media", "put", new Uint8Array([3, 2, 2, 50])],
-        expectedData: new Uint8Array([3, 0,16,0,0,0, 0,21,0,0,0, DataIndicator.BINARY_DATA,24,0,0,0,
+        expectedData: new Uint8Array([3, 0,16,0,0,0, 0,21,0,0,0, DataIndicator.BinaryData,24,0,0,0,
             ...asciiCodesOfString("media"),
             ...asciiCodesOfString("put"),
             3, 2, 2, 50]),
@@ -114,7 +114,7 @@ const cases = [
     },
     {
         dataParts: ["contents", "put", "{}"],
-        expectedData: new Uint8Array([3, 0,16,0,0,0, 0,24,0,0,0, DataIndicator.TEXT,27,0,0,0,
+        expectedData: new Uint8Array([3, 0,16,0,0,0, 0,24,0,0,0, DataIndicator.Text,27,0,0,0,
             ...asciiCodesOfString("contents"),
             ...asciiCodesOfString("put"),
             ...asciiCodesOfString("{}")]),
