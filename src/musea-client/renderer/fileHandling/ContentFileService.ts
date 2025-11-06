@@ -1,13 +1,13 @@
-/// <reference path="../mcf-ipc-globals.d.ts" />
+/// <reference path="../globals.d.ts" />
 
-import {IMainFileService} from "main/MediaClientFrameworkMain.js";
+import {IMainFileService} from "main/MuseaClientMain.js";
 
 export class ContentFileService {
 
     private _backendFileService: IMainFileService;
     private _pathToFolder: string  = "";
 
-    constructor(backendFileService: IMainFileService = window.mcfBackendFiles) {
+    constructor(backendFileService: IMainFileService = window.museaClientBackendFiles) {
         this._backendFileService = backendFileService;
     }
 

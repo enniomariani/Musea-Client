@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MediaFileService} from "renderer/fileHandling/MediaFileService.js";
 import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler.js";
-import {IMainFileService} from "main/MediaClientFrameworkMain.js";
+import {IMainFileService} from "main/MuseaClientMain.js";
 
 let mediaFileService:MediaFileService;
 

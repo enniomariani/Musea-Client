@@ -1,11 +1,11 @@
-import {IMainFileService} from "main/MediaClientFrameworkMain.js";
+import {IMainFileService} from "main/MuseaClientMain.js";
 
 export class MediaStationLocalMetaData {
 
     private _backendFileService:IMainFileService;
     private _pathToFile:string = "";
 
-    constructor(backendFileService:IMainFileService = window.mcfBackendFiles) {
+    constructor(backendFileService:IMainFileService = window.museaClientBackendFiles) {
         this._backendFileService = backendFileService;
     }
 

@@ -1,1 +1,1 @@
-export * from "./MediaClientFrameworkMain.js";
+export * from "./MuseaClientMain.js";

@@ -3,7 +3,7 @@ import {
     NetworkConnectionHandler
 } from "renderer/network/NetworkConnectionHandler.js";
 import {MockNetworkInterface} from "mocks/renderer/network/MockNetworkInterface.js";
-import {IMainNetworkService} from "main/MediaClientFrameworkMain.js";
+import {IMainNetworkService} from "main/MuseaClientMain.js";
 
 
 let mockNetworkInterface: MockNetworkInterface;

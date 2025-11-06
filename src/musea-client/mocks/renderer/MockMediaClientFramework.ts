@@ -2,7 +2,7 @@ import {MockMediaPlayerDataService} from "./services/MockMediaPlayerDataService.
 import {MockFolderDataService} from "./services/MockFolderDataService.js";
 import {MockContentDataService} from "./services/MockContentDataService.js";
 import {MockMediaService} from "./services/MockMediaService.js";
-import {IMediaClientFramework} from "renderer/MediaClientFramework.js";
+import {IMediaClientFramework} from "renderer/MuseaClient.js";
 import {MockTagService} from "./services/MockTagService.js";
 import {MockMediaPlayerConnectionService} from "./services/MockMediaPlayerConnectionService.js";
 import {MockMediaStationService} from "./services/mediastation/MockMediaStationService.js";

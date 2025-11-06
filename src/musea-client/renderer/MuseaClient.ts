@@ -30,7 +30,7 @@ export interface IMediaClientFramework {
     get tagService(): TagDataService
 }
 
-export class MediaClientFramework implements IMediaClientFramework {
+export class MuseaClient implements IMediaClientFramework {
     protected _mediaStationMetaData: MediaStationLocalMetaData;
     protected _mediaStationRepository: MediaStationRepository;
 

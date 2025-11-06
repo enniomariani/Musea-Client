@@ -1,4 +1,4 @@
-import {IMainFileService} from "main/MediaClientFrameworkMain.js";
+import {IMainFileService} from "main/MuseaClientMain.js";
 import { jest } from '@jest/globals';
 
 export class MockBackendFileService implements IMainFileService{

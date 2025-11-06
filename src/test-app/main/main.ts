@@ -1,7 +1,7 @@
 import {app, BrowserWindow, ipcMain} from 'electron';
 import { fileURLToPath } from 'url';
 import { dirname, join} from 'path';
-import {MediaClientFrameworkMain} from "main/MediaClientFrameworkMain.js";
+import {MuseaClientMain} from "main/MuseaClientMain.js";
 
 //size of main-window
 const windowWidth:number = 1920;
@@ -15,7 +15,7 @@ const __dirname:string = dirname(filename);
 const environment:string | undefined = process.env.NODE_ENV;
 
 let mainWindow:BrowserWindow;
-let mainMediaClientFramework:MediaClientFrameworkMain;
+let mainMediaClientFramework:MuseaClientMain;
 
 //this is necessary because the path to the data-folder is in public_html/daten in the dev-environment but
 //in the resources-folder in the production-environment. If in the production-env nothing is specified as path, it looks in the asar-package
@@ -34,7 +34,7 @@ app.whenReady().then(async () => {
     mainWindow.webContents.openDevTools();
     mainWindow.show(); //initially sets the focus to the created electron-window
 
-    mainMediaClientFramework = new MediaClientFrameworkMain(pathToDataFolder);
+    mainMediaClientFramework = new MuseaClientMain(pathToDataFolder);
     mainMediaClientFramework.init();
 
     app.on('window-all-closed', () => {

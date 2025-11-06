@@ -1,9 +1,9 @@
 {
-  "name": "Media-Client-Framework",
+  "name": "Musea-Client",
   "author": "Ennio Mariani",
   "email": "mail@enniomariani.ch",
   "version": "1.0.3",
-  "description": "Framework for media management and communication with app that contain the media-server-frameworks",
+  "description": "Library for clients inside Musea-Apps",
   "type": "module",
   "main": "build/test-app/main/main.js",
   "scripts": {
@@ -19,24 +19,24 @@
   },
   "exports": {
     "./main": {
-      "types": "./build/mcf/main/index.d.ts",
-      "default": "./build/mcf/main/index.js"
+      "types": "./build/musea-client/main/index.d.ts",
+      "default": "./build/musea-client/main/index.js"
     },
     "./renderer": {
-      "types": "./build/mcf/renderer/index.d.ts",
-      "default": "./build/mcf/renderer/index.js"
+      "types": "./build/musea-client/renderer/index.d.ts",
+      "default": "./build/musea-client/renderer/index.js"
     },
     "./preload": {
-      "types": "./build/mcf/preload/index.d.ts",
-      "default": "./build/mcf/preload/index.js"
+      "types": "./build/musea-client/preload/index.d.ts",
+      "default": "./build/musea-client/preload/index.js"
     },
     "./mocks": {
-      "types": "./build/mcf/mocks/index.d.ts",
-      "default": "./build/mcf/mocks/index.js"
+      "types": "./build/musea-client/mocks/index.d.ts",
+      "default": "./build/musea-client/mocks/index.js"
     }
   },
   "files": [
-    "build/mcf"
+    "build/musea-client"
   ],
   "devDependencies": {
     "@jest/globals": "^30.2.0",

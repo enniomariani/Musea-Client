@@ -6,8 +6,8 @@ const {ipcRenderer, contextBridge, webUtils} = require('electron');
 //if you include it like this in the renderer.ts: const { backend } = window;, you can use the object ipcRenderer directly
 //more info here: https://chiragagrawal65.medium.com/how-to-import-ipcrenderer-in-renderer-process-component-26fef55fa4b7
 
-export function exposeMCFAPI() {
-    contextBridge.exposeInMainWorld("mcfBackendFiles", {
+export function exposeMuseClientAPI() {
+    contextBridge.exposeInMainWorld("museaClientBackendFiles", {
         saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('mediaClientFramework:saveFile', path, data),
         saveFileByPath: async (path: string, fileInstance: File) => {
             const pathToLoad: string = webUtils.getPathForFile(fileInstance);
@@ -19,7 +19,7 @@ export function exposeMCFAPI() {
         getAllFileNamesInFolder: (path: string) => ipcRenderer.invoke('mediaClientFramework:getAllFileNamesInFolder', path)
     });
 
-    contextBridge.exposeInMainWorld("mcfBackendNetwork", {
+    contextBridge.exposeInMainWorld("museaClientBackendNetwork", {
         ping: (ip: string) => ipcRenderer.invoke('backendNetworkService:ping', ip)
     });
 }

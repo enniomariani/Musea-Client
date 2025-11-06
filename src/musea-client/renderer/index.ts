@@ -1,4 +1,4 @@
-export {IMediaClientFramework, MediaClientFramework} from "./MediaClientFramework.js";
+export {IMediaClientFramework, MuseaClient} from "./MuseaClient.js";
 
 export {ConvertNetworkData} from "./network/ConvertNetworkData.js"
 

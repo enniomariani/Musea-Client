@@ -1,7 +1,7 @@
 import {
     NetworkConnectionHandler
 } from "renderer/network/NetworkConnectionHandler.js";
-import {IMainNetworkService} from "main/MediaClientFrameworkMain.js";
+import {IMainNetworkService} from "main/MuseaClientMain.js";
 
 const mockBackendNetworkService:jest.Mocked<IMainNetworkService> = {
     ping: jest.fn(),

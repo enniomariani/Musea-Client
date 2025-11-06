@@ -1,7 +1,7 @@
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../build/mcf/renderer",
+    "outDir": "../../../build/musea-client/renderer",
     "rootDir": ".",
   },
   "include": ["./**/*.ts"],

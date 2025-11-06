@@ -1,4 +1,4 @@
-import {IMainFileService} from "main/MediaClientFrameworkMain.js";
+import {IMainFileService} from "main/MuseaClientMain.js";
 
 export class MediaFilesMarkedToDeleteService {
 
@@ -7,7 +7,7 @@ export class MediaFilesMarkedToDeleteService {
     private _backendFileService: IMainFileService;
     private _pathToDataFolder: string = "";
 
-    constructor(backendFileService: IMainFileService = (window as any).mcfBackendFiles) {
+    constructor(backendFileService: IMainFileService = (window as any).museaClientBackendFiles) {
         this._backendFileService = backendFileService;
     }
 

@@ -1,12 +1,12 @@
 import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler.js";
-import {IMainFileService} from "main/MediaClientFrameworkMain.js";
+import {IMainFileService} from "main/MuseaClientMain.js";
 
 export class MediaFileService {
 
     private _backendFileService:IMainFileService;
     private _pathToFolder:string = "";
 
-    constructor( backendFileService:IMainFileService = window.mcfBackendFiles) {
+    constructor( backendFileService:IMainFileService = window.museaClientBackendFiles) {
         this._backendFileService = backendFileService;
     }
 

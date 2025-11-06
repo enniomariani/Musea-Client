@@ -10,7 +10,7 @@ contextBridge.exposeInMainWorld("backend", {
     loadSettings: () => ipcRenderer.invoke('app:load-settings')
 });
 
-contextBridge.exposeInMainWorld("mcfBackendFiles", {
+contextBridge.exposeInMainWorld("museaClientBackendFiles", {
     saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('mediaClientFramework:saveFile', path, data),
     saveFileByPath: async (path: string, fileInstance: File) => {
         const pathToLoad: string = webUtils.getPathForFile(fileInstance);
@@ -22,6 +22,6 @@ contextBridge.exposeInMainWorld("mcfBackendFiles", {
     getAllFileNamesInFolder: (path: string) => ipcRenderer.invoke('mediaClientFramework:getAllFileNamesInFolder', path)
 });
 
-contextBridge.exposeInMainWorld("mcfBackendNetwork", {
+contextBridge.exposeInMainWorld("museaClientBackendNetwork", {
     ping: (ip: string) => ipcRenderer.invoke('backendNetworkService:ping', ip)
 });

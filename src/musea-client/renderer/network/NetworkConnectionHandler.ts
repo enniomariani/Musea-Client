@@ -1,5 +1,5 @@
 import {NetworkInterface} from "renderer/network/NetworkInterface.js";
-import {IMainNetworkService} from "main/MediaClientFrameworkMain.js";
+import {IMainNetworkService} from "main/MuseaClientMain.js";
 
 export interface IOnReceivedConnectionData{
     (ip:string, data:Uint8Array):void
@@ -14,7 +14,7 @@ export  class NetworkConnectionHandler{
     private _connections: Map<string, NetworkInterface>;
     private _backenNetworkService:IMainNetworkService;
 
-    constructor( backenNetworkService:IMainNetworkService = window.mcfBackendNetwork) {
+    constructor( backenNetworkService:IMainNetworkService = window.museaClientBackendNetwork) {
         this._connections = new Map();
         this._backenNetworkService = backenNetworkService;
     }

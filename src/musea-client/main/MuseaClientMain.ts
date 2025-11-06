@@ -17,7 +17,7 @@ export interface IMainNetworkService {
     ping(ip:string):Promise<boolean>;
 }
 
-export class MediaClientFrameworkMain {
+export class MuseaClientMain {
     private _mainFileService: MainFileService;
 
     constructor(pathToDataFolder:string) {
