@@ -1,13 +1,13 @@
-export const MediaAppRole = {
+export const MediaPlayerRole = {
     CONTROLLER: "roleController",
     DEFAULT: "roleDefault"
 } as const;
-export type MediaAppRole = typeof MediaAppRole[keyof typeof MediaAppRole];
+export type MediaPlayerRole = typeof MediaPlayerRole[keyof typeof MediaPlayerRole];
 
-export class MediaApp {
+export class MediaPlayer {
 
     private _id: number;
-    private _role: MediaAppRole = MediaAppRole.DEFAULT;
+    private _role: MediaPlayerRole = MediaPlayerRole.DEFAULT;
     private _name: string = "";
     private _ip: string = "";
 
@@ -19,11 +19,11 @@ export class MediaApp {
         return this._id;
     }
 
-    get role(): MediaAppRole {
+    get role(): MediaPlayerRole {
         return this._role;
     }
 
-    set role(value: MediaAppRole) {
+    set role(value: MediaPlayerRole) {
         this._role = value;
     }
 

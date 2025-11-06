@@ -6,7 +6,7 @@ import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js
 import {
     MockContentFileService
 } from "mocks/renderer/fileHandling/MockContentFileService.js";
-import {MediaAppRole} from "renderer/dataStructure/MediaApp.js";
+import {MediaPlayerRole} from "renderer/dataStructure/MediaPlayer.js";
 import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 import {
     MediaStationRepository
@@ -42,7 +42,7 @@ beforeEach(() => {
 
     mediaStationRepo = new MediaStationRepository(mockMediaStationLocalMetaData, "fakePathToDataFolder", mockMediaFileCacheHandler, mockMediaFilesMarkedToDeleteService, mockContentFileService,
         (id: number) => {const ms = new MockMediaStation(id);
-            ms.mediaAppRegistry.getControllerIp.mockReturnValue(defaultControllerIp);
+            ms.mediaPlayerRegistry.getControllerIp.mockReturnValue(defaultControllerIp);
             return ms;
         });
 });
@@ -77,14 +77,14 @@ describe("loadMediaStations() ", () => {
         expect(mediaStationRepo.mediaCacheHandler.hydrate).toHaveBeenNthCalledWith(3, 2);
     });
 
-    it("should call addMediaApp() for each mediastation which has a controller-app saved", async () => {
+    it("should call addMediaPlayer() for each mediastation which has a controller-app saved", async () => {
         const idREturnedFrom2: number = 1100;
         const idREturnedFrom3: number = 123222;
         const mediaStation1: MockMediaStation = new MockMediaStation(0);
         const mediaStation2: MockMediaStation = new MockMediaStation(1);
-        mediaStation2.getNextMediaAppId.mockReturnValueOnce(idREturnedFrom2);
+        mediaStation2.getNextMediaPlayerId.mockReturnValueOnce(idREturnedFrom2);
         const mediaStation3: MockMediaStation = new MockMediaStation(2);
-        mediaStation3.getNextMediaAppId.mockReturnValueOnce(idREturnedFrom3);
+        mediaStation3.getNextMediaPlayerId.mockReturnValueOnce(idREturnedFrom3);
         const addMediaStationSpy = jest.spyOn(mediaStationRepo, 'addMediaStation');
 
         addMediaStationSpy.mockImplementation(async (name: string, save?: boolean | undefined):Promise<number> => {
@@ -116,11 +116,11 @@ describe("loadMediaStations() ", () => {
 
         await mediaStationRepo.loadMediaStations();
 
-        expect(mediaStation1.mediaAppRegistry.add).toHaveBeenCalledTimes(0);
-        expect(mediaStation2.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
-        expect(mediaStation2.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom2, "Controller-App not reachable", "192.168.2.1", MediaAppRole.CONTROLLER);
-        expect(mediaStation3.mediaAppRegistry.add).toHaveBeenCalledTimes(1);
-        expect(mediaStation3.mediaAppRegistry.add).toHaveBeenCalledWith(idREturnedFrom3, "Controller-App not reachable", "192.168.2.100", MediaAppRole.CONTROLLER);
+        expect(mediaStation1.mediaPlayerRegistry.add).toHaveBeenCalledTimes(0);
+        expect(mediaStation2.mediaPlayerRegistry.add).toHaveBeenCalledTimes(1);
+        expect(mediaStation2.mediaPlayerRegistry.add).toHaveBeenCalledWith(idREturnedFrom2, "Controller-App not reachable", "192.168.2.1", MediaPlayerRole.CONTROLLER);
+        expect(mediaStation3.mediaPlayerRegistry.add).toHaveBeenCalledTimes(1);
+        expect(mediaStation3.mediaPlayerRegistry.add).toHaveBeenCalledWith(idREturnedFrom3, "Controller-App not reachable", "192.168.2.100", MediaPlayerRole.CONTROLLER);
     });
 
     it("should return the map it got from the loading-service", async () => {
@@ -381,7 +381,7 @@ describe("saveMediaStations() ", () => {
         receivedId = await mediaStationRepo.addMediaStation("testName1");
 
         mediaStation = mediaStationRepo.findMediaStation(receivedId) as MockMediaStation;
-        mediaStation.mediaAppRegistry.getControllerIp.mockReturnValue(newIp)
+        mediaStation.mediaPlayerRegistry.getControllerIp.mockReturnValue(newIp)
         await mediaStationRepo.saveMediaStations();
 
         expect(mockMediaStationLocalMetaData.save).toHaveBeenCalledTimes(2)

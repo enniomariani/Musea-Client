@@ -9,7 +9,7 @@ export class MockNetworkService extends NetworkService{
     openConnection: jest.Mock;
     closeConnection: jest.Mock;
     pcRespondsToPing: jest.Mock;
-    isMediaAppOnline: jest.Mock;
+    isMediaPlayerOnline: jest.Mock;
 
     onBlockReceived: jest.Mock;
     onUnBlockReceived: jest.Mock;
@@ -35,7 +35,7 @@ export class MockNetworkService extends NetworkService{
         this.openConnection = jest.fn();
         this.closeConnection = jest.fn();
         this.pcRespondsToPing = jest.fn();
-        this.isMediaAppOnline = jest.fn();
+        this.isMediaPlayerOnline = jest.fn();
 
         this.onBlockReceived = jest.fn();
         this.onUnBlockReceived = jest.fn();

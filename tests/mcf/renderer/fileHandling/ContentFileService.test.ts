@@ -17,10 +17,10 @@ beforeEach(() => {
         name: "myName",
         folderIdCounter: 1,
         contentIdCounter: 1,
-        mediaAppIdCounter: 1,
+        mediaPlayerIdCounter: 1,
         tagIdCounter: 1,
         rootFolder: {id: 0, name: "Test", subfolders: []},
-        mediaApps: [],
+        mediaPlayers: [],
         tags: []
     }
 

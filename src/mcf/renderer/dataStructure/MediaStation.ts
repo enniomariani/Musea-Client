@@ -1,8 +1,8 @@
 import {Folder} from "./Folder.js";
 import {TagRegistry} from "renderer/registries/TagRegistry.js";
 import {Tag} from "renderer/dataStructure/Tag.js";
-import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry.js";
-import {MediaApp} from "renderer/dataStructure/MediaApp.js";
+import {MediaPlayerRegistry} from "renderer/registries/MediaPlayerRegistry.js";
+import {MediaPlayer} from "renderer/dataStructure/MediaPlayer.js";
 
 export class MediaStation {
     private _id: number;
@@ -11,16 +11,16 @@ export class MediaStation {
 
     private _folderIdCounter: number = -1;
     private _contentIdCounter: number = -1;
-    private _mediaAppIdCounter: number = -1;
+    private _mediaPlayerIdCounter: number = -1;
     private _tagIdCounter: number = -1;
 
     private _tagRegistry:TagRegistry;
-    private _mediaAppRegistry:MediaAppRegistry;
+    private _mediaPlayerRegistry:MediaPlayerRegistry;
 
-    constructor(id: number, tagRegistry:TagRegistry, mediaAppRegistry:MediaAppRegistry) {
+    constructor(id: number, tagRegistry:TagRegistry, mediaPlayerRegistry:MediaPlayerRegistry) {
         this._id = id;
         this._tagRegistry = tagRegistry;
-        this._mediaAppRegistry = mediaAppRegistry;
+        this._mediaPlayerRegistry = mediaPlayerRegistry;
         this.reset();
     }
 
@@ -33,11 +33,11 @@ export class MediaStation {
 
         this._folderIdCounter = 1;    //must be 1 because the root-folder has the id 0
         this._contentIdCounter = 0;
-        this._mediaAppIdCounter = 0;
+        this._mediaPlayerIdCounter = 0;
         this._tagIdCounter = 0;
 
         this._tagRegistry.reset();
-        this._mediaAppRegistry.reset();
+        this._mediaPlayerRegistry.reset();
     }
 
     exportToJSON(date:Date): string {
@@ -48,9 +48,9 @@ export class MediaStation {
             name: this._name,
             folderIdCounter: this._folderIdCounter,
             contentIdCounter: this._contentIdCounter,
-            mediaAppIdCounter: this._mediaAppIdCounter,
+            mediaPlayerIdCounter: this._mediaPlayerIdCounter,
             tagIdCounter: this._tagIdCounter,
-            mediaApps: [],
+            mediaPlayers: [],
             tags: [],
             rootFolder: this._rootFolder.exportToJSON(),
         };
@@ -58,8 +58,8 @@ export class MediaStation {
         for(const [key, tag] of allTags)
             json.tags.push({id: tag.id, name: tag.name});
 
-        this._mediaAppRegistry.getAll().forEach((mediaApp: MediaApp) => {
-            json.mediaApps.push({id: mediaApp.id, name: mediaApp.name, ip: mediaApp.ip, role: mediaApp.role});
+        this._mediaPlayerRegistry.getAll().forEach((mediaPlayer: MediaPlayer) => {
+            json.mediaPlayers.push({id: mediaPlayer.id, name: mediaPlayer.name, ip: mediaPlayer.ip, role: mediaPlayer.role});
         });
 
         return JSON.stringify(json);
@@ -69,7 +69,7 @@ export class MediaStation {
      *
      * imports the whole data-structure from the JSON
      *
-     * before it imports the data, it deletes the root-folder and all mediaApps
+     * before it imports the data, it deletes the root-folder and all mediaPlayers
      *
      * @param json
      * @param {boolean} preserveName
@@ -88,11 +88,11 @@ export class MediaStation {
             this._contentIdCounter = json.contentIdCounter;
         if (this._jsonPropertyExists(json, "tagIdCounter"))
             this._tagIdCounter = json.tagIdCounter;
-        if (this._jsonPropertyExists(json, "mediaAppIdCounter"))
-            this._mediaAppIdCounter = json.mediaAppIdCounter;
+        if (this._jsonPropertyExists(json, "mediaPlayerIdCounter"))
+            this._mediaPlayerIdCounter = json.mediaPlayerIdCounter;
 
-        if (this._jsonPropertyExists(json, "mediaApps"))
-            this._mediaAppRegistry.importFromJSON(json.mediaApps);
+        if (this._jsonPropertyExists(json, "mediaPlayers"))
+            this._mediaPlayerRegistry.importFromJSON(json.mediaPlayers);
 
         if (this._jsonPropertyExists(json, "tags")) {
             this._tagRegistry.reset();
@@ -114,9 +114,9 @@ export class MediaStation {
             throw new Error("MediaStation: missing property in JSON: " + propName);
     }
 
-    getNextMediaAppId(): number {
-        let actualID: number = this._mediaAppIdCounter;
-        this._mediaAppIdCounter++;
+    getNextMediaPlayerId(): number {
+        let actualID: number = this._mediaPlayerIdCounter;
+        this._mediaPlayerIdCounter++;
         return actualID;
     }
 
@@ -162,7 +162,7 @@ export class MediaStation {
         return this._tagRegistry;
     }
 
-    get mediaAppRegistry(): MediaAppRegistry {
-        return this._mediaAppRegistry;
+    get mediaPlayerRegistry(): MediaPlayerRegistry {
+        return this._mediaPlayerRegistry;
     }
 }

@@ -6,7 +6,7 @@ import {
 import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
 import {MockContentManager} from "mocks/renderer/dataManagers/MockContentManager.js";
 import {MockContent} from "mocks/renderer/dataStructure/MockContent.js";
-import {MediaApp} from "renderer/dataStructure/MediaApp.js";
+import {MediaPlayer} from "renderer/dataStructure/MediaPlayer.js";
 import {MockMediaService} from "mocks/renderer/services/MockMediaService.js";
 
 let contentService:ContentDataService;
@@ -171,10 +171,10 @@ describe("changeLightIntensity() ", ()=> {
 
 describe("deleteContent() ", ()=> {
     let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
-    const allMediaApps:Map<number, MediaApp> = new Map();
-    allMediaApps.set(0, new MediaApp(0));
-    allMediaApps.set(1, new MediaApp(1));
-    mockMediaStation.mediaAppRegistry.getAll.mockReturnValue(allMediaApps);
+    const allMediaPlayers:Map<number, MediaPlayer> = new Map();
+    allMediaPlayers.set(0, new MediaPlayer(0));
+    allMediaPlayers.set(1, new MediaPlayer(1));
+    mockMediaStation.mediaPlayerRegistry.getAll.mockReturnValue(allMediaPlayers);
 
     it("should call contentManager.deleteContent with the correct arguments", async () => {
         mockMediaService.getMediaType.mockReturnValue("image");
@@ -186,7 +186,7 @@ describe("deleteContent() ", ()=> {
         expect(mockContentManager.deleteContent).toHaveBeenCalledWith(mockMediaStation, folderId, contentId);
     });
 
-    it("should call mediaService.deleteMedia for each mediaApp defined with the correct arguments", async () => {
+    it("should call mediaService.deleteMedia for each mediaPlayer defined with the correct arguments", async () => {
         mockMediaService.getMediaType.mockReturnValue("image");
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
@@ -197,7 +197,7 @@ describe("deleteContent() ", ()=> {
         expect(mockMediaService.deleteMedia).toHaveBeenNthCalledWith(2, mediaStationId, contentId, 1);
     });
 
-    it("should NOT call mediaService.deleteMedia if mediaService.getMediaType returns null for all media-Apps", async ()=>{
+    it("should NOT call mediaService.deleteMedia if mediaService.getMediaType returns null for all media-players", async ()=>{
         mockMediaService.getMediaType.mockReturnValue(null);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 

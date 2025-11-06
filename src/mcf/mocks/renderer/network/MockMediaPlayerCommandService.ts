@@ -1,12 +1,12 @@
 import {
-    MediaAppCommandService
-} from "renderer/network/MediaAppCommandService.js";
+    MediaPlayerCommandService
+} from "renderer/network/MediaPlayerCommandService.js";
 import {MockNetworkService} from "./MockNetworkService.js";
 
 const mockNetworkService:MockNetworkService = new MockNetworkService();
 
 
-export class MockMediaAppCommandService extends MediaAppCommandService{
+export class MockMediaPlayerCommandService extends MediaPlayerCommandService{
     sendCommandPlay: jest.Mock;
     sendCommandStop: jest.Mock;
     sendCommandPause: jest.Mock;

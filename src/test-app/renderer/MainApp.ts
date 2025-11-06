@@ -2,7 +2,7 @@
 
 import {MediaClientFramework} from "renderer/MediaClientFramework.js";
 import {SyncEvent} from "renderer/services/mediastation/SyncEvents.js";
-import {IConnectionProgress} from "renderer/network/MediaAppConnectionSteps.js";
+import {IConnectionProgress} from "renderer/network/MediaPlayerConnectionSteps.js";
 
 export class MainApp extends EventTarget {
     private _backend: IBackend;
@@ -21,10 +21,10 @@ export class MainApp extends EventTarget {
         let firstMediaStationId: number = await mcf.mediaStationService.createMediaStation("111");
         console.log("FIRST MEDIA-STATIONID: ", firstMediaStationId)
 
-        console.log("ADD MEDIA-APP WITH ID: ", await mcf.mediaAppDataService.createMediaApp(firstMediaStationId, "myControllerApp", "localhost"));
-        console.log("ADD MEDIA-APP WITH ID: ", await mcf.mediaAppDataService.createMediaApp(firstMediaStationId, "media-app2", "127.0.0.1"));
+        console.log("ADD MEDIA-PLAYER WITH ID: ", await mcf.mediaPlayerDataService.createMediaPlayer(firstMediaStationId, "myControllerApp", "localhost"));
+        console.log("ADD MEDIA-PLAYER WITH ID: ", await mcf.mediaPlayerDataService.createMediaPlayer(firstMediaStationId, "media-player-2", "127.0.0.1"));
 
-        console.log("IS MEDIA-APP PC REACHABLE?", await mcf.mediaAppConnectionService
+        console.log("IS MEDIA-PLAYER PC REACHABLE?", await mcf.mediaPlayerConnectionService
             .checkConnection("localhost", {
                 role: "admin",
                 onProgress: (p: IConnectionProgress) => {
@@ -32,7 +32,7 @@ export class MainApp extends EventTarget {
                 }
             }))
 
-        await mcf.mediaAppConnectionService.connectAndRegisterToMediaApp(0, 0);
+        await mcf.mediaPlayerConnectionService.connectAndRegisterToMediaPlayer(0, 0);
 
         // console.log("DOWNLOAD RESULT: ", await mcf.mediaStationNetworkService.downloadContentsOfMediaStation(0));
 

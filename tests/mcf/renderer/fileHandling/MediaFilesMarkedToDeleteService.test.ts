@@ -31,9 +31,9 @@ function createJSONandConvertToBinary(idsApp1: number[] | undefined, idsApp2: nu
     }
 
     if(idsApp1)
-        json.allIds.push({mediaAppId: 0, ids: idsApp1});
+        json.allIds.push({mediaPlayerId: 0, ids: idsApp1});
     if(idsApp2)
-        json.allIds.push({mediaAppId: 1, ids: idsApp2});
+        json.allIds.push({mediaPlayerId: 1, ids: idsApp2});
 
     jsonStr = JSON.stringify(json);
 

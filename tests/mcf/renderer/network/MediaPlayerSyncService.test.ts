@@ -6,27 +6,27 @@ import {MockFolder} from "mocks/renderer/dataStructure/MockFolder.js";
 import {MockContent} from "mocks/renderer/dataStructure/MockContent.js";
 import {Image} from "renderer/dataStructure/Media.js";
 import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler.js";
-import {MediaAppSyncService, IMediaAppProgress, IMediaAppSyncEvent} from "renderer/network/MediaAppSyncService.js";
+import {MediaPlayerSyncService, IMediaPlayerProgress, IMediaPlayerSyncEvent} from "renderer/network/MediaPlayerSyncService.js";
 
-let service: MediaAppSyncService;
+let service: MediaPlayerSyncService;
 let mockNetworkService: MockNetworkService;
 let mockMediaStationRepo: MockMediaStationRepository;
 
 beforeEach(() => {
     mockNetworkService = new MockNetworkService();
     mockMediaStationRepo = new MockMediaStationRepository();
-    service = new MediaAppSyncService(mockNetworkService, mockMediaStationRepo);
+    service = new MediaPlayerSyncService(mockNetworkService, mockMediaStationRepo);
 });
 
 afterEach(() => {
     jest.clearAllMocks();
 });
 
-describe("sendMediaFilesToMediaApp()", () => {
+describe("sendMediaFilesToMediaPlayer()", () => {
     const fileData: Uint8Array = new Uint8Array([0x00, 0xFF, 0xEE, 0xAA]);
     let station: MockMediaStation;
-    let reporter: IMediaAppProgress;
-    let events: IMediaAppSyncEvent[];
+    let reporter: IMediaPlayerProgress;
+    let events: IMediaPlayerSyncEvent[];
 
     let content0: MockContent;
     let content2: MockContent;
@@ -36,8 +36,8 @@ describe("sendMediaFilesToMediaApp()", () => {
     const ip = "127.0.0.10";
 
     const cachedMedia: ICachedMedia[] = [
-        { contentId: 0, mediaAppId: 0, fileExtension: "jpeg" },
-        { contentId: 2, mediaAppId: 0, fileExtension: "mp4" },
+        { contentId: 0, mediaPlayerId: 0, fileExtension: "jpeg" },
+        { contentId: 2, mediaPlayerId: 0, fileExtension: "mp4" },
     ];
 
     beforeEach(() => {
@@ -45,14 +45,14 @@ describe("sendMediaFilesToMediaApp()", () => {
         station.rootFolder = new MockFolder(0);
 
         events = [];
-        reporter = jest.fn((evt: IMediaAppSyncEvent) => {
+        reporter = jest.fn((evt: IMediaPlayerSyncEvent) => {
             events.push(evt);
         });
 
         image1 = new Image();
-        image1.idOnMediaApp = -1;
+        image1.idOnMediaPlayer = -1;
         image2 = new Image();
-        image2.idOnMediaApp = -1;
+        image2.idOnMediaPlayer = -1;
 
         content0 = new MockContent(0, 0);
         content2 = new MockContent(2, 0);
@@ -70,10 +70,10 @@ describe("sendMediaFilesToMediaApp()", () => {
         });
 
         mockMediaStationRepo.mediaCacheHandler.getCachedMediaFile.mockImplementation(
-            (mediaStationId: number, contentId: number, mediaAppId: number, fileExtension: string) => {
+            (mediaStationId: number, contentId: number, mediaPlayerId: number, fileExtension: string) => {
                 if (mediaStationId === station.id) {
                     const found = cachedMedia.find(
-                        (m) => m.contentId === contentId && m.mediaAppId === mediaAppId && m.fileExtension === fileExtension
+                        (m) => m.contentId === contentId && m.mediaPlayerId === mediaPlayerId && m.fileExtension === fileExtension
                     );
                     return found ? fileData : null;
                 }
@@ -83,7 +83,7 @@ describe("sendMediaFilesToMediaApp()", () => {
     });
 
     it("should return true and not emit events when no media is passed", async () => {
-        const result = await service.sendMediaFilesToMediaApp(station, undefined as unknown as ICachedMedia[], ip, reporter);
+        const result = await service.sendMediaFilesToMediaPlayer(station, undefined as unknown as ICachedMedia[], ip, reporter);
 
         expect(result).toBe(true);
         expect(reporter).toHaveBeenCalledTimes(0);
@@ -102,7 +102,7 @@ describe("sendMediaFilesToMediaApp()", () => {
             return null as any;
         });
 
-        const result = await service.sendMediaFilesToMediaApp(station, cachedMedia, ip, reporter);
+        const result = await service.sendMediaFilesToMediaPlayer(station, cachedMedia, ip, reporter);
 
         // result is false because not all sends succeeded
         expect(result).toBe(false);
@@ -127,15 +127,15 @@ describe("sendMediaFilesToMediaApp()", () => {
         );
 
         // ids updated for success only
-        expect(image1.idOnMediaApp).toBe(99);
-        expect(image2.idOnMediaApp).toBe(-1);
+        expect(image1.idOnMediaPlayer).toBe(99);
+        expect(image2.idOnMediaPlayer).toBe(-1);
 
         // delete cache only for success
         expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledTimes(1);
         expect(mockMediaStationRepo.mediaCacheHandler.deleteCachedMedia).toHaveBeenCalledWith(
             station.id,
             cachedMedia[0].contentId,
-            cachedMedia[0].mediaAppId
+            cachedMedia[0].mediaPlayerId
         );
 
         // events: LoadMediaStart -> MediaSendStart -> (MediaSendSuccess | MediaSendFailed) for each
@@ -161,7 +161,7 @@ describe("sendMediaFilesToMediaApp()", () => {
             return 1;
         });
 
-        const result = await service.sendMediaFilesToMediaApp(station, [cachedMedia[0]], ip, reporter);
+        const result = await service.sendMediaFilesToMediaPlayer(station, [cachedMedia[0]], ip, reporter);
 
         expect(result).toBe(true);
         // We expect: LoadMediaStart, MediaSendStart, MediaSending x3, MediaSendSuccess
@@ -180,16 +180,16 @@ describe("sendMediaFilesToMediaApp()", () => {
     });
 });
 
-describe("sendCommandDeleteMediaToMediaApps()", () => {
-    let reporter: IMediaAppProgress;
-    let events: IMediaAppSyncEvent[];
+describe("sendCommandDeleteMediaToMediaPlayers()", () => {
+    let reporter: IMediaPlayerProgress;
+    let events: IMediaPlayerSyncEvent[];
     const mediaStationId = 5;
-    const mediaAppId = 2;
+    const mediaPlayerId = 2;
     const ip = "127.0.0.20";
 
     beforeEach(() => {
         events = [];
-        reporter = jest.fn((evt: IMediaAppSyncEvent) => {
+        reporter = jest.fn((evt: IMediaPlayerSyncEvent) => {
             events.push(evt);
         });
     });
@@ -197,13 +197,13 @@ describe("sendCommandDeleteMediaToMediaApps()", () => {
     it("should emit DeleteStart and call network + repo for each id", async () => {
         const ids = [3, 0, 6];
 
-        await service.sendCommandDeleteMediaToMediaApps(mediaStationId, mediaAppId, ids, ip, reporter);
+        await service.sendCommandDeleteMediaToMediaPlayers(mediaStationId, mediaPlayerId, ids, ip, reporter);
 
         // reporter called once per id
         expect(reporter).toHaveBeenCalledTimes(ids.length);
         expect(events.map((e) => e.type)).toEqual(["DeleteStart", "DeleteStart", "DeleteStart"]);
         // Check one payload example
-        expect(events[0].data).toMatchObject({ id: 3, mediaAppId: mediaAppId.toString() });
+        expect(events[0].data).toMatchObject({ id: 3, mediaPlayerId: mediaPlayerId.toString() });
 
         // network deletes
         expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenCalledTimes(ids.length);
@@ -213,13 +213,13 @@ describe("sendCommandDeleteMediaToMediaApps()", () => {
 
         // repo cleanup
         expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenCalledTimes(ids.length);
-        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(1, mediaStationId, mediaAppId, 3);
-        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(2, mediaStationId, mediaAppId, 0);
-        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(3, mediaStationId, mediaAppId, 6);
+        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(1, mediaStationId, mediaPlayerId, 3);
+        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(2, mediaStationId, mediaPlayerId, 0);
+        expect(mockMediaStationRepo.deleteStoredMediaID).toHaveBeenNthCalledWith(3, mediaStationId, mediaPlayerId, 6);
     });
 
     it("should handle empty ids list without calls", async () => {
-        await service.sendCommandDeleteMediaToMediaApps(mediaStationId, mediaAppId, [], ip, reporter);
+        await service.sendCommandDeleteMediaToMediaPlayers(mediaStationId, mediaPlayerId, [], ip, reporter);
 
         expect(reporter).toHaveBeenCalledTimes(0);
         expect(mockNetworkService.sendDeleteMediaTo).toHaveBeenCalledTimes(0);

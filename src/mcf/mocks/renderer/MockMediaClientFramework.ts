@@ -1,15 +1,15 @@
-import {MockMediaAppDataService} from "./services/MockMediaAppDataService.js";
+import {MockMediaPlayerDataService} from "./services/MockMediaPlayerDataService.js";
 import {MockFolderDataService} from "./services/MockFolderDataService.js";
 import {MockContentDataService} from "./services/MockContentDataService.js";
 import {MockMediaService} from "./services/MockMediaService.js";
 import {IMediaClientFramework} from "renderer/MediaClientFramework.js";
 import {MockTagService} from "./services/MockTagService.js";
-import {MockMediaAppConnectionService} from "./services/MockMediaAppConnectionService.js";
+import {MockMediaPlayerConnectionService} from "./services/MockMediaPlayerConnectionService.js";
 import {MockMediaStationService} from "./services/mediastation/MockMediaStationService.js";
 
 export class MockMediaClientFramework implements  IMediaClientFramework{
-    private _mockMediaAppDataService: MockMediaAppDataService = new MockMediaAppDataService();
-    private _mockMediaAppConnectionService: MockMediaAppConnectionService = new MockMediaAppConnectionService();
+    private _mockMediaPlayerDataService: MockMediaPlayerDataService = new MockMediaPlayerDataService();
+    private _mockMediaPlayerConnectionService: MockMediaPlayerConnectionService = new MockMediaPlayerConnectionService();
 
     private _mockMediaStationService: MockMediaStationService = new MockMediaStationService();
 
@@ -37,12 +37,12 @@ export class MockMediaClientFramework implements  IMediaClientFramework{
         return this._mockTagService;
     }
 
-    get mediaAppDataService():MockMediaAppDataService {
-        return this._mockMediaAppDataService;
+    get mediaPlayerDataService():MockMediaPlayerDataService {
+        return this._mockMediaPlayerDataService;
     }
 
-    get mediaAppConnectionService():MockMediaAppConnectionService {
-        return this._mockMediaAppConnectionService;
+    get mediaPlayerConnectionService():MockMediaPlayerConnectionService {
+        return this._mockMediaPlayerConnectionService;
     }
 
     get mediaStationService(): MockMediaStationService {

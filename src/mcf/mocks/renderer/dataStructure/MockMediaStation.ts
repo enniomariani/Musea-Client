@@ -1,48 +1,48 @@
 import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 import {MockFolder} from "./MockFolder.js";
 import {MockTagRegistry} from "../registries/MockTagRegistry.js";
-import {MockMediaAppRegistry} from "../registries/MockMediaAppRegistry.js";
+import {MockMediaPlayerRegistry} from "../registries/MockMediaPlayerRegistry.js";
 
 const mockTagRegistry:MockTagRegistry = new MockTagRegistry();
-const mockMediaAppRegistry: MockMediaAppRegistry = new MockMediaAppRegistry();
+const mockMediaPlayerRegistry: MockMediaPlayerRegistry = new MockMediaPlayerRegistry();
 
 export class MockMediaStation extends MediaStation{
 
     reset: jest.Mock;
 
-    getNextMediaAppId: jest.Mock;
+    getNextMediaPlayerId: jest.Mock;
     getNextContentId: jest.Mock;
     getNextFolderId: jest.Mock;
     getNextTagId: jest.Mock;
     exportToJSON: jest.Mock;
     importFromJSON: jest.Mock;
-    importMediaAppsFromJSON: jest.Mock;
+    importMediaPlayersFromJSON: jest.Mock;
 
     getControllerIp: jest.Mock;
-    addMediaApp: jest.Mock;
-    getMediaApp: jest.Mock;
-    getAllMediaApps: jest.Mock;
+    addMediaPlayer: jest.Mock;
+    getMediaPlayer: jest.Mock;
+    getAllMediaPlayers: jest.Mock;
 
     private _rootFolderMock: MockFolder = new MockFolder(0);
     private _mockTagRegistry: MockTagRegistry = new MockTagRegistry();
-    private _mockMediaAppRegistry: MockMediaAppRegistry = new MockMediaAppRegistry();
+    private _mockMediaPlayerRegistry: MockMediaPlayerRegistry = new MockMediaPlayerRegistry();
 
     constructor(id:number) {
-        super(id, mockTagRegistry, mockMediaAppRegistry);
+        super(id, mockTagRegistry, mockMediaPlayerRegistry);
         this.reset = jest.fn();
 
-        this.getNextMediaAppId = jest.fn();
+        this.getNextMediaPlayerId = jest.fn();
         this.getNextContentId = jest.fn();
         this.getNextFolderId = jest.fn();
         this.getNextTagId = jest.fn();
         this.exportToJSON = jest.fn();
         this.importFromJSON = jest.fn();
-        this.importMediaAppsFromJSON = jest.fn();
+        this.importMediaPlayersFromJSON = jest.fn();
 
         this.getControllerIp = jest.fn();
-        this.addMediaApp = jest.fn();
-        this.getMediaApp = jest.fn();
-        this.getAllMediaApps = jest.fn();
+        this.addMediaPlayer = jest.fn();
+        this.getMediaPlayer = jest.fn();
+        this.getAllMediaPlayers = jest.fn();
 
         this.getControllerIp.mockReturnValue("mock-controller-ip")
     }
@@ -51,8 +51,8 @@ export class MockMediaStation extends MediaStation{
         return this._mockTagRegistry;
     }
 
-    override get mediaAppRegistry(): MockMediaAppRegistry {
-        return this._mockMediaAppRegistry;
+    override get mediaPlayerRegistry(): MockMediaPlayerRegistry {
+        return this._mockMediaPlayerRegistry;
     }
 
     get rootFolder(): MockFolder {

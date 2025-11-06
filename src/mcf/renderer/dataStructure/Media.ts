@@ -1,39 +1,39 @@
 export interface IMedia{
-    idOnMediaApp:number
-    mediaAppId:number
+    idOnMediaPlayer:number
+    mediaPlayerId:number
     exportToJSON:any
     fileName:any
 }
 
 export class BaseMedia implements IMedia{
 
-    protected _idOnMediaApp:number = -1;
-    protected _mediaAppId:number = -1;
+    protected _idOnMediaPlayer:number = -1;
+    protected _mediaPlayerId:number = -1;
     private _fileName:string = "";
 
     constructor() {}
 
     exportToJSON():any{
         return {
-            idOnMediaApp: this._idOnMediaApp,
-            mediaAppId: this._mediaAppId
+            idOnMediaPlayer: this._idOnMediaPlayer,
+            mediaPlayerId: this._mediaPlayerId
         }
     }
 
-    get idOnMediaApp(): number {
-        return this._idOnMediaApp;
+    get idOnMediaPlayer(): number {
+        return this._idOnMediaPlayer;
     }
 
-    set idOnMediaApp(value: number) {
-        this._idOnMediaApp = value;
+    set idOnMediaPlayer(value: number) {
+        this._idOnMediaPlayer = value;
     }
 
-    get mediaAppId(): number {
-        return this._mediaAppId;
+    get mediaPlayerId(): number {
+        return this._mediaPlayerId;
     }
 
-    set mediaAppId(value: number) {
-        this._mediaAppId = value;
+    set mediaPlayerId(value: number) {
+        this._mediaPlayerId = value;
     }
 
     get fileName(): string {
@@ -60,8 +60,8 @@ export class Video extends BaseMedia implements IMedia{
 
     exportToJSON():any{
         return {
-            idOnMediaApp: this._idOnMediaApp,
-            mediaAppId: this._mediaAppId,
+            idOnMediaPlayer: this._idOnMediaPlayer,
+            mediaPlayerId: this._mediaPlayerId,
             duration: this._duration
         }
     }

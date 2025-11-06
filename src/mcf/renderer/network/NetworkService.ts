@@ -77,7 +77,7 @@ export class NetworkService {
      * Send a "ping" signal to the ip (if it is connected) via websocket and waits the amount of timeout in MS
      * until it returns a "false" if it did not receive a pong-signal until then
      */
-    async isMediaAppOnline(ip: string, timeoutMS: number = 3000): Promise<boolean> {
+    async isMediaPlayerOnline(ip: string, timeoutMS: number = 3000): Promise<boolean> {
         return await this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("network", "ping"), timeoutMS, false);
     }
 
@@ -98,7 +98,7 @@ export class NetworkService {
     }
 
     /**
-     * Send a command to the ip which asks for the content file saved on it. The media-app should
+     * Send a command to the ip which asks for the content file saved on it. The media-player should
      * return an empty JSON if there is no content-file or the JSON of the content-file
      *
      * Returns null if there was no response from the controller-app during the timeout passed
@@ -109,7 +109,7 @@ export class NetworkService {
 
     /**
      * Send a command to the ip which contains the passed media-file and type. If the transfer was succesful, the promise
-     * returns the number of the newly created media from the media-app if not it returns null
+     * returns the number of the newly created media from the media-player if not it returns null
      */
     async sendMediaFileToIp(ip: string, mediaType: string, mediaFile: Uint8Array, timeoutMS: number = 3000, onSendChunk: Function): Promise<number | null> {
         return this._createNetworkPromise(ip, ConvertNetworkData.encodeCommand("media", "put", mediaType, mediaFile), timeoutMS, null, onSendChunk);

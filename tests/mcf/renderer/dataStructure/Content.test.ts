@@ -19,8 +19,8 @@ const expectedJSON: any = {
     name: "myName",
     lightIntensity: 2,
     tagIds: tagIds,
-    media: [{mediaAppId: 0, type: "video", idOnMediaApp: 20, duration: 300, fileName: "video1.mp4"},
-        {mediaAppId: 1, type: "image", idOnMediaApp: 10, fileName: "image22.jpeg"}]
+    media: [{mediaPlayerId: 0, type: "video", idOnMediaPlayer: 20, duration: 300, fileName: "video1.mp4"},
+        {mediaPlayerId: 1, type: "image", idOnMediaPlayer: 10, fileName: "image22.jpeg"}]
 };
 
 describe("importFromJSON() ", () => {
@@ -46,13 +46,13 @@ describe("importFromJSON() ", () => {
         video = content.media.get(0) as Video;
         expect(video).not.toBeNull();
         expect(video).not.toBeUndefined();
-        expect(video.mediaAppId).toBe(expectedJSON.media[0].mediaAppId);
+        expect(video.mediaPlayerId).toBe(expectedJSON.media[0].mediaPlayerId);
         expect(video.duration).toBe(expectedJSON.media[0].duration);
-        expect(video.idOnMediaApp).toBe(expectedJSON.media[0].idOnMediaApp);
+        expect(video.idOnMediaPlayer).toBe(expectedJSON.media[0].idOnMediaPlayer);
         expect(video.fileName).toBe(expectedJSON.media[0].fileName);
 
-        expect(content.media.get(1)?.mediaAppId).toBe(expectedJSON.media[1].mediaAppId);
-        expect(content.media.get(1)?.idOnMediaApp).toBe(expectedJSON.media[1].idOnMediaApp);
+        expect(content.media.get(1)?.mediaPlayerId).toBe(expectedJSON.media[1].mediaPlayerId);
+        expect(content.media.get(1)?.idOnMediaPlayer).toBe(expectedJSON.media[1].idOnMediaPlayer);
         expect(content.media.get(1)?.fileName).toBe(expectedJSON.media[1].fileName);
     });
 });
@@ -64,18 +64,18 @@ describe("exportToJSON() ", () => {
         content.tagIds = tagIds;
         content.lightIntensity = 2;
         let video: Video = new Video();
-        video.idOnMediaApp = 20;
-        video.mediaAppId = 0;
+        video.idOnMediaPlayer = 20;
+        video.mediaPlayerId = 0;
         video.duration = 300;
         video.fileName = "video1.mp4"
 
         let image: Image = new Image();
-        image.idOnMediaApp = 10;
-        image.mediaAppId = 1;
+        image.idOnMediaPlayer = 10;
+        image.mediaPlayerId = 1;
         image.fileName = "image22.jpeg";
 
-        content.media.set(video.mediaAppId, video)
-        content.media.set(image.mediaAppId, image)
+        content.media.set(video.mediaPlayerId, video)
+        content.media.set(image.mediaPlayerId, image)
 
         receivedJSON = content.exportToJSON();
 
@@ -92,7 +92,7 @@ describe("getMaxDuration() ", () => {
         for (let i: number = 0; i < values.length; i++) {
             video = new Video();
             video.duration = values[i];
-            video.mediaAppId = i;
+            video.mediaPlayerId = i;
             content.media.set(i, video);
         }
 
@@ -104,7 +104,7 @@ describe("getMaxDuration() ", () => {
 
         for (let i: number = 0; i < 5; i++) {
             image = new Image();
-            image.mediaAppId = i;
+            image.mediaPlayerId = i;
             content.media.set(i, image);
         }
 
@@ -115,13 +115,13 @@ describe("getMaxDuration() ", () => {
 describe("getMedia() ", () => {
     it("should find the media if it is in one of the subfolders of the folder", () => {
         const image = new Image();
-        image.mediaAppId = 3;
+        image.mediaPlayerId = 3;
         content.media.set(3, image);
         const media: IMedia | null = content.getMedia(3);
         expect(media).toBe(image);
     });
 
-    it("should return null if there is no media for the mediaAppId", () => {
+    it("should return null if there is no media for the mediaPlayerId", () => {
         const media: IMedia | null = content.getMedia(333);
         expect(media).toBe(null);
     });
@@ -131,13 +131,13 @@ describe("getMedia() ", () => {
 describe("requireMedia() ", () => {
     it("should find the media if it is in one of the subfolders of the folder", () => {
         const image = new Image();
-        image.mediaAppId = 3;
+        image.mediaPlayerId = 3;
         content.media.set(3, image);
         const media: IMedia = content.requireMedia(3);
         expect(media).toBe(image);
     });
 
-    it("should throw an error if media-app-id is not one of the sub-folders", () => {
-        expect(() => content.requireMedia(100)).toThrow(new Error("Media with mediaApp-ID 100 does not exist in Content: 0"));
+    it("should throw an error if media-player-id is not one of the sub-folders", () => {
+        expect(() => content.requireMedia(100)).toThrow(new Error("Media with mediaPlayer-ID 100 does not exist in Content: 0"));
     });
 });

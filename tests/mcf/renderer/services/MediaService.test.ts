@@ -132,8 +132,8 @@ describe("deleteMedia() ", () => {
 
     it("should call mediaStationRepository.deleteCachedMedia if mediaStationRepository.isMediaCached is true", async () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
-            if (msID === mediaStationId && cID === contentId && mediaAppId === 0)
+        mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaPlayerId: number) => {
+            if (msID === mediaStationId && cID === contentId && mediaPlayerId === 0)
                 return true;
             else
                 return false;
@@ -147,8 +147,8 @@ describe("deleteMedia() ", () => {
 
     it("should not call mediaStationRepository.deleteCachedMedia if mediaStationRepository.isMediaCached is false", async () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
-            if (msID === mediaStationId && cID === contentId && mediaAppId === 0)
+        mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaPlayerId: number) => {
+            if (msID === mediaStationId && cID === contentId && mediaPlayerId === 0)
                 return false;
             else
                 return true;
@@ -160,18 +160,18 @@ describe("deleteMedia() ", () => {
     });
 
     it("should call mediaStationRepository.markMediaIDtoDelete if mediaStationRepository.isMediaCached is false", async () => {
-        const idOnMediaApp: number = 20;
+        const idOnMediaPlayer: number = 20;
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
-        mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaAppId: number) => {
-            if (msID === mediaStationId && cID === contentId && mediaAppId === 0)
+        mockMediaStationRepo.mediaCacheHandler.isMediaCached.mockImplementation((msID: number, cID: number, mediaPlayerId: number) => {
+            if (msID === mediaStationId && cID === contentId && mediaPlayerId === 0)
                 return false;
             else
                 return true;
         });
 
-        mockMediaManager.getIdOnMediaApp.mockImplementation((mediaStation: MockMediaStation, cID: number, mediaAppId: number) => {
-            if (mediaStation === mockMediaStation && cID === contentId && mediaAppId === 0)
-                return idOnMediaApp;
+        mockMediaManager.getIdOnMediaPlayer.mockImplementation((mediaStation: MockMediaStation, cID: number, mediaPlayerId: number) => {
+            if (mediaStation === mockMediaStation && cID === contentId && mediaPlayerId === 0)
+                return idOnMediaPlayer;
             else
                 return null;
         });
@@ -179,6 +179,6 @@ describe("deleteMedia() ", () => {
         await mediaService.deleteMedia(mediaStationId, contentId, 0);
 
         expect(mockMediaStationRepo.markMediaIDtoDelete).toHaveBeenCalledTimes(1);
-        expect(mockMediaStationRepo.markMediaIDtoDelete).toHaveBeenCalledWith(mediaStationId, 0, idOnMediaApp);
+        expect(mockMediaStationRepo.markMediaIDtoDelete).toHaveBeenCalledWith(mediaStationId, 0, idOnMediaPlayer);
     });
 });

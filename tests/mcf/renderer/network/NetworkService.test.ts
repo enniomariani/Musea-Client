@@ -205,13 +205,13 @@ describe("pcRespondsToPing() ", () => {
     });
 });
 
-describe("isMediaAppOnline() ", () => {
+describe("isMediaPlayerOnline() ", () => {
     it("should call mockNetworkConnectionHandler.sendData with a ping-command", async () => {
         const pongCommand: string[] = ["network", "pong"];
         mockOpenConnectionAndReceiveDataLater(ip1, pongCommand, true);
 
         await networkService.openConnection(ip1);
-        await networkService.isMediaAppOnline(ip1);
+        await networkService.isMediaPlayerOnline(ip1);
 
         expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledTimes(1);
         expect(mockNetworkConnectionHandler.sendData).toHaveBeenCalledWith(ip1, ConvertNetworkData.encodeCommand("network", "ping"), null);
@@ -222,7 +222,7 @@ describe("isMediaAppOnline() ", () => {
         mockOpenConnectionAndReceiveDataLater(ip1, pongCommand, true);
 
         await networkService.openConnection(ip1);
-        const answer: boolean = await networkService.isMediaAppOnline(ip1);
+        const answer: boolean = await networkService.isMediaPlayerOnline(ip1);
 
         expect(answer).toBe(true);
     });
@@ -232,7 +232,7 @@ describe("isMediaAppOnline() ", () => {
         mockOpenConnectionAndReceiveDataLater(ip1, pongCommand, null);
 
         await networkService.openConnection(ip1);
-        const answer: boolean = await networkService.isMediaAppOnline(ip1);
+        const answer: boolean = await networkService.isMediaPlayerOnline(ip1);
 
         expect(answer).toBe(null);
     });
@@ -245,7 +245,7 @@ describe("isMediaAppOnline() ", () => {
         mockOpenConnection();
 
         await networkService.openConnection(ip1);
-        answerPromise = networkService.isMediaAppOnline(ip1);
+        answerPromise = networkService.isMediaPlayerOnline(ip1);
 
         await Promise.resolve(); // Forces the promise to resolve after advancing timers
 

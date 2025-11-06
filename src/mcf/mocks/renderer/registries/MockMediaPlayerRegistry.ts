@@ -1,6 +1,6 @@
-import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry.js";
+import {MediaPlayerRegistry} from "renderer/registries/MediaPlayerRegistry.js";
 
-export class MockMediaAppRegistry extends MediaAppRegistry{
+export class MockMediaPlayerRegistry extends MediaPlayerRegistry{
 
     add: jest.Mock;
     get: jest.Mock;

@@ -49,16 +49,16 @@ export class Content {
                 }
 
                 if(media){
-                    if (this._jsonPropertyExists(json.media[i], "idOnMediaApp"))
-                        media.idOnMediaApp = json.media[i].idOnMediaApp;
+                    if (this._jsonPropertyExists(json.media[i], "idOnMediaPlayer"))
+                        media.idOnMediaPlayer = json.media[i].idOnMediaPlayer;
 
-                    if (this._jsonPropertyExists(json.media[i], "mediaAppId"))
-                        media.mediaAppId = json.media[i].mediaAppId;
+                    if (this._jsonPropertyExists(json.media[i], "mediaPlayerId"))
+                        media.mediaPlayerId = json.media[i].mediaPlayerId;
 
                     if (this._jsonPropertyExists(json.media[i], "fileName"))
                         media.fileName = json.media[i].fileName;
 
-                    this._media.set(media.mediaAppId, media);
+                    this._media.set(media.mediaPlayerId, media);
                 }
             }
         }
@@ -79,14 +79,14 @@ export class Content {
         this._media.forEach((media: IMedia) => {
             if (media instanceof Image) {
                 image = media;
-                allMedia.push({mediaAppId: image.mediaAppId, type: "image",
-                    idOnMediaApp: image.idOnMediaApp, fileName: image.fileName});
+                allMedia.push({mediaPlayerId: image.mediaPlayerId, type: "image",
+                    idOnMediaPlayer: image.idOnMediaPlayer, fileName: image.fileName});
             } else if (media instanceof Video) {
                 video = media;
                 allMedia.push({
-                    mediaAppId: video.mediaAppId,
+                    mediaPlayerId: video.mediaPlayerId,
                     type: "video",
-                    idOnMediaApp: video.idOnMediaApp,
+                    idOnMediaPlayer: video.idOnMediaPlayer,
                     duration: video.duration,
                     fileName: video.fileName
                 });
@@ -126,8 +126,8 @@ export class Content {
     /**
      * Returns the Media or returns null if it does not exist.
      */
-    getMedia(mediaAppId:number):IMedia | null {
-        const media:IMedia | undefined = this._media.get(mediaAppId);
+    getMedia(mediaPlayerId:number):IMedia | null {
+        const media:IMedia | undefined = this._media.get(mediaPlayerId);
 
         if (!media)
             return null;
@@ -138,11 +138,11 @@ export class Content {
     /**
      * Returns the Media or throws if it does not exist.
      */
-    requireMedia(mediaAppId:number):IMedia {
-        const media:IMedia | undefined = this._media.get(mediaAppId);
+    requireMedia(mediaPlayerId:number):IMedia {
+        const media:IMedia | undefined = this._media.get(mediaPlayerId);
 
         if (!media)
-            throw new Error("Media with mediaApp-ID " + mediaAppId + " does not exist in Content: " + this._id);
+            throw new Error("Media with mediaPlayer-ID " + mediaPlayerId + " does not exist in Content: " + this._id);
 
         return media;
     }

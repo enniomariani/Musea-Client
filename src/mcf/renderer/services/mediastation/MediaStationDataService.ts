@@ -32,7 +32,7 @@ export class MediaStationDataService{
 
     getControllerIp(id:number):string|null{
         const ms:MediaStation = this._mediaStationRepository.requireMediaStation(id);
-        return ms.mediaAppRegistry.getControllerIp();
+        return ms.mediaPlayerRegistry.getControllerIp();
     }
 
     getName(id:number):string{

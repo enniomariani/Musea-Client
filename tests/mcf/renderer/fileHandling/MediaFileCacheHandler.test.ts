@@ -20,8 +20,8 @@ describe("hydrate() ", ()=>{
     it("should load cached media from service and set it for the station", async ()=>{
         const stationId = 7;
         const list: ICachedMedia[] = [
-            { contentId: 10, mediaAppId: 2, fileExtension: "jpeg" },
-            { contentId: 11, mediaAppId: 3, fileExtension: "mp4" },
+            { contentId: 10, mediaPlayerId: 2, fileExtension: "jpeg" },
+            { contentId: 11, mediaPlayerId: 3, fileExtension: "mp4" },
         ];
         mockMediaFileService.getAllCachedMedia.mockResolvedValueOnce(list);
 
@@ -51,7 +51,7 @@ describe("hydrate() ", ()=>{
         // pre-populate internal cache via public API
         await mediaFileCacheHandler.cacheMedia(stationId, 1, 1, "png", mockFile);
 
-        const replacement: ICachedMedia[] = [{ contentId: 2, mediaAppId: 2, fileExtension: "mp4" }];
+        const replacement: ICachedMedia[] = [{ contentId: 2, mediaPlayerId: 2, fileExtension: "mp4" }];
         mockMediaFileService.getAllCachedMedia.mockResolvedValueOnce(replacement);
 
         await mediaFileCacheHandler.hydrate(stationId);
@@ -79,7 +79,7 @@ describe("cacheMedia() ", ()=>{
         expect(mediaFileArr).not.toBeUndefined();
 
         if (mediaFileArr) {
-            expect(mediaFileArr[0].mediaAppId).toBe(2);
+            expect(mediaFileArr[0].mediaPlayerId).toBe(2);
             expect(mediaFileArr[0].contentId).toBe(1);
             expect(mediaFileArr[0].fileExtension).toBe("jpeg");
         }
@@ -94,7 +94,7 @@ describe("cacheMedia() ", ()=>{
 
         if (mediaFileArr) {
             expect(mediaFileArr.length).toBe(2);
-            expect(mediaFileArr[1].mediaAppId).toBe(2);
+            expect(mediaFileArr[1].mediaPlayerId).toBe(2);
             expect(mediaFileArr[1].contentId).toBe(2);
             expect(mediaFileArr[1].fileExtension).toBe("mp4");
         }
@@ -148,7 +148,7 @@ describe("deleteCachedMedia() ", ()=>{
         const copy = mediaFileCacheHandler.getAllCachedMedia().get(0);
         expect(copy).not.toBeUndefined();
         expect(copy![0].contentId).toBe(1);
-        expect(copy![0].mediaAppId).toBe(2);
+        expect(copy![0].mediaPlayerId).toBe(2);
         expect(copy![0].fileExtension).toBe("jpeg");
     });
 
@@ -162,7 +162,7 @@ describe("deleteCachedMedia() ", ()=>{
         const copy = mediaFileCacheHandler.getAllCachedMedia().get(0);
         expect(copy).not.toBeUndefined();
         expect(copy![0].contentId).toBe(3);
-        expect(copy![0].mediaAppId).toBe(3);
+        expect(copy![0].mediaPlayerId).toBe(3);
         expect(copy![0].fileExtension).toBe("mp4");
     });
 
@@ -179,10 +179,10 @@ describe("deleteCachedMedia() ", ()=>{
         expect(()=> mediaFileCacheHandler.deleteCachedMedia(1,1,2)).toThrow("No media cached for mediastation with ID: 1")
     });
 
-    it("should throw an error if there is no cached media for the passed contentId and mediaAppID", async ()=>{
+    it("should throw an error if there is no cached media for the passed contentId and mediaPlayerID", async ()=>{
         const file = new File(["x"], "x", {type: "text/plain"});
         await mediaFileCacheHandler.cacheMedia(0,1,2,"jpeg", file);
-        expect(()=> mediaFileCacheHandler.deleteCachedMedia(0,2,2)).toThrow("No media cached for media-App-ID 2 in content-ID 2 of mediastation with ID: 0")
+        expect(()=> mediaFileCacheHandler.deleteCachedMedia(0,2,2)).toThrow("No media cached for Media-Player-ID 2 in content-ID 2 of mediastation with ID: 0")
     });
 });
 

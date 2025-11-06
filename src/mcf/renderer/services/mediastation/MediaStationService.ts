@@ -59,8 +59,8 @@ export class MediaStationService {
     /**
      * Remove a mediastation and save the new mediastation-metadata-file (savedMediaStations.json)
      *
-     * Caution: at the moment mediastaions can be deleted, but the data on the media-apps remains ->
-     * If a media-app with existing data is inserted into another media-station, this can lead to unforseen bugs/errors!
+     * Caution: at the moment mediastaions can be deleted, but the data on the media-players remains ->
+     * If a media-player with existing data is inserted into another media-station, this can lead to unforseen bugs/errors!
      */
     async deleteMediaStation(id: number): Promise<void> {
         return this._data.deleteMediaStation(id);
@@ -109,7 +109,7 @@ export class MediaStationService {
 
     // Commands
     /**
-     * Send the command play to all media-apps defined in the media-station
+     * Send the command play to all media-players defined in the media-station
      *
      * @param {number} mediaStationId
      * @param {number | null} contentId     if null, the actual set media is played
@@ -120,43 +120,43 @@ export class MediaStationService {
     }
 
     /**
-     * Send the command stop to all media-apps defined in the media-station
+     * Send the command stop to all media-players defined in the media-station
      */
     async stop(mediaStationId: number): Promise<void> {
         return this._command.sendCommandStop(mediaStationId);
     }
 
     /**
-     * Send the command pause to all media-apps defined in the media-station
+     * Send the command pause to all media-players defined in the media-station
      */
     async pause(mediaStationId: number): Promise<void> {
         return this._command.sendCommandPause(mediaStationId);
     }
 
     /**
-     * Send the command forward (video-fwd) to all media-apps defined in the media-station
+     * Send the command forward (video-fwd) to all media-players defined in the media-station
      */
     async forward(mediaStationId: number): Promise<void> {
         return this._command.sendCommandFwd(mediaStationId);
     }
 
     /**
-     * Send the command rewind (video-rew) to all media-apps defined in the media-station
+     * Send the command rewind (video-rew) to all media-players defined in the media-station
      */
     async rewind(mediaStationId: number): Promise<void> {
         return this._command.sendCommandRew(mediaStationId);
     }
 
     /**
-     * Send the command sync to all media-apps defined in the media-station. Sync-calls are sent to synchronise playback
-     * among the different media-apps
+     * Send the command sync to all media-players defined in the media-station. Sync-calls are sent to synchronise playback
+     * among the different media-players
      */
     async sync(mediaStationId: number, contentId: number, posInSec: number): Promise<void> {
         return this._command.sendCommandSync(mediaStationId, contentId, posInSec);
     }
 
     /**
-     * Send seek command to all media-apps defined in the media-station
+     * Send seek command to all media-players defined in the media-station
      *
      * Print an error and do not send the command if posInSec is negative
      */
@@ -165,21 +165,21 @@ export class MediaStationService {
     }
 
     /**
-     * Send command mute to all media-apps defined in the media-station
+     * Send command mute to all media-players defined in the media-station
      */
     async mute(mediaStationId: number): Promise<void> {
         return this._command.sendCommandMute(mediaStationId);
     }
 
     /**
-     * Send command unmute to all media-apps defined in the media-station
+     * Send command unmute to all media-players defined in the media-station
      */
     async unmute(mediaStationId: number): Promise<void> {
         return this._command.sendCommandUnmute(mediaStationId);
     }
 
     /**
-     * Send command set volume to all media-apps defined in the media-station
+     * Send command set volume to all media-players defined in the media-station
      */
     async setVolume(mediaStationId: number, volume: number): Promise<void> {
         return this._command.sendCommandSetVolume(mediaStationId, volume);
@@ -205,9 +205,9 @@ export class MediaStationService {
     // Sync
     /**
      * Send the file contents.json to the controller (which holds folder-structure, content-info, tag-info, etc.) and all cached media-files
-     * to their specific media-app and delete-commands to delete media files.
+     * to their specific media-player and delete-commands to delete media files.
      *
-     * If a media-file is sent successfully (and the ID created on the media-app is received): Delete the cached file
+     * If a media-file is sent successfully (and the ID created on the media-player is received): Delete the cached file
      *
      * If all media-files + all delete-commands are sent, send the contents.json-File to the controller and delete the cached one.
      *
@@ -225,14 +225,14 @@ export class MediaStationService {
 
     // Events
     /**
-     * Is executed when a block-event is received from a media-app (only apps registered as role "user" receive block-events)
+     * Is executed when a block-event is received from a media-player (only apps registered as role "user" receive block-events)
      */
     onBlockReceived(callback:() => void): void {
         this._events.onBlockReceived(callback);
     }
 
     /**
-     * Is executed when an un-block-event is received from a media-app (only apps registered as role "user" receive unblock-events)
+     * Is executed when an un-block-event is received from a media-player (only apps registered as role "user" receive unblock-events)
      */
     onUnBlockReceived(callback:() => void): void {
         this._events.onUnBlockReceived(callback);

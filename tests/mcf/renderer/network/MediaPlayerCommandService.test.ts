@@ -1,36 +1,36 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {MediaAppCommandService, MediaCommand} from "renderer/network/MediaAppCommandService.js";
+import {MediaPlayerCommandService, MediaCommand} from "renderer/network/MediaPlayerCommandService.js";
 import {MockNetworkService} from "mocks/renderer/network/MockNetworkService.js";
-import {MediaApp} from "renderer/dataStructure/MediaApp.js";
+import {MediaPlayer} from "renderer/dataStructure/MediaPlayer.js";
 
-let service: MediaAppCommandService;
+let service: MediaPlayerCommandService;
 let net: MockNetworkService;
 
 const contentId = 12;
-let app1: MediaApp;
-let app2: MediaApp;
-let app3: MediaApp;
-let apps: Map<number, MediaApp>;
+let app1: MediaPlayer;
+let app2: MediaPlayer;
+let app3: MediaPlayer;
+let apps: Map<number, MediaPlayer>;
 
 beforeEach(() => {
-    app1 = new MediaApp(0);
+    app1 = new MediaPlayer(0);
     app1.ip = "127.0.0.1";
-    app2 = new MediaApp(1);
+    app2 = new MediaPlayer(1);
     app2.ip = "127.0.0.2";
-    app3 = new MediaApp(2);
+    app3 = new MediaPlayer(2);
     app3.ip = "127.0.0.3";
 
     apps = new Map([[0, app1], [1, app2], [2, app3]]);
 
     net = new MockNetworkService();
-    service = new MediaAppCommandService(net);
+    service = new MediaPlayerCommandService(net);
 });
 
 afterEach(() => {
     jest.clearAllMocks();
 });
 
-function expectSentTo(targets: Map<number, MediaApp>, method: Function, command: string[]): void {
+function expectSentTo(targets: Map<number, MediaPlayer>, method: Function, command: string[]): void {
     let nth = 1;
     expect(method).toHaveBeenCalledTimes(targets.size);
     for (const [, app] of targets) {

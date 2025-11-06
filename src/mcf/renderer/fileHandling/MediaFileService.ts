@@ -15,35 +15,35 @@ export class MediaFileService {
     }
 
     /**
-     * creates a file-name out of content-id and mediaAppId and the fileExtension and saves it in the folder with mediaStationId as
+     * creates a file-name out of content-id and mediaPlayerId and the fileExtension and saves it in the folder with mediaStationId as
      * folder-name
      */
-    async saveFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string, payload:Uint8Array):Promise<void>{
-        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
+    async saveFile(mediaStationId:number, contentId:number, mediaPlayerId:number, fileExtension:string, payload:Uint8Array):Promise<void>{
+        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaPlayerId, fileExtension);
         await this._backendFileService.saveFile(this._pathToFolder + pathToFile, payload);
     }
 
     /**
-     * creates a file-name out of content-id and mediaAppId and the fileExtension and saves it in the folder with mediaStationId as
+     * creates a file-name out of content-id and mediaPlayerId and the fileExtension and saves it in the folder with mediaStationId as
      * folder-name
      */
-    async saveFileByPath(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string, fileInstance:File):Promise<void>{
-        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
+    async saveFileByPath(mediaStationId:number, contentId:number, mediaPlayerId:number, fileExtension:string, fileInstance:File):Promise<void>{
+        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaPlayerId, fileExtension);
         await this._backendFileService.saveFileByPath(this._pathToFolder + pathToFile, fileInstance);
     }
 
-    deleteFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):void{
-        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
+    deleteFile(mediaStationId:number, contentId:number, mediaPlayerId:number, fileExtension:string):void{
+        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaPlayerId, fileExtension);
         this._backendFileService.deleteFile(this._pathToFolder + pathToFile);
     }
 
-    async fileExists(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):Promise<boolean>{
-        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
+    async fileExists(mediaStationId:number, contentId:number, mediaPlayerId:number, fileExtension:string):Promise<boolean>{
+        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaPlayerId, fileExtension);
         return await this._backendFileService.fileExists(this._pathToFolder + pathToFile);
     }
 
-    async loadFile(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):Promise<Uint8Array | null>{
-        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaAppId, fileExtension);
+    async loadFile(mediaStationId:number, contentId:number, mediaPlayerId:number, fileExtension:string):Promise<Uint8Array | null>{
+        let pathToFile:string = this._createFilePath(mediaStationId, contentId, mediaPlayerId, fileExtension);
         return this._backendFileService.loadFile(this._pathToFolder + pathToFile);
     }
 
@@ -61,7 +61,7 @@ export class MediaFileService {
 
             allCachedMedia.push({
                 contentId: Number(splittedName[0]),
-                mediaAppId: Number(splittedName[1]),
+                mediaPlayerId: Number(splittedName[1]),
                 fileExtension: splittedName[2]
             });
         }
@@ -69,7 +69,7 @@ export class MediaFileService {
         return allCachedMedia;
     }
 
-    private _createFilePath(mediaStationId:number, contentId:number, mediaAppId:number, fileExtension:string):string{
-        return mediaStationId.toString() + "\\cachedMedia\\" + contentId.toString()+ "." + mediaAppId.toString() + "." + fileExtension;
+    private _createFilePath(mediaStationId:number, contentId:number, mediaPlayerId:number, fileExtension:string):string{
+        return mediaStationId.toString() + "\\cachedMedia\\" + contentId.toString()+ "." + mediaPlayerId.toString() + "." + fileExtension;
     }
 }

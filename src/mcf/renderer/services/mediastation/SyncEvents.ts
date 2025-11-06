@@ -1,5 +1,5 @@
 export enum SyncScope {
-    MediaApp = "MediaApp",
+    MediaPlayer = "MediaPlayer",
     Controller = "Controller",
     MediaStation = "MediaStation"
 }
@@ -13,14 +13,14 @@ export enum ConnectionStatus {
 }
 
 export type SyncEvent =
-    | { scope: SyncScope.MediaApp; type: "Connecting"; appName: string; ip: string }
-    | { scope: SyncScope.MediaApp; type: "ConnectionStatus"; status: ConnectionStatus }
-    | { scope: SyncScope.MediaApp; type: "LoadMediaStart"; ext: string }
-    | { scope: SyncScope.MediaApp; type: "MediaSendStart" }
-    | { scope: SyncScope.MediaApp; type: "MediaSendingProgress"; progressPoint:string }
-    | { scope: SyncScope.MediaApp; type: "MediaSendSuccess" }
-    | { scope: SyncScope.MediaApp; type: "MediaSendFailed" }
-    | { scope: SyncScope.MediaApp; type: "DeleteStart"; mediaAppId: number; id: number }
+    | { scope: SyncScope.MediaPlayer; type: "Connecting"; appName: string; ip: string }
+    | { scope: SyncScope.MediaPlayer; type: "ConnectionStatus"; status: ConnectionStatus }
+    | { scope: SyncScope.MediaPlayer; type: "LoadMediaStart"; ext: string }
+    | { scope: SyncScope.MediaPlayer; type: "MediaSendStart" }
+    | { scope: SyncScope.MediaPlayer; type: "MediaSendingProgress"; progressPoint:string }
+    | { scope: SyncScope.MediaPlayer; type: "MediaSendSuccess" }
+    | { scope: SyncScope.MediaPlayer; type: "MediaSendFailed" }
+    | { scope: SyncScope.MediaPlayer; type: "DeleteStart"; mediaPlayerId: number; id: number }
     | { scope: SyncScope.Controller; type: "NoControllerDefined" }
     | { scope: SyncScope.Controller; type: "Connecting"; ip: string, appName:string }
     | { scope: SyncScope.Controller; type: "SendingContents" }

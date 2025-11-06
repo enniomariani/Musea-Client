@@ -1,10 +1,10 @@
 import {MockMediaStationRepository} from "../../dataStructure/MockMediaStationRepository.js";
-import {MockMediaAppCommandService} from "../../network/MockMediaAppCommandService.js";
+import {MockMediaPlayerCommandService} from "../../network/MockMediaPlayerCommandService.js";
 import {MediaStationCommandService} from "renderer/services/mediastation/MediaStationCommandService.js";
 import {MockNetworkService} from "../../network/MockNetworkService.js";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
-const mockContentNetworkService:MockMediaAppCommandService = new MockMediaAppCommandService();
+const mockContentNetworkService:MockMediaPlayerCommandService = new MockMediaPlayerCommandService();
 const mockNetworkService:MockNetworkService = new MockNetworkService();
 
 

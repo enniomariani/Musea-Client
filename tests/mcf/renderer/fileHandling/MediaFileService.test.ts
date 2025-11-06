@@ -203,11 +203,11 @@ describe("init () and getAllCachedMedia() ", () => {
     it("should return the data in form of an ICachedMedia-array of the loaded-file-names from the backend", async () => {
         let answer:ICachedMedia[];
         const expectedAnswer:ICachedMedia[]= [
-            {contentId: 1, mediaAppId: 2, fileExtension: "png"},
-            {contentId: 2, mediaAppId: 3, fileExtension: "jpeg"},
-            {contentId: 5, mediaAppId: 0, fileExtension: "mp4"},
-            {contentId: 0, mediaAppId: 0, fileExtension: "jpeg"},
-            {contentId: 0, mediaAppId: 1, fileExtension: "jpeg"}
+            {contentId: 1, mediaPlayerId: 2, fileExtension: "png"},
+            {contentId: 2, mediaPlayerId: 3, fileExtension: "jpeg"},
+            {contentId: 5, mediaPlayerId: 0, fileExtension: "mp4"},
+            {contentId: 0, mediaPlayerId: 0, fileExtension: "jpeg"},
+            {contentId: 0, mediaPlayerId: 1, fileExtension: "jpeg"}
         ]
         let fileNames:string[] = ["1.2.png", "2.3.jpeg", "5.0.mp4", "0.0.jpeg", "0.1.jpeg"]
 

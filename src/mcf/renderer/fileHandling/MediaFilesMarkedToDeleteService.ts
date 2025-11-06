@@ -19,23 +19,23 @@ export class MediaFilesMarkedToDeleteService {
      * adds an ID to the "Ids to delete" json and saves it
      *
      * @param {number} mediaStationId
-     * @param {number} mediaAppId
+     * @param {number} mediaPlayerId
      * @param {number} id
      * @returns {Promise<void>}
      */
-    async addID(mediaStationId: number, mediaAppId: number, id: number): Promise<void> {
+    async addID(mediaStationId: number, mediaPlayerId: number, id: number): Promise<void> {
         let allIDs: Map<number, number[]> = new Map();
-        let IDsOfMediaApp: number[];
+        let IDsOfMediaPlayer: number[];
         let filePath: string = this._pathToDataFolder + "\\" + mediaStationId.toString() + "\\" + this._fileName;
 
         if (await this._backendFileService.fileExists(filePath))
             allIDs = await this._loadIDsFromFile(filePath);
 
-        if (!allIDs.has(mediaAppId))
-            allIDs.set(mediaAppId, []);
+        if (!allIDs.has(mediaPlayerId))
+            allIDs.set(mediaPlayerId, []);
 
-        IDsOfMediaApp = allIDs.get(mediaAppId) as number[];
-        IDsOfMediaApp.push(id);
+        IDsOfMediaPlayer = allIDs.get(mediaPlayerId) as number[];
+        IDsOfMediaPlayer.push(id);
 
         this._saveJSON(allIDs, filePath);
     }
@@ -46,13 +46,13 @@ export class MediaFilesMarkedToDeleteService {
      * throws an error if there was no ID saved before or if the passed ID was not saved
      *
      * @param {number} mediaStationId
-     * @param {number} mediaAppId
+     * @param {number} mediaPlayerId
      * @param {number} idToDelete
      * @returns {Promise<void>}
      */
-    async removeID(mediaStationId: number, mediaAppId: number, idToDelete: number): Promise<void> {
+    async removeID(mediaStationId: number, mediaPlayerId: number, idToDelete: number): Promise<void> {
         let allIDs: Map<number, number[]>;
-        let idsOfMediaApp: number[];
+        let idsOfMediaPlayer: number[];
         let indexOfIdToDelete: number;
         let filePath: string = this._pathToDataFolder + "\\" + mediaStationId.toString() + "\\" + this._fileName;
 
@@ -61,14 +61,14 @@ export class MediaFilesMarkedToDeleteService {
         else
             throw new Error("ID can't be removed because there are no saved IDs!");
 
-        idsOfMediaApp = allIDs.get(mediaAppId) as number[];
+        idsOfMediaPlayer = allIDs.get(mediaPlayerId) as number[];
 
-        indexOfIdToDelete = idsOfMediaApp.indexOf(idToDelete);
+        indexOfIdToDelete = idsOfMediaPlayer.indexOf(idToDelete);
 
         if (indexOfIdToDelete === -1)
             throw new Error("ID can not be deleted because it was not saved before: " + idToDelete);
 
-        idsOfMediaApp.splice(indexOfIdToDelete, 1);
+        idsOfMediaPlayer.splice(indexOfIdToDelete, 1);
 
         this._saveJSON(allIDs, filePath);
     }
@@ -89,7 +89,7 @@ export class MediaFilesMarkedToDeleteService {
         json = JSON.parse(jsonStr);
 
         for (let i = 0; i < json.allIds.length; i++)
-            map.set(json.allIds[i].mediaAppId, json.allIds[i].ids);
+            map.set(json.allIds[i].mediaPlayerId, json.allIds[i].ids);
 
         return map;
     }
@@ -104,7 +104,7 @@ export class MediaFilesMarkedToDeleteService {
 
         for (let [key, ids] of allIDs) {
             json.allIds.push(
-                {mediaAppId: key, ids: ids}
+                {mediaPlayerId: key, ids: ids}
             );
         }
 

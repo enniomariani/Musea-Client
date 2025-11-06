@@ -1,23 +1,23 @@
 import {afterEach, beforeEach, describe, expect, it, jest, test} from "@jest/globals";
 import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 import {MockFolder} from "mocks/renderer/dataStructure/MockFolder.js";
-import {MediaApp, MediaAppRole} from "renderer/dataStructure/MediaApp.js";
+import {MediaPlayer, MediaPlayerRole} from "renderer/dataStructure/MediaPlayer.js";
 import {Tag} from "renderer/dataStructure/Tag.js";
 import {MockTagRegistry} from "mocks/renderer/registries/MockTagRegistry.js";
-import {MockMediaAppRegistry} from "mocks/renderer/registries/MockMediaAppRegistry.js";
+import {MockMediaPlayerRegistry} from "mocks/renderer/registries/MockMediaPlayerRegistry.js";
 
 let mediaStation: MediaStation;
 let mockTagRegistry:MockTagRegistry;
-let mockMediaAppRegistry:MockMediaAppRegistry;
+let mockMediaPlayerRegistry:MockMediaPlayerRegistry;
 
-let mediaApp1: MediaApp = new MediaApp(0);
-mediaApp1.name = "app1";
-mediaApp1.ip = "127.0.0.1";
-mediaApp1.role = MediaAppRole.CONTROLLER;
-let mediaApp2: MediaApp = new MediaApp(1);
-mediaApp2.name = "app2";
-mediaApp2.ip = "127.0.0.2";
-mediaApp2.role = MediaAppRole.DEFAULT;
+let mediaPlayer1: MediaPlayer = new MediaPlayer(0);
+mediaPlayer1.name = "app1";
+mediaPlayer1.ip = "127.0.0.1";
+mediaPlayer1.role = MediaPlayerRole.CONTROLLER;
+let mediaPlayer2: MediaPlayer = new MediaPlayer(1);
+mediaPlayer2.name = "app2";
+mediaPlayer2.ip = "127.0.0.2";
+mediaPlayer2.role = MediaPlayerRole.DEFAULT;
 
 const date:Date = new Date();
 const jsonMock: any = {
@@ -25,19 +25,19 @@ const jsonMock: any = {
     name: "newName",
     folderIdCounter: 2,
     contentIdCounter: 1,
-    mediaAppIdCounter: 1,
+    mediaPlayerIdCounter: 1,
     tagIdCounter: 1,
     rootFolder: {id: 0, name: "Test", subfolders: []},
-    mediaApps: [{id: mediaApp1.id, name: mediaApp1.name, ip: mediaApp1.ip, role: mediaApp1.role},
-        {id: mediaApp2.id, name: mediaApp2.name, ip: mediaApp2.ip, role: mediaApp2.role}],
+    mediaPlayers: [{id: mediaPlayer1.id, name: mediaPlayer1.name, ip: mediaPlayer1.ip, role: mediaPlayer1.role},
+        {id: mediaPlayer2.id, name: mediaPlayer2.name, ip: mediaPlayer2.ip, role: mediaPlayer2.role}],
     tags: [{id: 0, name: "tag1"},
         {id:3, name: "tag2"}]
 }
 
 beforeEach(() => {
     mockTagRegistry = new MockTagRegistry();
-    mockMediaAppRegistry = new MockMediaAppRegistry();
-    mediaStation = new MediaStation(0, mockTagRegistry, mockMediaAppRegistry);
+    mockMediaPlayerRegistry = new MockMediaPlayerRegistry();
+    mediaStation = new MediaStation(0, mockTagRegistry, mockMediaPlayerRegistry);
 });
 
 afterEach(() => {
@@ -51,8 +51,8 @@ describe("reset() ", () => {
         mediaStation.rootFolder.name = "root";
 
         //increase the ids to test if the ids have been reset after the calling of the function
-        mediaStation.getNextMediaAppId();
-        mediaStation.getNextMediaAppId();
+        mediaStation.getNextMediaPlayerId();
+        mediaStation.getNextMediaPlayerId();
         mediaStation.getNextFolderId();
         mediaStation.getNextFolderId();
         mediaStation.getNextContentId();
@@ -64,11 +64,11 @@ describe("reset() ", () => {
 
         expect(mediaStation.name).toEqual(name);
         expect(mediaStation.rootFolder.name).toEqual("root");
-        expect(mediaStation.getNextMediaAppId()).toEqual(0);
+        expect(mediaStation.getNextMediaPlayerId()).toEqual(0);
         expect(mediaStation.getNextContentId()).toEqual(0);
         expect(mediaStation.getNextTagId()).toEqual(0);
         expect(mediaStation.getNextFolderId()).toEqual(1);
-        expect(mockMediaAppRegistry.reset).toHaveBeenCalledTimes(2);    //2 because the constructor also calls reset
+        expect(mockMediaPlayerRegistry.reset).toHaveBeenCalledTimes(2);    //2 because the constructor also calls reset
         expect(mockTagRegistry.reset).toHaveBeenCalledTimes(2);
     });
 });
@@ -83,7 +83,7 @@ describe("exportToJSON() ", () => {
         let mockFolder: MockFolder = new MockFolder(0);
         mockFolder.exportToJSON.mockReturnValueOnce({id: 0, name: "Test", subfolders: []});
 
-        mediaStation.getNextMediaAppId();
+        mediaStation.getNextMediaPlayerId();
         mediaStation.getNextFolderId();
         mediaStation.getNextTagId();
         mediaStation.getNextContentId();
@@ -91,7 +91,7 @@ describe("exportToJSON() ", () => {
         mediaStation.rootFolder = mockFolder;
 
         mockTagRegistry.getAll.mockReturnValueOnce(new Map([[0, tag1],[3,tag2]]));
-        mockMediaAppRegistry.getAll.mockReturnValueOnce(new Map([[mediaApp1.id, mediaApp1],[mediaApp2.id,mediaApp2]]));
+        mockMediaPlayerRegistry.getAll.mockReturnValueOnce(new Map([[mediaPlayer1.id, mediaPlayer1],[mediaPlayer2.id,mediaPlayer2]]));
 
         receivedJSONstr = mediaStation.exportToJSON(date);
 
@@ -113,11 +113,11 @@ describe("importFromJSON() ", () => {
         expect(mediaStation.name).toBe("newName");
         expect(mediaStation.getNextFolderId()).toBe(jsonMock.folderIdCounter);
         expect(mediaStation.getNextContentId()).toBe(jsonMock.contentIdCounter);
-        expect(mediaStation.getNextMediaAppId()).toBe(jsonMock.mediaAppIdCounter);
+        expect(mediaStation.getNextMediaPlayerId()).toBe(jsonMock.mediaPlayerIdCounter);
         expect(mediaStation.getNextTagId()).toBe(jsonMock.tagIdCounter);
 
-        expect(mockMediaAppRegistry.importFromJSON).toHaveBeenCalledTimes(1);
-        expect(mockMediaAppRegistry.importFromJSON).toHaveBeenCalledWith(jsonMock.mediaApps);
+        expect(mockMediaPlayerRegistry.importFromJSON).toHaveBeenCalledTimes(1);
+        expect(mockMediaPlayerRegistry.importFromJSON).toHaveBeenCalledWith(jsonMock.mediaPlayers);
 
         expect(mockTagRegistry.add).toHaveBeenCalledTimes(2);
         expect(mockTagRegistry.add).toHaveBeenCalledWith(0, "tag1");
@@ -154,13 +154,13 @@ describe("importFromJSON() ", () => {
     });
 });
 
-describe("getNextMediaAppId() ", () => {
+describe("getNextMediaPlayerId() ", () => {
     it("should return an increased ID everytime it's called", () => {
         let idPerCall: number[] = [0, 1, 2, 3, 4, 5, 6];
         let answerPerCall: number[] = [];
 
         for (let i: number = 0; i < idPerCall.length; i++)
-            answerPerCall.push(mediaStation.getNextMediaAppId());
+            answerPerCall.push(mediaStation.getNextMediaPlayerId());
 
         for (let i: number = 0; i < idPerCall.length; i++) {
             console.log("got id: ", answerPerCall[i], " expected ID: ", idPerCall[i])

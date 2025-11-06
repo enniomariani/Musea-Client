@@ -1,11 +1,11 @@
-import {MediaAppDataService} from "../../../renderer/services/MediaAppDataService.js";
+import {MediaPlayerDataService} from "../../../renderer/services/MediaPlayerDataService.js";
 import {MockMediaStationRepository} from "../dataStructure/MockMediaStationRepository.js";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
 
-export class MockMediaAppDataService extends MediaAppDataService{
-    createMediaApp: jest.Mock;
-    getAllMediaApps: jest.Mock;
+export class MockMediaPlayerDataService extends MediaPlayerDataService{
+    createMediaPlayer: jest.Mock;
+    getAllMediaPlayers: jest.Mock;
     getName: jest.Mock;
     changeName: jest.Mock;
     getIp: jest.Mock;
@@ -13,8 +13,8 @@ export class MockMediaAppDataService extends MediaAppDataService{
 
     constructor() {
         super(mockMediaStationRepo);
-        this.createMediaApp = jest.fn();
-        this.getAllMediaApps = jest.fn();
+        this.createMediaPlayer = jest.fn();
+        this.getAllMediaPlayers = jest.fn();
         this.getName = jest.fn();
         this.changeName = jest.fn();
         this.getIp = jest.fn();

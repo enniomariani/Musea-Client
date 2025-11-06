@@ -1,26 +1,26 @@
 import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository.js";
 import {MediaStationLocalMetaData} from "renderer/fileHandling/MediaStationLocalMetaData.js";
-import {MediaAppDataService} from "renderer/services/MediaAppDataService.js";
+import {MediaPlayerDataService} from "renderer/services/MediaPlayerDataService.js";
 import {NetworkService} from "renderer/network/NetworkService.js";
 import {NetworkConnectionHandler} from "renderer/network/NetworkConnectionHandler.js";
 import {ContentDataService} from "renderer/services/ContentDataService.js";
-import {MediaAppCommandService} from "renderer/network/MediaAppCommandService.js";
+import {MediaPlayerCommandService} from "renderer/network/MediaPlayerCommandService.js";
 import {FolderDataService} from "renderer/services/FolderDataService.js";
 import {MediaService} from "renderer/services/MediaService.js";
 import {TagDataService} from "renderer/services/TagDataService.js";
 import {MediaStationService} from "renderer/services/mediastation/MediaStationService.js";
-import {MediaAppConnectionService} from "renderer/services/MediaAppConnectionService.js";
+import {MediaPlayerConnectionService} from "renderer/services/MediaPlayerConnectionService.js";
 import {MediaStationDataService} from "renderer/services/mediastation/MediaStationDataService.js";
 import {MediaStationCacheService} from "renderer/services/mediastation/MediaStationCacheService.js";
 import {MediaStationCommandService} from "renderer/services/mediastation/MediaStationCommandService.js";
 import {MediaStationContentsService} from "renderer/services/mediastation/MediaStationContentsService.js";
 import {MediaStationSyncService} from "renderer/services/mediastation/MediaStationSyncService.js";
-import {MediaAppSyncService} from "renderer/network/MediaAppSyncService.js";
+import {MediaPlayerSyncService} from "renderer/network/MediaPlayerSyncService.js";
 import {MediaStationEventService} from "renderer/services/mediastation/MediaStationEventService.js";
 
 export interface IMediaClientFramework {
-    get mediaAppDataService(): MediaAppDataService
-    get mediaAppConnectionService(): MediaAppConnectionService
+    get mediaPlayerDataService(): MediaPlayerDataService
+    get mediaPlayerConnectionService(): MediaPlayerConnectionService
 
     get mediaStationService(): MediaStationService
 
@@ -36,13 +36,13 @@ export class MediaClientFramework implements IMediaClientFramework {
 
     protected _networkConnectionHandler: NetworkConnectionHandler;
     protected _networkService: NetworkService;
-    protected _contentNetworkService: MediaAppCommandService;
+    protected _contentNetworkService: MediaPlayerCommandService;
 
     protected _mediaStationService: MediaStationService;
 
-    protected _mediaAppDataService: MediaAppDataService;
-    protected _mediaAppSyncService:MediaAppSyncService;
-    private _mediaAppConnectionService: MediaAppConnectionService;
+    protected _mediaPlayerDataService: MediaPlayerDataService;
+    protected _mediaPlayerSyncService:MediaPlayerSyncService;
+    private _mediaPlayerConnectionService: MediaPlayerConnectionService;
 
     protected _folderService: FolderDataService;
     protected _contentService: ContentDataService;
@@ -63,18 +63,18 @@ export class MediaClientFramework implements IMediaClientFramework {
 
         this._networkConnectionHandler = new NetworkConnectionHandler();
         this._networkService = new NetworkService(this._networkConnectionHandler);
-        this._contentNetworkService = new MediaAppCommandService(this._networkService);
-        this._mediaAppConnectionService = new MediaAppConnectionService(this._mediaStationRepository, this._networkService);
-        this._mediaAppSyncService = new MediaAppSyncService(this._networkService, this._mediaStationRepository);
+        this._contentNetworkService = new MediaPlayerCommandService(this._networkService);
+        this._mediaPlayerConnectionService = new MediaPlayerConnectionService(this._mediaStationRepository, this._networkService);
+        this._mediaPlayerSyncService = new MediaPlayerSyncService(this._networkService, this._mediaStationRepository);
 
         //media-station facade
         this._mediaStationService = new MediaStationService(new MediaStationDataService(this._mediaStationRepository),
             new MediaStationCacheService(this._mediaStationRepository),
             new MediaStationCommandService(this._mediaStationRepository, this._networkService, this._contentNetworkService),
             new MediaStationContentsService(this._networkService, this._mediaStationRepository),
-            new MediaStationSyncService(this._networkService, this._mediaStationRepository, this._mediaAppConnectionService, this._mediaAppSyncService),
+            new MediaStationSyncService(this._networkService, this._mediaStationRepository, this._mediaPlayerConnectionService, this._mediaPlayerSyncService),
             new MediaStationEventService(this._networkService));
-        this._mediaAppDataService = new MediaAppDataService(this._mediaStationRepository);
+        this._mediaPlayerDataService = new MediaPlayerDataService(this._mediaStationRepository);
 
         this._mediaService = new MediaService(this._mediaStationRepository);
         this._contentService = new ContentDataService(this._mediaStationRepository, this._mediaService);
@@ -84,17 +84,17 @@ export class MediaClientFramework implements IMediaClientFramework {
     }
 
     /**
-     * all services related to change data of media-apps (add, remove, change name, ...)
+     * all services related to change data of media-players (add, remove, change name, ...)
      */
-    get mediaAppDataService(): MediaAppDataService {
-        return this._mediaAppDataService;
+    get mediaPlayerDataService(): MediaPlayerDataService {
+        return this._mediaPlayerDataService;
     }
 
     /**
-     * all services related to connections of media-apps: check online status, connect, disconnect, ...
+     * all services related to connections of media-players: check online status, connect, disconnect, ...
      */
-    get mediaAppConnectionService(): MediaAppConnectionService {
-        return this._mediaAppConnectionService;
+    get mediaPlayerConnectionService(): MediaPlayerConnectionService {
+        return this._mediaPlayerConnectionService;
     }
 
     /**

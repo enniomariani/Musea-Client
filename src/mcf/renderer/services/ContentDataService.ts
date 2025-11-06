@@ -3,7 +3,7 @@ import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 import {Content} from "renderer/dataStructure/Content.js";
 import {ContentManager} from "renderer/dataManagers/ContentManager.js";
 import {MediaService} from "renderer/services/MediaService.js";
-import {MediaApp} from "renderer/dataStructure/MediaApp.js";
+import {MediaPlayer} from "renderer/dataStructure/MediaPlayer.js";
 
 
 export class ContentDataService  {
@@ -99,11 +99,11 @@ export class ContentDataService  {
      */
     async deleteContent(mediaStationId:number, folderId:number, contentId:number):Promise<void>{
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        const allMediaApps: Map<number, MediaApp> = mediaStation.mediaAppRegistry.getAll();
+        const allMediaPlayers: Map<number, MediaPlayer> = mediaStation.mediaPlayerRegistry.getAll();
 
-        for(const [key, mediaApp] of allMediaApps)
-            if(this._mediaService.getMediaType(mediaStationId, contentId, mediaApp.id) !== null)
-                await this._mediaService.deleteMedia(mediaStationId, contentId, mediaApp.id);
+        for(const [key, mediaPlayer] of allMediaPlayers)
+            if(this._mediaService.getMediaType(mediaStationId, contentId, mediaPlayer.id) !== null)
+                await this._mediaService.deleteMedia(mediaStationId, contentId, mediaPlayer.id);
 
         this._contentManager.deleteContent(mediaStation, folderId, contentId);
     }

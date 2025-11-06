@@ -29,53 +29,53 @@ export class MediaService {
      * Create a new Image-object and add it to the content.
      * Cache the image: image stays cached even if app is closed. Cache is removed when mediastation is  succesfully synced.
      */
-    async addImageAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, fileExtension: ImageFileExtension, fileInstance: File, fileName: string): Promise<void> {
+    async addImageAndCacheIt(mediaStationId: number, contentId: number, mediaPlayerId: number, fileExtension: ImageFileExtension, fileInstance: File, fileName: string): Promise<void> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        this._mediaManager.createImage(mediaStation, contentId, mediaAppId, fileName);
-        await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
+        this._mediaManager.createImage(mediaStation, contentId, mediaPlayerId, fileName);
+        await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaPlayerId, fileExtension, fileInstance);
     }
 
     /**
      * Create a new video-object and add it to the content.
      * Cache the video: video stays cached even if app is closed. Cache is removed when mediastation is  succesfully synced.
      */
-    async addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaAppId: number, duration: number, fileExtension: VideoFileExtension, fileInstance: File, fileName: string): Promise<void> {
+    async addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaPlayerId: number, duration: number, fileExtension: VideoFileExtension, fileInstance: File, fileName: string): Promise<void> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        this._mediaManager.createVideo(mediaStation, contentId, mediaAppId, duration, fileName);
-        await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaAppId, fileExtension, fileInstance);
+        this._mediaManager.createVideo(mediaStation, contentId, mediaPlayerId, duration, fileName);
+        await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaPlayerId, fileExtension, fileInstance);
     }
 
     /**
      * Return the fileName of the media or null if there was no media set
      */
-    getFileName(mediaStationId: number, contentId: number, mediaAppId: number): string | null {
+    getFileName(mediaStationId: number, contentId: number, mediaPlayerId: number): string | null {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        return this._mediaManager.getFileName(mediaStation, contentId, mediaAppId);
+        return this._mediaManager.getFileName(mediaStation, contentId, mediaPlayerId);
     }
 
     /**
      * Return a media-type or null if there was no media set
      */
-    getMediaType(mediaStationId: number, contentId: number, mediaAppId: number):  MediaType | null {
+    getMediaType(mediaStationId: number, contentId: number, mediaPlayerId: number):  MediaType | null {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        return this._mediaManager.getMediaType(mediaStation, contentId, mediaAppId);
+        return this._mediaManager.getMediaType(mediaStation, contentId, mediaPlayerId);
     }
 
     /**
      * Delete the media from the data-structure
      *
      * If the media is cached it deletes the cached media, if it is not cached (means it was already sent to the mediastation),
-     * save the ID for the sync-process to send the delete-command to the media-App
+     * save the ID for the sync-process to send the delete-command to the Media-Player
      */
-    async deleteMedia(mediaStationId: number, contentId: number, mediaAppId: number): Promise<void> {
+    async deleteMedia(mediaStationId: number, contentId: number, mediaPlayerId: number): Promise<void> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let idOnMediaApp: number = this._mediaManager.getIdOnMediaApp(mediaStation, contentId, mediaAppId);
+        let idOnMediaPlayer: number = this._mediaManager.getIdOnMediaPlayer(mediaStation, contentId, mediaPlayerId);
 
-        if (this._mediaStationRepository.mediaCacheHandler.isMediaCached(mediaStationId, contentId, mediaAppId))
-            this._mediaStationRepository.mediaCacheHandler.deleteCachedMedia(mediaStationId, contentId, mediaAppId);
+        if (this._mediaStationRepository.mediaCacheHandler.isMediaCached(mediaStationId, contentId, mediaPlayerId))
+            this._mediaStationRepository.mediaCacheHandler.deleteCachedMedia(mediaStationId, contentId, mediaPlayerId);
         else
-            await this._mediaStationRepository.markMediaIDtoDelete(mediaStationId, mediaAppId, idOnMediaApp);
+            await this._mediaStationRepository.markMediaIDtoDelete(mediaStationId, mediaPlayerId, idOnMediaPlayer);
 
-        this._mediaManager.deleteMedia(mediaStation, contentId, mediaAppId);
+        this._mediaManager.deleteMedia(mediaStation, contentId, mediaPlayerId);
     }
 }

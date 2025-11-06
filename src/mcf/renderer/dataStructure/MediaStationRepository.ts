@@ -1,10 +1,10 @@
 import {MediaStation} from "./MediaStation.js";
 import {MediaStationLocalMetaData} from "../fileHandling/MediaStationLocalMetaData.js";
-import {MediaApp, MediaAppRole} from "./MediaApp.js";
+import {MediaPlayer, MediaPlayerRole} from "./MediaPlayer.js";
 import {ContentFileService} from "../fileHandling/ContentFileService.js";
 import {MediaFilesMarkedToDeleteService} from "../fileHandling/MediaFilesMarkedToDeleteService.js";
 import {TagRegistry} from "renderer/registries/TagRegistry.js";
-import {MediaAppRegistry} from "renderer/registries/MediaAppRegistry.js";
+import {MediaPlayerRegistry} from "renderer/registries/MediaPlayerRegistry.js";
 import {MediaFileCacheHandler} from "renderer/fileHandling/MediaFileCacheHandler.js";
 
 export class MediaStationRepository{
@@ -21,7 +21,7 @@ export class MediaStationRepository{
 
     private _pathToMainFolder:string;
 
-    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaCacheHandler:MediaFileCacheHandler = new MediaFileCacheHandler(pathToMainFolder), mediaFilesMarkedToDeleteService = new MediaFilesMarkedToDeleteService(), contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id, new TagRegistry(), new MediaAppRegistry())) {
+    constructor(mediaStationMetaData:MediaStationLocalMetaData, pathToMainFolder:string, mediaCacheHandler:MediaFileCacheHandler = new MediaFileCacheHandler(pathToMainFolder), mediaFilesMarkedToDeleteService = new MediaFilesMarkedToDeleteService(), contentFileService:ContentFileService = new ContentFileService(), mediaStationFactory: (id: number) => MediaStation = (id) => new MediaStation(id, new TagRegistry(), new MediaPlayerRegistry())) {
         this._mediaStationMetaData = mediaStationMetaData;
         this._pathToMainFolder = pathToMainFolder;
         this._contentFileService = contentFileService;
@@ -60,7 +60,7 @@ export class MediaStationRepository{
                 if(await this.isMediaStationCached(id))
                     mediaStation.importFromJSON(await this._contentFileService.loadFile(id), false);
                 else if(controllerIp)
-                    mediaStation.mediaAppRegistry.add(mediaStation.getNextMediaAppId(), "Controller-App not reachable", controllerIp, MediaAppRole.CONTROLLER);
+                    mediaStation.mediaPlayerRegistry.add(mediaStation.getNextMediaPlayerId(), "Controller-App not reachable", controllerIp, MediaPlayerRole.CONTROLLER);
             }
         }
 
@@ -138,14 +138,14 @@ export class MediaStationRepository{
         return await this._contentFileService.fileExists(id);
     }
 
-    async markMediaIDtoDelete(mediaStationId:number,mediaAppId:number, id:number):Promise<void>{
+    async markMediaIDtoDelete(mediaStationId:number,mediaPlayerId:number, id:number):Promise<void>{
         this.requireMediaStation(mediaStationId);
-        await this._mediaFilesMarkedToDeleteService.addID(mediaStationId,mediaAppId, id);
+        await this._mediaFilesMarkedToDeleteService.addID(mediaStationId,mediaPlayerId, id);
     }
 
-    async deleteStoredMediaID(mediaStationId:number, mediaAppId:number, id:number):Promise<void>{
+    async deleteStoredMediaID(mediaStationId:number, mediaPlayerId:number, id:number):Promise<void>{
         this.requireMediaStation(mediaStationId);
-        await this._mediaFilesMarkedToDeleteService.removeID(mediaStationId, mediaAppId, id);
+        await this._mediaFilesMarkedToDeleteService.removeID(mediaStationId, mediaPlayerId, id);
     }
 
     async getAllMediaIDsToDelete(mediaStationId:number):Promise<Map<number, number[]>>{
@@ -158,7 +158,7 @@ export class MediaStationRepository{
         let controllerIp:string | null;
 
         this._allMediaStations.forEach((mediaStation:MediaStation, key:number)=>{
-            controllerIp = mediaStation.mediaAppRegistry.getControllerIp();
+            controllerIp = mediaStation.mediaPlayerRegistry.getControllerIp();
             map.set(mediaStation.name, controllerIp?controllerIp:"");
         });
 

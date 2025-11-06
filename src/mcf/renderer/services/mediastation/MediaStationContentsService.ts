@@ -34,12 +34,12 @@ export class MediaStationContentsService {
      * @param {number} id
      * @param {boolean} preserveMSname if true, the actually set name in the mediaStation object is preserved, if false the name is overwritten by the
      * name loaded from the contents-file
-     * @param {string} role either "admin" or "user": determines if the app registers as admin- or user-app on the media-apps
+     * @param {string} role either "admin" or "user": determines if the app registers as admin- or user-app on the media-players
      * @returns {Promise<ContentDownloadStatus>}
      */
     async downloadContentsOfMediaStation(id: number, preserveMSname: boolean, role: ("user" | "admin") = "admin"): Promise<IContentDownloadResult> {
         const mediaStation: MediaStation = this._mediaStationRepo.requireMediaStation(id);
-        const controllerIP: string | null = mediaStation.mediaAppRegistry.getControllerIp();
+        const controllerIP: string | null = mediaStation.mediaPlayerRegistry.getControllerIp();
         let contentsJSON: string | null;
 
         if (!controllerIP)
@@ -55,7 +55,7 @@ export class MediaStationContentsService {
         if (!connection)
             return {status: ContentDownloadStatus.FailedNoResponseFrom , ip: controllerIP};
 
-        const appIsOnline: boolean = await this._networkService.isMediaAppOnline(controllerIP);
+        const appIsOnline: boolean = await this._networkService.isMediaPlayerOnline(controllerIP);
 
         if (!appIsOnline)
             return {status: ContentDownloadStatus.FailedNoResponseFrom , ip: controllerIP};

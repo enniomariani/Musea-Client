@@ -177,7 +177,7 @@ export class NetworkInterface {
         return new Promise((resolve) => {
             this._connection?.send(chunk)
             setTimeout(resolve, 800);   //like this, every chunk is actually processed before the next is sent
-            //if the timeout is smaller, all chunks are cached in the media-app and then sent after all chunks have been added
+            //if the timeout is smaller, all chunks are cached in the media-player and then sent after all chunks have been added
         });
     }
 

@@ -4,9 +4,9 @@ export {ConvertNetworkData} from "./network/ConvertNetworkData.js"
 
 export {ContentDataService} from "./services/ContentDataService.js";
 export {FolderDataService} from "./services/FolderDataService.js";
-export {IMediaAppData, MediaAppDataService} from "./services/MediaAppDataService.js"
+export {IMediaPlayerData, MediaPlayerDataService} from "./services/MediaPlayerDataService.js"
 
-export {MediaAppConnectionService} from "./services/MediaAppConnectionService.js";
+export {MediaPlayerConnectionService} from "./services/MediaPlayerConnectionService.js";
 export {FileExtension, ImageFileExtension, VideoFileExtension, MediaService} from "./services/MediaService.js"
 export {TagDataService} from "./services/TagDataService.js"
 
@@ -16,4 +16,4 @@ export {ContentDownloadStatus, IContentDownloadResult} from "./services/mediasta
 
 export {MediaType} from "./dataManagers/MediaManager.js";
 
-export {IConnectionProgress, MediaAppConnectionStatus, ConnectionStep, StepState} from "./network/MediaAppConnectionSteps.js";
+export {IConnectionProgress, MediaPlayerConnectionStatus, ConnectionStep, StepState} from "./network/MediaPlayerConnectionSteps.js";

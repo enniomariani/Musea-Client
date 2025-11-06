@@ -100,7 +100,7 @@ describe("getControllerIp() ", ()=>{
         let controllerIp:string = "ip-address"
         let ipReturned:string | null;
         let createdMediaStation:MockMediaStation = new MockMediaStation(createdID);
-        createdMediaStation.mediaAppRegistry.getControllerIp.mockImplementationOnce((idArg)=>{return controllerIp})
+        createdMediaStation.mediaPlayerRegistry.getControllerIp.mockImplementationOnce((idArg)=>{return controllerIp})
 
         mockMediaStationRepository.requireMediaStation.mockImplementation((idArg)=>{
             if(idArg === createdID)
