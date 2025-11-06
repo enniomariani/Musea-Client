@@ -8,15 +8,15 @@ const {ipcRenderer, contextBridge, webUtils} = require('electron');
 
 export function exposeMuseClientAPI() {
     contextBridge.exposeInMainWorld("museaClientBackendFiles", {
-        saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('mediaClientFramework:saveFile', path, data),
+        saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('museaClient:saveFile', path, data),
         saveFileByPath: async (path: string, fileInstance: File) => {
             const pathToLoad: string = webUtils.getPathForFile(fileInstance);
-            await ipcRenderer.invoke('mediaClientFramework:saveFileByPath', path, pathToLoad)
+            await ipcRenderer.invoke('museaClient:saveFileByPath', path, pathToLoad)
         },
-        deleteFile: (path: string) => ipcRenderer.invoke('mediaClientFramework:deleteFile', path),
-        loadFile: (path: string) => ipcRenderer.invoke('mediaClientFramework:loadFile', path),
-        fileExists: (path: string) => ipcRenderer.invoke('mediaClientFramework:fileExists', path),
-        getAllFileNamesInFolder: (path: string) => ipcRenderer.invoke('mediaClientFramework:getAllFileNamesInFolder', path)
+        deleteFile: (path: string) => ipcRenderer.invoke('museaClient:deleteFile', path),
+        loadFile: (path: string) => ipcRenderer.invoke('museaClient:loadFile', path),
+        fileExists: (path: string) => ipcRenderer.invoke('museaClient:fileExists', path),
+        getAllFileNamesInFolder: (path: string) => ipcRenderer.invoke('museaClient:getAllFileNamesInFolder', path)
     });
 
     contextBridge.exposeInMainWorld("museaClientBackendNetwork", {

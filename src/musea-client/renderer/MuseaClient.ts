@@ -18,7 +18,7 @@ import {MediaStationSyncService} from "renderer/services/mediastation/MediaStati
 import {MediaPlayerSyncService} from "renderer/network/MediaPlayerSyncService.js";
 import {MediaStationEventService} from "renderer/services/mediastation/MediaStationEventService.js";
 
-export interface IMediaClientFramework {
+export interface IMuseaClient {
     get mediaPlayerDataService(): MediaPlayerDataService
     get mediaPlayerConnectionService(): MediaPlayerConnectionService
 
@@ -30,7 +30,7 @@ export interface IMediaClientFramework {
     get tagService(): TagDataService
 }
 
-export class MuseaClient implements IMediaClientFramework {
+export class MuseaClient implements IMuseaClient {
     protected _mediaStationMetaData: MediaStationLocalMetaData;
     protected _mediaStationRepository: MediaStationRepository;
 

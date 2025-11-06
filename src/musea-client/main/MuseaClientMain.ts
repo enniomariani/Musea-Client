@@ -26,12 +26,12 @@ export class MuseaClientMain {
 
     init(): void {
         //load/save/delete files
-        ipcMain.handle('mediaClientFramework:saveFile', async (event:Electron.IpcMainInvokeEvent, path: string, data: Uint8Array) => {
+        ipcMain.handle('museaClient:saveFile', async (event:Electron.IpcMainInvokeEvent, path: string, data: Uint8Array) => {
             const dataAsNodeBuffer:Buffer = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
             return await   this._mainFileService.saveFile(path, dataAsNodeBuffer);
         });
 
-        ipcMain.handle('mediaClientFramework:saveFileByPath', async (event:Electron.IpcMainInvokeEvent, path: string, pathToLoad: string) => {
+        ipcMain.handle('museaClient:saveFileByPath', async (event:Electron.IpcMainInvokeEvent, path: string, pathToLoad: string) => {
                         try {
                 let dataAsNodeBuffer:Buffer = await fs.promises.readFile(pathToLoad);
                 return await this._mainFileService.saveFile(path, dataAsNodeBuffer);
@@ -40,19 +40,19 @@ export class MuseaClientMain {
             }
         });
 
-        ipcMain.handle('mediaClientFramework:deleteFile', (event:Electron.IpcMainInvokeEvent, path: string) => {
+        ipcMain.handle('museaClient:deleteFile', (event:Electron.IpcMainInvokeEvent, path: string) => {
             return this._mainFileService.delete(path);
         });
 
-        ipcMain.handle('mediaClientFramework:fileExists', (event:Electron.IpcMainInvokeEvent, path: string) => {
+        ipcMain.handle('museaClient:fileExists', (event:Electron.IpcMainInvokeEvent, path: string) => {
             return this._mainFileService.fileExists(path);
         });
 
-        ipcMain.handle('mediaClientFramework:getAllFileNamesInFolder', (event:Electron.IpcMainInvokeEvent, path: string) => {
+        ipcMain.handle('museaClient:getAllFileNamesInFolder', (event:Electron.IpcMainInvokeEvent, path: string) => {
             return this._mainFileService.getAllFileNamesInFolder(path);
         });
 
-        ipcMain.handle('mediaClientFramework:loadFile', async (event:Electron.IpcMainInvokeEvent, path: string) => {
+        ipcMain.handle('museaClient:loadFile', async (event:Electron.IpcMainInvokeEvent, path: string) => {
             return await this._mainFileService.loadFile(path);
         });
 

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/MediaClientFramework.iml" filepath="$PROJECT_DIR$/.idea/MediaClientFramework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Musea-Client.iml" filepath="$PROJECT_DIR$/.idea/Musea-Client.iml" />
     </modules>
   </component>
 </project>
