@@ -7,6 +7,7 @@ const {ipcRenderer, contextBridge, webUtils} = require('electron');
 //more info here: https://chiragagrawal65.medium.com/how-to-import-ipcrenderer-in-renderer-process-component-26fef55fa4b7
 
 export function exposeMuseClientAPI() {
+    //--- START FOR MUSEA-CLIENT ---
     contextBridge.exposeInMainWorld("museaClientBackendFiles", {
         saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('museaClient:saveFile', path, data),
         saveFileByPath: async (path: string, fileInstance: File) => {
@@ -22,4 +23,5 @@ export function exposeMuseClientAPI() {
     contextBridge.exposeInMainWorld("museaClientBackendNetwork", {
         ping: (ip: string) => ipcRenderer.invoke('backendNetworkService:ping', ip)
     });
+    //--- END FOR MUSEA-CLIENT ---
 }

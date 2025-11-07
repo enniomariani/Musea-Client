@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld("backend", {
     loadSettings: () => ipcRenderer.invoke('app:load-settings')
 });
 
+//--- START FOR MUSEA-CLIENT ---
 contextBridge.exposeInMainWorld("museaClientBackendFiles", {
     saveFile: (path: string, data: Uint8Array) => ipcRenderer.invoke('museaClient:saveFile', path, data),
     saveFileByPath: async (path: string, fileInstance: File) => {
@@ -25,3 +26,4 @@ contextBridge.exposeInMainWorld("museaClientBackendFiles", {
 contextBridge.exposeInMainWorld("museaClientBackendNetwork", {
     ping: (ip: string) => ipcRenderer.invoke('backendNetworkService:ping', ip)
 });
+//--- END FOR MUSEA-CLIENT ---
