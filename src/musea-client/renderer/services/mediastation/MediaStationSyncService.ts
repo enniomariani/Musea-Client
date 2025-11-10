@@ -120,11 +120,11 @@ export class MediaStationSyncService {
 
             //if the connection could be established to a media-player, send all cached media-files
             if (!await this._mediaPlayerSyncService.sendMediaFilesToMediaPlayer(mediaStation, allMediaToAdd.get(mediaPlayer) as ICachedMedia[]
-                , mediaPlayer.ip, (event: IMediaPlayerSyncEvent) => this._mapMediaPlayerSyncToProgress(event)))
+                , mediaPlayer.ip, (event: IMediaPlayerSyncEvent) => progressReporter(this._mapMediaPlayerSyncToProgress(event))))
                 allMediaWereSentSuccesfully = false;
 
             if (allMediaIdsToDelete.has(mediaPlayer.id))
-                await this._mediaPlayerSyncService.sendCommandDeleteMediaToMediaPlayers(mediaStationId, mediaPlayer.id, allMediaIdsToDelete.get(mediaPlayer.id) as number[], mediaPlayer.ip, (event: IMediaPlayerSyncEvent) => this._mapMediaPlayerSyncToProgress(event));
+                await this._mediaPlayerSyncService.sendCommandDeleteMediaToMediaPlayers(mediaStationId, mediaPlayer.id, allMediaIdsToDelete.get(mediaPlayer.id) as number[], mediaPlayer.ip, (event: IMediaPlayerSyncEvent) => progressReporter(this._mapMediaPlayerSyncToProgress(event)));
 
             this._mediaStationRepo.cacheMediaStation(mediaStationId);
         }
@@ -202,6 +202,7 @@ export class MediaStationSyncService {
     }
 
     private _mapMediaPlayerSyncToProgress(event: IMediaPlayerSyncEvent): SyncEvent {
+        console.log("sync event: ", event);
         switch (event.type) {
             case MediaPlayerSyncEventType.LoadMediaStart:
                 return {scope: SyncScope.MediaPlayer, type: "LoadMediaStart", ext: event.data?.fileExt as string};

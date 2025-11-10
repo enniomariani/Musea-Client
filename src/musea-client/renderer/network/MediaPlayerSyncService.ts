@@ -51,7 +51,9 @@ export class MediaPlayerSyncService {
 
             reporter({ type: MediaPlayerSyncEventType.MediaSendStart });
             idOnMediaPlayer = await this._networkService.sendMediaFileToIp(ipMediaPlayer, cachedMedia.fileExtension, fileData,240000,
-                (msg:string) => {console.log("send progress: ", msg); reporter({type:MediaPlayerSyncEventType.MediaSending, data: {progress: msg}});});
+                (msg:string) => {
+                reporter({type:MediaPlayerSyncEventType.MediaSending, data: {progress: msg}});
+            });
 
             fileData = null;    //to free memory as fast as possible when transferring large files
 
