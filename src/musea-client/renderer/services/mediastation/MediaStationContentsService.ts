@@ -76,8 +76,6 @@ export class MediaStationContentsService {
 
         contentsJSON = await this._networkService.getContentFileFrom(controllerIP);
 
-        console.log("got contents from media-station: ", contentsJSON)
-
         if (contentsJSON === null) {
             return {status: ContentDownloadStatus.FailedNoResponseFrom , ip: controllerIP};
         } else if (contentsJSON === "{}") {

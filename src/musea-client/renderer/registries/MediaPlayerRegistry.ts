@@ -10,7 +10,6 @@ export class MediaPlayerRegistry {
         mediaPlayer.ip = ip;
         mediaPlayer.name = name;
         mediaPlayer.role = role;
-        console.log("add media-player entry: ", id, name, ip)
 
         this._mediaPlayers.set(id, mediaPlayer);
     }
@@ -45,13 +44,10 @@ export class MediaPlayerRegistry {
 
         this._mediaPlayers.forEach((mediaPlayer: MediaPlayer) => {
             if (mediaPlayer.role === MediaPlayerRole.CONTROLLER) {
-                console.log("found controller-app!")
                 controller = mediaPlayer;
                 return;
             }
         });
-
-        console.log("found controller-app? ", controller)
 
         if (!controller) {
             console.error("No controller-app is set!");

@@ -202,7 +202,6 @@ export class MediaStationSyncService {
     }
 
     private _mapMediaPlayerSyncToProgress(event: IMediaPlayerSyncEvent): SyncEvent {
-        console.log("sync event: ", event);
         switch (event.type) {
             case MediaPlayerSyncEventType.LoadMediaStart:
                 return {scope: SyncScope.MediaPlayer, type: "LoadMediaStart", ext: event.data?.fileExt as string};
