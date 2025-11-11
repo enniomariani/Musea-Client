@@ -1,0 +1,59 @@
+import {NetworkService} from "renderer/network/NetworkService.js";
+import {MockNetworkConnectionHandler} from "./MockNetworkConnectionHandler.js";
+import {MockNetworkCommandRouter} from "./MockNetworkCommandRouter.js";
+
+const mockNetworkConnectionHandler:MockNetworkConnectionHandler = new MockNetworkConnectionHandler();
+
+
+export class MockNetworkService extends NetworkService{
+    openConnection: jest.Mock;
+    closeConnection: jest.Mock;
+    pcRespondsToPing: jest.Mock;
+    isMediaPlayerOnline: jest.Mock;
+
+    onBlockReceived: jest.Mock;
+    onUnBlockReceived: jest.Mock;
+
+    sendRegistrationAdminApp: jest.Mock;
+    sendRegistrationUserApp: jest.Mock;
+
+    sendCheckRegistration: jest.Mock;
+    unregisterAndCloseConnection: jest.Mock;
+
+
+    getContentFileFrom: jest.Mock;
+    sendMediaFileToIp: jest.Mock;
+    sendContentFileTo: jest.Mock;
+    sendMediaControlTo: jest.Mock;
+    sendSystemCommandTo: jest.Mock;
+    sendDeleteMediaTo: jest.Mock;
+
+    sendLightCommandTo: jest.Mock;
+
+    constructor() {
+        super(mockNetworkConnectionHandler, new MockNetworkCommandRouter());
+        this.openConnection = jest.fn();
+        this.closeConnection = jest.fn();
+        this.pcRespondsToPing = jest.fn();
+        this.isMediaPlayerOnline = jest.fn();
+
+        this.onBlockReceived = jest.fn();
+        this.onUnBlockReceived = jest.fn();
+
+        this.sendRegistrationAdminApp = jest.fn();
+        this.sendRegistrationUserApp = jest.fn();
+        
+        this.sendCheckRegistration = jest.fn();
+        this.unregisterAndCloseConnection = jest.fn();
+
+        this.getContentFileFrom = jest.fn();
+        this.sendMediaFileToIp = jest.fn();
+        this.sendContentFileTo = jest.fn();
+        this.sendMediaControlTo = jest.fn();
+        this.sendSystemCommandTo = jest.fn();
+        this.sendDeleteMediaTo = jest.fn();
+
+        this.sendLightCommandTo = jest.fn();
+
+    }
+}

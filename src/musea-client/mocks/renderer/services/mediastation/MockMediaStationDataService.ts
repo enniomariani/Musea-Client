@@ -1,0 +1,26 @@
+import {MockMediaStationRepository} from "../../dataStructure/MockMediaStationRepository.js";
+import {
+    MediaStationDataService
+} from "../../../../renderer/services/mediastation/MediaStationDataService.js";
+
+const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
+
+
+export class MockMediaStationDataService extends MediaStationDataService{
+    loadMediaStations: jest.Mock;
+    createMediaStation: jest.Mock;
+    deleteMediaStation: jest.Mock;
+    changeName: jest.Mock;
+    getName: jest.Mock;
+    getControllerIp: jest.Mock;
+
+    constructor() {
+        super(mockMediaStationRepo);
+        this.loadMediaStations = jest.fn();
+        this.createMediaStation = jest.fn();
+        this.deleteMediaStation = jest.fn();
+        this.changeName = jest.fn();
+        this.getName = jest.fn();
+        this.getControllerIp = jest.fn();
+    }
+}
