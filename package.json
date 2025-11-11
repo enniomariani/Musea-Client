@@ -7,6 +7,7 @@
     "type": "git",
     "url": "https://github.com/enniomariani/Musea-Client"
   },
+  "license": "GPL-3.0-only",
   "description": "Electron-Library to communicate with Musea-Server. This is the client-side. The server-side is Musea-Server.",
   "type": "module",
   "main": "build/test-app/main/main.js",
