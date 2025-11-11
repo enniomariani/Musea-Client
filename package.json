@@ -2,7 +2,7 @@
   "name": "Musea-Client",
   "author": "Ennio Mariani",
   "email": "mail@enniomariani.ch",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "Electron-Library to communicate with Musea-Server. This is the client-side. The server-side is Musea-Server.",
   "type": "module",
   "main": "build/test-app/main/main.js",
