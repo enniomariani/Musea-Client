@@ -3,6 +3,10 @@
   "author": "Ennio Mariani",
   "email": "mail@enniomariani.ch",
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/enniomariani/Musea-Client"
+  },
   "description": "Electron-Library to communicate with Musea-Server. This is the client-side. The server-side is Musea-Server.",
   "type": "module",
   "main": "build/test-app/main/main.js",
