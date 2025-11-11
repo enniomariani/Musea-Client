@@ -10,6 +10,12 @@ import {ICachedMedia} from "renderer/fileHandling/MediaFileCacheHandler.js";
 import {ProgressReporter, SyncEvent, SyncScope} from "renderer/services/mediastation/SyncEvents.js";
 import {ConnectionStatus as UiConnectionStatus} from "renderer/services/mediastation/SyncEvents.js";
 import {MediaPlayerConnectionStatus} from "renderer/network/MediaPlayerConnectionSteps.js";
+import {
+    IMediaPlayerProgress,
+    IMediaPlayerSyncEvent,
+    MediaPlayerSyncEventType
+} from "renderer/network/MediaPlayerSyncService.js";
+import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 
 let service: MediaStationSyncService;
 let mockNetworkService: MockNetworkService;
@@ -77,8 +83,15 @@ describe("sync() happy-path", () => {
         mockConn.checkConnection.mockResolvedValue(MediaPlayerConnectionStatus.Online);
         mockConn.connectAndRegisterToMediaPlayer.mockResolvedValue(true);
 
-        // AppSync: both apps successfully send all media
-        mockAppSync.sendMediaFilesToMediaPlayer.mockResolvedValue(true);
+        // AppSync: emit progress events and return true
+        mockAppSync.sendMediaFilesToMediaPlayer.mockImplementation(
+            async (mediaStation: MediaStation, allCachedMedia: ICachedMedia[], ipMediaPlayer: string, reporter: IMediaPlayerProgress) =>{
+                reporter({ type: MediaPlayerSyncEventType.MediaSendStart });
+                reporter({type:MediaPlayerSyncEventType.MediaSending, data: {progress: "."}});
+                reporter({ type: MediaPlayerSyncEventType.MediaSendSuccess });
+
+                return true;
+            });
 
         // JSON exporting
         const jsonString = '{"ok":true}';
@@ -122,7 +135,8 @@ describe("sync() happy-path", () => {
         expect(mockRepo.removeCachedMediaStation).toHaveBeenCalledWith(station.id);
 
         // Progress events: at least show connecting + status for each app and controller stage
-        const events = (reporter as jest.Mock).mock.calls.map((c) => c[0] as SyncEvent);
+        const events:SyncEvent[] = (reporter as jest.Mock).mock.calls.map((c) => c[0] as SyncEvent);
+        console.log("sync-events: ", events)
         const connectEvents = events.filter((e) => e.scope === SyncScope.MediaPlayer && e.type === "Connecting");
         const statusEvents = events.filter((e) => e.scope === SyncScope.MediaPlayer && e.type === "ConnectionStatus");
         expect(connectEvents.length).toBeGreaterThanOrEqual(2);
@@ -130,6 +144,16 @@ describe("sync() happy-path", () => {
         expect(connectEvents.some((e: any) => e.ip === controller.ip)).toBe(true);
         expect(connectEvents.some((e: any) => e.ip === app2.ip)).toBe(true);
         expect(statusEvents.every((e: any) => e.status === UiConnectionStatus.Online)).toBe(true);
+
+        //Progress events: check media send, progress + sent events
+        const mediaSendEvents = events.filter((e) => e.scope === SyncScope.MediaPlayer && e.type === "MediaSendStart");
+        const mediaSendProgressEvents = events.filter((e) => e.scope === SyncScope.MediaPlayer && e.type === "MediaSendingProgress");
+        const MediaSendSuccessEvents = events.filter((e) => e.scope === SyncScope.MediaPlayer && e.type === "MediaSendSuccess");
+
+        expect(mediaSendEvents.length).toBe(2);
+        expect(mediaSendProgressEvents.length).toBe(2);
+        expect(MediaSendSuccessEvents.length).toBe(2);
+        expect(mediaSendProgressEvents.every((e: any) => e.progressPoint === ".")).toBe(true);
     });
 });
 

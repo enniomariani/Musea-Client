@@ -15,11 +15,13 @@ const __dirname:string = dirname(filename);
 const environment:string | undefined = process.env.NODE_ENV;
 
 let mainWindow:BrowserWindow;
-let museaClientMain:MuseaClientMain;
 
 //this is necessary because the path to the data-folder is in public_html/daten in the dev-environment but
 //in the resources-folder in the production-environment. If in the production-env nothing is specified as path, it looks in the asar-package
 const pathToDataFolder:string = environment === 'development' ? join(__dirname, '..', '..', '..','daten\\') : join(process.resourcesPath, '\\daten\\');
+
+let museaClientMain:MuseaClientMain = new MuseaClientMain(pathToDataFolder);
+museaClientMain.init();
 
 app.whenReady().then(async () => {
     mainWindow = new BrowserWindow({
@@ -33,9 +35,6 @@ app.whenReady().then(async () => {
     await mainWindow.loadFile(join(__dirname, '../index.html'));
     mainWindow.webContents.openDevTools();
     mainWindow.show(); //initially sets the focus to the created electron-window
-
-    museaClientMain = new MuseaClientMain(pathToDataFolder);
-    museaClientMain.init();
 
     app.on('window-all-closed', () => {
         if (process.platform !== 'darwin') {
