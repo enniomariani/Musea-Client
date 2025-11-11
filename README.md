@@ -57,3 +57,9 @@ import {MuseaClient} from "Musea-Client/renderer";
 //pathToDataFolder ist ein string, siehe Variable pathToDataFolder oben im main Kontext
 const museaClient = new MuseaClient(pathToDataFolder);
 ```
+
+## Lizenz
+
+Dieses Projekt steht unter der [GNU General Public License v3.0](LICENSE).
+
+Das bedeutet: Der Code darf genutzt, verändert und weitergegeben werden, aber abgeleitete Werke müssen ebenfalls unter GPL-3.0 veröffentlicht werden.
