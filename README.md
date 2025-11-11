@@ -11,6 +11,10 @@ Eine electron-library zur Steuerung von [Musea-Server](https://github.com/enniom
 
 ## Installation
 
+```shell
+npm i musea-client
+```
+
 ## Schnellstart
 
 Funktionierende Beispiele in den Apps [Musea Guide](https://github.com/enniomariani/Musea-Guide) und [Musea Admin](https://github.com/enniomariani/Musea-Admin).
