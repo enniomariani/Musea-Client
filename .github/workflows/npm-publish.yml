@@ -30,11 +30,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: |
-            build/musea-client
-            package.json
-            README.md
-            LICENSE
+          path: build/musea-client
 
   publish-npm:
     needs: build
@@ -47,7 +43,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: build-output
-          path: build/musea-client
+          path: .
       - uses: actions/setup-node@v4
         with:
           node-version: 22
