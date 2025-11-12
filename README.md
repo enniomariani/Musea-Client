@@ -19,7 +19,7 @@ npm i musea-client
 
 Funktionierende Beispiele in den Apps [Musea Guide](https://github.com/enniomariani/Musea-Guide) und [Musea Admin](https://github.com/enniomariani/Musea-Admin).
 
-**main**
+**main** 
 
 ```typescript
 import {MuseaClientMain} from "Musea-Client/main";
