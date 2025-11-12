@@ -26,11 +26,14 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Debug - List build output
+        run: dir
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: build/musea-client
+          path: build/musea-client/**/*
 
   publish-npm:
     needs: build
@@ -43,7 +46,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: build-output
-          path: .
+          path: build/musea-client
       - uses: actions/setup-node@v4
         with:
           node-version: 22
