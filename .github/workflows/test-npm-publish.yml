@@ -24,6 +24,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Debug - List build output
+        run: dir /s
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
