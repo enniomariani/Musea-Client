@@ -1,8 +1,13 @@
 {
-  "name": "Musea-Client",
+  "name": "musea-client",
   "author": "Ennio Mariani",
   "email": "mail@enniomariani.ch",
-  "version": "1.0.0",
+  "version": "1.0.7",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/enniomariani/Musea-Client"
+  },
+  "license": "GPL-3.0-only",
   "description": "Electron-Library to communicate with Musea-Server. This is the client-side. The server-side is Musea-Server.",
   "type": "module",
   "main": "build/test-app/main/main.js",
@@ -20,19 +25,23 @@
   "exports": {
     "./main": {
       "types": "./build/musea-client/main/index.d.ts",
-      "default": "./build/musea-client/main/index.js"
+      "default": "./build/musea-client/main/index.js",
+      "import": "./build/musea-client/main/index.js"
     },
     "./renderer": {
       "types": "./build/musea-client/renderer/index.d.ts",
-      "default": "./build/musea-client/renderer/index.js"
+      "default": "./build/musea-client/renderer/index.js",
+      "import": "./build/musea-client/renderer/index.js"
     },
     "./preload": {
       "types": "./build/musea-client/preload/index.d.ts",
-      "default": "./build/musea-client/preload/index.js"
+      "default": "./build/musea-client/preload/index.js",
+      "import": "./build/musea-client/preload/index.js"
     },
     "./mocks": {
       "types": "./build/musea-client/mocks/index.d.ts",
-      "default": "./build/musea-client/mocks/index.js"
+      "default": "./build/musea-client/mocks/index.js",
+      "import": "./build/musea-client/mocks/index.js"
     }
   },
   "files": [

@@ -11,6 +11,10 @@ Eine electron-library zur Steuerung von [Musea-Server](https://github.com/enniom
 
 ## Installation
 
+```shell
+npm i musea-client
+```
+
 ## Schnellstart
 
 Funktionierende Beispiele in den Apps [Musea Guide](https://github.com/enniomariani/Musea-Guide) und [Musea Admin](https://github.com/enniomariani/Musea-Admin).
@@ -28,7 +32,8 @@ museaClientMain.init();
 **preload**
 
 Folgenden Code in die Datei preload.ts einfügen. Muss bei einem Update von Musea Client eventuell auch aktualisiert werden!
-Falls ein Bundler für den main/preload-Kontext verwendet wird, sollte der import auch über import {exposeMuseClientAPI} from "Musea-Client/preload" funktionieren -> bisher aber nicht getestet
+Falls ein Bundler für den main/preload-Kontext verwendet wird, sollte der import auch über ```typescriptimport {exposeMuseClientAPI} from "Musea-Client/preload"``` funktionieren.
+Bisher ist dieser Option aber nicht getestet.
 ```typescript
 //--- START FOR MUSEA-CLIENT ---
 contextBridge.exposeInMainWorld("museaClientBackendFiles", {
