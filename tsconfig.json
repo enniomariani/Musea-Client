@@ -1,8 +1,50 @@
 {
-  "extends": "./tsconfig-base.json",
-  "files": [],
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "esModuleInterop": false,   //false because library-users should be free to turn it on/off,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "sourceMap": true,
+    "composite": true,
+    "declaration": true,
+
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    "baseUrl": ".",
+    "paths": {
+      "main/*": ["src/musea-client/main/*"],
+      "renderer/*": ["src/musea-client/renderer/*"],
+      "mocks/*": ["src/musea-client/mocks/*"]
+    }
+  },
   "references": [
-    { "path": "./public_html" },
-    { "path": "./tests" }
-  ]
+    {
+      "path": "./src/musea-client/main"
+    },
+    {
+      "path": "./src/musea-client/preload"
+    },
+    {
+      "path": "./src/musea-client/renderer"
+    },
+    {
+      "path": "./src/musea-client/mocks"
+    },
+    {
+      "path": "./src/test-app/main"
+    },
+    {
+      "path": "./src/test-app/preload"
+    },
+    {
+      "path": "./src/test-app/renderer"
+    }
+  ],
+  "exclude": ["**/build/**", "**/tests/**"],
+  "files": []  // Important: prevents root config from compiling anything
 }

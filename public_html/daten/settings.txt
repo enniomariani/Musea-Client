@@ -1,5 +1,0 @@
-{
-"Mauszeiger": true,
-"Vollbild": false,
-"BildschirmSchonerInMSec": 30000
-}

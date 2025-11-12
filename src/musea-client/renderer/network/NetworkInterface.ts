@@ -1,0 +1,200 @@
+export interface IOnReceivedData {
+    (data: Uint8Array): void
+}
+
+export class NetworkInterface {
+    private _connected: boolean = false;
+    private _connection: WebSocket | null = null;
+
+    private _onError:Function | null = null;
+    private _onOpen:Function | null  = null;
+    private _onClosed:Function | null  = null;
+    private _onDataReceivedCallBack:Function | null  = null;
+
+    private _connectionTimeoutTimer:number = -1;
+
+    private _onConnectionOpenFunc = this._onConnectionOpen.bind(this);
+    private _onConnectionErrorFunc = this._onConnectionError.bind(this);
+    private _onConnectionClosedFunc = this._onConnectionClosed.bind(this);
+    private _onDataReceivedFunc = this._onDataReceived.bind(this);
+
+    constructor() {}
+
+    /**
+     * creates a websocket-connection to the passed url and port.
+     *
+     * Listen for the onOpen-callback before you send messages to the server
+     *
+     * the callback-functions are triggered before the events
+     *
+     * calls onError if the connection could not be opened
+     *
+     * @param {string} url
+     * @param {Function} onOpen
+     * @param {Function} onError
+     * @param {Function} onClosed
+     * @param {IOnReceivedData} onDataReceived
+     * @returns {}
+     */
+    connectToServer(url: string, onOpen: Function | null = null, onError: Function | null = null, onClosed: Function | null = null, onDataReceived: IOnReceivedData | null = null): void {
+
+        //abort if the Websocket exists and is connecting (state 0), opening (state 1) or closing (state 2)
+        if (this._connection !== null && this._connection.readyState !== 3) {
+            console.info("WebSocketConnection: connection already exists and is not closed!");
+            return;
+        }
+
+        this._onOpen = onOpen;
+        this._onError = onError;
+        this._onClosed = onClosed;
+        this._onDataReceivedCallBack = onDataReceived;
+
+        try {
+            this._connection = new WebSocket(url);
+
+            // Close WebSocket connection if it could not be established after a certain time
+            // --> normally not necesary, but if the connection is over WLAN and the connection is unstable, it could be
+            // that the websocket-connection hangs for a long time
+            // @ts-ignore
+            this._connectionTimeoutTimer = setTimeout(() => {
+                this._connection?.close();
+            }, 3000);
+
+        } catch (error) {
+            console.error("NetworkInterface Error: ", error);
+            if (onError)
+                onError();
+            return;
+        }
+
+        this._connection.binaryType = "arraybuffer";
+
+        this._connection.addEventListener("error", this._onConnectionErrorFunc);
+        this._connection.addEventListener("open", this._onConnectionOpenFunc);
+        this._connection.addEventListener("close", this._onConnectionClosedFunc);
+        this._connection.addEventListener("message", this._onDataReceivedFunc);
+    }
+
+    private _onConnectionOpen(): void {
+        this._connected = true;
+
+        clearTimeout(this._connectionTimeoutTimer);
+
+        if (this._onOpen)
+            this._onOpen();
+    }
+
+    private _onConnectionClosed(): void {
+        this._connected = false;
+
+        clearTimeout(this._connectionTimeoutTimer);
+
+        this._connection?.removeEventListener("error", this._onConnectionErrorFunc);
+        this._connection?.removeEventListener("open", this._onConnectionOpenFunc);
+        this._connection?.removeEventListener("close", this._onConnectionClosedFunc);
+
+        this._connection = null;
+
+        if (this._onClosed)
+            this._onClosed();
+    }
+
+    private _onConnectionError(): void {
+        this._connected = false;
+
+        clearTimeout(this._connectionTimeoutTimer);
+
+        if (this._onError)
+            this._onError();
+    }
+
+    private _onDataReceived(e:MessageEvent): void {
+        let dataAsArray: Uint8Array;
+
+        //if the received data is a string, convert it to a Uint8Array (I always send data as Uint8Array, however in the test-
+        //cases the data is sent as string (because the server.send-function used in the tests sends always strings)
+        if (typeof e.data === "string")
+            dataAsArray = this._stringToUint8Array(e.data);
+        else if (e.data instanceof ArrayBuffer)
+            dataAsArray = new Uint8Array(e.data);
+        else
+            throw new Error("Websocket received data which is neither a string nor a Uint8Array!")
+
+        if (this._onDataReceivedCallBack)
+            this._onDataReceivedCallBack(dataAsArray);
+    }
+
+    /**
+     * returns true if the connection exists and was ready and false if not
+     *
+     * @param {Uint8Array} buffer
+     * @param {number} chunkSizeInBytes    // default 32MB chunks (was the fastest in tests compared with 16MB, 8 MB and 64MB))
+     * @returns {boolean}
+     */
+    async sendDataToServer(buffer: Uint8Array, onSendChunk:Function | null, chunkSizeInBytes: number = 32768 * 1024):Promise<boolean>{
+        let dataViewChunks: DataView = new DataView(new ArrayBuffer(2));
+        let chunksInfo:Uint8Array = new Uint8Array(2);
+        let arrayToSend: Uint8Array;
+        let offset:number = 0;
+
+        if (this._connection === null || this._connection.readyState !== 1) {
+            console.error("WebSocketConnection: sending data not possible, because connection not ready");
+            return false;
+        } else {
+            //buffer.length + 2 because the 2 bytes with the information about the amount of chunks are added after the calculation
+            //on how many chunks are sent
+            dataViewChunks.setUint16(0, Math.ceil((buffer.length + 2) / chunkSizeInBytes), true);
+            chunksInfo.set(new Uint8Array(dataViewChunks.buffer));
+
+            arrayToSend = new Uint8Array(dataViewChunks.buffer.byteLength + buffer.length);
+            arrayToSend.set(chunksInfo);
+            arrayToSend.set(buffer, chunksInfo.length);
+
+            while (offset < arrayToSend.length) {
+                const chunk:Uint8Array = arrayToSend.slice(offset, offset + chunkSizeInBytes);
+
+                if (this._connection === null || this._connection.readyState !== 1) {
+                    console.error("WebSocketConnection: connection was terminated during sending");
+                    return false;
+                }
+
+                if(offset + chunkSizeInBytes >= arrayToSend.length)
+                    this._connection.send(chunk)
+                else
+                    await this._sendChunk(chunk)
+
+                if(onSendChunk)
+                    onSendChunk(".");
+
+                offset += chunkSizeInBytes;
+            }
+
+            return true;
+        }
+    }
+
+    private async _sendChunk(chunk:Uint8Array):Promise<void> {
+        return new Promise((resolve) => {
+            this._connection?.send(chunk)
+            setTimeout(resolve, 800);   //like this, every chunk is actually processed before the next is sent
+            //if the timeout is smaller, all chunks are cached in the media-player and then sent after all chunks have been added
+        });
+    }
+
+    closeConnection(): void {
+
+        if(this._connection)
+            this._connection.close();
+    }
+
+    private _stringToUint8Array(inputString: string): Uint8Array {
+        const numberStrings: string[] = inputString.split(',');
+        const numbers: number[] = numberStrings.map(str => parseInt(str, 10));
+        const uint8Array: Uint8Array = new Uint8Array(numbers);
+        return uint8Array;
+    }
+
+    get connected(): boolean {
+        return this._connected;
+    }
+}
