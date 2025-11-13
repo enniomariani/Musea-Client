@@ -10,17 +10,14 @@ Eine electron-library zur Steuerung von [Musea-Server](https://github.com/enniom
 - **Wiedergabe-Steuerung** - Medien abspielen sowie Licht und Lautstärke steuern
 
 ## Installation
-
 ```shell
 npm i musea-client
 ```
 
 ## Schnellstart
-
 Funktionierende Beispiele in den Apps [Musea Guide](https://github.com/enniomariani/Musea-Guide) und [Musea Admin](https://github.com/enniomariani/Musea-Admin).
 
 **main**
-
 ```typescript
 import {MuseaClientMain} from "Musea-Client/main";
 
@@ -29,8 +26,8 @@ const pathToDataFolder:string = environment === 'development' ? join(__dirname, 
 const museaClientMain:MuseaClientMain = new MuseaClientMain(pathToDataFolder);
 museaClientMain.init();
 ```
-**preload**
 
+**preload**
 - Folgenden Code in die Datei preload.ts einfügen.
 - Muss bei einem Update von Musea Client eventuell auch aktualisiert werden!
 - Falls ein Bundler für den main/preload-Kontext verwendet wird, sollte der import auch über ```typescriptimport {exposeMuseClientAPI} from "Musea-Client/preload"``` funktionieren. Bisher ist diese Option aber nicht getestet.
@@ -55,7 +52,6 @@ contextBridge.exposeInMainWorld("museaClientBackendNetwork", {
 ```
 
 **renderer**
-
 ```typescript
 import {MuseaClient} from "Musea-Client/renderer";
 
@@ -64,13 +60,12 @@ const museaClient = new MuseaClient(pathToDataFolder);
 ```
 
 ## API Dokumentation
-
 Die vollständige API-Dokumentation befindet sich direkt im Code als JSDoc/TSDoc-Kommentare.
+
 Das aktuelle Klassen-Diagramm befindet sich [hier](docs/UML-Musea-Client.drawio.png).
 
 
 ## Lizenz
-
 Dieses Projekt steht unter der [GNU General Public License v3.0](LICENSE).
 
 Das bedeutet: Der Code darf genutzt, verändert und weitergegeben werden, aber abgeleitete Werke müssen ebenfalls unter GPL-3.0 veröffentlicht werden.
