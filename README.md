@@ -63,6 +63,12 @@ import {MuseaClient} from "Musea-Client/renderer";
 const museaClient = new MuseaClient(pathToDataFolder);
 ```
 
+## API Dokumentation
+
+Die vollständige API-Dokumentation befindet sich direkt im Code als JSDoc/TSDoc-Kommentare.
+Das aktuelle Klassen-Diagramm befindet sich [hier](docs/UML-Musea-Client.drawio.png).
+
+
 ## Lizenz
 
 Dieses Projekt steht unter der [GNU General Public License v3.0](LICENSE).
