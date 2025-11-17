@@ -78,7 +78,7 @@ jobs:
           issue-body: "Please approve or deny if the package.tgz is ready for deployment -> build-folders there + correct version in package.json?"
   
   publish-npm:
-    needs: build
+    needs: manual-approval
     runs-on: windows-latest
     permissions:
       contents: read
