@@ -15,7 +15,7 @@ const onError = jest.fn();
 const onDataReceived = jest.fn();
 
 const firstIP: string = "127.0.0.1";
-const firstURL: string = "ws://" + firstIP + ":5000";
+const firstURL: string = "ws://" + firstIP + ":8001";
 
 const mockBackendNetworkService: jest.Mocked<IMainNetworkService> = {
     ping: jest.fn(),

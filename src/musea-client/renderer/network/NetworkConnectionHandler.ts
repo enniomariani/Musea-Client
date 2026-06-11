@@ -35,7 +35,7 @@ export  class NetworkConnectionHandler{
      * @returns {boolean} - Returns true if the connection is successfully created, otherwise false.
      */
     createConnection(ip: string, onOpen: Function, onError: Function, onClosed: IOnClosedConnection | null = null,  onDataReceived: IOnReceivedConnectionData | null = null, networkInterface:NetworkInterface = new NetworkInterface()): void {
-        const url:string = "ws://" + ip + ":5000";
+        const url:string = "ws://" + ip + ":8001";
 
         if (this._connections.has(ip)) {
             console.error(`Connection to ip ${ip} already exists.`);
