@@ -1,5 +1,5 @@
 import {MediaStation} from "renderer/dataStructure/MediaStation.js";
-import {Image, IMedia, Video} from "renderer/dataStructure/Media.js";
+import {Image, IMedia, SubtitleInternal, Video} from "renderer/dataStructure/Media.js";
 import {Content} from "renderer/dataStructure/Content.js";
 
 export const MediaType = {
@@ -40,7 +40,7 @@ export class MediaManager{
      * Create a Video-Object, add it to the media-array of the content and return the object
      * Throw an error if contentId can not be found in the mediaStation-folders
      */
-    createVideo(playerRef:PlayerRef, duration:number, fileName:string):Video{
+    createVideo(playerRef:PlayerRef, duration:number, fileName:string, subTitles:SubtitleInternal[]):Video{
         const content:Content = playerRef.mediaStation.rootFolder.requireContent(playerRef.contentId);
         let newVideo:Video = new Video();
 

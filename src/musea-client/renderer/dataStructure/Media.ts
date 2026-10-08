@@ -53,7 +53,7 @@ export class Image extends BaseMedia implements IMedia{
 
 export class Video extends BaseMedia implements IMedia{
     private _duration:number = -1;
-    private _subtitles:Subtitle[] = [];
+    private _subtitles:SubtitleInternal[] = [];
 
     constructor() {
         super();
@@ -76,7 +76,7 @@ export class Video extends BaseMedia implements IMedia{
     }
 }
 
-export class Subtitle{
+export class SubtitleInternal {
     private _iso6392:string = "";
     private _title: string = "";
 
