@@ -53,6 +53,7 @@ export class Image extends BaseMedia implements IMedia{
 
 export class Video extends BaseMedia implements IMedia{
     private _duration:number = -1;
+    private _subtitles:Subtitle[] = [];
 
     constructor() {
         super();
@@ -72,5 +73,33 @@ export class Video extends BaseMedia implements IMedia{
 
     set duration(value: number) {
         this._duration = value;
+    }
+}
+
+export class Subtitle{
+    private _iso6392:string = "";
+    private _title: string = "";
+
+    exportToJSON():any{
+        return {
+            iso6392: this._iso6392,
+            title: this._title
+        }
+    }
+
+    get iso6392(): string {
+        return this._iso6392;
+    }
+
+    set iso6392(value: string) {
+        this._iso6392 = value;
+    }
+
+    get title(): string {
+        return this._title;
+    }
+
+    set title(value: string) {
+        this._title = value;
     }
 }
