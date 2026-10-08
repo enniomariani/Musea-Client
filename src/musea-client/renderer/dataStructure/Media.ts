@@ -67,6 +67,14 @@ export class Video extends BaseMedia implements IMedia{
         }
     }
 
+    get subtitles(): SubtitleInternal[] {
+        return this._subtitles;
+    }
+
+    set subtitles(value: SubtitleInternal[]) {
+        this._subtitles = value;
+    }
+
     get duration(): number {
         return this._duration;
     }
@@ -77,29 +85,15 @@ export class Video extends BaseMedia implements IMedia{
 }
 
 export class SubtitleInternal {
-    private _iso6392:string = "";
-    private _title: string = "";
+    constructor(private readonly _iso6392: string, private readonly _title: string) {}
+
+    get iso6392() { return this._iso6392; }
+    get title() { return this._title; }
 
     exportToJSON():any{
         return {
             iso6392: this._iso6392,
             title: this._title
         }
-    }
-
-    get iso6392(): string {
-        return this._iso6392;
-    }
-
-    set iso6392(value: string) {
-        this._iso6392 = value;
-    }
-
-    get title(): string {
-        return this._title;
-    }
-
-    set title(value: string) {
-        this._title = value;
     }
 }

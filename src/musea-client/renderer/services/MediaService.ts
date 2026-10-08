@@ -1,6 +1,7 @@
 import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository.js";
 import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 import {MediaManager, MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
+import {SubtitleInternal} from "../dataStructure/Media.js";
 
 export const FileExtension = {
     IMAGE: {
@@ -53,7 +54,15 @@ export class MediaService {
                              fileExtension: VideoFileExtension, fileInstance: File, fileName: string, videoOptions:VideoOptions = {}): Promise<void> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         const playerRef:PlayerRef = {mediaStation:mediaStation, contentId: contentId, mediaPlayerId:mediaPlayerId};
-        this._mediaManager.createVideo(playerRef, duration, fileName);
+        let subsInternal:SubtitleInternal[] = [];
+
+        if(videoOptions.subtitles){
+            videoOptions.subtitles.forEach((sub) =>{
+                subsInternal.push(new SubtitleInternal(sub.iso6392, sub.title));
+            });
+        }
+
+        this._mediaManager.createVideo(playerRef, duration, fileName, subsInternal);
         await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaPlayerId, fileExtension, fileInstance);
     }
 

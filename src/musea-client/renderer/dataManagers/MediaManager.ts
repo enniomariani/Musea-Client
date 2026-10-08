@@ -40,13 +40,14 @@ export class MediaManager{
      * Create a Video-Object, add it to the media-array of the content and return the object
      * Throw an error if contentId can not be found in the mediaStation-folders
      */
-    createVideo(playerRef:PlayerRef, duration:number, fileName:string, subTitles:SubtitleInternal[]):Video{
+    createVideo(playerRef:PlayerRef, duration:number, fileName:string, subtitles:SubtitleInternal[]):Video{
         const content:Content = playerRef.mediaStation.rootFolder.requireContent(playerRef.contentId);
         let newVideo:Video = new Video();
 
         newVideo.idOnMediaPlayer = -1;
         newVideo.mediaPlayerId = playerRef.mediaPlayerId;
         newVideo.duration = duration;
+        newVideo.subtitles = subtitles;
         newVideo.fileName = fileName;
 
         content.media.set(playerRef.mediaPlayerId, newVideo);

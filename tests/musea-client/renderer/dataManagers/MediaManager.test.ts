@@ -2,7 +2,7 @@ import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
 import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
 import {MediaManager, MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
 import {MockContent} from "mocks/renderer/dataStructure/MockContent.js";
-import {Image, Video} from "renderer/dataStructure/Media.js";
+import {Image, SubtitleInternal, Video} from "renderer/dataStructure/Media.js";
 
 let mediaManager:MediaManager;
 let mockMediaStation:MockMediaStation;
@@ -64,9 +64,13 @@ describe("createVideo() ", ()=>{
 
     it("should return a new video with the correct parameters set", ()=>{
         let answerVideo:Video;
+        const sub1:SubtitleInternal = new SubtitleInternal("deu", "Deutsch");
+        const sub2:SubtitleInternal = new SubtitleInternal("eng", "Englisch");
+        const subtitles:SubtitleInternal[] = [sub1, sub2];
+
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
 
-        answerVideo = mediaManager.createVideo(playerRef, 200, fileName);
+        answerVideo = mediaManager.createVideo(playerRef, 200, fileName, subtitles);
 
         expect(answerVideo).not.toBeNull();
         expect(answerVideo).not.toBeUndefined();
@@ -74,13 +78,22 @@ describe("createVideo() ", ()=>{
         expect(answerVideo.idOnMediaPlayer).toBe(-1);
         expect(answerVideo.duration).toBe(200);
         expect(answerVideo.fileName).toBe(fileName);
+        expect(answerVideo.subtitles).toEqual(subtitles);
+    });
+
+    it("should return a new video with empty subtitles if none are passed", ()=>{
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
+
+        const answerVideo:Video = mediaManager.createVideo(playerRef, 200, fileName, []);
+
+        expect(answerVideo.subtitles).toEqual([]);
     });
 
     it("should add the newly created video to the content", ()=>{
         let answerVideo:Video;
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
 
-        answerVideo = mediaManager.createVideo(playerRef, 200, fileName);
+        answerVideo = mediaManager.createVideo(playerRef, 200, fileName, []);
 
         expect(mockContent.media.get(0)).toEqual(answerVideo);
     });
@@ -94,7 +107,7 @@ describe("createVideo() ", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, existingImage);
 
-        answerVideo = mediaManager.createVideo(playerRef, 200, fileName);
+        answerVideo = mediaManager.createVideo(playerRef, 200, fileName, []);
 
         expect(mockContent.media.get(0)).toEqual(answerVideo);
     });

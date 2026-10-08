@@ -1,15 +1,15 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {
     MockMediaStationRepository
 } from "mocks/renderer/dataStructure/MockMediaStationRepository.js";
 import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
 import {MockMediaManager} from "mocks/renderer/dataManagers/MockMediaManager.js";
-import {Image, Video} from "renderer/dataStructure/Media.js";
+import {Image, SubtitleInternal, Video} from "renderer/dataStructure/Media.js";
 import {
     FileExtension,
     ImageFileExtension,
-    MediaService,
-    VideoFileExtension
+    MediaService, Subtitle,
+    VideoFileExtension, VideoOptions
 } from "renderer/services/MediaService.js";
 import {MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
 
@@ -72,17 +72,34 @@ describe("addVideoAndCacheIt() ", () => {
     const fileType = 'text/plain';
     const fileName:string = "testFileName.xy";
 
-    // Create a mock File object
     const mockFile = new File([fileContent], fileName, { type: fileType });
 
-    it("should call contentManager.createVideo with the correct arguments", async () => {
+    it("should call contentManager.createVideo with the correct arguments (no video-options)", async () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
         await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, mockFile, fileName);
 
         expect(mockMediaManager.createVideo).toHaveBeenCalledTimes(1);
-        expect(mockMediaManager.createVideo).toHaveBeenCalledWith({mediaStation:mockMediaStation, contentId: contentId, mediaPlayerId:0}, 199, fileName);
+        expect(mockMediaManager.createVideo).toHaveBeenCalledWith({mediaStation:mockMediaStation, contentId: contentId, mediaPlayerId:0}, 199, fileName, []);
+    });
+
+    it("should call contentManager.createVideo with the correct arguments (passing subtitles)", async () => {
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaManager.createImage.mockReturnValueOnce(video);
+
+        const subtitles:Subtitle[] = [{iso6392: "deu", title: "Deutsch"}, {iso6392:"fra", title: "Französisch"}];
+        const videoOptions:VideoOptions = {subtitles: subtitles};
+
+        await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, mockFile, fileName, videoOptions);
+
+        expect(mockMediaManager.createVideo).toHaveBeenCalledTimes(1);
+        expect(mockMediaManager.createVideo).toHaveBeenCalledWith(
+            { mediaStation: mockMediaStation, contentId, mediaPlayerId: 0 },
+            199,
+            fileName,
+            [new SubtitleInternal('deu', 'Deutsch'), new SubtitleInternal('fra', 'Französisch')],
+        );
     });
 
     it("should call mediaStationRepository.cacheMedia with the correct arguments", async () => {
