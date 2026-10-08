@@ -11,7 +11,7 @@ import {
     MediaService,
     VideoFileExtension
 } from "renderer/services/MediaService.js";
-import {MediaManager, MediaType} from "renderer/dataManagers/MediaManager.js";
+import {MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
 
 let mediaService: MediaService;
 let mockMediaStationRepo: MockMediaStationRepository;
@@ -49,7 +49,8 @@ describe("addImageAndCacheIt() ", () => {
         await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, mockFile, fileName);
 
         expect(mockMediaManager.createImage).toHaveBeenCalledTimes(1);
-        expect(mockMediaManager.createImage).toHaveBeenCalledWith(mockMediaStation, contentId, 0, fileName);
+        expect(mockMediaManager.createImage).toHaveBeenCalledWith(
+            {mediaStation:mockMediaStation, contentId: contentId, mediaPlayerId:0}, fileName);
     });
 
     it("should call mediaStationRepository.cacheMedia with the correct arguments", async () => {
@@ -81,7 +82,7 @@ describe("addVideoAndCacheIt() ", () => {
         await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, mockFile, fileName);
 
         expect(mockMediaManager.createVideo).toHaveBeenCalledTimes(1);
-        expect(mockMediaManager.createVideo).toHaveBeenCalledWith(mockMediaStation, contentId, 0, 199, fileName);
+        expect(mockMediaManager.createVideo).toHaveBeenCalledWith({mediaStation:mockMediaStation, contentId: contentId, mediaPlayerId:0}, 199, fileName);
     });
 
     it("should call mediaStationRepository.cacheMedia with the correct arguments", async () => {
@@ -127,7 +128,7 @@ describe("deleteMedia() ", () => {
         await mediaService.deleteMedia(mediaStationId, contentId, 0);
 
         expect(mockMediaManager.deleteMedia).toHaveBeenCalledTimes(1);
-        expect(mockMediaManager.deleteMedia).toHaveBeenCalledWith(mockMediaStation, contentId, 0);
+        expect(mockMediaManager.deleteMedia).toHaveBeenCalledWith({mediaStation:mockMediaStation, contentId: contentId, mediaPlayerId:0});
     });
 
     it("should call mediaStationRepository.deleteCachedMedia if mediaStationRepository.isMediaCached is true", async () => {
@@ -169,8 +170,8 @@ describe("deleteMedia() ", () => {
                 return true;
         });
 
-        mockMediaManager.getIdOnMediaPlayer.mockImplementation((mediaStation: MockMediaStation, cID: number, mediaPlayerId: number) => {
-            if (mediaStation === mockMediaStation && cID === contentId && mediaPlayerId === 0)
+        mockMediaManager.getIdOnMediaPlayer.mockImplementation((playerRef:PlayerRef) => {
+            if (playerRef.mediaStation === mockMediaStation && playerRef.contentId === contentId && playerRef.mediaPlayerId === 0)
                 return idOnMediaPlayer;
             else
                 return null;

@@ -7,7 +7,7 @@ export {FolderDataService} from "./services/FolderDataService.js";
 export {IMediaPlayerData, MediaPlayerDataService} from "./services/MediaPlayerDataService.js"
 
 export {MediaPlayerConnectionService} from "./services/MediaPlayerConnectionService.js";
-export {FileExtension, ImageFileExtension, VideoFileExtension, MediaService} from "./services/MediaService.js"
+export {FileExtension, ImageFileExtension, VideoFileExtension, MediaService, Subtitle, VideoOptions} from "./services/MediaService.js"
 export {TagDataService} from "./services/TagDataService.js"
 
 export {MediaStationService} from "./services/mediastation/MediaStationService.js";
