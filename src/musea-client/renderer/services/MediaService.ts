@@ -2,7 +2,7 @@ import {MediaStationRepository} from "renderer/dataStructure/MediaStationReposit
 import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 import {MediaManager, MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
 import {SubtitleInternal} from "../dataStructure/Media.js";
-import {ISO6392} from "./iso6392.js";
+import {ISO6392, Iso6392T} from "./iso6392.js";
 
 export const FileExtension = {
     IMAGE: {
@@ -13,26 +13,6 @@ export const FileExtension = {
         MP4: "mp4"
     }
 } as const;
-
-export type Iso6392T = string & { readonly __brand: "Iso6392" };
-const ISO_RE = /^[a-z]{3}$/;
-
-export function iso6392T(input: string): Iso6392T {
-    if (!ISO_RE.test(input)) {
-        throw new Error(`Invalid ISO 639-2T code: "${input}"`);
-    }
-
-    const langObj = ISO6392.find(obj =>
-        obj.iso6392T === input ||
-        (obj.iso6392T === undefined && obj.iso6392B === input)
-    );
-
-    if (!langObj) {
-        throw new Error(`Unknown ISO 639-2T code: "${input}"`);
-    }
-
-    return input as Iso6392T;
-}
 
 export interface Subtitle {
     readonly iso6392T: Iso6392T;   // uses ISO 639-2T e.g. "deu", or "eng" - see https://www.loc.gov/standards/iso639-2/php/code_list.php

@@ -11,6 +11,26 @@
  *   ISO 639-1 code (if available).
  */
 
+export type Iso6392T = string & { readonly __brand: "Iso6392" };
+const ISO_RE = /^[a-z]{3}$/;
+
+export function iso6392T(input: string): Iso6392T {
+  if (!ISO_RE.test(input)) {
+    throw new Error(`Invalid ISO 639-2T code: "${input}"`);
+  }
+
+  const langObj = ISO6392.find(obj =>
+      obj.iso6392T === input ||
+      (obj.iso6392T === undefined && obj.iso6392B === input)
+  );
+
+  if (!langObj) {
+    throw new Error(`Unknown ISO 639-2T code: "${input}"`);
+  }
+
+  return input as Iso6392T;
+}
+
 /**
  * List of languages.
  *

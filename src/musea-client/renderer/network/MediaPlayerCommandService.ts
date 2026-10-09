@@ -1,6 +1,6 @@
 import {NetworkService} from "renderer/network/NetworkService.js";
 import {MediaPlayer} from "renderer/dataStructure/MediaPlayer.js";
-import {Iso6392T} from "../services/MediaService.js";
+import {Iso6392T} from "../services/iso6392.js";
 
 export const MediaCommand = {
     PLAY: "play",
