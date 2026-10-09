@@ -1,4 +1,4 @@
-import {Image, IMedia, SubtitleInternal, Video} from "renderer/dataStructure/Media.js";
+import {Image, IMedia, Video} from "renderer/dataStructure/Media.js";
 
 export class Content {
     private _id: number;
@@ -35,21 +35,7 @@ export class Content {
                 if (this._jsonPropertyExists(json.media[i], "type")) {
                     switch (json.media[i].type) {
                         case    "video":
-                            let video:Video = new Video();
-                            if (this._jsonPropertyExists(json.media[i], "duration"))
-                                video.duration = json.media[i].duration;
-
-                            if (this._jsonPropertyExists(json.media[i], "subtitles")){
-                                video.subtitles = [];
-                                for(let j:number = 0; j < json.media[i].subtitles.length; j++)
-                                    video.subtitles.push(new SubtitleInternal(
-                                        json.media[i].subtitles[j].iso6392T, json.media[i].subtitles[j].title)
-                                    )
-                            }
-
-                            console.log("test subs: ", video.subtitles)
-
-                            media = video;
+                            media = new Video();
                             break;
                         case    "image":
                             media = new Image();
@@ -60,15 +46,7 @@ export class Content {
                 }
 
                 if(media){
-                    if (this._jsonPropertyExists(json.media[i], "idOnMediaPlayer"))
-                        media.idOnMediaPlayer = json.media[i].idOnMediaPlayer;
-
-                    if (this._jsonPropertyExists(json.media[i], "mediaPlayerId"))
-                        media.mediaPlayerId = json.media[i].mediaPlayerId;
-
-                    if (this._jsonPropertyExists(json.media[i], "fileName"))
-                        media.fileName = json.media[i].fileName;
-
+                    media.importFromJSON(json.media[i]);
                     this._media.set(media.mediaPlayerId, media);
                 }
             }

@@ -1,7 +1,8 @@
 export interface IMedia{
     idOnMediaPlayer:number
     mediaPlayerId:number
-    exportToJSON:any
+    exportToJSON:() => any
+    importFromJSON:(json:any) => void
     fileName:any
 }
 
@@ -19,6 +20,24 @@ export class BaseMedia implements IMedia{
             idOnMediaPlayer: this._idOnMediaPlayer,
             filename: this._fileName
         }
+    }
+
+    importFromJSON(jsonMedia:any):void{
+        if (this._jsonPropertyExists(jsonMedia, "idOnMediaPlayer"))
+            this._idOnMediaPlayer = jsonMedia.idOnMediaPlayer;
+
+        if (this._jsonPropertyExists(jsonMedia, "mediaPlayerId"))
+            this._mediaPlayerId = jsonMedia.mediaPlayerId;
+
+        if (this._jsonPropertyExists(jsonMedia, "fileName"))
+            this._fileName = jsonMedia.fileName;
+    }
+
+    protected _jsonPropertyExists(json: any, propName: string): boolean {
+        if(json.hasOwnProperty(propName))
+            return true;
+        else
+            throw new Error("Content: missing property in JSON: " + propName);
     }
 
     get idOnMediaPlayer(): number {
@@ -83,6 +102,20 @@ export class Video extends BaseMedia implements IMedia{
             duration: this._duration,
             fileName: this._fileName,
             subtitles: subJSON
+        }
+    }
+
+    override importFromJSON(jsonMedia: any) {
+        super.importFromJSON(jsonMedia);
+
+        if (this._jsonPropertyExists(jsonMedia, "duration"))
+            this._duration = jsonMedia.duration;
+
+        if (this._jsonPropertyExists(jsonMedia, "subtitles")){
+            for(let j:number = 0; j < jsonMedia.subtitles.length; j++)
+                this._subtitles.push(new SubtitleInternal(
+                    jsonMedia.subtitles[j].iso6392T, jsonMedia.subtitles[j].title)
+                )
         }
     }
 
