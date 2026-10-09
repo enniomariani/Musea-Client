@@ -70,7 +70,7 @@ export class MuseaClient implements IMuseaClient {
         //media-station facade
         this._mediaStationService = new MediaStationService(new MediaStationDataService(this._mediaStationRepository),
             new MediaStationCacheService(this._mediaStationRepository),
-            new MediaStationCommandService(this._mediaStationRepository, this._networkService, this._contentNetworkService),
+            new MediaStationCommandService(this._mediaStationRepository, this._contentNetworkService),
             new MediaStationContentsService(this._networkService, this._mediaStationRepository),
             new MediaStationSyncService(this._networkService, this._mediaStationRepository, this._mediaPlayerConnectionService, this._mediaPlayerSyncService),
             new MediaStationEventService(this._networkService));

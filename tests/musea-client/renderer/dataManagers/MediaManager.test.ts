@@ -1,17 +1,21 @@
 import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
 import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
-import {MediaManager, MediaType} from "renderer/dataManagers/MediaManager.js";
+import {MediaManager, MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
 import {MockContent} from "mocks/renderer/dataStructure/MockContent.js";
-import {Image, Video} from "renderer/dataStructure/Media.js";
+import {Image, SubtitleInternal, Video} from "renderer/dataStructure/Media.js";
 
 let mediaManager:MediaManager;
 let mockMediaStation:MockMediaStation;
 let mockContent:MockContent;
 
+let playerRef:PlayerRef;
+
 beforeEach(() => {
     mockMediaStation = new MockMediaStation(0);
     mockContent = new MockContent(0, 0);
     mediaManager = new MediaManager();
+
+    playerRef = {mediaStation:mockMediaStation, contentId: 0, mediaPlayerId:0};
 });
 
 afterEach(() => {
@@ -25,7 +29,7 @@ describe("createImage() ", ()=>{
 
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
 
-        answerImage = mediaManager.createImage(mockMediaStation, 0, 0, fileName);
+        answerImage = mediaManager.createImage(playerRef, fileName);
 
         expect(answerImage).not.toBeNull();
         expect(answerImage).not.toBeUndefined();
@@ -36,7 +40,7 @@ describe("createImage() ", ()=>{
 
     it("should add the newly created image to the content", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
-        const answerImage:Image = mediaManager.createImage(mockMediaStation, 0, 0, fileName);
+        const answerImage:Image = mediaManager.createImage(playerRef, fileName);
         expect(mockContent.media.get(0)).toEqual(answerImage);
     });
 
@@ -49,7 +53,7 @@ describe("createImage() ", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, existingImage);
 
-        answerImage = mediaManager.createImage(mockMediaStation, 0, 0, fileName);
+        answerImage = mediaManager.createImage(playerRef, fileName);
 
         expect(mockContent.media.get(0)).toEqual(answerImage);
     });
@@ -60,9 +64,13 @@ describe("createVideo() ", ()=>{
 
     it("should return a new video with the correct parameters set", ()=>{
         let answerVideo:Video;
+        const sub1:SubtitleInternal = new SubtitleInternal("deu", "Deutsch");
+        const sub2:SubtitleInternal = new SubtitleInternal("eng", "Englisch");
+        const subtitles:SubtitleInternal[] = [sub1, sub2];
+
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
 
-        answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200, fileName);
+        answerVideo = mediaManager.createVideo(playerRef, 200, fileName, subtitles);
 
         expect(answerVideo).not.toBeNull();
         expect(answerVideo).not.toBeUndefined();
@@ -70,13 +78,22 @@ describe("createVideo() ", ()=>{
         expect(answerVideo.idOnMediaPlayer).toBe(-1);
         expect(answerVideo.duration).toBe(200);
         expect(answerVideo.fileName).toBe(fileName);
+        expect(answerVideo.subtitles).toEqual(subtitles);
+    });
+
+    it("should return a new video with empty subtitles if none are passed", ()=>{
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
+
+        const answerVideo:Video = mediaManager.createVideo(playerRef, 200, fileName, []);
+
+        expect(answerVideo.subtitles).toEqual([]);
     });
 
     it("should add the newly created video to the content", ()=>{
         let answerVideo:Video;
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
 
-        answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200, fileName);
+        answerVideo = mediaManager.createVideo(playerRef, 200, fileName, []);
 
         expect(mockContent.media.get(0)).toEqual(answerVideo);
     });
@@ -90,7 +107,7 @@ describe("createVideo() ", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, existingImage);
 
-        answerVideo = mediaManager.createVideo(mockMediaStation, 0, 0, 200, fileName);
+        answerVideo = mediaManager.createVideo(playerRef, 200, fileName, []);
 
         expect(mockContent.media.get(0)).toEqual(answerVideo);
     });
@@ -104,7 +121,7 @@ describe("getFileName() ", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, image);
 
-        fileName = mediaManager.getFileName(mockMediaStation, 0, 0);
+        fileName = mediaManager.getFileName(playerRef);
 
         expect(fileName).toBe("testName");
     });
@@ -112,7 +129,7 @@ describe("getFileName() ", ()=>{
 
     it("should return null if there is no media set for the mediaPlayerId", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
-        const fileName:string | null = mediaManager.getFileName(mockMediaStation, 0, 0);
+        const fileName:string | null = mediaManager.getFileName(playerRef);
         expect(fileName).toBe(null);
     });
 });
@@ -122,7 +139,7 @@ describe("getMediaType() ", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, new Image());
 
-        const  mediaType:string | null = mediaManager.getMediaType(mockMediaStation, 0, 0);
+        const  mediaType:string | null = mediaManager.getMediaType(playerRef);
 
         expect(mediaType).toBe(MediaType.IMAGE);
     });
@@ -131,14 +148,14 @@ describe("getMediaType() ", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, new Video());
 
-        const  mediaType:string | null = mediaManager.getMediaType(mockMediaStation, 0, 0);
+        const  mediaType:string | null = mediaManager.getMediaType(playerRef);
 
         expect(mediaType).toBe(MediaType.VIDEO);
     });
 
     it("should return null if there is no media set for the mediaPlayerId", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
-        const  mediaType:string | null = mediaManager.getMediaType(mockMediaStation, 0, 0);
+        const  mediaType:string | null = mediaManager.getMediaType(playerRef);
         expect(mediaType).toBe(null);
     });
 });
@@ -151,7 +168,7 @@ describe("getIdOnMediaPlayer() ", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.requireMedia.mockReturnValueOnce(image);
 
-        idOnMediaPlayer = mediaManager.getIdOnMediaPlayer(mockMediaStation, 0, 0);
+        idOnMediaPlayer = mediaManager.getIdOnMediaPlayer(playerRef);
 
         expect(idOnMediaPlayer).toBe(33);
     });
@@ -164,7 +181,7 @@ describe("getIdOnMediaPlayer() ", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.requireMedia.mockReturnValueOnce(image);
 
-        idOnMediaPlayer = mediaManager.getIdOnMediaPlayer(mockMediaStation, 0, 0);
+        idOnMediaPlayer = mediaManager.getIdOnMediaPlayer(playerRef);
 
         expect(idOnMediaPlayer).toBe(-1);
     });
@@ -179,7 +196,7 @@ describe("deleteMedia() ", ()=>{
         mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
         mockContent.media.set(0, image);
 
-        mediaManager.deleteMedia(mockMediaStation, 0, 0);
+        mediaManager.deleteMedia(playerRef);
 
         expect(mockContent.media.get(0)).toBe(undefined);
     });

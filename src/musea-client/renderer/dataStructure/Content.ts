@@ -35,10 +35,7 @@ export class Content {
                 if (this._jsonPropertyExists(json.media[i], "type")) {
                     switch (json.media[i].type) {
                         case    "video":
-                            let video:Video = new Video();
-                            if (this._jsonPropertyExists(json.media[i], "duration"))
-                                video.duration = json.media[i].duration;
-                            media = video;
+                            media = new Video();
                             break;
                         case    "image":
                             media = new Image();
@@ -49,15 +46,7 @@ export class Content {
                 }
 
                 if(media){
-                    if (this._jsonPropertyExists(json.media[i], "idOnMediaPlayer"))
-                        media.idOnMediaPlayer = json.media[i].idOnMediaPlayer;
-
-                    if (this._jsonPropertyExists(json.media[i], "mediaPlayerId"))
-                        media.mediaPlayerId = json.media[i].mediaPlayerId;
-
-                    if (this._jsonPropertyExists(json.media[i], "fileName"))
-                        media.fileName = json.media[i].fileName;
-
+                    media.importFromJSON(json.media[i]);
                     this._media.set(media.mediaPlayerId, media);
                 }
             }
@@ -73,24 +62,9 @@ export class Content {
 
     exportToJSON(): any {
         let allMedia: any[] = [];
-        let image: Image;
-        let video: Video;
 
         this._media.forEach((media: IMedia) => {
-            if (media instanceof Image) {
-                image = media;
-                allMedia.push({mediaPlayerId: image.mediaPlayerId, type: "image",
-                    idOnMediaPlayer: image.idOnMediaPlayer, fileName: image.fileName});
-            } else if (media instanceof Video) {
-                video = media;
-                allMedia.push({
-                    mediaPlayerId: video.mediaPlayerId,
-                    type: "video",
-                    idOnMediaPlayer: video.idOnMediaPlayer,
-                    duration: video.duration,
-                    fileName: video.fileName
-                });
-            }
+            allMedia.push(media.exportToJSON());
         });
 
         return {

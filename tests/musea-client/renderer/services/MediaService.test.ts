@@ -1,17 +1,18 @@
-import {afterEach, beforeEach, describe, it, jest, test} from "@jest/globals";
+import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 import {
     MockMediaStationRepository
 } from "mocks/renderer/dataStructure/MockMediaStationRepository.js";
 import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js";
 import {MockMediaManager} from "mocks/renderer/dataManagers/MockMediaManager.js";
-import {Image, Video} from "renderer/dataStructure/Media.js";
+import {Image, SubtitleInternal, Video} from "renderer/dataStructure/Media.js";
 import {
     FileExtension,
     ImageFileExtension,
-    MediaService,
-    VideoFileExtension
+    MediaService, Subtitle,
+    VideoFileExtension, VideoOptions
 } from "renderer/services/MediaService.js";
-import {MediaManager, MediaType} from "renderer/dataManagers/MediaManager.js";
+import {MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
+import {iso6392T} from "renderer/dataStructure/iso6392.js";
 
 let mediaService: MediaService;
 let mockMediaStationRepo: MockMediaStationRepository;
@@ -49,7 +50,8 @@ describe("addImageAndCacheIt() ", () => {
         await mediaService.addImageAndCacheIt(mediaStationId, contentId, 0, fileExtension, mockFile, fileName);
 
         expect(mockMediaManager.createImage).toHaveBeenCalledTimes(1);
-        expect(mockMediaManager.createImage).toHaveBeenCalledWith(mockMediaStation, contentId, 0, fileName);
+        expect(mockMediaManager.createImage).toHaveBeenCalledWith(
+            {mediaStation:mockMediaStation, contentId: contentId, mediaPlayerId:0}, fileName);
     });
 
     it("should call mediaStationRepository.cacheMedia with the correct arguments", async () => {
@@ -71,17 +73,34 @@ describe("addVideoAndCacheIt() ", () => {
     const fileType = 'text/plain';
     const fileName:string = "testFileName.xy";
 
-    // Create a mock File object
     const mockFile = new File([fileContent], fileName, { type: fileType });
 
-    it("should call contentManager.createVideo with the correct arguments", async () => {
+    it("should call contentManager.createVideo with the correct arguments (no video-options)", async () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
         await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, mockFile, fileName);
 
         expect(mockMediaManager.createVideo).toHaveBeenCalledTimes(1);
-        expect(mockMediaManager.createVideo).toHaveBeenCalledWith(mockMediaStation, contentId, 0, 199, fileName);
+        expect(mockMediaManager.createVideo).toHaveBeenCalledWith({mediaStation:mockMediaStation, contentId: contentId, mediaPlayerId:0}, 199, fileName, []);
+    });
+
+    it("should call contentManager.createVideo with the correct arguments (passing subtitles)", async () => {
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaManager.createImage.mockReturnValueOnce(video);
+
+        const subtitles:Subtitle[] = [{iso6392T: iso6392T("deu"), title: "Deutsch"}, {iso6392T:iso6392T("fra"), title: "Französisch"}];
+        const videoOptions:VideoOptions = {subtitles: subtitles};
+
+        await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, mockFile, fileName, videoOptions);
+
+        expect(mockMediaManager.createVideo).toHaveBeenCalledTimes(1);
+        expect(mockMediaManager.createVideo).toHaveBeenCalledWith(
+            { mediaStation: mockMediaStation, contentId, mediaPlayerId: 0 },
+            199,
+            fileName,
+            [new SubtitleInternal('deu', 'Deutsch'), new SubtitleInternal('fra', 'Französisch')],
+        );
     });
 
     it("should call mediaStationRepository.cacheMedia with the correct arguments", async () => {
@@ -127,7 +146,7 @@ describe("deleteMedia() ", () => {
         await mediaService.deleteMedia(mediaStationId, contentId, 0);
 
         expect(mockMediaManager.deleteMedia).toHaveBeenCalledTimes(1);
-        expect(mockMediaManager.deleteMedia).toHaveBeenCalledWith(mockMediaStation, contentId, 0);
+        expect(mockMediaManager.deleteMedia).toHaveBeenCalledWith({mediaStation:mockMediaStation, contentId: contentId, mediaPlayerId:0});
     });
 
     it("should call mediaStationRepository.deleteCachedMedia if mediaStationRepository.isMediaCached is true", async () => {
@@ -169,8 +188,8 @@ describe("deleteMedia() ", () => {
                 return true;
         });
 
-        mockMediaManager.getIdOnMediaPlayer.mockImplementation((mediaStation: MockMediaStation, cID: number, mediaPlayerId: number) => {
-            if (mediaStation === mockMediaStation && cID === contentId && mediaPlayerId === 0)
+        mockMediaManager.getIdOnMediaPlayer.mockImplementation((playerRef:PlayerRef) => {
+            if (playerRef.mediaStation === mockMediaStation && playerRef.contentId === contentId && playerRef.mediaPlayerId === 0)
                 return idOnMediaPlayer;
             else
                 return null;

@@ -2,6 +2,7 @@ import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MediaPlayerCommandService, MediaCommand} from "renderer/network/MediaPlayerCommandService.js";
 import {MockNetworkService} from "mocks/renderer/network/MockNetworkService.js";
 import {MediaPlayer} from "renderer/dataStructure/MediaPlayer.js";
+import {Iso6392T, iso6392T} from "renderer/dataStructure/iso6392.js";
 
 let service: MediaPlayerCommandService;
 let net: MockNetworkService;
@@ -168,6 +169,30 @@ describe("sendCommandSeek()", () => {
     it("SEEK invalid pos", async () => {
         const spy = jest.spyOn(console, "error").mockImplementation(() => {});
         await service.sendCommandSeek(apps, -20);
+        expect(net.sendMediaControlTo).toHaveBeenCalledTimes(0);
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
+    });
+});
+
+describe("sendCommandSubs()", () => {
+    const subIso:Iso6392T = iso6392T("deu");
+    it("SUBS with subtitle-string", async () => {
+        const cmd = [MediaCommand.SUBS, subIso];
+        await service.sendCommandSubs(app1, subIso);
+        expectSentTo(new Map([[0, app1]]), net.sendMediaControlTo, cmd);
+    });
+
+    it("SUBS with no parameters (deactivate subs)", async () => {
+        const cmd = [MediaCommand.SUBS];
+        await service.sendCommandSubs(app3, null);
+        expectSentTo(new Map([[0, app3]]), net.sendMediaControlTo, cmd);
+    });
+
+    it("SUBS no ip", async () => {
+        app2.ip = "";
+        const spy = jest.spyOn(console, "error").mockImplementation(() => {});
+        await service.sendCommandSubs(app2, subIso);
         expect(net.sendMediaControlTo).toHaveBeenCalledTimes(0);
         expect(spy).toHaveBeenCalledTimes(1);
         spy.mockRestore();

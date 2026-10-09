@@ -1,7 +1,8 @@
 export interface IMedia{
     idOnMediaPlayer:number
     mediaPlayerId:number
-    exportToJSON:any
+    exportToJSON:() => any
+    importFromJSON:(json:any) => void
     fileName:any
 }
 
@@ -9,15 +10,34 @@ export class BaseMedia implements IMedia{
 
     protected _idOnMediaPlayer:number = -1;
     protected _mediaPlayerId:number = -1;
-    private _fileName:string = "";
+    protected _fileName:string = "";
 
     constructor() {}
 
     exportToJSON():any{
         return {
+            mediaPlayerId: this._mediaPlayerId,
             idOnMediaPlayer: this._idOnMediaPlayer,
-            mediaPlayerId: this._mediaPlayerId
+            filename: this._fileName
         }
+    }
+
+    importFromJSON(jsonMedia:any):void{
+        if (this._jsonPropertyExists(jsonMedia, "idOnMediaPlayer"))
+            this._idOnMediaPlayer = jsonMedia.idOnMediaPlayer;
+
+        if (this._jsonPropertyExists(jsonMedia, "mediaPlayerId"))
+            this._mediaPlayerId = jsonMedia.mediaPlayerId;
+
+        if (this._jsonPropertyExists(jsonMedia, "fileName"))
+            this._fileName = jsonMedia.fileName;
+    }
+
+    protected _jsonPropertyExists(json: any, propName: string): boolean {
+        if(json.hasOwnProperty(propName))
+            return true;
+        else
+            throw new Error("Content: missing property in JSON: " + propName);
     }
 
     get idOnMediaPlayer(): number {
@@ -49,21 +69,62 @@ export class Image extends BaseMedia implements IMedia{
     constructor() {
         super();
     }
+
+    override exportToJSON():any{
+        return {
+            mediaPlayerId: this._mediaPlayerId,
+            type: "image",
+            idOnMediaPlayer: this._idOnMediaPlayer,
+            fileName: this._fileName
+        }
+    }
 }
 
 export class Video extends BaseMedia implements IMedia{
     private _duration:number = -1;
+    private _subtitles:SubtitleInternal[] = [];
 
     constructor() {
         super();
     }
 
-    exportToJSON():any{
+    override exportToJSON():any{
+        let subJSON:any[] = [];
+
+        this._subtitles.forEach((sub) =>{
+            subJSON.push(sub.exportToJSON());
+        });
+
         return {
-            idOnMediaPlayer: this._idOnMediaPlayer,
             mediaPlayerId: this._mediaPlayerId,
-            duration: this._duration
+            type: "video",
+            idOnMediaPlayer: this._idOnMediaPlayer,
+            duration: this._duration,
+            fileName: this._fileName,
+            subtitles: subJSON
         }
+    }
+
+    override importFromJSON(jsonMedia: any) {
+        super.importFromJSON(jsonMedia);
+
+        if (this._jsonPropertyExists(jsonMedia, "duration"))
+            this._duration = jsonMedia.duration;
+
+        if (this._jsonPropertyExists(jsonMedia, "subtitles")){
+            for(let j:number = 0; j < jsonMedia.subtitles.length; j++)
+                this._subtitles.push(new SubtitleInternal(
+                    jsonMedia.subtitles[j].iso6392T, jsonMedia.subtitles[j].title)
+                )
+        }
+    }
+
+    get subtitles(): SubtitleInternal[] {
+        return this._subtitles;
+    }
+
+    set subtitles(value: SubtitleInternal[]) {
+        this._subtitles = value;
     }
 
     get duration(): number {
@@ -72,5 +133,19 @@ export class Video extends BaseMedia implements IMedia{
 
     set duration(value: number) {
         this._duration = value;
+    }
+}
+
+export class SubtitleInternal {
+    constructor(private readonly _iso6392T: string, private readonly _title: string) {}
+
+    get iso6392T() { return this._iso6392T; }
+    get title() { return this._title; }
+
+    exportToJSON():any{
+        return {
+            iso6392T: this._iso6392T,
+            title: this._title
+        }
     }
 }

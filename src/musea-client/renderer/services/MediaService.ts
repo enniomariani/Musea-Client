@@ -1,6 +1,8 @@
 import {MediaStationRepository} from "renderer/dataStructure/MediaStationRepository.js";
 import {MediaStation} from "renderer/dataStructure/MediaStation.js";
-import {MediaManager, MediaType} from "renderer/dataManagers/MediaManager.js";
+import {MediaManager, MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
+import {SubtitleInternal} from "../dataStructure/Media.js";
+import {ISO6392, Iso6392T} from "../dataStructure/iso6392.js";
 
 export const FileExtension = {
     IMAGE: {
@@ -11,6 +13,15 @@ export const FileExtension = {
         MP4: "mp4"
     }
 } as const;
+
+export interface Subtitle {
+    readonly iso6392T: Iso6392T;   // uses ISO 639-2T e.g. "deu", or "eng" - see https://www.loc.gov/standards/iso639-2/php/code_list.php
+    readonly title: string;    // custom language-title like "Deutsch"
+}
+
+export interface VideoOptions {
+    subtitles?: Subtitle[];
+}
 
 export type FileExtension = typeof FileExtension[keyof typeof FileExtension];
 export type ImageFileExtension = typeof FileExtension.IMAGE[keyof typeof FileExtension.IMAGE];
@@ -31,7 +42,8 @@ export class MediaService {
      */
     async addImageAndCacheIt(mediaStationId: number, contentId: number, mediaPlayerId: number, fileExtension: ImageFileExtension, fileInstance: File, fileName: string): Promise<void> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        this._mediaManager.createImage(mediaStation, contentId, mediaPlayerId, fileName);
+        const playerRef:PlayerRef = {mediaStation:mediaStation, contentId: contentId, mediaPlayerId:mediaPlayerId};
+        this._mediaManager.createImage(playerRef, fileName);
         await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaPlayerId, fileExtension, fileInstance);
     }
 
@@ -39,9 +51,19 @@ export class MediaService {
      * Create a new video-object and add it to the content.
      * Cache the video: video stays cached even if app is closed. Cache is removed when mediastation is  succesfully synced.
      */
-    async addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaPlayerId: number, duration: number, fileExtension: VideoFileExtension, fileInstance: File, fileName: string): Promise<void> {
+    async addVideoAndCacheIt(mediaStationId: number, contentId: number, mediaPlayerId: number, duration: number,
+                             fileExtension: VideoFileExtension, fileInstance: File, fileName: string, videoOptions:VideoOptions = {}): Promise<void> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        this._mediaManager.createVideo(mediaStation, contentId, mediaPlayerId, duration, fileName);
+        const playerRef:PlayerRef = {mediaStation:mediaStation, contentId: contentId, mediaPlayerId:mediaPlayerId};
+        let subsInternal:SubtitleInternal[] = [];
+
+        if(videoOptions.subtitles){
+            videoOptions.subtitles.forEach((sub) =>{
+                subsInternal.push(new SubtitleInternal(sub.iso6392T, sub.title));
+            });
+        }
+
+        this._mediaManager.createVideo(playerRef, duration, fileName, subsInternal);
         await this._mediaStationRepository.mediaCacheHandler.cacheMedia(mediaStationId, contentId, mediaPlayerId, fileExtension, fileInstance);
     }
 
@@ -50,7 +72,8 @@ export class MediaService {
      */
     getFileName(mediaStationId: number, contentId: number, mediaPlayerId: number): string | null {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        return this._mediaManager.getFileName(mediaStation, contentId, mediaPlayerId);
+        const playerRef:PlayerRef = {mediaStation:mediaStation, contentId: contentId, mediaPlayerId:mediaPlayerId};
+        return this._mediaManager.getFileName(playerRef);
     }
 
     /**
@@ -58,7 +81,8 @@ export class MediaService {
      */
     getMediaType(mediaStationId: number, contentId: number, mediaPlayerId: number):  MediaType | null {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        return this._mediaManager.getMediaType(mediaStation, contentId, mediaPlayerId);
+        const playerRef:PlayerRef = {mediaStation:mediaStation, contentId: contentId, mediaPlayerId:mediaPlayerId};
+        return this._mediaManager.getMediaType(playerRef);
     }
 
     /**
@@ -69,13 +93,15 @@ export class MediaService {
      */
     async deleteMedia(mediaStationId: number, contentId: number, mediaPlayerId: number): Promise<void> {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        let idOnMediaPlayer: number = this._mediaManager.getIdOnMediaPlayer(mediaStation, contentId, mediaPlayerId);
+        const playerRef:PlayerRef = {mediaStation:mediaStation, contentId: contentId, mediaPlayerId:mediaPlayerId};
+
+        let idOnMediaPlayer: number = this._mediaManager.getIdOnMediaPlayer(playerRef);
 
         if (this._mediaStationRepository.mediaCacheHandler.isMediaCached(mediaStationId, contentId, mediaPlayerId))
             this._mediaStationRepository.mediaCacheHandler.deleteCachedMedia(mediaStationId, contentId, mediaPlayerId);
         else
             await this._mediaStationRepository.markMediaIDtoDelete(mediaStationId, mediaPlayerId, idOnMediaPlayer);
 
-        this._mediaManager.deleteMedia(mediaStation, contentId, mediaPlayerId);
+        this._mediaManager.deleteMedia(playerRef);
     }
 }

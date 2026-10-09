@@ -1,5 +1,6 @@
 import {NetworkService} from "renderer/network/NetworkService.js";
 import {MediaPlayer} from "renderer/dataStructure/MediaPlayer.js";
+import {Iso6392T} from "../dataStructure/iso6392.js";
 
 export const MediaCommand = {
     PLAY: "play",
@@ -8,6 +9,7 @@ export const MediaCommand = {
     SEEK: "seek",
     FWD: "forward",
     REW: "rewind",
+    SUBS: "subs",
     SYNC: "sync",
     LIGHT: "preset",
     MUTE: "mute",
@@ -54,6 +56,19 @@ export class MediaPlayerCommandService {
 
     async sendCommandRew(mediaPlayers:Map<number, MediaPlayer>):Promise<void>{
         await this._sendToAll(mediaPlayers.values(),(ip) => this._networkService.sendMediaControlTo(ip, [MediaCommand.REW]));
+    }
+
+    async sendCommandSubs(mediaPlayer:MediaPlayer, subIso6392:Iso6392T | null):Promise<void>{
+        let command:string[] =  [MediaCommand.SUBS];
+
+        if(mediaPlayer.ip === "") {
+            console.error("Media-Player with id " + mediaPlayer.id + " does not have set an ip: " + mediaPlayer.ip);
+            return;
+        }
+        if(subIso6392 !== null)
+            command.push(subIso6392);
+
+        await this._networkService.sendMediaControlTo(mediaPlayer.ip, command);
     }
 
     async sendCommandSync(mediaPlayer:MediaPlayer, posInSec:number):Promise<void>{

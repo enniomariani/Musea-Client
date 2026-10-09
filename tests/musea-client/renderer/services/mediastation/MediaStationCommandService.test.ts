@@ -11,11 +11,10 @@ import {
 } from "mocks/renderer/network/MockMediaPlayerCommandService.js";
 import {Image, Video} from "renderer/dataStructure/Media.js";
 import {MediaStationCommandService} from "renderer/services/mediastation/MediaStationCommandService.js";
-import {MockNetworkService} from "mocks/renderer/network/MockNetworkService.js";
+import {Iso6392T, iso6392T} from "renderer/dataStructure/iso6392.js";
 
 let service:MediaStationCommandService;
 let mockMediaStationRepo:MockMediaStationRepository;
-let mockNetworkService:MockNetworkService;
 let mockContentManager:MockContentManager;
 let mockMediaPlayerCommandService:MockMediaPlayerCommandService;
 
@@ -24,10 +23,9 @@ const folderId:number = 10;
 
 beforeEach(() => {
     mockMediaStationRepo = new MockMediaStationRepository();
-    mockNetworkService = new MockNetworkService();
     mockContentManager = new MockContentManager();
     mockMediaPlayerCommandService = new MockMediaPlayerCommandService();
-    service = new MediaStationCommandService(mockMediaStationRepo,mockNetworkService, mockMediaPlayerCommandService, mockContentManager);
+    service = new MediaStationCommandService(mockMediaStationRepo, mockMediaPlayerCommandService, mockContentManager);
 });
 
 afterEach(() => {
@@ -66,7 +64,7 @@ describe("sendCommandPlay() ", ()=> {
 
     const contentId:number = 22;
 
-    it("should call contentNetworkService.sendCommandPlay for all media with an id not -1", async () => {
+    it("should call mediaPlayerCommandService.sendCommandPlay for all media with an id not -1", async () => {
         mockContentManager.getContent = jest.fn();
         mockContentManager.getContent.mockReturnValue(mockContent);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
@@ -77,7 +75,7 @@ describe("sendCommandPlay() ", ()=> {
         expect(mockMediaPlayerCommandService.sendCommandPlay).toHaveBeenCalledWith(mediaPlayer2, image2.idOnMediaPlayer);
     });
 
-    it("should call contentNetworkService.sendCommandPlay with null if no contentId was passed", async () => {
+    it("should call mediaPlayerCommandService.sendCommandPlay with null if no contentId was passed", async () => {
         mockContentManager.getContent = jest.fn();
         mockContentManager.getContent.mockReturnValue(null);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
@@ -89,7 +87,7 @@ describe("sendCommandPlay() ", ()=> {
         expect(mockMediaPlayerCommandService.sendCommandPlay).toHaveBeenNthCalledWith(2, mediaPlayer2, null);
     });
 
-    it("should call contentNetworkService.sendCommandStop for all media with an id EQUAL -1", async () => {
+    it("should call mediaPlayerCommandService.sendCommandStop for all media with an id EQUAL -1", async () => {
         mockContentManager.getContent = jest.fn();
         mockContentManager.getContent.mockReturnValue(mockContent);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
@@ -100,7 +98,7 @@ describe("sendCommandPlay() ", ()=> {
         expect(mockMediaPlayerCommandService.sendCommandStop).toHaveBeenCalledWith(mediaPlayer1);
     });
 
-    it("should call contentNetworkService.sendCommandStop for all mediaPlayers where no media was defined", async () => {
+    it("should call mediaPlayerCommandService.sendCommandStop for all mediaPlayers where no media was defined", async () => {
         mockContentManager.getContent = jest.fn();
         mockContentManager.getContent.mockReturnValue(mockContent);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
@@ -112,7 +110,7 @@ describe("sendCommandPlay() ", ()=> {
         expect(mockMediaPlayerCommandService.sendCommandStop).toHaveBeenCalledWith(mediaPlayer1);
     });
 
-    it("should call contentNetworkService.sendCommandLight with correct arguments", async () => {
+    it("should call mediaPlayerCommandService.sendCommandLight with correct arguments", async () => {
         mockContentManager.getContent = jest.fn();
         mockContentManager.getContent.mockReturnValue(mockContent);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
@@ -134,7 +132,7 @@ describe("sendCommandStop() ", ()=> {
     answerMap.set(1, mediaPlayer2);
     mockMediaStation.mediaPlayerRegistry.getAll.mockReturnValue(answerMap);
 
-    it("should call contentNetworkService.sendCommandStop for every mediaPlayer defined in the mocked mediastation", async () => {
+    it("should call mediaPlayerCommandService.sendCommandStop for every mediaPlayer defined in the mocked mediastation", async () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
         await service.sendCommandStop(mediaStationId);
@@ -144,7 +142,7 @@ describe("sendCommandStop() ", ()=> {
         expect(mockMediaPlayerCommandService.sendCommandStop).toHaveBeenNthCalledWith(2, mediaPlayer2);
     });
 
-    it("should call contentNetworkService.sendCommandLight with correct arguments", async () => {
+    it("should call mediaPlayerCommandService.sendCommandLight with correct arguments", async () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
         await service.sendCommandStop(mediaStationId);
@@ -162,7 +160,7 @@ describe("sendCommandPause() ", ()=> {
     answerMap.set(1, new MediaPlayer(1));
     mockMediaStation.mediaPlayerRegistry.getAll.mockReturnValue(answerMap);
 
-    it("should call contentNetworkService.sendCommandPause with the correct arguments", async () => {
+    it("should call mediaPlayerCommandService.sendCommandPause with the correct arguments", async () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
         await service.sendCommandPause(mediaStationId);
@@ -180,7 +178,7 @@ describe("sendCommandFwd() ", ()=> {
     answerMap.set(1, new MediaPlayer(1));
     mockMediaStation.mediaPlayerRegistry.getAll.mockReturnValue(answerMap);
 
-    it("should call contentNetworkService.sendCommandFwd with the correct arguments", async () => {
+    it("should call mediaPlayerCommandService.sendCommandFwd with the correct arguments", async () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
         await service.sendCommandFwd(mediaStationId);
@@ -198,13 +196,54 @@ describe("sendCommandRew() ", ()=> {
     answerMap.set(1, new MediaPlayer(1));
     mockMediaStation.mediaPlayerRegistry.getAll.mockReturnValue(answerMap);
 
-    it("should call contentNetworkService.sendCommandRew with the correct arguments", async () => {
+    it("should call mediaPlayerCommandService.sendCommandRew with the correct arguments", async () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
         await service.sendCommandRew(mediaStationId);
 
         expect(mockMediaPlayerCommandService.sendCommandRew).toHaveBeenCalledTimes(1);
         expect(mockMediaPlayerCommandService.sendCommandRew).toHaveBeenCalledWith(answerMap);
+    });
+});
+
+describe("sendCommandSubs() ", ()=> {
+
+    let mockMediaStation:MockMediaStation = new MockMediaStation(mediaStationId);
+    let answerMap:Map<number, MediaPlayer> = new Map();
+    let mediaPlayer1:MediaPlayer = new MediaPlayer(0);
+    let mediaPlayer2:MediaPlayer = new MediaPlayer(1);
+    
+    answerMap.set(0, mediaPlayer1);
+    answerMap.set(1, mediaPlayer2);
+    mockMediaStation.mediaPlayerRegistry.getAll.mockReturnValue(answerMap);
+
+    mockMediaStation.mediaPlayerRegistry.get.mockImplementation((id) =>{
+        if(id === 0)
+            return mediaPlayer1;
+        else if(id === 1)
+            return mediaPlayer2;
+    })
+    
+    it("when sub is null: should call mediaPlayerCommandService.sendCommandSubs for all players and pass null", async () => {
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        await service.sendCommandSubs(mediaStationId, null);
+
+        expect(mockMediaPlayerCommandService.sendCommandSubs).toHaveBeenCalledTimes(2);
+        expect(mockMediaPlayerCommandService.sendCommandSubs).toHaveBeenNthCalledWith(1, mediaPlayer1, null);
+        expect(mockMediaPlayerCommandService.sendCommandSubs).toHaveBeenNthCalledWith(2, mediaPlayer2, null);
+    });
+
+    it("when sub is set: should call mediaPlayerCommandService.sendCommandSubs for all players and pass the sub-string", async () => {
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
+
+        const sub:Iso6392T = iso6392T("deu");
+
+        await service.sendCommandSubs(mediaStationId,sub);
+
+        expect(mockMediaPlayerCommandService.sendCommandSubs).toHaveBeenCalledTimes(2);
+        expect(mockMediaPlayerCommandService.sendCommandSubs).toHaveBeenNthCalledWith(1, mediaPlayer1, sub);
+        expect(mockMediaPlayerCommandService.sendCommandSubs).toHaveBeenNthCalledWith(2, mediaPlayer2, sub);
     });
 });
 
@@ -240,7 +279,7 @@ describe("sendCommandSync() ", ()=> {
 
     const seekPos:number = 200;
 
-    it("should call contentNetworkService.sendCommandSync for every mediaPlayer defined in the mocked mediastation", async () => {
+    it("should call mediaPlayerCommandService.sendCommandSync for every mediaPlayer defined in the mocked mediastation", async () => {
         mockContentManager.requireContent = jest.fn();
         mockContentManager.requireContent.mockReturnValue(mockContent);
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
@@ -261,7 +300,7 @@ describe("sendCommandSeek() ", ()=> {
     mockMediaStation.mediaPlayerRegistry.getAll.mockReturnValue(answerMap);
     const seekPos:number = 200;
 
-    it("should call contentNetworkService.sendCommandSeek with the correct arguments", async () => {
+    it("should call mediaPlayerCommandService.sendCommandSeek with the correct arguments", async () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
 
         await service.sendCommandSeek(mediaStationId, seekPos);
