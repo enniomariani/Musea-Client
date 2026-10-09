@@ -1,4 +1,4 @@
-import {Image, IMedia, Video} from "renderer/dataStructure/Media.js";
+import {Image, IMedia, SubtitleInternal, Video} from "renderer/dataStructure/Media.js";
 
 export class Content {
     private _id: number;
@@ -38,6 +38,17 @@ export class Content {
                             let video:Video = new Video();
                             if (this._jsonPropertyExists(json.media[i], "duration"))
                                 video.duration = json.media[i].duration;
+
+                            if (this._jsonPropertyExists(json.media[i], "subtitles")){
+                                video.subtitles = [];
+                                for(let j:number = 0; j < json.media[i].subtitles.length; j++)
+                                    video.subtitles.push(new SubtitleInternal(
+                                        json.media[i].subtitles[j].iso6392T, json.media[i].subtitles[j].title)
+                                    )
+                            }
+
+                            console.log("test subs: ", video.subtitles)
+
                             media = video;
                             break;
                         case    "image":
@@ -73,24 +84,9 @@ export class Content {
 
     exportToJSON(): any {
         let allMedia: any[] = [];
-        let image: Image;
-        let video: Video;
 
         this._media.forEach((media: IMedia) => {
-            if (media instanceof Image) {
-                image = media;
-                allMedia.push({mediaPlayerId: image.mediaPlayerId, type: "image",
-                    idOnMediaPlayer: image.idOnMediaPlayer, fileName: image.fileName});
-            } else if (media instanceof Video) {
-                video = media;
-                allMedia.push({
-                    mediaPlayerId: video.mediaPlayerId,
-                    type: "video",
-                    idOnMediaPlayer: video.idOnMediaPlayer,
-                    duration: video.duration,
-                    fileName: video.fileName
-                });
-            }
+            allMedia.push(media.exportToJSON());
         });
 
         return {
