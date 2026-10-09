@@ -85,14 +85,14 @@ export class Video extends BaseMedia implements IMedia{
 }
 
 export class SubtitleInternal {
-    constructor(private readonly _iso6392: string, private readonly _title: string) {}
+    constructor(private readonly _iso6392T: string, private readonly _title: string) {}
 
-    get iso6392() { return this._iso6392; }
+    get iso6392T() { return this._iso6392T; }
     get title() { return this._title; }
 
     exportToJSON():any{
         return {
-            iso6392: this._iso6392,
+            iso6392T: this._iso6392T,
             title: this._title
         }
     }

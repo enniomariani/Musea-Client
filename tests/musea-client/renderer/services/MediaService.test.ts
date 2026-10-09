@@ -7,7 +7,7 @@ import {MockMediaManager} from "mocks/renderer/dataManagers/MockMediaManager.js"
 import {Image, SubtitleInternal, Video} from "renderer/dataStructure/Media.js";
 import {
     FileExtension,
-    ImageFileExtension,
+    ImageFileExtension, iso6392T,
     MediaService, Subtitle,
     VideoFileExtension, VideoOptions
 } from "renderer/services/MediaService.js";
@@ -28,6 +28,60 @@ beforeEach(() => {
 
 afterEach(() => {
     jest.clearAllMocks();
+});
+
+describe('iso6392T', () => {
+    describe('valid ISO 639-2T codes', () => {
+        it.each([
+            'eng',
+            'fra',
+            'deu',
+            'spa',
+            'ita',
+        ])('returns the input for valid code "%s"', (code) => {
+            expect(iso6392T(code)).toBe(code);
+        });
+
+        it('accepts a code that exists in iso6392T', () => {
+            expect(iso6392T('eng')).toBe('eng');
+        });
+
+        it('accepts an iso6392B code when iso6392T is undefined', () => {
+            // Example: a language whose terminology code is unavailable
+            // and whose bibliographic code is used as a fallback.
+            expect(iso6392T('bod')).toBe('bod');
+        });
+    });
+
+    describe('invalid ISO code formats', () => {
+        it.each([
+            '',
+            'en',
+            'engl',
+            'ENG',
+            '123',
+            'en1',
+            ' eng',
+            'eng ',
+            'eng\n',
+        ])('throws an error for invalid input "%s"', (input) => {
+            expect(() => iso6392T(input)).toThrow(
+                new Error(`Invalid ISO 639-2T code: "${input}"`),
+            );
+        });
+    });
+
+    describe('unknown ISO 639-2T codes', () => {
+        it.each([
+            'qaa',
+            'zzz',
+            'abc',
+        ])('throws an error for unknown code "%s"', (input) => {
+            expect(() => iso6392T(input)).toThrow(
+                new Error(`Unknown ISO 639-2T code: "${input}"`),
+            );
+        });
+    });
 });
 
 describe("addImageAndCacheIt() ", () => {
@@ -88,7 +142,7 @@ describe("addVideoAndCacheIt() ", () => {
         mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
         mockMediaManager.createImage.mockReturnValueOnce(video);
 
-        const subtitles:Subtitle[] = [{iso6392: "deu", title: "Deutsch"}, {iso6392:"fra", title: "Französisch"}];
+        const subtitles:Subtitle[] = [{iso6392T: iso6392T("deu"), title: "Deutsch"}, {iso6392T:iso6392T("fra"), title: "Französisch"}];
         const videoOptions:VideoOptions = {subtitles: subtitles};
 
         await mediaService.addVideoAndCacheIt(mediaStationId, contentId, 0, 199, fileExtension, mockFile, fileName, videoOptions);
