@@ -5,18 +5,15 @@ import {ContentManager} from "renderer/dataManagers/ContentManager.js";
 import {MediaPlayerCommandService} from "renderer/network/MediaPlayerCommandService.js";
 import {IMedia, Video} from "renderer/dataStructure/Media.js";
 import {ContentDataService} from "renderer/services/ContentDataService.js";
-import {NetworkService} from "renderer/network/NetworkService.js";
 import {Iso6392T} from "../iso6392.js";
 
 export class MediaStationCommandService  {
     private _mediaStationRepository: MediaStationRepository;
-    private _networkService: NetworkService;
     private _contentManager: ContentManager;
     private _mediaPlayerCommandService: MediaPlayerCommandService;
 
-    constructor(mediaStationRepository: MediaStationRepository, networkService: NetworkService, contentNetworkService: MediaPlayerCommandService, contentManager: ContentManager = new ContentManager()) {
+    constructor(mediaStationRepository: MediaStationRepository, contentNetworkService: MediaPlayerCommandService, contentManager: ContentManager = new ContentManager()) {
         this._mediaStationRepository = mediaStationRepository;
-        this._networkService = networkService;
         this._contentManager = contentManager;
         this._mediaPlayerCommandService = contentNetworkService;
     }

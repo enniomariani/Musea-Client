@@ -11,12 +11,10 @@ import {
 } from "mocks/renderer/network/MockMediaPlayerCommandService.js";
 import {Image, Video} from "renderer/dataStructure/Media.js";
 import {MediaStationCommandService} from "renderer/services/mediastation/MediaStationCommandService.js";
-import {MockNetworkService} from "mocks/renderer/network/MockNetworkService.js";
 import {Iso6392T, iso6392T} from "renderer/services/iso6392.js";
 
 let service:MediaStationCommandService;
 let mockMediaStationRepo:MockMediaStationRepository;
-let mockNetworkService:MockNetworkService;
 let mockContentManager:MockContentManager;
 let mockMediaPlayerCommandService:MockMediaPlayerCommandService;
 
@@ -25,10 +23,9 @@ const folderId:number = 10;
 
 beforeEach(() => {
     mockMediaStationRepo = new MockMediaStationRepository();
-    mockNetworkService = new MockNetworkService();
     mockContentManager = new MockContentManager();
     mockMediaPlayerCommandService = new MockMediaPlayerCommandService();
-    service = new MediaStationCommandService(mockMediaStationRepo,mockNetworkService, mockMediaPlayerCommandService, mockContentManager);
+    service = new MediaStationCommandService(mockMediaStationRepo, mockMediaPlayerCommandService, mockContentManager);
 });
 
 afterEach(() => {
