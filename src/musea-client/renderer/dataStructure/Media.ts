@@ -9,14 +9,15 @@ export class BaseMedia implements IMedia{
 
     protected _idOnMediaPlayer:number = -1;
     protected _mediaPlayerId:number = -1;
-    private _fileName:string = "";
+    protected _fileName:string = "";
 
     constructor() {}
 
     exportToJSON():any{
         return {
+            mediaPlayerId: this._mediaPlayerId,
             idOnMediaPlayer: this._idOnMediaPlayer,
-            mediaPlayerId: this._mediaPlayerId
+            filename: this._fileName
         }
     }
 
@@ -49,6 +50,15 @@ export class Image extends BaseMedia implements IMedia{
     constructor() {
         super();
     }
+
+    override exportToJSON():any{
+        return {
+            mediaPlayerId: this._mediaPlayerId,
+            type: "image",
+            idOnMediaPlayer: this._idOnMediaPlayer,
+            fileName: this._fileName
+        }
+    }
 }
 
 export class Video extends BaseMedia implements IMedia{
@@ -59,11 +69,20 @@ export class Video extends BaseMedia implements IMedia{
         super();
     }
 
-    exportToJSON():any{
+    override exportToJSON():any{
+        let subJSON:any[] = [];
+
+        this._subtitles.forEach((sub) =>{
+            subJSON.push(sub.exportToJSON());
+        });
+
         return {
-            idOnMediaPlayer: this._idOnMediaPlayer,
             mediaPlayerId: this._mediaPlayerId,
-            duration: this._duration
+            type: "video",
+            idOnMediaPlayer: this._idOnMediaPlayer,
+            duration: this._duration,
+            fileName: this._fileName,
+            subtitles: subJSON
         }
     }
 
