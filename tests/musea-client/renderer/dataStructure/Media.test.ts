@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {Image, SubtitleInternal, Video} from "renderer/dataStructure/Media.js";
-import {iso6392T} from "renderer/services/iso6392.js";
+import {iso6392T} from "renderer/dataStructure/iso6392.js";
 
 beforeEach(() => {
 

@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, it, jest} from "@jest/globals";
 
-import {iso6392T} from "renderer/services/iso6392.js";
+import {iso6392T} from "renderer/dataStructure/iso6392.js";
 
 afterEach(() => {
     jest.clearAllMocks();

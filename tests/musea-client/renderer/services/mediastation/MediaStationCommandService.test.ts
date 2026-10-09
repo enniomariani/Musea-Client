@@ -11,7 +11,7 @@ import {
 } from "mocks/renderer/network/MockMediaPlayerCommandService.js";
 import {Image, Video} from "renderer/dataStructure/Media.js";
 import {MediaStationCommandService} from "renderer/services/mediastation/MediaStationCommandService.js";
-import {Iso6392T, iso6392T} from "renderer/services/iso6392.js";
+import {Iso6392T, iso6392T} from "renderer/dataStructure/iso6392.js";
 
 let service:MediaStationCommandService;
 let mockMediaStationRepo:MockMediaStationRepository;

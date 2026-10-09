@@ -1,12 +1,9 @@
 import {MockMediaStationRepository} from "../../dataStructure/MockMediaStationRepository.js";
 import {MockMediaPlayerCommandService} from "../../network/MockMediaPlayerCommandService.js";
 import {MediaStationCommandService} from "renderer/services/mediastation/MediaStationCommandService.js";
-import {MockNetworkService} from "../../network/MockNetworkService.js";
 
 const mockMediaStationRepo:MockMediaStationRepository = new MockMediaStationRepository();
 const mockContentNetworkService:MockMediaPlayerCommandService = new MockMediaPlayerCommandService();
-const mockNetworkService:MockNetworkService = new MockNetworkService();
-
 
 export class MockMediaStationCommandService extends MediaStationCommandService {
 
@@ -24,7 +21,7 @@ export class MockMediaStationCommandService extends MediaStationCommandService {
     sendCommandSetVolume: jest.Mock;
 
     constructor() {
-        super(mockMediaStationRepo,mockNetworkService, mockContentNetworkService);
+        super(mockMediaStationRepo, mockContentNetworkService);
 
         this.sendCommandPlay = jest.fn();
         this.sendCommandStop = jest.fn();

@@ -5,7 +5,7 @@ import {ContentManager} from "renderer/dataManagers/ContentManager.js";
 import {MediaPlayerCommandService} from "renderer/network/MediaPlayerCommandService.js";
 import {IMedia, Video} from "renderer/dataStructure/Media.js";
 import {ContentDataService} from "renderer/services/ContentDataService.js";
-import {Iso6392T} from "../iso6392.js";
+import {Iso6392T} from "../../dataStructure/iso6392.js";
 
 export class MediaStationCommandService  {
     private _mediaStationRepository: MediaStationRepository;

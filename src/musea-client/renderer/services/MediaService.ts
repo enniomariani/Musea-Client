@@ -2,7 +2,7 @@ import {MediaStationRepository} from "renderer/dataStructure/MediaStationReposit
 import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 import {MediaManager, MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
 import {SubtitleInternal} from "../dataStructure/Media.js";
-import {ISO6392, Iso6392T} from "./iso6392.js";
+import {ISO6392, Iso6392T} from "../dataStructure/iso6392.js";
 
 export const FileExtension = {
     IMAGE: {

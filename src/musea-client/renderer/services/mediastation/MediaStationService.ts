@@ -8,7 +8,7 @@ import {
 import {MediaStationSyncService} from "renderer/services/mediastation/MediaStationSyncService.js";
 import {ProgressReporter} from "renderer/services/mediastation/SyncEvents.js";
 import {MediaStationEventService} from "renderer/services/mediastation/MediaStationEventService.js";
-import {Iso6392T} from "../iso6392.js";
+import {Iso6392T} from "../../dataStructure/iso6392.js";
 
 export class MediaStationService {
     private _data: MediaStationDataService;

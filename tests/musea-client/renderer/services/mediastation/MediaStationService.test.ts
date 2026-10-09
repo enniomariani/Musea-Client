@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MediaStationService} from "renderer/services/mediastation/MediaStationService.js";
-import {iso6392T, Iso6392T} from "renderer/services/iso6392.js";
+import {iso6392T, Iso6392T} from "renderer/dataStructure/iso6392.js";
 
 describe("MediaStationService", () => {
     let data: any;

@@ -12,7 +12,7 @@ import {
     VideoFileExtension, VideoOptions
 } from "renderer/services/MediaService.js";
 import {MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
-import {iso6392T} from "renderer/services/iso6392.js";
+import {iso6392T} from "renderer/dataStructure/iso6392.js";
 
 let mediaService: MediaService;
 let mockMediaStationRepo: MockMediaStationRepository;

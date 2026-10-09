@@ -2,7 +2,7 @@ import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MediaPlayerCommandService, MediaCommand} from "renderer/network/MediaPlayerCommandService.js";
 import {MockNetworkService} from "mocks/renderer/network/MockNetworkService.js";
 import {MediaPlayer} from "renderer/dataStructure/MediaPlayer.js";
-import {Iso6392T, iso6392T} from "renderer/services/iso6392.js";
+import {Iso6392T, iso6392T} from "renderer/dataStructure/iso6392.js";
 
 let service: MediaPlayerCommandService;
 let net: MockNetworkService;
