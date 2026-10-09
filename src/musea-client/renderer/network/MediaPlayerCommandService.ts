@@ -61,14 +61,14 @@ export class MediaPlayerCommandService {
     async sendCommandSubs(mediaPlayer:MediaPlayer, subIso6392:Iso6392T | null):Promise<void>{
         let command:string[] =  [MediaCommand.SUBS];
 
-        if(mediaPlayer.ip === "")
+        if(mediaPlayer.ip === "") {
             console.error("Media-Player with id " + mediaPlayer.id + " does not have set an ip: " + mediaPlayer.ip);
-        else{
-            if(subIso6392 !== null)
-                command.push(subIso6392);
-
-            await this._networkService.sendMediaControlTo(mediaPlayer.ip, command);
+            return;
         }
+        if(subIso6392 !== null)
+            command.push(subIso6392);
+
+        await this._networkService.sendMediaControlTo(mediaPlayer.ip, command);
     }
 
     async sendCommandSync(mediaPlayer:MediaPlayer, posInSec:number):Promise<void>{
