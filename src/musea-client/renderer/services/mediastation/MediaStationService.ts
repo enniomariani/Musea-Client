@@ -8,6 +8,7 @@ import {
 import {MediaStationSyncService} from "renderer/services/mediastation/MediaStationSyncService.js";
 import {ProgressReporter} from "renderer/services/mediastation/SyncEvents.js";
 import {MediaStationEventService} from "renderer/services/mediastation/MediaStationEventService.js";
+import {Iso6392T} from "../iso6392.js";
 
 export class MediaStationService {
     private _data: MediaStationDataService;
@@ -145,6 +146,13 @@ export class MediaStationService {
      */
     async rewind(mediaStationId: number): Promise<void> {
         return this._command.sendCommandRew(mediaStationId);
+    }
+
+    /**
+     * Send the command subs (show subs or null to hide them) to all media-players defined in the media-station
+     */
+    async subs(mediaStationId: number, subIso6392:Iso6392T | null): Promise<void> {
+        return this._command.sendCommandSubs(mediaStationId, subIso6392);
     }
 
     /**

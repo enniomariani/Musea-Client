@@ -1,5 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {MediaStationService} from "renderer/services/mediastation/MediaStationService.js";
+import {iso6392T, Iso6392T} from "renderer/services/iso6392.js";
 
 describe("MediaStationService", () => {
     let data: any;
@@ -31,6 +32,7 @@ describe("MediaStationService", () => {
             sendCommandRew: jest.fn(),
             sendCommandSync: jest.fn(),
             sendCommandSeek: jest.fn(),
+            sendCommandSubs: jest.fn(),
             sendCommandLight: jest.fn(),
             sendCommandMute: jest.fn(),
             sendCommandUnmute: jest.fn(),
@@ -140,13 +142,18 @@ describe("MediaStationService", () => {
             await facade.rewind(1);
             expect(command.sendCommandRew).toHaveBeenCalledWith(1);
         });
-        it("sync forwards", async () => {
-            await facade.sync(1, 99, 12);
-            expect(command.sendCommandSync).toHaveBeenCalledWith(1, 99, 12);
+        it("subs forwards", async () => {
+            const sub:Iso6392T = iso6392T("eng");
+            await facade.subs(1, sub);
+            expect(command.sendCommandSubs).toHaveBeenCalledWith(1, sub);
         });
         it("seek forwards", async () => {
             await facade.seek(1, 33);
             expect(command.sendCommandSeek).toHaveBeenCalledWith(1, 33);
+        });
+        it("sync forwards", async () => {
+            await facade.sync(1, 99, 12);
+            expect(command.sendCommandSync).toHaveBeenCalledWith(1, 99, 12);
         });
         it("mute forwards", async () => {
             await facade.mute(1);

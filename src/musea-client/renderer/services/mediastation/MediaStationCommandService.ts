@@ -6,18 +6,19 @@ import {MediaPlayerCommandService} from "renderer/network/MediaPlayerCommandServ
 import {IMedia, Video} from "renderer/dataStructure/Media.js";
 import {ContentDataService} from "renderer/services/ContentDataService.js";
 import {NetworkService} from "renderer/network/NetworkService.js";
+import {Iso6392T} from "../iso6392.js";
 
 export class MediaStationCommandService  {
     private _mediaStationRepository: MediaStationRepository;
     private _networkService: NetworkService;
     private _contentManager: ContentManager;
-    private _contentNetworkService: MediaPlayerCommandService;
+    private _mediaPlayerCommandService: MediaPlayerCommandService;
 
     constructor(mediaStationRepository: MediaStationRepository, networkService: NetworkService, contentNetworkService: MediaPlayerCommandService, contentManager: ContentManager = new ContentManager()) {
         this._mediaStationRepository = mediaStationRepository;
         this._networkService = networkService;
         this._contentManager = contentManager;
-        this._contentNetworkService = contentNetworkService;
+        this._mediaPlayerCommandService = contentNetworkService;
     }
 
     async sendCommandPlay(mediaStationId: number, contentId: number | null): Promise<void> {
@@ -30,38 +31,46 @@ export class MediaStationCommandService  {
                 media = content.media.get(item.id);
 
             if(media && media.idOnMediaPlayer !== -1)
-                await this._contentNetworkService.sendCommandPlay(item, media.idOnMediaPlayer);
+                await this._mediaPlayerCommandService.sendCommandPlay(item, media.idOnMediaPlayer);
             else if(!content)
-                await this._contentNetworkService.sendCommandPlay(item, null);
+                await this._mediaPlayerCommandService.sendCommandPlay(item, null);
             else
-                await this._contentNetworkService.sendCommandStop(item);
+                await this._mediaPlayerCommandService.sendCommandStop(item);
         }
 
         if(content)
-            await this._contentNetworkService.sendCommandLight(ms.mediaPlayerRegistry.getAll(), content.lightIntensity);
+            await this._mediaPlayerCommandService.sendCommandLight(ms.mediaPlayerRegistry.getAll(), content.lightIntensity);
     }
 
     async sendCommandStop(mediaStationId: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         for (const [key, item] of ms.mediaPlayerRegistry.getAll())
-            await this._contentNetworkService.sendCommandStop(item);
+            await this._mediaPlayerCommandService.sendCommandStop(item);
 
-        await this._contentNetworkService.sendCommandLight(ms.mediaPlayerRegistry.getAll(), ContentDataService.DEFAULT_DMX_PRESET);
+        await this._mediaPlayerCommandService.sendCommandLight(ms.mediaPlayerRegistry.getAll(), ContentDataService.DEFAULT_DMX_PRESET);
     }
 
     async sendCommandPause(mediaStationId: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandPause(ms.mediaPlayerRegistry.getAll());
+        await this._mediaPlayerCommandService.sendCommandPause(ms.mediaPlayerRegistry.getAll());
     }
 
     async sendCommandFwd(mediaStationId: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandFwd(ms.mediaPlayerRegistry.getAll());
+        await this._mediaPlayerCommandService.sendCommandFwd(ms.mediaPlayerRegistry.getAll());
     }
 
     async sendCommandRew(mediaStationId: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandRew(ms.mediaPlayerRegistry.getAll());
+        await this._mediaPlayerCommandService.sendCommandRew(ms.mediaPlayerRegistry.getAll());
+    }
+
+    async sendCommandSubs(mediaStationId: number, subIso6392:Iso6392T | null): Promise<void> {
+        const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
+
+        for (const [key, item] of ms.mediaPlayerRegistry.getAll()){
+            await this._mediaPlayerCommandService.sendCommandSubs(item, subIso6392);
+        }
     }
 
     async sendCommandSync(mediaStationId: number, contentId:number, pos: number): Promise<void> {
@@ -75,27 +84,27 @@ export class MediaStationCommandService  {
                 media = content.media.get(item.id);
 
             if(media && media instanceof Video)
-                await this._contentNetworkService.sendCommandSync(item, pos);
+                await this._mediaPlayerCommandService.sendCommandSync(item, pos);
         }
     }
 
     async sendCommandSeek(mediaStationId: number, pos: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandSeek(ms.mediaPlayerRegistry.getAll(), pos);
+        await this._mediaPlayerCommandService.sendCommandSeek(ms.mediaPlayerRegistry.getAll(), pos);
     }
 
     async sendCommandMute(mediaStationId: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandMute(ms.mediaPlayerRegistry.getAll());
+        await this._mediaPlayerCommandService.sendCommandMute(ms.mediaPlayerRegistry.getAll());
     }
 
     async sendCommandUnmute(mediaStationId: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandUnmute(ms.mediaPlayerRegistry.getAll());
+        await this._mediaPlayerCommandService.sendCommandUnmute(ms.mediaPlayerRegistry.getAll());
     }
 
     async sendCommandSetVolume(mediaStationId: number, vol: number): Promise<void> {
         const ms: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
-        await this._contentNetworkService.sendCommandSetVolume(ms.mediaPlayerRegistry.getAll(), vol);
+        await this._mediaPlayerCommandService.sendCommandSetVolume(ms.mediaPlayerRegistry.getAll(), vol);
     }
 }
