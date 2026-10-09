@@ -12,8 +12,9 @@ export class MockMediaPlayerCommandService extends MediaPlayerCommandService{
     sendCommandPause: jest.Mock;
     sendCommandRew: jest.Mock;
     sendCommandFwd: jest.Mock;
-
+    sendCommandSubs: jest.Mock;
     sendCommandSeek: jest.Mock;
+
     sendCommandSync: jest.Mock;
 
     sendCommandLight: jest.Mock;
@@ -29,8 +30,9 @@ export class MockMediaPlayerCommandService extends MediaPlayerCommandService{
         this.sendCommandPause = jest.fn();
         this.sendCommandRew = jest.fn();
         this.sendCommandFwd = jest.fn();
-
+        this.sendCommandSubs = jest.fn();
         this.sendCommandSeek = jest.fn();
+
         this.sendCommandSync = jest.fn();
 
         this.sendCommandLight = jest.fn();
