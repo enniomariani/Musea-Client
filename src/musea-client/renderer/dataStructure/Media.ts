@@ -111,7 +111,7 @@ export class Video extends BaseMedia implements IMedia{
         if (this._jsonPropertyExists(jsonMedia, "duration"))
             this._duration = jsonMedia.duration;
 
-        if (this._jsonPropertyExists(jsonMedia, "subtitles")){
+        if (jsonMedia.hasOwnProperty("subtitles")){
             for(let j:number = 0; j < jsonMedia.subtitles.length; j++)
                 this._subtitles.push(new SubtitleInternal(
                     jsonMedia.subtitles[j].iso6392T, jsonMedia.subtitles[j].title)

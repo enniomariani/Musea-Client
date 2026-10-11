@@ -10,8 +10,8 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-describe("importFromJSON() ", () => {
-    it("Image: set all properties correctly", () => {
+describe("class Image: ", () => {
+    it("importFromJSON() should set all properties correctly", () => {
         let image: Image = new Image();
         const json:any = {mediaPlayerId: 1, type: "image", idOnMediaPlayer: 2, fileName: "image1.jpeg"};
 
@@ -22,7 +22,25 @@ describe("importFromJSON() ", () => {
         expect(image.idOnMediaPlayer).toBe(2);
     });
 
-    it("content 2: should set all media correctly", () => {
+    it("exportToJSON() should export a valid JSON that contains all set properties", () => {
+        const expectedJSON:any = {mediaPlayerId: 1, type: "image", idOnMediaPlayer: 2, fileName: "image1.jpeg"};
+        let receivedJSON: any;
+
+        let image: Image = new Image();
+        image.idOnMediaPlayer = 2;
+        image.mediaPlayerId = 1;
+        image.fileName = "image1.jpeg";
+
+        receivedJSON = image.exportToJSON();
+
+        expect(JSON.stringify(receivedJSON)).not.toBe(undefined);
+        expect(receivedJSON).toMatchObject(expectedJSON);
+    });
+});
+
+describe("class Video: ", () => {
+
+    it("importFromJSON() should set all properties correctly", () => {
         let video: Video = new Video();
         const json:any = {
             mediaPlayerId: 0, type: "video", idOnMediaPlayer: 3, duration: 320, fileName: "video2.mp4",
@@ -42,25 +60,19 @@ describe("importFromJSON() ", () => {
         expect(video.duration).toBe(320);
         expect(video.subtitles).toStrictEqual(expectedSubs);
     });
-});
 
-describe("exportToJSON() ", () => {
-    it("Image: should export a valid JSON that contains all set properties", () => {
-        const expectedJSON:any = {mediaPlayerId: 1, type: "image", idOnMediaPlayer: 2, fileName: "image1.jpeg"};
-        let receivedJSON: any;
+    it("importFromJSON() should not throw if no subtitle-object in the loaded json but create an empty sub-array (ensure backward-compatibility)", () => {
+        let video: Video = new Video();
+        const json:any = {
+            mediaPlayerId: 0, type: "video", idOnMediaPlayer: 3, duration: 320, fileName: "video2.mp4"
+        };
 
-        let image: Image = new Image();
-        image.idOnMediaPlayer = 2;
-        image.mediaPlayerId = 1;
-        image.fileName = "image1.jpeg";
+        expect( () => video.importFromJSON(json)).not.toThrow();
 
-        receivedJSON = image.exportToJSON();
-
-        expect(JSON.stringify(receivedJSON)).not.toBe(undefined);
-        expect(receivedJSON).toMatchObject(expectedJSON);
+        expect(video.subtitles).toStrictEqual([]);
     });
 
-    it("Image: should export a valid JSON that contains all set properties (with subtitles)", () => {
+    it("exportToJSON() should export a valid JSON that contains all set properties (with subtitles)", () => {
         let receivedJSON: any;
         const expectedJSON:any = {
             mediaPlayerId: 0, type: "video", idOnMediaPlayer: 3, duration: 320, fileName: "video2.mp4",
@@ -81,7 +93,7 @@ describe("exportToJSON() ", () => {
         expect(receivedJSON).toMatchObject(expectedJSON);
     });
 
-    it("Image: should export a valid JSON that contains all set properties (NO subtitles)", () => {
+    it("exportToJSON() should export a valid JSON that contains all set properties (NO subtitles)", () => {
         let receivedJSON: any;
         const expectedJSON:any = {
             mediaPlayerId: 0, type: "video", idOnMediaPlayer: 3, duration: 320, fileName: "video2.mp4",
