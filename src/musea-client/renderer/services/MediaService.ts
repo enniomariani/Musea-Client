@@ -2,7 +2,7 @@ import {MediaStationRepository} from "renderer/dataStructure/MediaStationReposit
 import {MediaStation} from "renderer/dataStructure/MediaStation.js";
 import {MediaManager, MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
 import {SubtitleInternal} from "../dataStructure/Media.js";
-import {ISO6392, Iso6392T} from "../dataStructure/iso6392.js";
+import {ISO6392, iso6392T, Iso6392T} from "../dataStructure/iso6392.js";
 
 export const FileExtension = {
     IMAGE: {
@@ -83,6 +83,26 @@ export class MediaService {
         const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
         const playerRef:PlayerRef = {mediaStation:mediaStation, contentId: contentId, mediaPlayerId:mediaPlayerId};
         return this._mediaManager.getMediaType(playerRef);
+    }
+
+    /**
+     * Return possible subtitles (or empty array) for a specific media
+     *
+     * Throws an error if the media on position mediaStationId/contentId/mediaPlayerId is not a video.
+     *
+     * Use getMediaType first to check what kind of media it is
+     */
+    getSubtitles(mediaStationId: number, contentId: number, mediaPlayerId: number):  Subtitle[]{
+        const mediaStation: MediaStation = this._mediaStationRepository.requireMediaStation(mediaStationId);
+        const playerRef:PlayerRef = {mediaStation:mediaStation, contentId: contentId, mediaPlayerId:mediaPlayerId};
+        const subsInternal:SubtitleInternal[] = this._mediaManager.getSubtitles(playerRef);
+        let returnArr:Subtitle[] = [];
+
+        subsInternal.forEach((sub) =>{
+            returnArr.push({iso6392T:iso6392T(sub.iso6392T), title:sub.title});
+        });
+
+        return returnArr;
     }
 
     /**
