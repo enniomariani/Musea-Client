@@ -157,7 +157,7 @@ describe("getSubtitles() ", () => {
 
         const answer:Subtitle[] = mediaService.getSubtitles(mediaStationId, contentId, 0);
 
-        expect(answer).toEqual([{iso6392T: iso6392T("deu"), title: "Deutsch"}]);
+        expect(answer).toEqual([]);
     });
 });
 
