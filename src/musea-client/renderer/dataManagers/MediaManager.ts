@@ -80,6 +80,18 @@ export class MediaManager{
             return null;
     }
 
+    getSubtitles(playerRef:PlayerRef):SubtitleInternal[]{
+        const content:Content = playerRef.mediaStation.rootFolder.requireContent(playerRef.contentId);
+        const media:IMedia = content.requireMedia(playerRef.mediaPlayerId);
+
+        if(!(media instanceof Video))
+            throw new Error("getSubtitles needs a playerRef to a video!");
+
+        const video:Video = media as Video;
+
+        return video.subtitles;
+    }
+
     getIdOnMediaPlayer(playerRef:PlayerRef):number{
         const content:Content = playerRef.mediaStation.rootFolder.requireContent(playerRef.contentId);
         const media:IMedia = content.requireMedia(playerRef.mediaPlayerId);

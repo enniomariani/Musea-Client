@@ -138,6 +138,29 @@ describe("getMediaType() ", () => {
     });
 });
 
+describe("getSubtitles() ", () => {
+    let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
+    it("should call contentManager.getSubtitles and return the correct subtitles", () => {
+        const internalSubs:SubtitleInternal[] = [new SubtitleInternal(iso6392T("deu"), "Deutsch")];
+
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaManager.getSubtitles.mockReturnValueOnce(internalSubs);
+
+        const answer:Subtitle[] = mediaService.getSubtitles(mediaStationId, contentId, 0);
+
+        expect(answer).toEqual([{iso6392T: iso6392T("deu"), title: "Deutsch"}]);
+    });
+
+    it("should return an empty array if contentManager.getSubtitles returns an empty array", () => {
+        mockMediaStationRepo.requireMediaStation.mockReturnValueOnce(mockMediaStation);
+        mockMediaManager.getSubtitles.mockReturnValueOnce([]);
+
+        const answer:Subtitle[] = mediaService.getSubtitles(mediaStationId, contentId, 0);
+
+        expect(answer).toEqual([]);
+    });
+});
+
 describe("deleteMedia() ", () => {
     let mockMediaStation: MockMediaStation = new MockMediaStation(mediaStationId);
     it("should call mediaManager.deleteMedia with the correct arguments", async () => {

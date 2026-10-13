@@ -3,6 +3,7 @@ import {MockMediaStation} from "mocks/renderer/dataStructure/MockMediaStation.js
 import {MediaManager, MediaType, PlayerRef} from "renderer/dataManagers/MediaManager.js";
 import {MockContent} from "mocks/renderer/dataStructure/MockContent.js";
 import {Image, SubtitleInternal, Video} from "renderer/dataStructure/Media.js";
+import {iso6392T} from "renderer/dataStructure/iso6392.js";
 
 let mediaManager:MediaManager;
 let mockMediaStation:MockMediaStation;
@@ -184,6 +185,33 @@ describe("getIdOnMediaPlayer() ", ()=>{
         idOnMediaPlayer = mediaManager.getIdOnMediaPlayer(playerRef);
 
         expect(idOnMediaPlayer).toBe(-1);
+    });
+});
+
+describe("getSubtitles() ", ()=>{
+    it("should return the subtitles of the requested media (video)", ()=>{
+        let subtitles:SubtitleInternal[];
+        let video:Video = new Video();
+        video.subtitles = [
+            new SubtitleInternal(iso6392T("deu"), "Deutsch"),
+            new SubtitleInternal(iso6392T("fra"), "Franzoesisch")
+        ];
+
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
+        mockContent.requireMedia.mockReturnValueOnce(video);
+
+        subtitles = mediaManager.getSubtitles(playerRef);
+
+        expect(subtitles).toEqual(video.subtitles);
+    });
+
+    it("should throw an error if the passed media-id is not a video", ()=>{
+        let image:Image = new Image();
+
+        mockMediaStation.rootFolder.requireContent.mockReturnValueOnce(mockContent);
+        mockContent.requireMedia.mockReturnValueOnce(image);
+
+        expect(() => mediaManager.getSubtitles(playerRef)).toThrow();
     });
 });
 
